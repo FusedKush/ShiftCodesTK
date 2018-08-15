@@ -1,0 +1,7 @@
+RewriteEngine on
+
+RewriteRule .*\.()$ - [F,NC]
+
+RewriteRule .*\.()$ - [F,NC]
+
+Header set Access-Control-Allow-Origin "*"
