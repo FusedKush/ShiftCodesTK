@@ -36,7 +36,7 @@
     <!--// Before-Content Imports \\-->
     <?php include_once('./assets/php/imports/global/beforeContent.php'); ?>
     <!-- Main Content -->
-    <main class="no-header banner" id="banner" data-webp='{"path": "/assets/img/banners/landing/", "name": "landing", "alt": "jpg", "type": "bg"}'>
+    <main class="no-header banner" id="banner" data-webp='{"path": "/assets/img/banners/landing/", "name": "landing", "alt": ".jpg", "type": "bg"}'>
       <section class="content-container content-wrapper">
         <header class="title">
           <img class="logo" src="/assets/img/logo.svg" alt="ShiftCodesTK Logo">

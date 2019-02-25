@@ -1,5 +1,7 @@
 RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule .*\.()$ - [F,NC]
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
 ErrorDocument 400 /assets/php/errordocs/errorDocument.php?statusCode=400
 ErrorDocument 401 /assets/php/errordocs/errorDocument.php?statusCode=401

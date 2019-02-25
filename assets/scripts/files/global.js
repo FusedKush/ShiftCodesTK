@@ -71,15 +71,11 @@ function webpSupportUpdate (support) {
       webp = JSON.parse(webp);
       webp.fullPath = webp.path + webp.name;
 
-      function update (ext) {
-        webp.link = webp.dir + webp.name + ext;
-      }
-
       if (support === true) {
-        update('.webp');
+        webp.fullPath += '.webp';
       }
       else if (support === false) {
-        update(webp.alt);
+        webp.fullPath += webp.alt;
       }
 
       if (webp.type == 'bg') {
@@ -174,21 +170,3 @@ function getDate (format, separator) {
 
   document.body.appendChild(img);
 })();
-
-// *** Event Listeners ***
-/*
-document.body.onload = function () {
-  function checkLoad() {
-    let styles = document.getElementById('global_stylesheet_styles.css');
-
-    if (typeof styles == 'object') {
-      document.getElementById('startup').remove();
-    }
-    else {
-      setTimeout(checkLoad, 50);
-    }
-  }
-
-  checkLoad();
-}
-*/
