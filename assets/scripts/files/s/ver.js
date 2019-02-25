@@ -8,7 +8,7 @@ var tkVer = {};
     // Secondary / Minor Update Number
     tkVer.s = 0,
     // Tertiary / Patch Number
-    tkVer.t = 0,
+    tkVer.t = 1,
     // Full Version Number
     tkVer.full = tkVer.p + ('.') +tkVer.s + ('.') + tkVer.t;
   })();
