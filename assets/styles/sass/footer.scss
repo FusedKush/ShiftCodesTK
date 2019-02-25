@@ -1,0 +1,160 @@
+/*********************************
+  Footer Styles
+*********************************/
+
+/*** Imports ***/
+@import "partials/_globals";
+
+/*** Animations ***/
+@keyframes creditAnimation1 {
+  20%, 50%, 80% { transform: rotate(0deg); }
+  35%           { transform: rotate(-15deg); }
+  65%           { transform: rotate(15deg); }
+}
+@keyframes creditAnimation2 {
+  0%, 60%, 100% { transform: scale(1); }
+  25%           { transform: scale(0.95); }
+  40%           { transform: scale(1.05); }
+  75%           { transform: scale(1.1); }
+}
+
+/*** Media Queries ***/
+@media screen and (max-width: 539px) {
+  footer .content-wrapper {
+    .social, .return {
+      grid-row: 2;
+    }
+    .social {
+      grid-column: 1 / span 2;
+    }
+    .info {
+      grid-column: 1 / span 3;
+    }
+    .return {
+      grid-column: 2 / span 3;
+    }
+  }
+}
+@media screen and (min-width: 540px) {
+  footer .content-wrapper {
+    .social, .return {
+      grid-row: 1;
+    }
+    .social {
+      grid-column: 1;
+    }
+    .info {
+      grid-column: 2;
+    }
+    .return {
+      grid-column: 3;
+    }
+  }
+}
+
+/*** Style Declarations ***/
+.primary-footer {
+  @include ready;
+
+  position: relative;
+  @include dynamicTheme-bgColor;
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: repeat(2, auto);
+    align-items: center;
+    padding: 24px;
+
+    .social {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      justify-self: start;
+      font-size: 1.75em;
+      padding: 8px;
+      cursor: default;
+
+      a {
+        color: inherit;
+        text-decoration: none;
+        height: 1.1em;
+        width: 1.1em;
+        transition: opacity $trd;
+
+        &:not(:hover):not(:focus) { opacity: 0.85; }
+        &:hover, &:focus          { opacity: 1; }
+        &:not(:last-child)        { margin-right: 6px; }
+      }
+    }
+    .info {
+      grid-row: 1;
+      font-size: 1.1em;
+      justify-self: center;
+
+      .credit {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+        text-decoration: none;
+        padding: 8px 8px 4px;
+        transition: opacity $trd, transform $trd;
+
+        &:not(:hover):not(:focus) { opacity: 0.85; }
+        &:hover, &:focus {
+          opacity: 1;
+
+          .fa-code  { animation-name: creditAnimation1; }
+          .fa-heart { animation-name: creditAnimation2; }
+        }
+        &:active {
+          transform: scale(0.9);
+        }
+
+        .fas {
+          animation-duration: 1.5s;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+        .fa-code    { padding-right: 0.25em; }
+        .fa-heart   { padding: 0 0.25em; }
+        strong      { padding-left: 0.25em; }
+      }
+      .version {
+        opacity: 0.85;
+        font-size: 0.9em;
+        text-align: center;
+        padding: 4px 8px 8px;
+
+        .num {
+          padding-left: 0.25em;
+          cursor: default;
+        }
+      }
+    }
+    .return {
+      justify-self: end;
+      padding: 8px;
+      margin: 8px;
+      font-size: 1.5em;
+      line-height: 1;
+      border-radius: 50%;
+      transition: border $trd, color $trd, background-color $trd, transform $trd;
+
+      &:not(:hover):not(:focus) {
+        color: tpw(0.85);
+        background-color: transparent;
+        border: 2px solid;
+      }
+      &:hover, &:focus {
+        @include dynamicTheme-color;
+        background-color: #fff;
+        border: 2px solid #fff;
+      }
+      &:active {
+        transform: scale(0.85);
+      }
+    }
+  }
+}

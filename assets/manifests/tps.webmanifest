@@ -1,0 +1,18 @@
+{
+  "name": "Borderlands: TPS - ShiftCodesTK",
+  "short_name": "Borderlands: TPS",
+  "description": "SHiFT Codes for Borderlands: The Pre-Sequel",
+  "dir": "ltr",
+  "lang": "en-US",
+  "start_url": "/",
+  "background_color": "#0f1d2c",
+  "theme_color": "#4169e1",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/img/logo.svg",
+      "sizes": "48x48 72x72 96x96 128x128 256x256",
+    }
+  ]
+}

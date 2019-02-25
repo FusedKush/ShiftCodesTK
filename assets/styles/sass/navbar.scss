@@ -1,0 +1,102 @@
+/*********************************
+  Navbar Styles
+*********************************/
+
+/*** Imports ***/
+@import "partials/_globals";
+
+/*** Style Declarations ***/
+.navbar-container {
+  @include ready;
+
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    overflow: hidden;
+    z-index: 100;
+    transition: background-color $trd;
+
+    &[data-atTop="true"] {
+      background-color: transparent;
+
+      .bubble-dynamic { background-color: $bbl-light; }
+    }
+    &[data-atTop="false"] {
+      @include dynamicTheme-bgColor;
+
+      .bubble-dynamic { background-color: $bbl-dark; }
+    }
+
+    .content-wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: 64px;
+      height: 100%;
+      width: 100%;
+
+      .left {
+        grid-column: 1;
+        justify-self: start;
+      }
+      .center {
+        grid-column: 2;
+        justify-self: center;
+      }
+
+      * li {
+        display: inline-block;
+        height: 100%;
+
+        .btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          min-width: 64px;
+          padding: 16px;
+          transition: color $trd;
+
+          &:not(:hover):not(:focus):not([data-pressed]), &:not(:hover):not(:focus)[data-pressed="false"] {
+            color: tpw(0.75);
+
+            .logo:after {
+              opacity: 0;
+            }
+          }
+          &:hover, &:focus, &[data-pressed="true"] {
+            color: #fff;
+          }
+          &:hover .logo:after {
+            opacity: 1;
+          }
+
+          .fas {
+            position: relative;
+            font-size: 26px;
+          }
+        }
+        .logo {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          height: 26px;
+          width: 26px;
+
+          &:after {
+            position: absolute;
+            height: calc(100% + 4px);
+            width: calc(100% + 4px);
+            border: 2px solid;
+            border-radius: 50%;
+            content: "";
+            transition: opacity $trd;
+          }
+        }
+      }
+      }
+    }
+}

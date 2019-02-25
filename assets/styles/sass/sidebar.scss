@@ -1,0 +1,209 @@
+/*********************************
+Sidebar Styles
+*********************************/
+
+/*** Imports ***/
+@import "partials/_globals";
+
+/*** Style Declarations ***/
+.sidebar {
+  @include ready;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 101;
+  transition: background-color $trd;
+
+  &[data-expanded="false"] {
+    background-color: transparent;
+
+    .panel {
+      transform: translateX(-100%);
+      box-shadow: none;
+    }
+  }
+  &[data-expanded="true"] {
+    background-color: rgba(0, 0, 0, 0.5);
+
+    .panel {
+      transform: translateX(0);
+      box-shadow: shadow(tpb(0.5));
+    }
+  }
+  &[hidden] {
+    display: none;
+  }
+  &:not([hidden]) {
+    display: block;
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    color: inherit;
+    background-color: $site-color-lighter;
+    overflow: auto;
+    transition: transform $trd, box-shadow $trd;
+
+    .header {
+      display: flex;
+      align-items: center;
+      height: 64px;
+      width: 100%;
+      overflow: hidden;
+
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 64px;
+        width: 64px;
+        transition: color $trd;
+
+        &:not(:hover):not(:focus) {
+          color: tpw(0.75);
+        }
+        &:hover, &:focus {
+          color: #fff;
+        }
+
+        .fas {
+          position: relative;
+          font-size: 26px;
+        }
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: inherit;
+        text-decoration: none;
+        height: 64px;
+        padding: 12px 16px;
+        font-size: 1.5em;
+
+        &:not(:hover):not(:focus) .name {
+          border-color: transparent;
+        }
+        &:hover:not(:active) .name, &:focus:not(:active) .name {
+          @include dynamicTheme-borderColor;
+        }
+        &:active .name {
+          border-color: #fff;
+        }
+
+        .name {
+          padding: 4px 0;
+          border-bottom: 2px solid;
+          transition: border $trd;
+
+          .focus {
+            @include dynamicTheme-color;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+    .link {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      padding: 16px 32px 16px 0;
+      text-decoration: none;
+      transition: color $trd, background-color $trd;
+
+      @mixin badgeStyle($color: tpw(0.75), $bgcolor: transparent, $border: 1.5px solid) {
+        color: $color;
+        background-color: $bgcolor;
+        border: $border;
+      }
+      @mixin badgeStyle-fade {
+        .badges {
+          .new { @include badgeStyle; }
+          .expiring { @include badgeStyle; }
+        }
+      }
+      @mixin badgeStyle-focus {
+        &:not([selected="true"]) .badges {
+          .new { @include badgeStyle(#fff, $badge-new); }
+          .expiring { @include badgeStyle(#fff, $badge-exp); }
+        }
+      }
+      @mixin badgeStyle-present {
+        &:not([selected="true"]) .badges {
+          .new { @include badgeStyle(#fff, transparent); }
+          .expiring { @include badgeStyle(#fff, transparent); }
+        }
+      }
+
+      &:not(:hover):not(:focus)[data-selected="false"] {
+        color: tpw(0.75);
+        background-color: transparent;
+
+        @include badgeStyle-fade;
+      }
+      &:hover, &:focus {
+        color: #fff;
+        background-color: tpb(0.2);
+
+        @include badgeStyle-focus;
+      }
+      &:active {
+        background-color: tpb(0.4);
+
+        @include badgeStyle-focus;
+      }
+      &[data-selected="true"] {
+        color: #fff;
+        @include dynamicTheme-bgColor;
+
+        @include badgeStyle-present;
+      }
+
+      .fas {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        grid-column: 1;
+        width: 64px;
+        padding: 0 16px;
+        font-size: 22px;
+      }
+      .name {
+        grid-column: 2;
+        padding: 0 16px;
+        font-size: 1.25em;
+      }
+      .badges {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        grid-column: 2;
+        padding: 2px 16px;
+        font-size: 0.7em;
+        font-weight: 600;
+
+        .new, .expiring {
+          padding: 6px 9px;
+          line-height: 1;
+          margin-right: 4px;
+          border-radius: 4px;
+          text-shadow: dropShadow(tpb(0.15));
+          box-shadow: shadow(tpb(0.15));
+          transition: color $trd, background-color $trd, border $trd;
+        }
+      }
+    }
+    .separator {
+      border-bottom: 2px solid #fff;
+      margin: 16px;
+      opacity: .5;
+    }
+  }
+}
