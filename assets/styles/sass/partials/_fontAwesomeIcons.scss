@@ -1,0 +1,26 @@
+/*********************************
+  FontAwesome Icons
+*********************************/
+
+.fa {
+  &-arrow-circle-up:before            { @include fa-icon(f0aa); }
+  &-bars:before                       { @include fa-icon(f0c9); }
+  &-gamepad:before                    { @include fa-icon(f11b); }
+  &-heart:before                      { @include fa-icon(f004); }
+  &-code:before                       { @include fa-icon(f121); }
+  &-bug:before                        { @include fa-icon(f188); }
+  &-star:before                       { @include fa-icon(f005); }
+  &-exclamation-triangle:before       { @include fa-icon(f071); }
+  &-key:before                        { @include fa-icon(f084); }
+  &-clipboard:before                  { @include fa-icon(f328); }
+  &-heart-broken:before               { @include fa-icon(f7a9); }
+  &-external-link-square-alt:before   { @include fa-icon(f360); }
+  &-times:before                      { @include fa-icon(f00d); }
+  &-sort-amount-up:before             { @include fa-icon(f161); }
+  &-sort-amount-down:before           { @include fa-icon(f160); }
+  &-twitter-square:before             { @include fa-icon(f081); }
+  &-facebook-square:before            { @include fa-icon(f082); }
+  &-font-awesome-flag:before          { @include fa-icon(f425); }
+  &-spinner:before                    { @include fa-icon(f110); }
+  &-award:before                      { @include fa-icon(f559); }
+}

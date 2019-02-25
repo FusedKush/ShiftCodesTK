@@ -1,0 +1,10 @@
+RewriteEngine on
+RewriteRule .*\.()$ - [F,NC]
+
+ErrorDocument 400 /assets/php/errordocs/errorDocument.php?statusCode=400
+ErrorDocument 401 /assets/php/errordocs/errorDocument.php?statusCode=401
+ErrorDocument 403 /assets/php/errordocs/errorDocument.php?statusCode=403
+ErrorDocument 404 /assets/php/errordocs/errorDocument.php?statusCode=404
+ErrorDocument 408 /assets/php/errordocs/errorDocument.php?statusCode=408
+ErrorDocument 500 /assets/php/errordocs/errorDocument.php?statusCode=500
+ErrorDocument 503 /assets/php/errordocs/errorDocument.php?statusCode=503

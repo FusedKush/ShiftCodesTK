@@ -1,0 +1,164 @@
+/*********************************
+  Index Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Media Queries ***/
+@media screen and (max-width: 400px) {
+  .content-container {
+    font-size: 1.5em;
+
+    .button-group {
+      flex-direction: column;
+
+      a {
+        padding: 0.8em 0.6em;
+      }
+    }
+  }
+}
+@media screen and (min-width: 401px) and (max-width: 499px) {
+  .content-container {
+    font-size: 1.75em;
+
+    .button-group {
+      flex-direction: column;
+
+      a {
+        padding: 0.8em 0.6em;
+      }
+    }
+  }
+}
+@media screen and (min-width: 500px) {
+  .content-container {
+    font-size: 2em;
+
+    .button-group {
+      flex-direction: row;
+
+      a {
+        padding: 0.6em;
+      }
+    }
+  }
+}
+
+/*** Style Declarations ***/
+.banner {
+  @include ready;
+
+  position: relative;
+  height: 100%;
+  width: 100%;
+  background-position: center;
+  background-size: cover;
+
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: tpb(0.6);
+    content: "";
+  }
+
+  .content-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    padding: 16px;
+
+    .title {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      margin-bottom: 8px;
+      position: relative;
+      text-align: center;
+      text-shadow: dropShadow(tpb(0.6));
+
+      .logo {
+        margin-bottom: 8px;
+        border-radius: 50%;
+        box-shadow: shadow(tpb(0.6));
+        height: 3.5em;
+        width: 3.5em;
+      }
+      .name {
+        font-weight: 600;
+        font-size: 1.5em;
+      }
+      .tagline {
+        opacity: .8;
+        font-size: 1em;
+      }
+    }
+    .button-group {
+      display: flex;
+      position: relative;
+      padding-top: 8px;
+      min-width: 75%;
+
+      a {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        color: inherit;
+        line-height: 1;
+        text-decoration: none;
+        text-align: center;
+        border: 2px solid;
+        border-radius: 4px;
+        background-position: center;
+        background-size: cover;
+        transition: background-color $trd, box-shadow $trd, opacity $trd;
+        font-size: 0.8em;
+        margin: 0.25em;
+
+        &:before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          transition: background-color $trd;
+          content: "";
+        }
+        &:not(:hover):not(:focus) {
+          background-color: transparent;
+          border-color: #fff;
+          box-shadow: none;
+        }
+        &:hover, &:focus {
+          box-shadow: 0 0 1em rgba(0, 0, 0, 0.6);
+
+          &.bl2 {
+            background-color: $theme-bl2;
+            border-color: $theme-bl2;
+          }
+          &.tps {
+            background-color: $theme-tps;
+            border-color: $theme-tps;
+          }
+        }
+        &:active {
+          opacity: 0.75;
+        }
+
+        span {
+          position: relative;
+        }
+      }
+    }
+  }
+}
