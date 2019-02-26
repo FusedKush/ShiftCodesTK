@@ -53,6 +53,88 @@ module.exports = function(grunt) {
         }
       }
     },
+    htmlmin: {
+      options: {
+        caseSensitive: true,
+        collapseBooleanAttributes: true,
+        collapseInlineTagWhitespace: true,
+        collapseWhitespace: true,
+        decodeEntities: true,
+        minifyCSS: true,
+        minifyJS: true,
+        minifyURLs: true,
+        processConditionalComments: true,
+        processScripts: ["text/html"],
+        removeAttributeQuotes: true,
+        removeComments: true,
+        removeEmptyAttributes: true,
+        removeOptionalTags: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        removeTagWhitespace: true,
+        sortAttributes: true,
+        sortClassName: true,
+        trimCustomFragments: true,
+        useShortDoctype: true
+      },
+      default: {
+        files: [{
+          expand: true,
+          cwd: "assets/php/html/files",
+          src: ["**/*.php"],
+          dest: "assets/php/html/min"
+        }]
+      }
+    },
+    copy: {
+      html: {
+        files: [{
+          expand: true,
+          cwd: "assets/php/html/min/builds",
+          src: ["**/*.php"],
+          dest: ""
+        }]
+      },
+      public: {
+        files: [{
+          expand: true,
+          src: ["**/*",
+                "**/*.",
+                ".htaccess",
+                "!.gitignore",
+                "!Gruntfile.js",
+                "!package-lock.json",
+                "!package.json",
+                "!README.md",
+                "!.git",
+                "!.git/**/*",
+                "!.sass-cache",
+                "!.sass-cache/**/*",
+                "!.credentials",
+                "!.credentials/**/*",
+                "!.deprecated",
+                "!.deprecated/**/*",
+                "!.tdb",
+                "!.tbd/**/*",
+                "!node_modules",
+                "!node_modules/**/*",
+                "!public",
+                "!public/**/*",
+                "!assets/php/html/files",
+                "!assets/php/html/files/**/*",
+                "!assets/php/html/min/builds",
+                "!assets/php/html/min/builds/**/*",
+                "!assets/scripts/files",
+                "!assets/scripts/files/**/*",
+                "!assets/styles/css/files",
+                "!assets/styles/css/files/**/*",
+                "!assets/styles/sass",
+                "!assets/styles/sass/**/*"],
+          dest: "public"
+        }]
+      }
+    },
     watch: {
       sassPartials: {
         files: ["assets/styles/sass/partials/**/*.scss"],
@@ -68,8 +150,38 @@ module.exports = function(grunt) {
         files: ["assets/scripts/files/**/*.js"],
         tasks: ["newer:uglify", "newer:concat"]
       },
+      html: {
+        files: ["assets/php/html/files/**/*.php"],
+        tasks: ["newer:htmlmin", "newer:copy:html"]
+      },
+      copy: {
+        files: ["**/*",
+                "**/*.",
+                ".htaccess",
+                "!.gitignore",
+                "!Gruntfile.js",
+                "!package-lock.json",
+                "!package.json",
+                "!README.md",
+                "!.git/**/*",
+                "!.sass-cache/**/*",
+                "!.credentials/**/*",
+                "!.deprecated/**/*",
+                "!.tbd/**/*",
+                "!node_modules/**/*",
+                "!public/**/*",
+                "!assets/php/html/files/**/*",
+                "!assets/php/html/min/builds/**/*",
+                "!assets/scripts/files/**/*",
+                "!assets/styles/css/files/**/*",
+                "!assets/styles/sass/**/*"],
+        tasks: ["newer:copy:public"]
+      },
       config: {
-        files: ["GruntFile.js"]
+        files: ["Gruntfile.js"],
+        options: {
+          reload: true
+        }
       },
       livereload: {
         files: ["**/*.php",
@@ -89,11 +201,13 @@ module.exports = function(grunt) {
       }
     }
   });
+  grunt.loadNpmTasks("grunt-newer");
   grunt.loadNpmTasks("grunt-contrib-sass");
   grunt.loadNpmTasks("grunt-contrib-cssmin");
   grunt.loadNpmTasks("grunt-contrib-uglify-es");
   grunt.loadNpmTasks("grunt-contrib-concat");
-  grunt.loadNpmTasks("grunt-newer");
+  grunt.loadNpmTasks("grunt-contrib-htmlmin");
+  grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-watch");
   grunt.registerTask("default", ["watch"]);
 };

@@ -12,7 +12,16 @@ function returnToTop () {
 // *** Immediate Functions ***
 // Update the footer version number
 (function () {
-  document.getElementById('footer_ver').innerHTML = tkVer.full;
+  function executeWhenReady() {
+    if (typeof tkVer == 'object') {
+      document.getElementById('footer_ver').innerHTML = tkVer.full;
+    }
+    else {
+      setTimeout (function () { executeWhenReady(); }, 100);
+    }
+  }
+
+  executeWhenReady();
 })();
 
 // *** Event Listeners ***

@@ -1,6 +1,6 @@
 .sass-cache/
 node_modules/
-deprecated/
-tbd/
-
+.deprecated/
+.tbd/
+.credentials/
 assets/php/scripts/dbConfig.php

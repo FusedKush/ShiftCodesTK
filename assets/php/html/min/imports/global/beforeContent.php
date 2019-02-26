@@ -1,0 +1,1 @@
+<?php include_once("files/navbar.php"); ?><?php include_once("files/sidebar.php"); ?>
