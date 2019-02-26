@@ -13,8 +13,8 @@ function returnToTop () {
 // Update the footer version number
 (function () {
   function executeWhenReady() {
-    if (typeof tkVer == 'object') {
-      document.getElementById('footer_ver').innerHTML = tkVer.full;
+    if (typeof serverVersion == 'object') {
+      document.getElementById('footer_ver').innerHTML = serverVersion.version;
     }
     else {
       setTimeout (function () { executeWhenReady(); }, 100);

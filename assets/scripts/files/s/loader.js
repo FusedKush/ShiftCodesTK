@@ -3,7 +3,7 @@
 *********************************/
 
 // Load all required files
-let dir = {};
+let dir = {}; // Asset Paths
   (function () {
     dir.assets  =       '/assets',
     dir.styles  =       '/styles/css/',
@@ -46,20 +46,7 @@ function fetch (fileName, type) {
 
     path += fileName;
 
-    if (type == 'global') {
-      function waitForVer () {
-        if (typeof tkVer != 'undefined') {
-          path += ('?v=') + tkVer.full;
-        }
-        else {
-          setTimeout (function () {
-            waitForVer();
-          }, 100);
-        }
-      }
-
-      waitForVer();
-    }
+    if (type == 'global') { path += ('?v=') + serverVersion.version; }
 
     return path;
   })();
@@ -83,10 +70,19 @@ function fetch (fileName, type) {
 
 // Load all scripts & styles
 (function () {
-  // Load global files
-  for (i = 0; i < globalFiles.length; i++) {
-    fetch(globalFiles[i], 'global');
+  // Wait for Version Number
+  function waitForDep () {
+    if (typeof serverVersion == 'object') {
+      // Load global files
+      for (i = 0; i < globalFiles.length; i++) {
+        fetch(globalFiles[i], 'global');
+      }
+    }
+    else { setTimeout(function () { waitForDep(); }, 100); }
   }
+
+  waitForDep();
+
   // Load Local Files
   for (i = 0; i < localFiles.length; i++) {
     fetch(localFiles[i].content, 'local');

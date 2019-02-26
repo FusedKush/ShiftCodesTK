@@ -4,3 +4,4 @@ node_modules/
 .tbd/
 .credentials/
 assets/php/scripts/dbConfig.php
+public/assets/php/scripts/dbConfig.php

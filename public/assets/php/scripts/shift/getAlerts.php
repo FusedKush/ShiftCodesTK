@@ -2,24 +2,37 @@
 // Database Credentials
 require_once('../dbConfig.php');
 
-// Object Initialization
-class responseObject {};
-class codeCountObject {};
+class Response {
+  public $response;
 
-// Object Definition
-$response = new responseObject;
-  $response->response = new responseObject;
-    $response->response->alerts = new responseObject;
-$newCodes = new codeCountObject;
-$expCodes = new codeCountObject;
+  public function __construct() {
+    $this->response = new stdClass();
+    $this->response->alerts = new stdClass();
+  }
+}
+class GameIDs {
+  public $game1 = 'bl2';
+  public $game2 = 'tps';
+}
+class GameCounters {
+  public $bl2 = 0;
+  public $tps = 0;
+}
+class AlertCount {
+  public $new;
+  public $expiring;
 
-// Immediate Object Value Definitions
-$newCodes->bl2 = 0;
-$newCodes->tps = 0;
-$expCodes->bl2 = 0;
-$expCodes->tps = 0;
+  public function __construct() {
+    $this->new = new GameCounters();
+    $this->expiring = new GameCounters();
+  }
+}
 
-// Variables
+$response = new Response();
+$gameIDs = new GameIDs;
+$alertCount = new AlertCount();
+
+// SQL Preparation & Execution
 $sql =
   'SELECT
       GameID,
@@ -37,29 +50,16 @@ $today = date('Y-m-d');
 // Count New & Expiring SHiFT Codes
 if(mysqli_num_rows($sqlResult) > 0) {
   while($row = mysqli_fetch_array($sqlResult)) {
-    if($row['RelDate'] == $today) {
-      if($row['GameID'] == 1) {
-        $newCodes->bl2++;
-      }
-      else if($row['GameID'] == 2) {
-        $newCodes->tps++;
-      }
-    }
-    if($row['ExpDate'] == $today) {
-      if($row['GameID'] == 1) {
-        $expCodes->bl2++;
-      }
-      else if($row['GameID'] == 2) {
-        $expCodes->tps++;
-      }
-    }
+    $gameID = 'game' . $row['GameID'];
+
+    if ($row['RelDate'] == $today) { $alertCount->new->$gameID++; }
+    if ($row['ExpDate'] == $today) { $alertCount->expiring->$gameID++; }
   }
 }
 
-// Create Response Object
-$response->response->alerts->new = $newCodes;
-$response->response->alerts->expiring = $expCodes;
+// Add alert count to Response Object
+$response->response->alerts = $alertCount;
 
-// Send Response
+// Return alert count
 echo json_encode($response);
 ?>

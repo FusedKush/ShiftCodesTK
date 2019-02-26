@@ -2,18 +2,27 @@
 // Database Credentials
 require_once('../dbConfig.php');
 
-// Object Initialization
-class responseObject {};
+class Response {
+  public $response = array();
+};
+class Code {
+  public $codeID;
+  public $relDate;
+  public $expDate;
+  public $reward;
+  public $source;
+  public $codePC;
+  public $codeXbox;
+  public $codePS;
+}
 class codeObject {};
 
-// Object Definition
-$response = new responseObject;
-  $response->response = array();
+$response = new Response;
 
 // Retrieve code details
 function getCode ($codeID, $i) {
   global $con, $response;
-  $code = new codeObject;
+  $code = new Code;
 
   // SQL Setup
   $sql = $con->prepare(
@@ -53,7 +62,7 @@ function getCode ($codeID, $i) {
 // Get Code IDs and fetch code details
 (function () {
   global $con;
-  $codeID;
+  $currentCodeID;
   $i = 0;
 
   // SQL Setup
@@ -74,14 +83,14 @@ function getCode ($codeID, $i) {
   // SQL Execution
   $sql->execute();
   $sql->store_result();
-  $sql->bind_result($codeID);
+  $sql->bind_result($currentCodeID);
 
   // Loop through results and fetch code details
   while ($sql->fetch()) {
-    getCode($codeID, $i);
+    getCode($currentCodeID, $i);
     $i++;
   }
 })();
 
-// Submit Response
+// Return all SHiFT Codes
 echo json_encode($response);
