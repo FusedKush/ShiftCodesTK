@@ -3,10 +3,10 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule .*\.()$ - [F,NC]
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
 
-ErrorDocument 400 /assets/php/html/min/builds/errorDocument.php?statusCode=400
-ErrorDocument 401 /assets/php/html/min/builds/errorDocument.php?statusCode=401
-ErrorDocument 403 /assets/php/html/min/builds/errorDocument.php?statusCode=403
-ErrorDocument 404 /assets/php/html/min/builds/errorDocument.php?statusCode=404
-ErrorDocument 408 /assets/php/html/min/builds/errorDocument.php?statusCode=408
-ErrorDocument 500 /assets/php/html/min/builds/errorDocument.php?statusCode=500
-ErrorDocument 503 /assets/php/html/min/builds/errorDocument.php?statusCode=503
+ErrorDocument 400 /errorDocument.php?statusCode=400
+ErrorDocument 401 /errorDocument.php?statusCode=401
+ErrorDocument 403 /errorDocument.php?statusCode=403
+ErrorDocument 404 /errorDocument.php?statusCode=404
+ErrorDocument 408 /errorDocument.php?statusCode=408
+ErrorDocument 500 /errorDocument.php?statusCode=500
+ErrorDocument 503 /errorDocument.php?statusCode=503
