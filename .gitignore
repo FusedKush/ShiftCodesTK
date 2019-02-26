@@ -3,5 +3,4 @@ node_modules/
 .deprecated/
 .tbd/
 .credentials/
-assets/php/scripts/dbConfig.php
-public/assets/php/scripts/dbConfig.php
+**/dbConfig.php
