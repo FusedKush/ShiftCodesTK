@@ -1,0 +1,1 @@
+<?php include_once('files/inlineStyles.php'); ?><?php include_once('files/errordocs/noscript-styles.php'); ?><?php include_once("files/startup.php"); ?>

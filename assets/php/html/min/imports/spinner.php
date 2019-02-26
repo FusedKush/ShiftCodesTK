@@ -1,0 +1,1 @@
+<div aria-label="Loading Icon"class=spinner title="Loading Icon"><span class=dot></span><span class=dot></span><span class=dot></span><span class=dot></span></div>
