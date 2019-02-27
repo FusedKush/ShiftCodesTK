@@ -71,7 +71,7 @@ function toggleSort() {
     sort.button.classList.add('animated');
     sort.icon.classList.remove(strings.icons[currentSort]);
     sort.icon.classList.add(strings.icons[!currentSort]);
-  }, 1);
+  }, 50);
 
   if (strings.states[currentSort] == 'default') {
     for (i = 0; i < feed.count; i++) {
@@ -330,7 +330,7 @@ function shiftEventListenerTogglePanelClose (event) {
     // Handle Panel Properties
     (function () {
       // Panel ID
-      panel.base.id = ('panel_code_') + codeObject.codeID;
+      panel.base.id = ('shift_code_') + codeObject.codeID;
     })();
     // Handle Header Properties
     (function () {
