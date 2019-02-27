@@ -74,10 +74,7 @@
               <span>fontawesome.com</span>
             </span>
           </div>
-          <p class="description" id="module_font_awesome_description">
-            FontAwesome provided all of the, well,
-            <em>awesome</em>
-            &nbsp;icons that can be found all across the site.
+          <p class="description" id="module_font_awesome_description">FontAwesome provided all of the, well,&nbsp;<em>awesome</em>&nbsp;icons that can be found all across the site.
           </p>
         </a>
         <a class="module" id="module_loading_io" href="https://loading.io" rel="external noopener" target="_blank" aria-labelledby="module_loading_io_name" aria-describedby="module_loading_io_description">
