@@ -15,6 +15,8 @@
     <meta property="og:title" content="Borderlands: The Pre-Sequel - ShiftCodesTK">
     <meta property="og:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1080">
     <meta property="og:type" content="Website">
     <meta property="og:url" content="https://shiftcodes.tk/tps">
     <!-- Twitter Markup -->
