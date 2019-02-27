@@ -225,7 +225,7 @@ main {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 32px 12px; }
+    padding: 32px 12px 64px; }
     main .feed .panel {
       position: relative;
       color: inherit;
