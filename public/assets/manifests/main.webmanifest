@@ -12,7 +12,8 @@
   "icons": [
     {
       "src": "/assets/img/logo.svg",
-      "sizes": "48x48 72x72 96x96 128x128 256x256",
+      "type": "image/svg",
+      "sizes": "48x48 96x96 192x192 288x288 384x384 480x480 512x512 576x76"
     }
   ]
 }
