@@ -15,6 +15,8 @@
     <meta property="og:title" content="Borderlands 2 - ShiftCodesTK">
     <meta property="og:description" content="SHiFT Codes for Borderlands 2">
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
+    <meta property="og:image:width" content="1920">
+    <meta property="og:image:height" content="1080">
     <meta property="og:type" content="Website">
     <meta property="og:url" content="https://shiftcodes.tk/bl2">
     <!-- Twitter Markup -->
