@@ -6,7 +6,7 @@ serverVersion = {};
 /*******************************/
   serverVersion.major = 1;
   serverVersion.minor = 0;
-  serverVersion.patch = 2;
+  serverVersion.patch = 3;
 /*******************************/
 (function () {
   let keys = Object.keys(serverVersion);
