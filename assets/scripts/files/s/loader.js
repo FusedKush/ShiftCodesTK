@@ -46,7 +46,7 @@ function fetch (fileName, type) {
 
     path += fileName;
 
-    if (type == 'global') { path += ('?v=') + serverVersion.version; }
+    if (type == 'global') { path += ('?v=') + serverVersion; }
 
     return path;
   })();
@@ -72,7 +72,7 @@ function fetch (fileName, type) {
 (function () {
   // Wait for Version Number
   function waitForDep () {
-    if (typeof serverVersion == 'object') {
+    if (typeof serverVersion == 'string') {
       // Load global files
       for (i = 0; i < globalFiles.length; i++) {
         fetch(globalFiles[i], 'global');

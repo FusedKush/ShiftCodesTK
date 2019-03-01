@@ -15,7 +15,7 @@
     <!-- Facebook Markup -->
     <meta property="fb:app_id" content="259185334481064">
     <meta property="og:title" content="Credits - ShiftCodesTK">
-    <meta property="og:description" content="Contributions to ShiftCodesTK">
+    <meta property="og:description" content="The people and projects that make ShiftCodesTK possible">
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
     <meta property="og:image:width" content="1920">
     <meta property="og:image:height" content="1080">

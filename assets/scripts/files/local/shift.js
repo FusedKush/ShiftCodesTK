@@ -240,7 +240,7 @@ function shiftEventListenerTogglePanelClose (event) {
     1: {
       'pc': 'PC / Mac:',
       'xbox': 'Xbox 360 / Xbox One:',
-      'ps': 'PS3 / PS4 / PS Vita:'
+      'ps': 'PS3 / PS4 / PS Vita / PSVR:'
     },
     2: {
       'pc': 'PC / Mac / Linux:',
