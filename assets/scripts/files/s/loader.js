@@ -44,9 +44,7 @@ function fetch (fileName, type) {
       }
     }
 
-    path += fileName;
-
-    if (type == 'global') { path += ('?v=') + serverVersion; }
+    path += fileName + ('?v=') + serverVersion;;
 
     return path;
   })();
@@ -77,31 +75,30 @@ function fetch (fileName, type) {
       for (i = 0; i < globalFiles.length; i++) {
         fetch(globalFiles[i], 'global');
       }
+      // Load Local Files
+      for (i = 0; i < localFiles.length; i++) {
+        fetch(localFiles[i].content, 'local');
+      }
+      // Check for DevTools Support
+      (function () {
+        let params = window.location.search;
+        let key = {};
+          (function () {
+            key.base = new Date();
+            key.primary = key.base.getMonth();
+            key.secondary = key.base.getDate();
+            key.tertiary = key.base.getFullYear();
+            key.unique = 1106;
+            key.full = key.primary + key.secondary + key.tertiary + key.unique;
+          })();
+
+        if (params.indexOf('dev=' + key.full) != -1) {
+          fetch('min/s/devTools.min.js', 'global');
+        }
+      })();
     }
     else { setTimeout(function () { waitForDep(); }, 100); }
   }
 
   waitForDep();
-
-  // Load Local Files
-  for (i = 0; i < localFiles.length; i++) {
-    fetch(localFiles[i].content, 'local');
-  }
-  // Check for DevTools Support
-  (function () {
-    let params = window.location.search;
-    let key = {};
-      (function () {
-        key.base = new Date();
-        key.primary = key.base.getMonth();
-        key.secondary = key.base.getDate();
-        key.tertiary = key.base.getFullYear();
-        key.unique = 1106;
-        key.full = key.primary + key.secondary + key.tertiary + key.unique;
-      })();
-
-    if (params.indexOf('dev=' + key.full) != -1) {
-      fetch('min/s/devTools.min.js', 'global');
-    }
-  })();
 })();

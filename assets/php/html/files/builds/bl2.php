@@ -28,8 +28,8 @@
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
     <meta property="twitter:image:alt" content="ShiftCodesTK Logo">
     <!-- Local Dependencies -->
-    <meta class="loader-localFile" content="shift.min.css?v=1">
-    <meta class="loader-localFile" content="shift.min.js?v=1">
+    <meta class="loader-localFile" content="shift.min.css">
+    <meta class="loader-localFile" content="shift.min.js">
     <!--// Head Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>

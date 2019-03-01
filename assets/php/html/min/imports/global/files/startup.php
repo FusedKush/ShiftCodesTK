@@ -1,1 +1,1 @@
-<script async src="/assets/scripts/min/s/serverVersion.min.js?t=<?php echo time(); ?>"></script><script async src="/assets/scripts/min/s/loader.min.js?v=1"></script>
+<script async src="/assets/scripts/min/s/serverVersion.min.js?t=<?php echo time(); ?>"></script><script async src="/assets/scripts/min/s/loader.min.js?v=1.2"></script>

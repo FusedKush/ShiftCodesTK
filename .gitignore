@@ -3,4 +3,5 @@ node_modules/
 .deprecated/
 .tbd/
 .credentials/
+.updateChecklist
 **/dbConfig.php
