@@ -50,13 +50,13 @@ $today = date('Y-m-d');
 // Count New & Expiring SHiFT Codes
 if(mysqli_num_rows($sqlResult) > 0) {
   while($row = mysqli_fetch_array($sqlResult)) {
-    $gameID = 'game' . $row['GameID'];
-
+    $gameIDString = 'game' . $row['GameID'];
+    $gameID = $gameIDs->$gameIDString;
+    
     if ($row['RelDate'] == $today) { $alertCount->new->$gameID++; }
     if ($row['ExpDate'] == $today) { $alertCount->expiring->$gameID++; }
   }
 }
-
 // Add alert count to Response Object
 $response->response->alerts = $alertCount;
 
