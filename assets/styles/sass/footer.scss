@@ -5,6 +5,9 @@
 /*** Imports ***/
 @import "partials/_globals";
 
+/*** Variables ***/
+$footerIdleOpacity: 0.75;
+
 /*** Animations ***/
 @keyframes creditAnimation1 {
   20%, 50%, 80% { transform: rotate(0deg); }
@@ -21,34 +24,18 @@
 /*** Media Queries ***/
 @media screen and (max-width: 539px) {
   footer .content-wrapper {
-    .social, .return {
-      grid-row: 2;
-    }
-    .social {
-      grid-column: 1 / span 2;
-    }
-    .info {
-      grid-column: 1 / span 3;
-    }
-    .return {
-      grid-column: 2 / span 3;
-    }
+    .social, .return  { grid-row: 2; }
+    .social           { grid-column: 1 / span 2; }
+    .info             { grid-column: 1 / span 3; }
+    .return           { grid-column: 2 / span 3; }
   }
 }
 @media screen and (min-width: 540px) {
   footer .content-wrapper {
-    .social, .return {
-      grid-row: 1;
-    }
-    .social {
-      grid-column: 1;
-    }
-    .info {
-      grid-column: 2;
-    }
-    .return {
-      grid-column: 3;
-    }
+    .social, .return  { grid-row: 1; }
+    .social           { grid-column: 1; }
+    .info             { grid-column: 2; }
+    .return           { grid-column: 3; }
   }
 }
 
@@ -82,34 +69,30 @@
         width: 1.1em;
         transition: opacity $trd;
 
-        &:not(:hover):not(:focus) { opacity: 0.85; }
+        &:not(:hover):not(:focus) { opacity: $footerIdleOpacity; }
         &:hover, &:focus          { opacity: 1; }
         &:not(:last-child)        { margin-right: 6px; }
       }
     }
     .info {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      justify-self: center;
       grid-row: 1;
       font-size: 1.1em;
-      justify-self: center;
+      padding: 4px 0;
+      text-align: center;
 
       .credit {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: inherit;
-        text-decoration: none;
-        padding: 8px 8px 4px;
-        transition: opacity $trd, transform $trd;
 
-        &:not(:hover):not(:focus) { opacity: 0.85; }
         &:hover, &:focus {
-          opacity: 1;
-
           .fa-code  { animation-name: creditAnimation1; }
           .fa-heart { animation-name: creditAnimation2; }
-        }
-        &:active {
-          transform: scale(0.9);
         }
 
         .fas {
@@ -122,38 +105,38 @@
         strong      { padding-left: 0.25em; }
       }
       .version {
-        opacity: 0.85;
         font-size: 0.9em;
-        text-align: center;
-        padding: 4px 8px 8px;
 
-        .num {
-          padding-left: 0.25em;
-          cursor: default;
-        }
+        .num { padding-left: 0.25em; }
+      }
+      .credit, .version {
+        color: inherit;
+        text-decoration: none;
+        padding: 4px 8px;
+        transition: opacity $trd, transform $trd;
+
+        &:not(:hover):not(:focus) { opacity: $footerIdleOpacity; }
+        &:hover, &:focus          { opacity: 1; }
+        &:active                  { transform: scale(0.85); }
       }
     }
     .return {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       justify-self: end;
-      padding: 8px;
-      margin: 8px;
       font-size: 1.5em;
-      line-height: 1;
-      border-radius: 50%;
-      transition: border $trd, color $trd, background-color $trd, transform $trd;
+      padding: 8px;
+      transition: opacity $trd, transform $trd;
 
-      &:not(:hover):not(:focus) {
-        color: tpw(0.85);
-        background-color: transparent;
+      &:not(:hover):not(:focus) { opacity: $footerIdleOpacity; }
+      &:hover, &:focus { opacity: 1; }
+      &:active { transform: scale(0.85); }
+
+      .fas {
+        padding: 6px;
         border: 2px solid;
-      }
-      &:hover, &:focus {
-        @include dynamicTheme-color;
-        background-color: #fff;
-        border: 2px solid #fff;
-      }
-      &:active {
-        transform: scale(0.85);
+        border-radius: 50%;
       }
     }
   }

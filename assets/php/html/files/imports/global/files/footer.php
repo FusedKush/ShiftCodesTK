@@ -6,12 +6,12 @@
       <a class="external-link-icon report" href="https://github.com/FusedKush/ShiftCodesTK/issues" rel="external noopener" target="_blank" title="Report an Issue" aria-label="Report an Issue"><span class="external fas fa-external-link-square-alt"></span><span class="icon fas fa-bug"></span></a>
     </div>
     <div class="info">
-      <a href="/credits" class="credit" title="Coded with Love by Zach Vaughan" aria-label="Coded with Love by Zach Vaughan"><span class="fas fa-code" title="Coded" aria-label="Coded"></span>with<span class="fas fa-heart" title="Love" aria-label="Love"></span>by<strong>Zach Vaughan</strong>
+      <a class="credit" href="/credits" title="Coded with Love by Zach Vaughan" aria-label="Coded with Love by Zach Vaughan"><span class="fas fa-code" title="Coded" aria-label="Coded"></span>with<span class="fas fa-heart" title="Love" aria-label="Love"></span>by<strong>Zach Vaughan</strong>
       </a>
-      <div class="version">Version<strong class="num" id="footer_ver">0.0.0</strong></div>
+      <a class="version" href="/updates">Version<strong class="num" id="footer_ver">0.0.0</strong></a>
     </div>
     <button class="return" id="footer_return" title="Return to Top" aria-label="Return to Top">
-      <span class="fas fa-arrow-circle-up"></span>
+      <span class="fas fa-arrow-alt-circle-up"></span>
     </button>
   </div>
 </footer>
