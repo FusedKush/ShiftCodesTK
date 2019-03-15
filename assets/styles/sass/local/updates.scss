@@ -1,0 +1,152 @@
+/*********************************
+  Updates Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Media Queries ***/
+@media screen and (max-width: 449px) {
+  main .panel .header .title {
+    font-size: 0.9em;
+
+    .info {
+      flex-direction: column;
+      align-items: flex-start;
+
+      .date, .type {
+        display: list-item;
+        list-style: disc inside;
+      }
+      .separator { display: none; }
+    }
+  }
+}
+@media screen and (min-width: 500px) {
+  main .panel .header .title {
+    font-size: 1em;
+
+    .info {
+      flex-direction: row;
+      align-items: center;
+
+      .date, .type { display: inline; }
+      .separator { display: inline; }
+    }
+  }
+}
+
+/*** Style Declarations ***/
+main {
+  @include ready;
+
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 32px 16px 64px;
+  overflow: hidden;
+
+  .panel {
+    position: relative;
+    color: inherit;
+    background-color: $site-color-lighter;
+    border: 2px solid $site-color-darker;
+    border-radius: 4px;
+    overflow: hidden;
+
+    &[data-expanded="false"] {
+      .header .toggle .fas { transform: rotate(0deg); }
+      .body { display: none; }
+    }
+    &[data-expanded="true"] {
+      .header .toggle .fas { transform: rotate(180deg); }
+      .body { display: grid; }
+    }
+    &:not(:last-child) { margin-bottom: 1.5em; }
+
+    .header {
+      display: grid;
+      grid-template-columns: 2.55em 1fr auto;
+      font-size: 1.5em;
+      padding: 8px;
+
+      > .icon, .title, .toggle {
+        grid-row: 1;
+        padding: 8px;
+      }
+      > .icon, .title { align-self: center; }
+      > .icon {
+        display: inline-flex;
+        justify-content: center;
+        grid-column: 1;
+        font-size: 1.5em;
+      }
+      .title {
+        grid-column: 2;
+
+        .version {
+          font-weight: 600;
+          font-size: 1em;
+        }
+        .info {
+          display: flex;
+          opacity: .5;
+          font-size: 0.75em;
+
+          .separator {
+            font-size: 1.5em;
+            padding: 0 0.35em;
+            line-height: 0;
+          }
+        }
+      }
+      .toggle {
+        grid-column: 3;
+        font-size: 1em;
+        height: 2em;
+        width: 2em;
+        transition: opacity $trd;
+
+        &:not(:hover):not(:focus):not([hidden]) {
+          opacity: 0.75;
+        }
+        &:hover, &:focus {
+          opacity: 1;
+        }
+
+        .fas { transition: transform $trd; }
+      }
+    }
+    .body {
+      position: relative;
+      background-color: tpb(0.2);
+      padding: 16px;
+      overflow: hidden;
+
+      h3 {
+        font-size: 1.25em;
+        margin-bottom: 0.25em;
+
+        &:not(:first-child) {
+          margin-top: 1em;
+        }
+      }
+
+      ul {
+        list-style: disc inside;
+
+        li {
+          padding: 2px 0;
+
+          code {
+            font-family: inherit;
+            background-color: tpb(0.4);
+            padding: 2px 4px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}
