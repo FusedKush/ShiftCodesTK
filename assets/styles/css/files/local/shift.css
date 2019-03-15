@@ -11,8 +11,6 @@
 /*** Mixins ***/
 /*** Media Queries ***/
 @media screen and (max-width: 379px) {
-  main .feed .panel[data-expanded="true"] .body {
-    max-height: calc(6 * ((1.25 * 2em) + 1.25em + 48px) + (0.85em + 40px) + 23px + 8px); }
   main .feed .panel .header .top {
     font-size: 1.25em; }
   main .feed .panel .body {
@@ -36,8 +34,6 @@
     main .feed .panel .body .separator {
       grid-row: 4; } }
 @media screen and (min-width: 380px) {
-  main .feed .panel[data-expanded="true"] .body {
-    max-height: calc(5 * ((1.25 * 2em) + 1.25em + 48px) + (0.85em + 40px) + 23px + 8px); }
   main .feed .panel .header .top {
     font-size: 1.5em; }
   main .feed .panel .body {
@@ -81,9 +77,9 @@
     opacity: 1; } }
 @keyframes progressClimb {
   0% {
-    max-width: 0; }
+    transform: translateX(-100%); }
   100% {
-    max-width: 100%; } }
+    transform: translateX(0); } }
 @keyframes relPulseBadge {
   66.6%, 100% {
     box-shadow: none; }
@@ -101,7 +97,7 @@
     transform: scale(0.8); }
   75% {
     transform: scale(1.2); } }
-@keyframes buttonPop {
+@keyframes sortButtonPop {
   0%, 100% {
     transform: scale(1); }
   50% {
@@ -109,7 +105,7 @@
 /*** Style Declarations ***/
 main {
   opacity: 1;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.2s ease-out;
   position: relative;
   display: flex;
   align-items: center;
@@ -118,7 +114,7 @@ main {
   overflow: hidden; }
   main * {
     opacity: 1;
-    transition: opacity 0.25s ease-out; }
+    transition: opacity 0.2s ease-out; }
   main * {
     display: block; }
   main .overlay {
@@ -130,7 +126,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: opacity 0.25s ease-out; }
+    transition: opacity 0.2s ease-out; }
     main .overlay[hidden], main .overlay > *[hidden] {
       display: inherit; }
     main .overlay:not([hidden]) {
@@ -143,7 +139,7 @@ main {
       position: absolute; }
     main .overlay .spinner {
       transform: scale(1.5);
-      transition: opacity 0.25s ease-out; }
+      transition: opacity 0.2s ease-out; }
       main .overlay .spinner:not([hidden]) {
         opacity: 1; }
       main .overlay .spinner[hidden] {
@@ -151,7 +147,7 @@ main {
     main .overlay .error {
       text-align: center;
       font-weight: 600;
-      transition: opacity 0.25s ease-out; }
+      transition: opacity 0.2s ease-out; }
       main .overlay .error:not([hidden]) {
         opacity: 0.25; }
       main .overlay .error[hidden] {
@@ -160,7 +156,7 @@ main {
         font-size: 2em;
         padding: 16px 0; }
   main .shift-header {
-    background-color: #152c42;
+    background-color: #1d3f60;
     border-bottom: 2px solid #060c12;
     width: 100%;
     font-size: 1.25em; }
@@ -182,7 +178,7 @@ main {
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
           margin-right: 6px;
           overflow: hidden;
-          transition: opacity 0.25s ease-out;
+          transition: opacity 0.2s ease-out;
           cursor: default; }
           main .shift-header .content-wrapper .section.counters .badge.total {
             background-color: #808080; }
@@ -203,6 +199,7 @@ main {
           main .shift-header .content-wrapper .section.counters .badge .fas {
             font-size: 0.9em; }
         main .shift-header .content-wrapper .section.sort button {
+          position: relative;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -212,47 +209,49 @@ main {
           padding: 0.25em;
           line-height: 1;
           border-radius: 4px;
-          transition: background-color 0.25s ease-out, opacity 0.25s ease-out; }
-          main .shift-header .content-wrapper .section.sort button:not(:hover):not(:focus) {
-            background-color: rgba(255, 255, 255, 0.2); }
-          main .shift-header .content-wrapper .section.sort button:hover, main .shift-header .content-wrapper .section.sort button:focus {
-            background-color: rgba(255, 255, 255, 0.4); }
+          overflow: hidden;
+          transition: opacity 0.2s ease-out; }
+          main .shift-header .content-wrapper .section.sort button:before {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            content: "";
+            background-color: #fff;
+            transition: opacity 0.2s ease-out; }
+          main .shift-header .content-wrapper .section.sort button.animated {
+            animation: sortButtonPop 0.4s linear forwards; }
+          main .shift-header .content-wrapper .section.sort button:not(:hover):not(:focus):before {
+            opacity: 0.2; }
+          main .shift-header .content-wrapper .section.sort button:hover:before, main .shift-header .content-wrapper .section.sort button:focus:before {
+            opacity: 0.4; }
           main .shift-header .content-wrapper .section.sort button:active {
             opacity: 0.75; }
-          main .shift-header .content-wrapper .section.sort button.animated {
-            animation: buttonPop 0.4s linear forwards; }
+          main .shift-header .content-wrapper .section.sort button .fas {
+            position: relative; }
   main .feed {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 32px 12px 64px; }
+    padding: 32px 16px 64px; }
     main .feed .panel {
       position: relative;
       color: inherit;
+      background-color: #1d3f60;
       border: 2px solid;
       border-radius: 4px;
       opacity: 0;
       overflow: hidden;
-      animation: fadeIn 0.4s linear forwards;
-      transition: box-shadow 0.25s ease-out, background-color 0.25s ease-out, border-color 0.25s ease-out; }
-      main .feed .panel[data-expanded="false"]:not(:hover):not(:focus) {
-        background-color: #152c42; }
-      main .feed .panel[data-expanded="false"]:hover, main .feed .panel[data-expanded="false"]:focus {
-        background-color: #1d3f60;
-        cursor: pointer; }
-      main .feed .panel[data-expanded="false"]:active {
-        box-shadow: 0 0 1em rgba(0, 0, 0, 0.75); }
-      main .feed .panel[data-expanded="false"] .header .top .title {
-        margin-right: 0; }
+      animation: fadeIn 0.4s linear forwards; }
+      main .feed .panel[data-expanded="false"] .header .top .toggle .fas {
+        transform: rotate(0deg); }
       main .feed .panel[data-expanded="false"] .body {
-        max-height: 0;
-        padding: 0 8px; }
-      main .feed .panel[data-expanded="true"] {
-        background-color: #1d3f60; }
-        main .feed .panel[data-expanded="true"] .header .top .title {
-          margin-right: 1em; }
-        main .feed .panel[data-expanded="true"] .body {
-          padding: 0 8px 8px 8px; }
+        display: none; }
+      main .feed .panel[data-expanded="true"] .header .top .toggle .fas {
+        transform: rotate(180deg); }
+      main .feed .panel[data-expanded="true"] .body {
+        display: grid; }
       main .feed .panel:not(.new):not(.exp) {
         border-color: #060c12; }
       main .feed .panel.new {
@@ -288,7 +287,7 @@ main {
         display: grid;
         grid-template-columns: auto 1fr auto;
         padding: 8px; }
-        main .feed .panel .header .top > .fas, main .feed .panel .header .top .title, main .feed .panel .header .top .collapse {
+        main .feed .panel .header .top > .fas, main .feed .panel .header .top .title, main .feed .panel .header .top .toggle {
           grid-row: 1;
           padding: 8px; }
         main .feed .panel .header .top > .fas, main .feed .panel .header .top .title {
@@ -297,8 +296,7 @@ main {
           grid-column: 1;
           font-size: 1.5em; }
         main .feed .panel .header .top .title {
-          grid-column: 2 / span 3;
-          transition: margin 0.25s ease-out; }
+          grid-column: 2; }
           main .feed .panel .header .top .title .reward {
             font-weight: 600; }
             main .feed .panel .header .top .title .reward:not(.long) {
@@ -308,19 +306,22 @@ main {
           main .feed .panel .header .top .title .description {
             opacity: .5;
             font-size: 0.75em; }
-        main .feed .panel .header .top .collapse {
+        main .feed .panel .header .top .toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           grid-column: 3;
           font-size: 1em;
           height: 2em;
           width: 2em;
-          transition: opacity 0.25s ease-out; }
-          main .feed .panel .header .top .collapse[hidden] {
-            display: flex;
-            opacity: 0; }
-          main .feed .panel .header .top .collapse:not(:hover):not(:focus):not([hidden]) {
+          transition: opacity 0.2s ease-out; }
+          main .feed .panel .header .top .toggle:not(:hover):not(:focus):not([hidden]) {
             opacity: 0.75; }
-          main .feed .panel .header .top .collapse:hover, main .feed .panel .header .top .collapse:focus {
+          main .feed .panel .header .top .toggle:hover, main .feed .panel .header .top .toggle:focus {
             opacity: 1; }
+          main .feed .panel .header .top .toggle .fas {
+            position: relative;
+            transition: transform 0.2s ease-out; }
       main .feed .panel .header .bottom {
         padding: 0 8px 8px 8px; }
         main .feed .panel .header .bottom .progress-bar {
@@ -341,8 +342,8 @@ main {
             width: 0;
             box-shadow: 0 0 1em;
             border-radius: 4px;
-            max-width: 0;
-            animation: progressClimb 1.6s 0.4s linear forwards; }
+            transform: translateX(-100%);
+            animation: progressClimb 1.2s 0.4s linear forwards; }
             body[data-theme="main"] main .feed .panel .header .bottom .progress-bar .progress {
               color: #f00; }
             body[data-theme="bl2"] main .feed .panel .header .bottom .progress-bar .progress {
@@ -359,8 +360,8 @@ main {
         position: relative;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        padding: 0 8px 8px;
         background-color: rgba(0, 0, 0, 0.2);
-        transition: max-height 0.5s ease-out, padding 0.5s ease-out;
         overflow: hidden; }
         main .feed .panel .body .background {
           display: flex;
@@ -410,26 +411,17 @@ main {
               opacity: 1;
               text-decoration: none;
               width: 100%; }
-              main .feed .panel .body .section .content a:not(:hover):not(:focus) span.fas {
-                max-width: 0;
-                padding-right: 0; }
-              main .feed .panel .body .section .content a:not(:hover):not(:focus) span:not(.fas) {
+              main .feed .panel .body .section .content a:not(:hover):not(:focus) .text {
                 text-decoration: none; }
-              main .feed .panel .body .section .content a:hover span.fas, main .feed .panel .body .section .content a:focus span.fas {
-                max-width: 18px;
-                padding-right: 1em; }
-              main .feed .panel .body .section .content a:hover span:not(.fas), main .feed .panel .body .section .content a:focus span:not(.fas) {
+              main .feed .panel .body .section .content a:hover .text, main .feed .panel .body .section .content a:focus .text {
                 text-decoration: underline; }
               main .feed .panel .body .section .content a:active {
-                opacity: .75; }
+                opacity: 0.75; }
               main .feed .panel .body .section .content a .fas {
+                padding-right: 6px;
+                overflow: hidden; }
+              main .feed .panel .body .section .content a .text {
                 overflow: hidden;
-                transition: max-width 0.25s ease-out, padding 0.25s ease-out; }
-              main .feed .panel .body .section .content a:not(.fas) {
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis; }
-              main .feed .panel .body .section .content a span:not(.fas) {
                 white-space: nowrap;
                 text-overflow: ellipsis; }
             main .feed .panel .body .section .content input {
@@ -447,14 +439,22 @@ main {
               width: 15%;
               font-size: inherit;
               padding: 8px;
-              transition: background-color 0.25s ease-out, opacity 0.25s ease-out; }
+              transition: opacity 0.2s ease-out; }
+              main .feed .panel .body .section .content .copy:before {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                content: "";
+                background-color: #fff;
+                transition: opacity 0.2s ease-out; }
               main .feed .panel .body .section .content .copy.animated .fas {
                 animation: copiedToClipboard 0.5s linear; }
-              main .feed .panel .body .section .content .copy:not(:hover):not(:focus) {
-                background-color: rgba(255, 255, 255, 0.3); }
-              main .feed .panel .body .section .content .copy:hover, main .feed .panel .body .section .content .copy:focus {
-                background-color: rgba(255, 255, 255, 0.5);
-                opacity: 1; }
+              main .feed .panel .body .section .content .copy:not(:hover):not(:focus):before {
+                opacity: 0.3; }
+              main .feed .panel .body .section .content .copy:hover:before, main .feed .panel .body .section .content .copy:focus:before {
+                opacity: 0.5; }
               main .feed .panel .body .section .content .copy:active {
                 opacity: 0.75; }
         main .feed .panel .body .separator {

@@ -47,9 +47,9 @@
           <div class="reward">5 Golden Keys</div>
           <div class="description">SHiFT Code</div>
         </div>
-        <button class="collapse bubble-parent" title="Collapse SHiFT Code" aria-label="Collapse SHiFT Code" hidden aria-hidden="true" disabled aria-disabled="true">
+        <button class="toggle bubble-parent" title="Expand SHiFT Code" aria-label="Expand SHiFT Code">
           <span class="bubble bubble-light"></span>
-          <span class="fas fa-times"></span>
+          <span class="fas fa-chevron-circle-down"></span>
         </button>
       </div>
       <div class="bottom">
