@@ -143,8 +143,7 @@ module.exports = function(grunt) {
       },
       sass: {
         files: ["assets/styles/sass/**/*.scss",
-                "!assets/styles/sass/partials/**/*.scss",
-                "!assets/styles/sass/errordocs/**/*.scss"],
+                "!assets/styles/sass/partials/**/*.scss"],
         tasks: ["newer:sass", "newer:cssmin:minify", "newer:cssmin:concat"]
       },
       js: {
@@ -186,9 +185,7 @@ module.exports = function(grunt) {
         }
       },
       livereload: {
-        files: ["**/*.php",
-                "**/*.html",
-                "**/*.txt",
+        files: ["*.php",
                 "assets/fonts/**/*",
                 "assets/img/**/*",
                 "assets/manifests/**/*",
@@ -196,7 +193,9 @@ module.exports = function(grunt) {
                 "assets/scripts/global-scripts.min.js",
                 "assets/scripts/min/local/**/*.min.js",
                 "assets/styles/css/global-styles.min.css",
-                "assets/styles/css/min/local/**/*.min.css"],
+                "assets/styles/css/min/local/**/*.min.css",
+                "!assets/php/files/**/*",
+                "!assets/php/min/builds/**/*"],
         options: {
           livereload: true
         }

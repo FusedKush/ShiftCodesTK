@@ -17,17 +17,27 @@
     height: 64px;
     overflow: hidden;
     z-index: 100;
-    transition: background-color $trd;
 
     &[data-atTop="true"] {
-      background-color: transparent;
+      &:before        { opacity: 0; }
 
       .bubble-dynamic { background-color: $bbl-light; }
     }
     &[data-atTop="false"] {
-      @include dynamicTheme-bgColor;
+      &:before        { opacity: 1; }
 
       .bubble-dynamic { background-color: $bbl-dark; }
+    }
+
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      @include dynamicTheme-bgColor;
+      content: "";
+      transition: opacity 0.25s ease-out;
     }
 
     .content-wrapper {
@@ -60,43 +70,40 @@
           transition: color $trd;
 
           &:not(:hover):not(:focus):not([data-pressed]), &:not(:hover):not(:focus)[data-pressed="false"] {
-            color: tpw(0.75);
-
-            .logo:after {
-              opacity: 0;
-            }
+            .fas        { opacity: 0.75; }
+            .logo:after { opacity: 0; }
           }
-          &:hover, &:focus, &[data-pressed="true"] {
-            color: #fff;
-          }
-          &:hover .logo:after {
-            opacity: 1;
-          }
+          &:hover, &:focus, &[data-pressed="true"] { .fas { opacity: 1; } }
+          &:hover .logo:after { opacity: 1; }
 
           .fas {
             position: relative;
             font-size: 26px;
-          }
-        }
-        .logo {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: relative;
-          height: 26px;
-          width: 26px;
-
-          &:after {
-            position: absolute;
-            height: calc(100% + 4px);
-            width: calc(100% + 4px);
-            border: 2px solid;
-            border-radius: 50%;
-            content: "";
             transition: opacity $trd;
           }
+          .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background-image: url("/assets/img/logo.svg");
+            background-position: center;
+            background-size: cover;
+            height: 26px;
+            width: 26px;
+
+            &:after {
+              position: absolute;
+              height: calc(100% + 4px);
+              width: calc(100% + 4px);
+              border: 2px solid #fff;
+              border-radius: 50%;
+              content: "";
+              transition: opacity $trd;
+            }
+          }
         }
       }
-      }
     }
+  }
 }

@@ -14,9 +14,6 @@
 /*** Media Queries ***/
 @media screen and (max-width: 379px) {
   main .feed .panel {
-     &[data-expanded="true"] .body {
-       max-height: calc(6 * ((1.25 * 2em) + 1.25em + 48px) + (0.85em + 40px) + 23px + 8px);
-     }
      .header .top {
        font-size: 1.25em;
      }
@@ -56,9 +53,6 @@
 }
 @media screen and (min-width: 380px) {
   main .feed .panel {
-    &[data-expanded="true"] .body {
-      max-height: calc(5 * ((1.25 * 2em) + 1.25em + 48px) + (0.85em + 40px) + 23px + 8px);
-    }
     .header .top {
       font-size: 1.5em;
     }
@@ -123,12 +117,12 @@
 
 /*** Animations ***/
 @keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0%    { opacity: 0; }
+  100%  { opacity: 1; }
 }
 @keyframes progressClimb {
-  0% { max-width: 0; }
-  100% { max-width: 100%; }
+  0%    { transform: translateX(-100%); }
+  100%  { transform: translateX(0); }
 }
 @keyframes relPulseBadge {
   @include badgePulse($badge-new);
@@ -138,12 +132,12 @@
 }
 @keyframes copiedToClipboard {
   0%, 50%, 100% { transform: scale(1); }
-  25% { transform: scale(0.8); }
-  75% { transform: scale(1.2); }
+  25%           { transform: scale(0.8); }
+  75%           { transform: scale(1.2); }
 }
-@keyframes buttonPop {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.2); }
+@keyframes sortButtonPop {
+  0%, 100%      { transform: scale(1); }
+  50%           { transform: scale(1.2); }
 }
 
 /*** Style Declarations ***/
@@ -216,7 +210,7 @@ main {
     }
   }
   .shift-header {
-    background-color: $site-color-light;
+    background-color: $site-color-lighter;
     border-bottom: 2px solid $site-color-darker;
     width: 100%;
     font-size: 1.25em;
@@ -267,6 +261,7 @@ main {
         }
         &.sort {
           button {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -276,21 +271,21 @@ main {
             padding: 0.25em;
             line-height: 1;
             border-radius: 4px;
-            transition: background-color $trd, opacity $trd;
+            overflow: hidden;
+            transition: opacity $trd;
 
-            &:not(:hover):not(:focus) {
-              background-color: tpw(0.2);
+            &:before {
+              @include pseudo-fit;
+              background-color: #fff;
+              transition: opacity $trd;
             }
-            &:hover, &:focus {
-              background-color: tpw(0.4);
-            }
-            &:active {
-              opacity: 0.75;
-            }
+            &.animated { animation: sortButtonPop 0.4s linear forwards; }
 
-            &.animated {
-              animation: buttonPop 0.4s linear forwards;
-            }
+            &:not(:hover):not(:focus):before  { opacity: 0.2; }
+            &:hover, &:focus                  { &:before { opacity: 0.4; } }
+            &:active                          { opacity: 0.75; }
+
+            .fas { position: relative; }
           }
         }
       }
@@ -300,58 +295,30 @@ main {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 32px 12px 64px;
+    padding: 32px 16px 64px;
 
     .panel {
       position: relative;
       color: inherit;
+      background-color: $site-color-lighter;
       border: 2px solid;
       border-radius: 4px;
       opacity: 0;
       overflow: hidden;
       animation: fadeIn 0.4s linear forwards;
-      transition: box-shadow $trd, background-color $trd, border-color $trd;
 
       &[data-expanded="false"] {
-        &:not(:hover):not(:focus) {
-          background-color: $site-color-light;
-        }
-        &:hover, &:focus {
-          background-color: $site-color-lighter;
-          cursor: pointer;
-        }
-        &:active {
-          box-shadow: shadow(tpb(0.75));
-        }
-
-        .header .top {
-          .title {
-            margin-right: 0;
-          }
-        }
-        .body {
-          max-height: 0;
-          padding: 0 8px;
-        }
+        .header .top .toggle .fas { transform: rotate(0deg); }
+        .body  { display: none; }
       }
-      &[data-expanded="true"]  {
-        background-color: $site-color-lighter;
-
-        .header .top {
-          .title {
-            margin-right: 1em;
-          }
-        }
-        .body {
-          padding: 0 8px 8px 8px;
-        }
+      &[data-expanded="true"] {
+        .header .top .toggle .fas { transform: rotate(180deg); }
+        .body  { display: grid; }
       }
       &:not(.new):not(.exp)   { border-color: $site-color-darker; }
       &.new                   { border-color: $badge-new; }
       &.exp                   { border-color: $badge-exp; }
-      &:not(:last-child) {
-        margin-bottom: 1.5em;
-      }
+      &:not(:last-child) { margin-bottom: 1.5em; }
 
       .flag {
         display: flex;
@@ -388,7 +355,7 @@ main {
           grid-template-columns: auto 1fr auto;
           padding: 8px;
 
-          > .fas, .title, .collapse {
+          > .fas, .title, .toggle {
             grid-row: 1;
             padding: 8px;
           }
@@ -400,8 +367,7 @@ main {
             font-size: 1.5em;
           }
           .title {
-            grid-column: 2 / span 3;
-            transition: margin $trd;
+            grid-column: 2;
 
             .reward {
               font-weight: 600;
@@ -418,22 +384,22 @@ main {
               font-size: 0.75em;
             }
           }
-          .collapse {
+          .toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             grid-column: 3;
             font-size: 1em;
             height: 2em;
             width: 2em;
             transition: opacity $trd;
 
-            &[hidden] {
-              display: flex;
-              opacity: 0;
-            }
-            &:not(:hover):not(:focus):not([hidden]) {
-              opacity: 0.75;
-            }
-            &:hover, &:focus {
-              opacity: 1;
+            &:not(:hover):not(:focus):not([hidden]) { opacity: 0.75; }
+            &:hover, &:focus                        { opacity: 1; }
+
+            .fas {
+              position: relative;
+              transition: transform $trd;
             }
           }
         }
@@ -461,8 +427,8 @@ main {
               @include dynamicTheme-bgColor;
               box-shadow: 0 0 1em;
               border-radius: 4px;
-              max-width: 0;
-              animation: progressClimb 1.6s 0.4s linear forwards;
+              transform: translateX(-100%);
+              animation: progressClimb 1.2s 0.4s linear forwards;
             }
           }
         }
@@ -471,8 +437,8 @@ main {
         position: relative;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        padding: 0 8px 8px;
         background-color: tpb(0.2);
-        transition: max-height $trds, padding $trds;
         overflow: hidden;
 
         .background {
@@ -534,43 +500,18 @@ main {
               text-decoration: none;
               width: 100%;
 
-              &:not(:hover):not(:focus) {
-                span {
-                  &.fas {
-                    max-width: 0;
-                    padding-right: 0;
-                  }
-                  &:not(.fas) {
-                    text-decoration: none;
-                  }
-                }
-              }
+              &:not(:hover):not(:focus) .text  { text-decoration: none; }
               &:hover, &:focus {
-                span {
-                  &.fas {
-                    max-width: 18px;
-                    padding-right: 1em;
-                  }
-                  &:not(.fas) {
-                    text-decoration: underline;
-                  }
-                }
+                .text                          { text-decoration: underline; }
               }
-              &:active {
-                opacity: .75;
-              }
+              &:active                         { opacity: 0.75; }
 
               .fas {
+                padding-right: 6px;
                 overflow: hidden;
-                transition: max-width $trd, padding $trd;
               }
-              &:not(.fas) {
+              .text {
                 overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-              }
-
-              span:not(.fas) {
                 white-space: nowrap;
                 text-overflow: ellipsis;
               }
@@ -592,22 +533,20 @@ main {
               width: 15%;
               font-size: inherit;
               padding: 8px;
-              transition: background-color $trd, opacity $trd;
+              transition: opacity $trd;
 
-              &.animated .fas {
-                animation: copiedToClipboard 0.5s linear;
+              &:before {
+                @include pseudo-fit;
+                background-color: #fff;
+                transition: opacity $trd;
               }
+              &.animated .fas { animation: copiedToClipboard 0.5s linear; }
 
-              &:not(:hover):not(:focus) {
-                background-color: tpw(0.3);
-              }
+              &:not(:hover):not(:focus):before { opacity: 0.3; }
               &:hover, &:focus {
-                background-color: tpw(0.5);
-                opacity: 1;
+                &:before                       { opacity: 0.5; }
               }
-              &:active {
-                opacity: 0.75;
-              }
+              &:active                         { opacity: 0.75; }
             }
           }
         }

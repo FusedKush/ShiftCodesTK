@@ -18,7 +18,7 @@
 /*** Style Declarations ***/
 noscript {
   opacity: 1;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.2s ease-out;
   position: absolute;
   top: 0;
   left: 0;
@@ -33,7 +33,7 @@ noscript {
   padding: 16px; }
   noscript * {
     opacity: 1;
-    transition: opacity 0.25s ease-out; }
+    transition: opacity 0.2s ease-out; }
   noscript .logo {
     height: 7.5em;
     width: 7.5em; }
@@ -47,7 +47,8 @@ noscript {
     noscript .description div:last-child {
       padding-top: 8px; }
     noscript .description a {
-      color: #f00; }
+      color: #f00;
+      padding: 0.25em; }
       noscript .description a:not(:hover):not(:focus) {
         text-decoration: none; }
       noscript .description a:hover, noscript .description a:focus {
@@ -55,16 +56,29 @@ noscript {
       noscript .description a:active {
         opacity: 0.75; }
   noscript .refresh {
+    position: relative;
     font-size: 1.25em;
     padding: 12px 24px;
     color: inherit;
+    background-color: #f00;
     text-decoration: none;
     line-height: 1;
     border-radius: 4px;
-    transition: background-color 0.25s ease-out, transform 0.25s ease-out; }
-    noscript .refresh:not(:hover):not(:focus) {
-      background-color: #f00; }
-    noscript .refresh:hover, noscript .refresh:focus {
-      background-color: #c00; }
+    transition: transform 0.2s ease-out; }
+    noscript .refresh:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      content: "";
+      background-color: #000;
+      transition: opacity 0.2s ease-out; }
+    noscript .refresh:not(:hover):not(:focus):before {
+      opacity: 0; }
+    noscript .refresh:hover:before, noscript .refresh:focus:before {
+      opacity: 0.25; }
     noscript .refresh:active {
       transform: scale(0.9); }
+    noscript .refresh span {
+      position: relative; }

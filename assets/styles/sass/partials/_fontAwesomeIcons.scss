@@ -4,6 +4,7 @@
 
 .fa {
   &-arrow-circle-up:before            { @include fa-icon(f0aa); }
+  &-arrow-alt-circle-up:before        { @include fa-icon(f35b); }
   &-bars:before                       { @include fa-icon(f0c9); }
   &-gamepad:before                    { @include fa-icon(f11b); }
   &-heart:before                      { @include fa-icon(f004); }
@@ -23,4 +24,8 @@
   &-font-awesome-flag:before          { @include fa-icon(f425); }
   &-spinner:before                    { @include fa-icon(f110); }
   &-award:before                      { @include fa-icon(f559); }
+  &-tools:before                      { @include fa-icon(f7d9); }
+  &-cogs:before                       { @include fa-icon(f085); }
+  &-broadcast-tower:before            { @include fa-icon(f519); }
+  &-chevron-circle-down:before        { @include fa-icon(f13a); }
 }

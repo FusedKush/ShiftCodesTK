@@ -57,13 +57,8 @@
   background-size: cover;
 
   &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
+    @include pseudo-fit;
     background-color: tpb(0.6);
-    content: "";
   }
 
   .content-container {
@@ -117,43 +112,36 @@
         line-height: 1;
         text-decoration: none;
         text-align: center;
-        border: 2px solid;
         border-radius: 4px;
         background-position: center;
         background-size: cover;
-        transition: background-color $trd, box-shadow $trd, opacity $trd;
         font-size: 0.8em;
         margin: 0.25em;
 
-        &:before {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          transition: background-color $trd;
-          content: "";
+        &:before, &:after {
+          @include pseudo-fit;
+          border: 2px solid;
+          border-radius: 4px;
+          transition: opacity $trd;
         }
+        &.bl2:before {
+          background-color: $theme-bl2;
+          border-color: $theme-bl2;
+        }
+        &.tps:before {
+          background-color: $theme-tps;
+          border-color: $theme-tps;
+        }
+
         &:not(:hover):not(:focus) {
-          background-color: transparent;
-          border-color: #fff;
-          box-shadow: none;
+          &:before { opacity: 0; }
+          &:after  { opacity: 1; }
         }
         &:hover, &:focus {
-          box-shadow: 0 0 1em rgba(0, 0, 0, 0.6);
-
-          &.bl2 {
-            background-color: $theme-bl2;
-            border-color: $theme-bl2;
-          }
-          &.tps {
-            background-color: $theme-tps;
-            border-color: $theme-tps;
-          }
+          &:before { opacity: 1; }
+          &:after  { opacity: 0; }
         }
-        &:active {
-          opacity: 0.75;
-        }
+        &:active { opacity: 0.75; }
 
         span {
           position: relative;

@@ -60,7 +60,7 @@
           <?php echo $errorDescription; ?>
         </p>
       </div>
-      <a class="return" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">Back to the SHiFT Codes</a>
+      <a class="return" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home"><span>Back to the SHiFT Codes</span></a>
     </main>
   </body>
 </html>

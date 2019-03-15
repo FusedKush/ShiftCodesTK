@@ -52,14 +52,7 @@ function toggleSort() {
     x++;
     panelState = feed.content[x].getAttribute('data-expanded') == 'true';
     updatePanelTiming(feed.content[x], (x + 1));
-    updatePanelListeners(feed.content[x], 'setup-copyOnly');
-
-    if (panelState === false) {
-      updatePanelListeners(feed.content[x], 'collapse');
-    }
-    else {
-      updatePanelListeners(feed.content[x], 'expand');
-    }
+    addPanelListeners(feed.content[x]);
   }
 
   feed.base.setAttribute('data-sort', strings.states[!currentSort]);
@@ -91,19 +84,10 @@ function toggleSort() {
   }
 }
 // Toggles SHiFT Code Panels
-function togglePanel (type, event) {
-  let panel = (function () {
-    // Return Panel Element based on Event Listener Triggered
-    if (type == 'open') {
-      return event.currentTarget;
-    }
-    else if (type == 'close') {
-      return event.currentTarget.parentNode.parentNode.parentNode;
-    }
-  })();
+function togglePanel (event) {
+  let panel = event.currentTarget.parentNode.parentNode.parentNode;
   let e = {}; // Panel Elements
     (function () {
-      e.collapse = panel.getElementsByClassName('header')[0].getElementsByClassName('top')[0].getElementsByClassName('collapse')[0];
       e.body = panel.getElementsByClassName('body')[0];
         e.body.link = e.body.getElementsByClassName('src')[0].getElementsByClassName('content')[0].getElementsByTagName('a')[0];
         e.body.copyPC = e.body.getElementsByClassName('pc')[0].getElementsByClassName('content')[0].getElementsByClassName('copy')[0];
@@ -112,36 +96,12 @@ function togglePanel (type, event) {
       })();
   let state = panel.getAttribute('data-expanded') == 'true';
 
-  if (type == 'open') {
-    panel.removeAttribute('title');
-    panel.removeAttribute('aria-label');
-    panel.removeAttribute('role');
-    panel.removeAttribute('tabindex');
-  }
-  else if (type == 'close') {
-    panel.title = 'SHiFT Code for ' + shiftData.name;
-    panel.setAttribute('aria-label', 'SHiFT Code for ' + shiftData.name);
-    panel.role = 'button';
-    panel.tabIndex = '0';
-  }
-
   disenable(e.body.link, state, true);
   disenable(e.body.copyPC, state);
   disenable(e.body.copyXbox, state);
   disenable(e.body.copyPS, state);
-  disenable(e.collapse, state);
-  vishidden(e.collapse, state);
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
-
-  if (type == 'open') {
-    updatePanelListeners(panel, 'expand');
-    e.collapse.focus();
-  }
-  else if (type == 'close') {
-    updatePanelListeners(panel, 'collapse');
-    panel.focus();
-  }
 }
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
@@ -157,70 +117,22 @@ function copyCode (event) {
 function updatePanelTiming (panel, id) {
   panel.style.animationDelay = ((id - 1) * 0.2) + 's';
 }
-// Updates SHiFT Code Panel Event Listeners
-function updatePanelListeners (panel, type) {
-  let collapse = panel.getElementsByClassName('collapse')[0];
+// Adds SHiFT Code Panel Event Listeners
+function addPanelListeners(panel) {
+  let toggle = panel.getElementsByClassName('toggle')[0];
   let copy = panel.getElementsByClassName('copy');
 
-  function panelListeners (action) {
-    if (action == 'add') {
-      panel.addEventListener('click', shiftEventListenerTogglePanelOpen);
-      panel.addEventListener('keydown', shiftEventListenerTogglePanelOpenKey);
+  toggle.addEventListener('click', togglePanel);
+  toggle.addEventListener('keydown', function () {
+    if (event.key == 'Enter') {
+      event.preventDefault();
+      togglePanel(event);
     }
-    else if (action == 'remove') {
-      panel.removeEventListener('click', shiftEventListenerTogglePanelOpen);
-      panel.removeEventListener('keydown', shiftEventListenerTogglePanelOpenKey);
-    }
-  }
-  function collapseListeners (action) {
-    if (action == 'add') {
-      collapse.addEventListener('click', shiftEventListenerTogglePanelClose);
-    }
-    else if (action == 'remove') {
-      collapse.removeEventListener('click', shiftEventListenerTogglePanelClose);
-    }
-  }
-  function copyListeners () {
-    for (i = 0; i < copy.length; i++) {
-      copy[i].addEventListener('click', function (e) { copyCode(this); });
-    }
-  }
+  });
 
-  if (type == 'setup') {
-    panelListeners('add');
-    copyListeners();
+  for (i = 0; i < copy.length; i++) {
+    copy[i].addEventListener('click', function (e) { copyCode(this); });
   }
-  else if (type == 'setup-copyOnly') {
-    copyListeners();
-  }
-  else if (type == 'expand') {
-    panelListeners('remove');
-
-    setTimeout (function () {
-      collapseListeners('add');
-    }, 1);
-  }
-  else if (type == 'collapse') {
-    collapseListeners('remove');
-
-    setTimeout (function () {
-      panelListeners('add');
-    }, 1);
-  }
-}
-
-// *** Event Listener Reference Functions ***
-function shiftEventListenerTogglePanelOpen (event) {
-  togglePanel('open', event);
-}
-function shiftEventListenerTogglePanelOpenKey (event) {
-  if (event.key == 'Enter') {
-    event.preventDefault();
-    togglePanel('open', event);
-  }
-}
-function shiftEventListenerTogglePanelClose (event) {
-  togglePanel('close', event);
 }
 
 // *** Immediate Functions ***
@@ -249,8 +161,6 @@ function shiftEventListenerTogglePanelClose (event) {
     }
   };
 
-    template.panel.title = ('SHiFT Code for ') + name;
-    template.panel.setAttribute('aria-label', name);
     template.pcTitle.innerHTML = platformStrings[id]['pc'];
     template.xboxTitle.innerHTML = platformStrings[id]['xbox'];
     template.psTitle.innerHTML = platformStrings[id]['ps'];
@@ -432,12 +342,12 @@ function shiftEventListenerTogglePanelClose (event) {
       (function () {
         let source = codeObject.source;
         let label = (function () {
-          let str = 'Source (';
+          let str = 'Source';
 
-          if (source.indexOf('facebook') != -1)     { str += 'Facebook'; }
-          else if (source.indexOf('twitter') != -1) { str += 'Twitter'; }
+          if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
+          else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
 
-          return str += ')';
+          return str;
         })();
 
         panel.source.href = source;
@@ -460,7 +370,7 @@ function shiftEventListenerTogglePanelClose (event) {
     })();
 
     // Update Panel Event Listeners
-    updatePanelListeners(panel.base, 'setup');
+    addPanelListeners(panel.base);
 
     // Add panel to feed
     (function () {

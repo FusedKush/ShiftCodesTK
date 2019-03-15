@@ -10,5 +10,5 @@
       before refreshing the page.
     </div>
   </div>
-  <a class="refresh" href="." title="Refresh the Page" aria-label="Refresh the Page">Try Again</a>
+  <a class="refresh" href="." title="Refresh the Page" aria-label="Refresh the Page"><span>Try Again</span></a>
 </noscript>

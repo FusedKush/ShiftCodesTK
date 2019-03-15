@@ -7,18 +7,12 @@
 
 /*** Media Queries ***/
 @media screen and (max-width: 379px) {
-  .credits .banner {
-    .description { font-size: 0.9em; }
-  }
-  .credits .module {
-    font-size: 0.9em;
-  }
+  .credits .banner .description { font-size: 0.9em; }
+  .credits .module { font-size: 0.9em; }
 }
 @media screen and (min-width: 380px) {
   .credits .banner .description { font-size: 1em; }
-  .credits .module {
-    font-size: 1em;
-  }
+  .credits .module { font-size: 1em; }
 }
 @media screen and (max-width: 419px) {
   .credits .banner .header .flag strong { width: 100%; }
@@ -70,13 +64,13 @@
     border: 2px solid tpb(0.5);
     border-radius: 4px;
 
-    &:not(:hover) .description { color: tpw(0.85); }
+    &:not(:hover) .description p { opacity: 0.85; }
     &:hover {
       .header .flag {
         .fa-code  { animation-name: bannerAnimation1; }
         .fa-heart { animation-name: bannerAnimation2; }
       }
-      .description { color: #fff; }
+      .description p { opacity: 1; }
     }
 
     .header {
@@ -98,7 +92,7 @@
         border-radius: 4px;
         cursor: default;
 
-        .fa-code { padding-right: 6px; }
+        .fa-code  { padding-right: 6px; }
         .fa-heart { padding: 0 6px; }
       }
     }
@@ -106,50 +100,56 @@
       padding: 12px;
       text-align: center;
       background-color: tpb(0.25);
-      transition: color $trd;
+
+      p {
+        color: inherit;
+        transition: opacity $trd;
+      }
     }
   }
   .module {
+    position: relative;
     flex: 1;
     padding: 16px;
     margin: 8px;
     color: inherit;
-    background-color: $site-color-light;
+    background-color: $site-color-lighter;
     border: 2px solid $site-color-dark;
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color $trd, transform $trd;
+    transition: transform $trd;
+
+    &:before, .header .icon:before {
+      @include pseudo-fit;
+      background-color: #000;
+      transition: opacity $trd;
+    }
 
     &:not(:hover):not(:focus) {
-      background-color: $site-color-light;
 
-      .header .icon { background-color: $site-color-lighter; }
+      &:before              { opacity: 0.2; }
+      .header .icon:before  { opacity: 0; }
     }
     &:hover, &:focus {
-      background-color: $site-color-lighter;
 
+      &:before              { opacity: 0; }
       .header .icon {
-        background-color: $site-color-light;
-
-        .fa-font-awesome-flag {
-          animation-name: fontAwesomeAnimation;
-        }
-        .fa-spinner {
-          animation-name: loadingIoAnimation;
-        }
+        &:before            { opacity: 0.2; }
+        .fa-font-awesome-flag { animation-name: fontAwesomeAnimation; }
+        .fa-spinner           { animation-name: loadingIoAnimation; }
       }
     }
-    &:active {
-      transform: scale(0.9);
-    }
+    &:active { transform: scale(0.9); }
 
     .header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       padding: 8px;
 
       .icon {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -158,18 +158,17 @@
         width: 1.75em;
         padding: 8px;
         margin-right: 16px;
+        background-color: $site-color-lighter;
         border: 1.5px solid $site-color-dark;
         border-radius: 4px;
         overflow: hidden;
-        transition: background-color $trd;
+
+        .fas, .fab { position: relative; }
       }
-      .info {
-        h3 {
-          font-size: 1.5em;
-        }
-      }
+      .info h3 { font-size: 1.5em; }
     }
     .description {
+      position: relative;
       padding: 8px;
     }
   }
