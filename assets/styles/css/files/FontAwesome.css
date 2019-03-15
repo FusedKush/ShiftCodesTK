@@ -45,6 +45,8 @@
 *********************************/
 .fa-arrow-circle-up:before {
   content: "\f0aa"; }
+.fa-arrow-alt-circle-up:before {
+  content: "\f35b"; }
 .fa-bars:before {
   content: "\f0c9"; }
 .fa-gamepad:before {
@@ -83,3 +85,11 @@
   content: "\f110"; }
 .fa-award:before {
   content: "\f559"; }
+.fa-tools:before {
+  content: "\f7d9"; }
+.fa-cogs:before {
+  content: "\f085"; }
+.fa-broadcast-tower:before {
+  content: "\f519"; }
+.fa-chevron-circle-down:before {
+  content: "\f13a"; }
