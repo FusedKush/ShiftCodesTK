@@ -33,7 +33,7 @@
   </nav>
   <template id="sidebar_template_badges">
     <span class="badges"></span>
-    <span class="new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!">New!</span>
-    <span class="expiring" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!">Expiring!</span>
+    <span class="new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!"><span>New!</span></span>
+    <span class="exp" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!"><span>Expiring!</span></span>
   </template>
 </aside>

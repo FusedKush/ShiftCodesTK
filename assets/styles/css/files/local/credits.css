@@ -57,13 +57,13 @@
 /*** Style Declarations ***/
 .credits {
   opacity: 1;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.2s ease-out;
   display: flex;
   flex-wrap: wrap;
   overflow: hidden; }
   .credits * {
     opacity: 1;
-    transition: opacity 0.25s ease-out; }
+    transition: opacity 0.2s ease-out; }
   .credits .banner .header .flag .fas, .credits .banner .header .flag .fab, .credits .module .header .icon .fas, .credits .module .header .icon .fab {
     animation-duration: 1.5s;
     animation-timing-function: linear;
@@ -74,14 +74,14 @@
     background-color: #f00;
     border: 2px solid rgba(0, 0, 0, 0.5);
     border-radius: 4px; }
-    .credits .banner:not(:hover) .description {
-      color: rgba(255, 255, 255, 0.85); }
+    .credits .banner:not(:hover) .description p {
+      opacity: 0.85; }
     .credits .banner:hover .header .flag .fa-code {
       animation-name: bannerAnimation1; }
     .credits .banner:hover .header .flag .fa-heart {
       animation-name: bannerAnimation2; }
-    .credits .banner:hover .description {
-      color: #fff; }
+    .credits .banner:hover .description p {
+      opacity: 1; }
     .credits .banner .header {
       display: flex;
       align-items: center;
@@ -106,38 +106,52 @@
     .credits .banner .description {
       padding: 12px;
       text-align: center;
-      background-color: rgba(0, 0, 0, 0.25);
-      transition: color 0.25s ease-out; }
+      background-color: rgba(0, 0, 0, 0.25); }
+      .credits .banner .description p {
+        color: inherit;
+        transition: opacity 0.2s ease-out; }
   .credits .module {
+    position: relative;
     flex: 1;
     padding: 16px;
     margin: 8px;
     color: inherit;
-    background-color: #152c42;
+    background-color: #1d3f60;
     border: 2px solid #091320;
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.25s ease-out, transform 0.25s ease-out; }
-    .credits .module:not(:hover):not(:focus) {
-      background-color: #152c42; }
-      .credits .module:not(:hover):not(:focus) .header .icon {
-        background-color: #1d3f60; }
-    .credits .module:hover, .credits .module:focus {
-      background-color: #1d3f60; }
-      .credits .module:hover .header .icon, .credits .module:focus .header .icon {
-        background-color: #152c42; }
-        .credits .module:hover .header .icon .fa-font-awesome-flag, .credits .module:focus .header .icon .fa-font-awesome-flag {
-          animation-name: fontAwesomeAnimation; }
-        .credits .module:hover .header .icon .fa-spinner, .credits .module:focus .header .icon .fa-spinner {
-          animation-name: loadingIoAnimation; }
+    transition: transform 0.2s ease-out; }
+    .credits .module:before, .credits .module .header .icon:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      content: "";
+      background-color: #000;
+      transition: opacity 0.2s ease-out; }
+    .credits .module:not(:hover):not(:focus):before {
+      opacity: 0.2; }
+    .credits .module:not(:hover):not(:focus) .header .icon:before {
+      opacity: 0; }
+    .credits .module:hover:before, .credits .module:focus:before {
+      opacity: 0; }
+    .credits .module:hover .header .icon:before, .credits .module:focus .header .icon:before {
+      opacity: 0.2; }
+    .credits .module:hover .header .icon .fa-font-awesome-flag, .credits .module:focus .header .icon .fa-font-awesome-flag {
+      animation-name: fontAwesomeAnimation; }
+    .credits .module:hover .header .icon .fa-spinner, .credits .module:focus .header .icon .fa-spinner {
+      animation-name: loadingIoAnimation; }
     .credits .module:active {
       transform: scale(0.9); }
     .credits .module .header {
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       padding: 8px; }
       .credits .module .header .icon {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -146,11 +160,14 @@
         width: 1.75em;
         padding: 8px;
         margin-right: 16px;
+        background-color: #1d3f60;
         border: 1.5px solid #091320;
         border-radius: 4px;
-        overflow: hidden;
-        transition: background-color 0.25s ease-out; }
+        overflow: hidden; }
+        .credits .module .header .icon .fas, .credits .module .header .icon .fab {
+          position: relative; }
       .credits .module .header .info h3 {
         font-size: 1.5em; }
     .credits .module .description {
+      position: relative;
       padding: 8px; }

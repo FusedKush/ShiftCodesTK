@@ -53,6 +53,7 @@ noscript {
 
     a {
       color: $theme-main;
+      padding: 0.25em;
 
       &:not(:hover):not(:focus) {
         text-decoration: none;
@@ -66,22 +67,28 @@ noscript {
     }
   }
   .refresh {
+    position: relative;
     font-size: 1.25em;
     padding: 12px 24px;
     color: inherit;
+    background-color: $theme-main;
     text-decoration: none;
     line-height: 1;
     border-radius: 4px;
-    transition: background-color $trd, transform $trd;
+    transition: transform $trd;
 
-    &:not(:hover):not(:focus) {
-      background-color: $theme-main;
+    &:before {
+      @include pseudo-fit;
+      background-color: #000;
+      transition: opacity $trd;
     }
+
+    &:not(:hover):not(:focus):before  { opacity: 0; }
     &:hover, &:focus {
-      background-color: $theme-main-dark;
+      &:before                        { opacity: 0.25; }
     }
-    &:active {
-      transform: scale(0.9);
-    }
+    &:active                          { transform: scale(0.9); }
+
+    span { position: relative; }
   }
 }

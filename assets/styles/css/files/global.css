@@ -79,7 +79,7 @@ body {
   font-family: Arial, sans-serif;
   line-height: 1.25;
   opacity: 1;
-  transition: opacity 0.25s ease-out; }
+  transition: opacity 0.2s ease-out; }
   body[data-popup-active="true"] {
     overflow: hidden; }
   body[data-popup-active="false"] {
@@ -106,7 +106,7 @@ template, .webp-support {
 
 header.main {
   opacity: 1;
-  transition: opacity 0.25s ease-out;
+  transition: opacity 0.2s ease-out;
   position: relative;
   width: 100%;
   border-bottom: 4px solid;
@@ -115,7 +115,7 @@ header.main {
   overflow: hidden; }
   header.main *, header.main :before, header.main :after {
     opacity: 1;
-    transition: opacity 0.25s ease-out; }
+    transition: opacity 0.2s ease-out; }
   body[data-theme="main"] header.main {
     border-color: #f00; }
   body[data-theme="bl2"] header.main {
@@ -155,7 +155,7 @@ header.main {
 
 main {
   opacity: 1;
-  transition: opacity 0.25s ease-out; }
+  transition: opacity 0.2s ease-out; }
   main > .content-wrapper {
     padding: 32px 16px; }
     main > .content-wrapper.no-header {
@@ -180,7 +180,7 @@ main {
     border-radius: 50%;
     height: 80%;
     width: 80%;
-    transition: opacity 0.25s ease-out, transform 0.25s ease-out; }
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out; }
     .bubble-parent .bubble-light {
       background-color: #fff; }
     .bubble-parent .bubble-dark {
