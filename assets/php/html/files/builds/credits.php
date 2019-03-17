@@ -19,6 +19,7 @@
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
+    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="credits.min.css">
     <!--// Head Imports \\-->

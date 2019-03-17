@@ -19,6 +19,7 @@
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
+    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Google Metadata (Landing Page Only) -->
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
     <!-- Local Dependencies -->

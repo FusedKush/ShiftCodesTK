@@ -19,6 +19,7 @@
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/bl2.webmanifest">
+    <meta name="theme-color-tm" id="theme_color_tm" content="#ff4500">
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="shift.min.css">
     <meta class="loader-localFile" content="shift.min.js">
