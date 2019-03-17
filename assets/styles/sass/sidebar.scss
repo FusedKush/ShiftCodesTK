@@ -112,7 +112,7 @@ Sidebar Styles
 
         .name {
           position: relative;
-          padding: 4px 0; 
+          padding: 4px 0;
 
           &:before, &:after {
             @include pseudo-fit;
@@ -149,29 +149,31 @@ Sidebar Styles
         transition: opacity $trd;
       }
 
-      @mixin linkStyles($link-fg, $link-bg, $badge-bg) {
+      @mixin linkStyles($link-fg, $link-bg, $badge-bg, $badge-bd) {
         opacity: $link-fg;
 
         &:before { opacity: $link-bg; }
 
         .badges *:before { opacity: $badge-bg; }
+        .badges *:after  { opacity: $badge-bd; }
       }
 
-      &:not(:hover):not(:focus)[data-selected="false"] { @include linkStyles(0.75, 0, 0); }
-      &:hover, &:focus { @include linkStyles(1, 0.2, 1); }
-      &:active { @include linkStyles(1, 0.4, 1); }
+      &:not(:hover):not(:focus)[data-selected="false"] { @include linkStyles(0.75, 0, 0, 1); }
+      &:hover, &:focus { @include linkStyles(1, 0.2, 1, 0); }
+      &:active { @include linkStyles(1, 0.4, 1, 0); }
       &[data-selected="false"] {
         &:before { background-color: #000; }
 
         .badges * {
           color: #fff;
+          text-shadow: dropShadow(tpb(0.15));
 
           &.new:before { background-color: $badge-new; }
           &.exp:before { background-color: $badge-exp; }
         }
       }
       &[data-selected="true"] {
-        @include linkStyles(1, 1, 1);
+        @include linkStyles(1, 1, 1, 0);
 
         &:before { @include dynamicTheme-bgColor; }
 
@@ -214,18 +216,15 @@ Sidebar Styles
 
         .new, .exp {
           position: relative;
-          padding: 6px 9px;
+          padding: 5px 10px;
           line-height: 1;
-          margin-right: 4px;
-          border: 1.5px solid;
-          border-radius: 4px;
-          text-shadow: dropShadow(tpb(0.15));
-          box-shadow: shadow(tpb(0.15));
 
-          &:before {
+          &:after { border: 1px solid; }
+          &:before, &:after {
             @include pseudo-fit;
             transition: opacity $trd;
           }
+          &:not(:last-child) { margin-right: 4px; }
 
           span { position: relative; }
         }
