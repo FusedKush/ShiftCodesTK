@@ -418,8 +418,7 @@ main {
               main .feed .panel .body .section .content a:active {
                 opacity: 0.75; }
               main .feed .panel .body .section .content a .fas {
-                padding-right: 6px;
-                overflow: hidden; }
+                padding-right: 8px; }
               main .feed .panel .body .section .content a .text {
                 overflow: hidden;
                 white-space: nowrap;
