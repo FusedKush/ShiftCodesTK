@@ -1,37 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Important Metadata -->
+    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!-- Page Title -->
     <title>ShiftCodesTK</title>
-    <meta name="description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
-    <meta name="author" content="ShiftCodesTK">
-    <meta name="canonical" href="https://shiftcodes.tk">
-    <meta name="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Google Markup -->
-    <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
-    <!-- Facebook Markup -->
-    <meta property="fb:app_id" content="259185334481064">
     <meta property="og:title" content="ShiftCodesTK">
-    <meta property="og:description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
-    <meta property="og:image:width" content="1920">
-    <meta property="og:image:height" content="1080">
-    <meta property="og:type" content="Website">
-    <meta property="og:url" content="https://shiftcodes.tk">
-    <!-- Twitter Markup -->
-    <meta property="twitter:card" content="summary">
-    <meta property="twitter:site" content="@ShiftCodesTK">
-    <meta property="twitter:creator" content="@ShiftCodesTK">
     <meta property="twitter:title" content="ShiftCodesTK">
+    <!-- Page Description -->
+    <meta name="description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
+    <meta property="og:description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
+    <!-- Canonical Page Location -->
+    <meta name="canonical" href="https://shiftcodes.tk">
+    <meta property="og:url" content="https://shiftcodes.tk">
+    <!-- Page Thumbnail Image -->
+    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
-    <meta property="twitter:image:alt" content="ShiftCodesTK Logo">
+    <!-- Page-Specific Browser Properties -->
+    <link rel="manifest" href="/assets/manifests/main.webmanifest">
+    <!-- Google Metadata (Landing Page Only) -->
+    <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="index.min.css">
-    <!--// Head Imports \\-->
+    <!--// Global Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
   <body data-theme="main">
