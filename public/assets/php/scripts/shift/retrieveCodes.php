@@ -76,7 +76,8 @@ function getCode ($codeID, $i) {
         AND ExpDate >= CURRENT_DATE()
         OR ExpDate IS NULL
      ORDER BY
-        -RelDate ASC'
+        -RelDate ASC,
+        ExpDate DESC'
   );
   $sql->bind_param('i', $gameID);
   $gameID = $_GET['gameID'];
