@@ -32,7 +32,8 @@ function togglePanel (event) {
   function constructPanel (updateObject) {
     let panel = {}; // Changelog Panel Elements
       (function () {
-        panel.base = document.getElementById('panel_template').content.children[0].cloneNode(true);
+        panel.template = document.getElementById('panel_template');
+        panel.base = panel.template.content.children[0].cloneNode(true);
         panel.header = panel.base.getElementsByClassName('header')[0];
           panel.icon = panel.header.getElementsByClassName('icon')[0];
           panel.version = panel.header.getElementsByClassName('version')[0];
@@ -47,6 +48,8 @@ function togglePanel (event) {
       let ver = updateObject.version;
       // Panel ID
       panel.base.id = ver + ('_changelog');
+      // Panel animation timing
+      panel.base.style.animationDelay = (count.total * 0.2) + 's';
     })();
     // Handle Header Properties
     (function () {
@@ -97,8 +100,8 @@ function togglePanel (event) {
         notes = notes.replace(/`{1}(?=[\w.])/g, '<code>');
         notes = notes.replace(/`{1}(?![\w.])/g, '</code>');
         // Correct the final output
-        notes = notes.replace(/<\/ul>/, '');                      // Remove First closing List tag
-        notes = notes + ('</ul>');                                // Add Final closing List tag
+        notes = notes.replace(/<\/ul>/, ''); // Remove First closing List tag
+        notes = notes + ('</ul>');           // Add Final closing List tag
 
         return notes;
       })();
@@ -111,6 +114,8 @@ function togglePanel (event) {
     (function () {
       document.getElementsByTagName('main')[0].appendChild(panel.base);
       count.total++;
+
+      if (count.retrieved == count.total) { panel.template.remove(); }
     })();
   }
 

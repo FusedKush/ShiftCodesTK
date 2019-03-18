@@ -5,6 +5,12 @@
 /*** Imports ***/
 @import "../partials/_globals";
 
+/*** Animations ***/
+@keyframes fadeIn {
+  0%    { opacity: 0; }
+  100%  { opacity: 1; }
+}
+
 /*** Media Queries ***/
 @media screen and (max-width: 449px) {
   main .panel .header .title {
@@ -53,6 +59,8 @@ main {
     background-color: $site-color-lighter;
     border: 2px solid $site-color-darker;
     border-radius: 4px;
+    opacity: 0;
+    animation: fadeIn 0.4s linear forwards;
     overflow: hidden;
 
     &[data-expanded="false"] {
