@@ -30,10 +30,20 @@ noscript {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: $site-color-main;
+  background-image: url(/assets/img/banners/errorDocs/noScript.jpg);
+  background-position: center;
+  background-size: cover;
   text-align: center;
+  text-shadow: dropShadow(tpb(0.5));
   padding: 16px;
 
+  &:before {
+    @include pseudo-fit;
+    background-color: #000;
+    opacity: 0.75;
+  }
+
+  * { position: relative; }
   .logo {
     height: 7.5em;
     width: 7.5em;
