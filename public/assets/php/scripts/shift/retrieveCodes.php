@@ -11,8 +11,12 @@ class Code {
   public $expDate;
   public $reward;
   public $source;
+  public $notes;
+  public $platformsPC;
   public $codePC;
+  public $platformsXbox;
   public $codeXbox;
+  public $platformsPS;
   public $codePS;
 }
 class codeObject {};
@@ -27,18 +31,22 @@ function getCode ($codeID, $i) {
   // SQL Setup
   $sql = $con->prepare(
     'SELECT
-        ID,
-        RelDate,
-        ExpDate,
-        Reward,
-        Source,
-        CodePC,
-        CodeXbox,
-        CodePS
+        id,
+        rel_date,
+        exp_date,
+        reward,
+        source,
+        notes,
+        platforms_pc,
+        code_pc,
+        platforms_xbox,
+        code_xbox,
+        platforms_ps,
+        code_ps
      FROM
-        ShiftCodes
+        shift_codes
      WHERE
-        ID = ?'
+        id = ?'
   );
   $sql->bind_param('i', $codeID);
   // SQL Execution
@@ -50,8 +58,12 @@ function getCode ($codeID, $i) {
     $code->expDate,
     $code->reward,
     $code->source,
+    $code->notes,
+    $code->platformsPC,
     $code->codePC,
+    $code->platformsXbox,
     $code->codeXbox,
+    $code->platformsPS,
     $code->codePS
   );
   $sql->fetch();
@@ -68,16 +80,27 @@ function getCode ($codeID, $i) {
   // SQL Setup
   $sql = $con->prepare(
     'SELECT
-        ID
+        id
      FROM
-        ShiftCodes
+        shift_codes
      WHERE
-        GameID = ?
-        AND ExpDate >= CURRENT_DATE()
-        OR ExpDate IS NULL
+        game_id = ?
+        AND exp_date >= CURRENT_DATE()
+        OR exp_date IS NULL
      ORDER BY
-        -RelDate ASC,
-        ExpDate DESC'
+        CASE exp_date
+            WHEN CURRENT_DATE
+            THEN 0
+            ELSE 1
+        END,
+        CASE rel_date
+            WHEN CURRENT_DATE
+            THEN 0
+            ELSE 1
+        END,
+        -(exp_date IS NULL) DESC,
+        rel_date DESC,
+        exp_date DESC'
   );
   $sql->bind_param('i', $gameID);
   $gameID = $_GET['gameID'];

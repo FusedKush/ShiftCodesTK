@@ -35,14 +35,14 @@ $alertCount = new AlertCount();
 // SQL Preparation & Execution
 $sql =
   'SELECT
-      GameID,
-      RelDate,
-      ExpDate
+      game_id,
+      rel_date,
+      exp_date
    FROM
-      ShiftCodes
+      shift_codes
    WHERE
-      ExpDate >= CURRENT_DATE()
-      OR ExpDate IS NULL'
+      exp_date >= CURRENT_DATE()
+      OR exp_date IS NULL'
 ;
 $sqlResult = mysqli_query($con, $sql);
 $today = date('Y-m-d');
@@ -50,11 +50,11 @@ $today = date('Y-m-d');
 // Count New & Expiring SHiFT Codes
 if(mysqli_num_rows($sqlResult) > 0) {
   while($row = mysqli_fetch_array($sqlResult)) {
-    $gameIDString = 'game' . $row['GameID'];
+    $gameIDString = 'game' . $row['game_id'];
     $gameID = $gameIDs->$gameIDString;
-    
-    if ($row['RelDate'] == $today) { $alertCount->new->$gameID++; }
-    if ($row['ExpDate'] == $today) { $alertCount->expiring->$gameID++; }
+
+    if ($row['rel_date'] == $today) { $alertCount->new->$gameID++; }
+    if ($row['exp_date'] == $today) { $alertCount->expiring->$gameID++; }
   }
 }
 // Add alert count to Response Object
