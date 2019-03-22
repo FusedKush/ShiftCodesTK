@@ -4,9 +4,9 @@
   <div class="description">
     <div>We apologize for the inconvience, but ShiftCodesTK requires Javascript to function properly.</div>
     <div>Ensure you have Javascript
-      <a href="https://www.java.com/" rel="external noopener" target="_blank" title="Download Javascript" aria-label="Download Javascript">Downloaded</a>
+      <a href="https://www.java.com/" rel="external noopener" target="_blank" title="Download Javascript (External Link)" aria-label="Download Javascript (External Link)">Downloaded</a>
       and
-      <a href="https://www.enable-javascript.com/" rel="external noopener" target="_blank" title="How to Enable Javascript" aria-label="How to Enable Javascript">Enabled</a>
+      <a href="https://www.enable-javascript.com/" rel="external noopener" target="_blank" title="How to Enable Javascript (External Link)" aria-label="How to Enable Javascript (External Link)">Enabled</a>
       before refreshing the page.
     </div>
   </div>
