@@ -121,7 +121,7 @@ main {
       main .panel .body ul {
         list-style: disc inside; }
         main .panel .body ul li {
-          padding: 2px 0; }
+          padding: 3px 16px; }
           main .panel .body ul li code {
             font-family: inherit;
             background-color: rgba(0, 0, 0, 0.4);
