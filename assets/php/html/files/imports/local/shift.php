@@ -5,19 +5,34 @@
         <span class="count">0</span>
         <span class="fas fa-key"></span>
       </div>
-      <div class="badge new inactive" id="shift_header_count_new" title="No New SHiFT Codes" aria-label="No New SHiFT Codes">
+      <button class="badge new inactive" id="shift_header_count_new" title="No New SHiFT Codes" aria-label="No New SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
         <span class="count">0</span>
         <span class="fas fa-star"></span>
-      </div>
-      <div class="badge exp inactive" id="shift_header_count_exp" title="No Expiring SHiFT Codes" aria-label="No Expiring SHiFT Codes">
+      </button>
+      <button class="badge exp inactive" id="shift_header_count_exp" title="No Expiring SHiFT Codes" aria-label="No Expiring SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
         <span class="count">0</span>
         <span class="fas fa-exclamation-triangle"></span>
-      </div>
+      </button>
     </div>
     <div class="section sort">
-      <button id="shift_header_sort" title="Sorted by Newest Codes First. Click to change sort." aria-label="Sorted by Newest Codes First. Click to change sort." disabled aria-disabled>
+      <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" data-pressed="false" aria-pressed="false" aria-haspopup="true" disabled aria-disabled>
         <span class="fas fa-sort-amount-down"></span>
       </button>
+      <div class="dropdown" id="shift_header_sort_dropdown" data-expanded="false" aria-expanded="false" hidden data-hidden="true">
+        <span class="arrow"></span>
+        <ul class="panel" role="menu">
+          <span class="description">Sort codes by:</span>
+          <li role="menuitem">
+            <button data-value="default" data-pressed="true" aria-pressed="true" disabled aria-disabled="true"><span>Default</span></button>
+          </li>
+          <li role="menuitem">
+            <button data-value="newest" data-pressed="false" aria-pressed="false" disabled aria-disabled="true"><span>Newest</span></button>
+          </li>
+          <li role="menuitem">
+            <button data-value="oldest" data-pressed="false" aria-pressed="false" disabled aria-disabled="true"><span>Oldest</span></button>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </header>
@@ -30,10 +45,11 @@
     <div>Please try again later</div>
   </div>
 </div>
-<section class="feed content-wrapper" id="panel_feed" data-sort="default">
-</section>
+<main class="feed content-wrapper" id="panel_feed" data-filter="none" data-sort="default">
+</main>
+<div id="panel_feed_template" hidden aria-hidden="true"></div>
 <template id="panel_template">
-  <div class="panel" role="button" data-expanded="false" aria-expanded="false" tabindex="0">
+  <div class="panel" data-extraInfo="false" data-expanded="false" aria-expanded="false">
     <div class="flag new" title="New SHiFT Code" aria-label="New SHiFT Code">
       <span class="fas fa-star"></span>
     </div>
@@ -72,10 +88,14 @@
         <div class="title">Source:</div>
         <div class="content">
           <a target="_blank" rel="external noopener" tabindex="-1">
-            <span class="fas fa-external-link-square-alt"></span>
+            <span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>
             <span class="text"></span>
           </a>
         </div>
+      </div>
+      <div class="section notes inactive">
+        <div class="title">Notes:</div>
+        <ul class="content"></ul>
       </div>
       <div class="separator"></div>
       <div class="section pc">
@@ -108,6 +128,17 @@
           </button>
         </div>
       </div>
+    </div>
+  </div>
+</template>
+<template id="panel_filter_overlay_template">
+  <div class="filter-overlay" data-visible="hover-hide" hidden aria-hidden="true">
+    <div class="content-container">
+      <div class="title">
+        <span class="fas fa-filter"></span>
+        <span>Filter Active</span>
+      </div>
+      <button class="clear" title="Remove active filter" aria-label="Remove active filter">Click to Remove</button>
     </div>
   </div>
 </template>

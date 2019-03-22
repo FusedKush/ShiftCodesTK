@@ -11,76 +11,263 @@ let shiftData = {};
   })();
 
 // *** Functions ***
-// Toggle Panel Sort
-function toggleSort() {
-  let feed = {}; // Panel Feed
-    (function () {
-      feed.base = document.getElementById('panel_feed');
-      feed.content = feed.base.children;
-      feed.count = feed.content.length;
-    })();
-  let sort = {}; // Sort Button
-    (function () {
-      sort.button = document.getElementById('shift_header_sort');
-      sort.icon = sort.button.getElementsByClassName('fas')[0];
-    })();
-  let strings = {
-    'states': {
-      true: 'default',
-      false: 'flipped'
-    },
-    'icons': {
-      true: 'fa-sort-amount-down',
-      false: 'fa-sort-amount-up'
-    },
-    'labels': {
-      true: 'Sorted by Newest Codes First. Click to change sort.',
-      false: 'Sorted by Oldest Codes First. Click to change sort.'
-    }
-  };
-  let currentSort = feed.base.getAttribute('data-sort') == 'default';
-  let x = -1;
-  let panelCache = [];
-  let panelState;
+// Toggle Sort Options Dropdown
+function toggleSortDropdown() {
+  let sort = document.getElementById('shift_header_sort');
+  let dropdown = document.getElementById('shift_header_sort_dropdown');
+  let options = dropdown.getElementsByTagName('button');
+  let state = dropdown.getAttribute('data-expanded') == 'true';
 
-  function clonePanel (pos) {
-    panelCache.push(feed.content[pos].cloneNode(true));
-    feed.content[pos].remove();
-  }
-  function addPanel (i) {
-    feed.base.appendChild(panelCache[i]);
-    x++;
-    panelState = feed.content[x].getAttribute('data-expanded') == 'true';
-    updatePanelTiming(feed.content[x], (x + 1));
-    addPanelListeners(feed.content[x]);
+  function toggleState () {
+    dropdown.setAttribute('data-expanded', !state);
+    dropdown.setAttribute('aria-expanded', !state);
   }
 
-  feed.base.setAttribute('data-sort', strings.states[!currentSort]);
-  sort.button.title = strings.labels[!currentSort];
-  sort.button.setAttribute('aria-label', strings.labels[!currentSort]);
-  sort.button.classList.remove('animated');
+  sort.setAttribute('data-pressed', !state);
+  sort.setAttribute('data-pressed', !state);
+  for (i = 0; i < options.length; i++) {
+    disenable(options[i], state);
+  }
 
-  setTimeout(function () {
-    sort.button.classList.add('animated');
-    sort.icon.classList.remove(strings.icons[currentSort]);
-    sort.icon.classList.add(strings.icons[!currentSort]);
-  }, 50);
+  if (state === false) {
+    vishidden(dropdown, false);
+    window.addEventListener('click', checkSortDropdownClick);
+    window.addEventListener('keydown', checkSortDropdownKey);
 
-  if (strings.states[currentSort] == 'default') {
-    for (i = 0; i < feed.count; i++) {
-      clonePanel(0);
-    }
-    for (let i = panelCache.length; i > 0; i--) {
-      addPanel(i - 1);
-    }
+    setTimeout(function () {
+      let choices = dropdown.getElementsByTagName('button');
+
+      toggleState();
+
+      for (i = 0; i < choices.length; i++) {
+        if (choices[i].getAttribute('data-pressed') == 'true') { choices[i].focus(); }
+      }
+    }, 50);
   }
   else {
-    for (i = feed.count; i > 0; i--) {
-      clonePanel(i - 1);
+    toggleState();
+    window.removeEventListener('click', checkSortDropdownClick);
+    window.removeEventListener('keydown', checkSortDropdownKey);
+
+    setTimeout(function () {
+      vishidden(dropdown, true);
+      sort.focus();
+    }, 250);
+  }
+}
+// Toggle Filter Overlay
+function toggleFilterOverlay(event, type) {
+  let overlay = (function () {
+    if (event.classList.contains('filter-overlay')) { return event; }
+    else                                            { return event.parentNode.parentNode; }
+  })();
+  let state = overlay.getAttribute('data-visible');
+
+  function updateState() { overlay.setAttribute('data-visible', type); }
+
+  if (type == 'hover-show' || type == 'button-show' && state != 'hover-show') {
+    vishidden(overlay, false);
+
+    setTimeout(updateState, 50);
+  }
+  else if (type == 'hover-hide' || type == 'button-hide' && state != 'hover-show') {
+    overlay.setAttribute('data-visible', type);
+
+    setTimeout(updateState, 250);
+  }
+}
+// Update Feed Filter & Sort Settings
+function updateFeedSettings(setting, type) {
+  let feed = document.getElementById('panel_feed');
+  let template = document.getElementById('panel_feed_template');
+  let panels = template.getElementsByClassName('panel');
+  let codes = [];
+  let panelsAdded = 0;
+  let today = getDate('m-d-y');
+
+  function addPanel(code) {
+    feed.appendChild(code);
+    panelsAdded++;
+    updatePanelTiming(feed.children[panelsAdded - 1], (panelsAdded));
+    addPanelListeners(feed.children[panelsAdded - 1]);
+  }
+
+  // Get Codes & Clear Feed
+  (function () {
+    for (i = 0; i < panels.length; i++) {
+      codes[i] = {};
+      codes[i].panel = panels[i].cloneNode(true);
+      codes[i].relDate = panels[i].getElementsByClassName('section rel')[0].getElementsByClassName('content')[0].innerHTML;
+      codes[i].expDate = panels[i].getElementsByClassName('section exp')[0].getElementsByClassName('content')[0].innerHTML;
     }
-    for (let i = 0; i < panelCache.length; i++) {
-      addPanel(i);
+    feed.innerHTML = '';
+  })();
+
+  // Filter Settings
+  if (setting == 'filter') {
+    let currentFilter = feed.getAttribute('data-filter');
+
+    if (type != 'none') {
+      function updateCode(code) {
+        addPanel(code.panel);
+        code.used = true;
+      }
+
+      for (let i = 0; i < codes.length; i++) {
+        if (type == 'new' && codes[i].relDate == today)      { updateCode(codes[i]); }
+        else if (type == 'exp' && codes[i].expDate == today) { updateCode(codes[i]); }
+      }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].used !== true) {
+          let focusable = {
+            'buttons': codes[i].panel.getElementsByTagName('button'),
+            'links': codes[i].panel.getElementsByTagName('a')
+          };
+
+          // Disable Buttons & Links in filtered panels
+          for (x = 0; x < focusable.buttons.length; x++) { disenable(focusable.buttons[x], true); }
+          for (x = 0; x < focusable.links.length; x++)   { disenable(focusable.links[x], true); }
+
+          // Add Filter Overlay to Panel
+          (function () {
+            let overlay = document.getElementById('panel_filter_overlay_template').content.children[0].cloneNode(true);
+            let clear;
+
+            codes[i].panel.setAttribute('data-filtered', 'true');
+            codes[i].panel.appendChild(overlay);
+
+            overlay = codes[i].panel.getElementsByClassName('filter-overlay')[0];
+            clear = overlay.getElementsByClassName('clear')[0];
+
+            overlay.addEventListener('mouseenter', function(e) { toggleFilterOverlay(this, 'hover-show'); });
+            overlay.addEventListener('mouseleave', function(e) { toggleFilterOverlay(this, 'hover-hide'); });
+            clear.addEventListener('focus', function(e) { toggleFilterOverlay(this, 'button-show'); });
+            clear.addEventListener('blur', function(e) { toggleFilterOverlay(this, 'button-hide'); });
+            clear.addEventListener('click', function(e) { updateFeedSettings('filter', 'none'); });
+          })();
+
+          updateCode(codes[i]);
+        }
+      }
     }
+    else { updateFeedSettings('sort', feed.getAttribute('data-sort')); }
+
+    feed.setAttribute('data-filter', type);
+
+    // Update Filter Buttons
+    (function () {
+      let buttons = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
+      let labels = {
+        true: '(Click to remove filter)',
+        false: '(Click to filter)'
+      };
+
+      for (i = 0; i < buttons.length; i++) {
+        let state = buttons[i].classList[1] == feed.getAttribute('data-filter');
+        let currentLabel = buttons[i].title;
+        let newLabel = currentLabel.replace(/\(.*\)/g, labels[state]);
+
+        buttons[i].setAttribute('data-pressed', state);
+        buttons[i].setAttribute('aria-pressed', state);
+        buttons[i].title = newLabel;
+        buttons[i].setAttribute('aria-label', newLabel);
+      }
+    })();
+  }
+  // Sort Settings
+  if (setting == 'sort') {
+    function sort(sortType) {
+      codes = codes.sort(function(a, b) {
+        let matches = {
+          'new': {
+            'primary': b,
+            'secondary': a
+          },
+          'old': {
+            'primary': a,
+            'secondary': b
+          }
+        };
+
+        if (a.relDate != b.relDate) { return matches[sortType].primary.relDate.localeCompare(matches[sortType].secondary.relDate); }
+        else                        { return matches[sortType].primary.expDate.localeCompare(matches[sortType].secondary.expDate); }
+      });
+    }
+
+    if (type == 'default') {
+      function updateCode (x) {
+        if (codes[x].used !== true) {
+          addPanel(codes[x].panel);
+          codes[x].used = true;
+        }
+      }
+
+      sort ('new');
+
+      // Add Expiring Codes
+      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate == today)  { updateCode(i); } }
+      // Add New Codes
+      for (let i = 0; i < codes.length; i++) { if (codes[i].relDate == today)  { updateCode(i); } }
+      // Add Remaining Codes w/ an Expiration Date
+      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate != 'N/A')  { updateCode(i); } }
+      // Add Remaining Codes w/o an Expiration Date
+      for (let i = 0; i < codes.length; i++)                                   { updateCode(i); }
+    }
+    if (type == 'newest') {
+      sort ('new');
+
+      for (let i = 0; i < codes.length; i++) { addPanel(codes[i].panel); }
+    }
+    if (type == 'oldest') {
+      sort ('old');
+
+      for (let i = 0; i < codes.length; i++) { addPanel(codes[i].panel); }
+    }
+
+    // Update Dropdown Menu & Panel Feed Properties
+    (function () {
+      let options = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('button');
+
+      feed.setAttribute('data-sort', type);
+
+      setTimeout(function () {
+        for (i = 0; i < options.length; i++) {
+          let state = options[i].getAttribute('data-value') == type;
+
+          options[i].setAttribute('data-pressed', state);
+          options[i].setAttribute('aria-pressed', state);
+        }
+      }, 250);
+    })();
+  }
+}
+// Check Dropdown Clicks
+function checkSortDropdownClick (event) {
+  let dropdown = document.getElementById('shift_header_sort_dropdown').getElementsByClassName('panel')[0];
+  let targets = [event, event.target.parentNode, event.target.parentNode.parentNode, event.target.parentNode.parentNode.parentNode];
+  let matched = false;
+
+  for (i = 0; i < targets.length; i++) {
+    if (targets[i] == dropdown) {
+      matched = true;
+      break;
+    }
+  }
+
+  if (matched === false) { toggleSortDropdown(); }
+}
+// Check Dropdown KeyPresses
+function checkSortDropdownKey (event) {
+  let target = event.target;
+  let options = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('button');
+  let firstOption = options[0];
+  let lastOption = options[options.length - 1];
+
+  if (event.shiftKey === true && event.key == 'Tab' && target == firstOption || event.shiftKey === false && event.key == 'Tab' && target == lastOption) {
+    event.preventDefault();
+
+    if (target == firstOption)     { lastOption.focus(); }
+    else if (target == lastOption) { firstOption.focus(); }
   }
 }
 // Toggles SHiFT Code Panels
@@ -95,6 +282,10 @@ function togglePanel (event) {
         e.body.copyPS = e.body.getElementsByClassName('ps')[0].getElementsByClassName('content')[0].getElementsByClassName('copy')[0];
       })();
   let state = panel.getAttribute('data-expanded') == 'true';
+  let labels = {
+    true: 'Collapse SHiFT Code',
+    false: 'Expand SHiFT Code'
+  };
 
   disenable(e.body.link, state, true);
   disenable(e.body.copyPC, state);
@@ -102,6 +293,8 @@ function togglePanel (event) {
   disenable(e.body.copyPS, state);
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
+  event.currentTarget.title = labels[!state];
+  event.currentTarget.setAttribute('aria-label', labels[!state]);
 }
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
@@ -136,35 +329,6 @@ function addPanelListeners(panel) {
 }
 
 // *** Immediate Functions ***
-// Updates Page Content
-(function () {
-  let id = shiftData.id;
-  let name = shiftData.name;
-  let template = {};
-    (function () {
-      template.base = document.getElementById('panel_template');
-      template.panel = template.base.content.children[0];
-      template.pcTitle = template.panel.getElementsByClassName('pc')[0].getElementsByClassName('title')[0];
-      template.xboxTitle = template.panel.getElementsByClassName('xbox')[0].getElementsByClassName('title')[0];
-      template.psTitle = template.panel.getElementsByClassName('ps')[0].getElementsByClassName('title')[0];
-    })();
-  let platformStrings = {
-    1: {
-      'pc': 'PC / Mac:',
-      'xbox': 'Xbox 360 / Xbox One:',
-      'ps': 'PS3 / PS4 / PS Vita / PSVR:'
-    },
-    2: {
-      'pc': 'PC / Mac / Linux:',
-      'xbox': 'Xbox 360 / Xbox One:',
-      'ps': 'PS3 / PS4:'
-    }
-  };
-
-    template.pcTitle.innerHTML = platformStrings[id]['pc'];
-    template.xboxTitle.innerHTML = platformStrings[id]['xbox'];
-    template.psTitle.innerHTML = platformStrings[id]['ps'];
-})();
 // Handles Page Construction
 (function () {
   let header = document.getElementById('shift_header');
@@ -193,13 +357,20 @@ function addPanelListeners(panel) {
       'new': ('New ') + title,
       'exp': ('Expiring ') + title
     };
-    let label = count[name] + (' ') + labels[name];
+    let action = (function () {
+      if (name == 'total') { return ''; }
+      else                 { return ' (Click to filter)'; }
+    })();
+    let label = count[name] + (' ') + labels[name] + action;
 
     elm.title = label;
     elm.setAttribute('aria-label', label);
     elm.getElementsByClassName('count')[0].innerHTML = count[name];
 
-    if (count[name] == 1) { elm.classList.remove('inactive'); }
+    if (count[name] == 1) {
+      disenable(elm, false);
+      elm.classList.remove('inactive');
+    }
   }
   // Construct the SHiFT Code Panel and add it to the feed
   function constructPanel (codeObject) {
@@ -219,23 +390,27 @@ function addPanelListeners(panel) {
             panel.relDate = panel.body.getElementsByClassName('rel')[0].getElementsByClassName('content')[0];
             panel.expDate = panel.body.getElementsByClassName('exp')[0].getElementsByClassName('content')[0];
             panel.source = panel.body.getElementsByClassName('src')[0].getElementsByClassName('content')[0].firstChild;
+            panel.notes = panel.body.getElementsByClassName('notes')[0].getElementsByClassName('content')[0];
             panel.codePC = {};
+                  panel.codePC.title = panel.body.getElementsByClassName('pc')[0].getElementsByClassName('title')[0];
                   panel.codePC.base = panel.body.getElementsByClassName('pc')[0].getElementsByClassName('content')[0];
                   panel.codePC.display = panel.codePC.base.getElementsByClassName('display')[0];
                   panel.codePC.value = panel.codePC.base.getElementsByClassName('value')[0];
                   panel.codePC.copy = panel.codePC.base.getElementsByClassName('copy')[0];
             panel.codeXbox = {};
+                  panel.codeXbox.title = panel.body.getElementsByClassName('xbox')[0].getElementsByClassName('title')[0];
                   panel.codeXbox.base = panel.body.getElementsByClassName('xbox')[0].getElementsByClassName('content')[0];
                   panel.codeXbox.display = panel.codeXbox.base.getElementsByClassName('display')[0];
                   panel.codeXbox.value = panel.codeXbox.base.getElementsByClassName('value')[0];
                   panel.codeXbox.copy = panel.codeXbox.base.getElementsByClassName('copy')[0];
             panel.codePS = {};
+                  panel.codePS.title = panel.body.getElementsByClassName('ps')[0].getElementsByClassName('title')[0];
                   panel.codePS.base = panel.body.getElementsByClassName('ps')[0].getElementsByClassName('content')[0];
                   panel.codePS.display = panel.codePS.base.getElementsByClassName('display')[0];
                   panel.codePS.value = panel.codePS.base.getElementsByClassName('value')[0];
                   panel.codePS.copy = panel.codePS.base.getElementsByClassName('copy')[0];
       })();
-    let currentDate = getDate('yyyy-mm-dd', '-');
+    let currentDate = getDate();
 
     // Handle Panel Properties
     (function () {
@@ -309,6 +484,12 @@ function addPanelListeners(panel) {
 
           return Math.round(Math.abs((startDate - endDate) / base));
         }
+        function updateProgress(timeLeft, currentWidth) {
+          panel.progress.title = timeLeft;
+          panel.progress.setAttribute('aria-label', timeLeft);
+          panel.progress.setAttribute('aria-valuenow', currentWidth);
+          panel.progressBar.style.width = currentWidth + ('%');
+        }
 
         if (exp !== null) {
           let width = (function () {
@@ -331,12 +512,15 @@ function addPanelListeners(panel) {
             return time + string;
           })();
 
-          panel.progress.title = left;
-          panel.progress.setAttribute('aria-label', left);
-          panel.progress.setAttribute('aria-valuenow', width);
-          panel.progressBar.style.width = width + ('%');
+          updateProgress(left, width);
         }
-        else { panel.progressBar.parentNode.parentNode.remove(); }
+        else {
+          let width = 0;
+          let left = 'No Expiration Date';
+
+          updateProgress(left, width);
+          panel.progress.classList.add('inactive');
+        }
       })();
       // Source
       (function () {
@@ -355,15 +539,36 @@ function addPanelListeners(panel) {
         panel.source.setAttribute('aria-label', label);
         panel.source.getElementsByClassName('text')[0].innerHTML = source;
       })();
+      // Notes
+      (function () {
+        let notes = codeObject.notes;
+
+        // Notes Attribute
+        if (notes !== null) {
+          panel.base.setAttribute('data-extraInfo', true);
+          panel.notes.parentNode.classList.remove('inactive');
+          panel.notes.innerHTML = (function () {
+            if (notes.indexOf('-') == -1) {
+              return ('<li><i>') + notes + ('</i></li>');
+            }
+            else {
+              function updateNotes (match) { return match.replace(/-\s{1}/g, '<li><i>') + '</i></li>'; }
+
+              return notes.replace(/-.*/g, updateNotes);
+            }
+          })();
+        }
+      })();
     })();
     // Handle Body Properties
     (function () {
-      let fields = ['codePC', 'codeXbox', 'codePS'];
+      let fields = ['PC', 'Xbox', 'PS'];
 
       for (i = 0; i < fields.length; i++) {
-        let elm = panel[fields[i]];
-        let entry = codeObject[fields[i]];
+        let elm = panel[('code') + fields[i]];
+        let entry = codeObject[('code') + fields[i]];
 
+        elm.title.innerHTML = codeObject[('platforms') + fields[i]] + (':');
         elm.display.innerHTML = entry;
         elm.value.value = entry;
       }
@@ -387,6 +592,13 @@ function addPanelListeners(panel) {
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
         document.getElementById('panel_template').remove();
+
+        // Copy Panels to Template
+        for (i = 0; i < feed.children.length; i++) {
+          let panel = feed.children[i].cloneNode(true);
+
+          document.getElementById('panel_feed_template').appendChild(panel);
+        }
       }
     })();
   }
@@ -425,4 +637,31 @@ function addPanelListeners(panel) {
 })();
 
 // *** Event Listeners ***
-document.getElementById('shift_header_sort').addEventListener('click', toggleSort);
+document.getElementById('shift_header_sort').addEventListener('click', toggleSortDropdown);
+// Filter Button Listeners
+(function () {
+  let counters = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
+
+  for (i = 0; i < counters.length; i++) {
+    counters[i].addEventListener('click', function (e) {
+      let call = this.classList[1];
+
+      if (call != document.getElementById('panel_feed').getAttribute('data-filter')) { updateFeedSettings('filter', call); }
+      else                                                                           { updateFeedSettings('filter', 'none'); }
+    });
+  }
+})();
+// Sort Options Dropdown Listeners
+(function () {
+  let choices = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('BUTTON');
+
+  for (i = 0; i < choices.length; i++) {
+    choices[i].addEventListener('click', function (e) {
+      let call = this.getAttribute('data-value');
+
+      if (call != document.getElementById('panel_feed').getAttribute('data-filter')) { updateFeedSettings('sort', call); }
+
+      toggleSortDropdown();
+    });
+  }
+})();

@@ -40,10 +40,8 @@
         </div>
       </div>
     </header>
-    <main>
-      <!-- SHiFT -->
-      <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
-    </main>
+    <!-- SHiFT -->
+    <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
   </body>
