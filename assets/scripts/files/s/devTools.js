@@ -32,7 +32,16 @@ var devTools = {
 
   // Writes Startup Message to Console
   (function () {
-    waitForConsole('DevTools Enabled Successfully', 'info');
+    waitForConsole('Development Mode Enabled Successfully', 'info');
+  })();
+  // Adds notice to footer
+  (function () {
+    let alert = document.createElement('div');
+
+    alert.classList.add('devmode-message');
+    alert.innerHTML = 'Development Mode<strong>Enabled</strong>';
+
+    document.getElementById('footer').appendChild(alert);
   })();
   // Enables liveReload
   (function () {

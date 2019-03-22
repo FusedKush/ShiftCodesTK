@@ -1,34 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Important Metadata -->
+    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!-- Page Title -->
     <title>Credits - ShiftCodesTK</title>
-    <meta name="description" content="The people and projects that make ShiftCodesTK possible">
-    <meta name="author" content="ShiftCodesTK">
-    <meta name="canonical" href="https://shiftcodes.tk/credits">
-    <meta name="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Google Markup -->
-    <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
-    <!-- Facebook Markup -->
-    <meta property="fb:app_id" content="259185334481064">
     <meta property="og:title" content="Credits - ShiftCodesTK">
-    <meta property="og:description" content="The people and projects that make ShiftCodesTK possible">
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
-    <meta property="og:image:width" content="1920">
-    <meta property="og:image:height" content="1080">
-    <meta property="og:type" content="Website">
-    <meta property="og:url" content="https://shiftcodes.tk/credits">
-    <!-- Twitter Markup -->
-    <meta property="twitter:card" content="summary">
-    <meta property="twitter:site" content="@ShiftCodesTK">
-    <meta property="twitter:creator" content="@ShiftCodesTK">
     <meta property="twitter:title" content="Credits - ShiftCodesTK">
+    <!-- Page Description -->
+    <meta name="description" content="The people and projects that make ShiftCodesTK possible">
+    <meta property="og:description" content="The people and projects that make ShiftCodesTK possible">
     <meta property="twitter:description" content="The people and projects that make ShiftCodesTK possible">
+    <!-- Canonical Page Location -->
+    <meta name="canonical" href="https://shiftcodes.tk/credits">
+    <meta property="og:url" content="https://shiftcodes.tk/credits">
+    <!-- Page Thumbnail Image -->
+    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
-    <meta property="twitter:image:alt" content="ShiftCodesTK Logo">
+    <!-- Page-Specific Browser Properties -->
+    <link rel="manifest" href="/assets/manifests/main.webmanifest">
+    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="credits.min.css">
     <!--// Head Imports \\-->

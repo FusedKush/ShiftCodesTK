@@ -140,19 +140,19 @@ function newAjaxRequest (type, file, callback, parameters, requestHeader) {
   }
 }
 // Handles Time Requests
-function getDate (format, separator) {
+function getDate (format = 'y-m-d', separator = '-') {
   let date = new Date();
   let response;
 
-  if (format == 'yyyy-mm-dd') {
-    response = date.getUTCFullYear() + separator
-             + ('0' + (date.getUTCMonth() + 1)).slice(-2) + separator
-             + ('0' + date.getUTCDate()).slice(-2);
+  if (format == 'y-m-d') {
+    response = date.getFullYear() + separator
+             + ('0' + (date.getMonth() + 1)).slice(-2) + separator
+             + ('0' + date.getDate()).slice(-2);
   }
-  else {
-    response = ('0' + date.getUTCDate()).slice(-2) + separator
-             + ('0' + (date.getUTCMonth() + 1)).slice(-2) + separator
-             + date.getUTCFullYear();
+  else if (format == 'm-d-y') {
+    response = ('0' + (date.getMonth() + 1)).slice(-2) + separator
+             + ('0' + date.getDate()).slice(-2) + separator
+             + date.getFullYear();
   }
 
   return response;

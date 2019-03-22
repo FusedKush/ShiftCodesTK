@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Important Information -->
+    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!-- Page Title -->
     <title>Borderlands 2 - ShiftCodesTK</title>
-    <meta name="description" content="SHiFT Codes for Borderlands 2">
-    <meta name="author" content="ShiftCodesTK">
-    <meta name="canonical" href="https://shiftcodes.tk/bl2">
-    <meta name="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="manifest" href="/assets/manifests/bl2.webmanifest">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Facebook Markup -->
-    <meta property="fb:app_id" content="259185334481064">
     <meta property="og:title" content="Borderlands 2 - ShiftCodesTK">
-    <meta property="og:description" content="SHiFT Codes for Borderlands 2">
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
-    <meta property="og:image:width" content="1920">
-    <meta property="og:image:height" content="1080">
-    <meta property="og:type" content="Website">
-    <meta property="og:url" content="https://shiftcodes.tk/bl2">
-    <!-- Twitter Markup -->
-    <meta property="twitter:card" content="summary">
-    <meta property="twitter:site" content="@ShiftCodesTK">
-    <meta property="twitter:creator" content="@ShiftCodesTK">
     <meta property="twitter:title" content="Borderlands 2 - ShiftCodesTK">
+    <!-- Page Description -->
+    <meta name="description" content="SHiFT Codes for Borderlands 2">
+    <meta property="og:description" content="SHiFT Codes for Borderlands 2">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands 2">
+    <!-- Canonical Page Location -->
+    <meta name="canonical" href="https://shiftcodes.tk/bl2">
+    <meta property="og:url" content="https://shiftcodes.tk/bl2">
+    <!-- Page Thumbnail Image -->
+    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
-    <meta property="twitter:image:alt" content="ShiftCodesTK Logo">
+    <!-- Page-Specific Browser Properties -->
+    <link rel="manifest" href="/assets/manifests/bl2.webmanifest">
+    <meta name="theme-color-tm" id="theme_color_tm" content="#ff4500">
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="shift.min.css">
     <meta class="loader-localFile" content="shift.min.js">
-    <!--// Head Imports \\-->
+    <!--// GLobal Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
   <body data-theme="bl2" data-shiftData='{"id": "1", "name": "Borderlands 2"}'>
@@ -47,10 +40,8 @@
         </div>
       </div>
     </header>
-    <main>
-      <!-- SHiFT -->
-      <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
-    </main>
+    <!-- SHiFT -->
+    <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
   </body>

@@ -1,3 +1,5 @@
+<!-- Global Metadata -->
+<?php include_once('files/metadata.php'); ?>
 <!-- Inlined Startup Styles -->
 <?php include_once('files/inlineStyles.php'); ?>
 <!-- No Javascript Error Styles -->

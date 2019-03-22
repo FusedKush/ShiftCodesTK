@@ -4,7 +4,7 @@
   "description": "SHiFT Codes for Borderlands: The Pre-Sequel",
   "dir": "ltr",
   "lang": "en-US",
-  "start_url": "/",
+  "start_url": "/tps",
   "background_color": "#0f1d2c",
   "theme_color": "#1e90ff",
   "display": "standalone",

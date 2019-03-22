@@ -4,7 +4,7 @@
   "description": "SHiFT Codes for Borderlands 2",
   "dir": "ltr",
   "lang": "en-US",
-  "start_url": "/",
+  "start_url": "/bl2",
   "background_color": "#0f1d2c",
   "theme_color": "#ff4500",
   "display": "standalone",

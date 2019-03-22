@@ -8,6 +8,12 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
+/*** Animations ***/
+@keyframes fadeIn {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
 /*** Media Queries ***/
 @media screen and (max-width: 449px) {
   main .panel .header .title {
@@ -49,6 +55,8 @@ main {
     background-color: #1d3f60;
     border: 2px solid #060c12;
     border-radius: 4px;
+    opacity: 0;
+    animation: fadeIn 0.4s linear forwards;
     overflow: hidden; }
     main .panel[data-expanded="false"] .header .toggle .fas {
       transform: rotate(0deg); }

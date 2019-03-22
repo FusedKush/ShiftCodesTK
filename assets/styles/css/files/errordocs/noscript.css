@@ -28,12 +28,26 @@ noscript {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: #0f1d2c;
+  background-image: url(/assets/img/banners/errorDocs/noScript.jpg);
+  background-position: center;
+  background-size: cover;
   text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   padding: 16px; }
   noscript * {
     opacity: 1;
     transition: opacity 0.2s ease-out; }
+  noscript:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    background-color: #000;
+    opacity: 0.75; }
+  noscript * {
+    position: relative; }
   noscript .logo {
     height: 7.5em;
     width: 7.5em; }

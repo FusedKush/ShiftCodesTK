@@ -212,9 +212,7 @@ main {
 
 .bubble-parent {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include flex;
 
   &:not(:hover):not(:focus) .bubble {
     @include bubble-off;

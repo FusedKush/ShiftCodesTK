@@ -65,6 +65,39 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
     transition: opacity $trd;
   }
 }
+// Flex
+// Mixin-Dependent Functions
+@function getFlexAlignment ($align) {
+  @if $align == c       { @return center; }
+  @else if $align == s  { @return flex-start; }
+  @else if $align == e  { @return flex-end; }
+  @else if $align == sa { @return space-around; }
+  @else if $align == sb { @return space-between; }
+  @else if $align == se { @return space-evenly; }
+}
+@function getFlexDirection ($direction) {
+  @if $direction == c       { @return column; }
+  @else if $direction == cr { @return column-reverse; }
+  @else if $direction == r  { @return row; }
+  @else if $direction == rr { @return row-reverse; }
+}
+// Mixin
+@mixin flex($horizontal: c, $vertical: c, $direction: none, $wrap: false, $type: default) {
+  @if $type == default     { display: flex; }
+  @else if $type == inline { display: inline-flex; }
+
+  @if $direction == none or $direction == c or $direction == cr {
+    align-items: getFlexAlignment($horizontal);
+    justify-content: getFlexAlignment($vertical);
+  }
+  @else if $direction == r or $direction == rr {
+    align-items: getFlexAlignment($vertical);
+    justify-content: getFlexAlignment($horizontal);
+  }
+
+  @if $direction != none { flex-direction: getFlexDirection($direction); }
+  @if $wrap != false     { flex-wrap: wrap; }
+}
 // Overlay (Deprecated - Use @pseudo-fit instead)
 @mixin overlay {
   position: absolute;

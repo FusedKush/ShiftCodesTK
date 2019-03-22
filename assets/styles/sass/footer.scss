@@ -140,4 +140,14 @@ $footerIdleOpacity: 0.75;
       }
     }
   }
+  .devmode-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    color: tpw(0.5);
+    background-color: tpb(0.4);
+
+    strong { padding-left: 0.25em; }
+  }
 }
