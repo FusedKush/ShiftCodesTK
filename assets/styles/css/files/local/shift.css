@@ -584,6 +584,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       padding: 0 8px 8px;
+      margin: 0 2px 2px;
       background-color: rgba(0, 0, 0, 0.2);
       overflow: hidden; }
       .feed .panel .body .background {
