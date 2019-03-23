@@ -287,10 +287,6 @@ function togglePanel (event) {
     false: 'Expand SHiFT Code'
   };
 
-  disenable(e.body.link, state, true);
-  disenable(e.body.copyPC, state);
-  disenable(e.body.copyXbox, state);
-  disenable(e.body.copyPS, state);
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
   event.currentTarget.title = labels[!state];
@@ -316,12 +312,6 @@ function addPanelListeners(panel) {
   let copy = panel.getElementsByClassName('copy');
 
   toggle.addEventListener('click', togglePanel);
-  toggle.addEventListener('keydown', function () {
-    if (event.key == 'Enter') {
-      event.preventDefault();
-      togglePanel(event);
-    }
-  });
 
   for (i = 0; i < copy.length; i++) {
     copy[i].addEventListener('click', function (e) { copyCode(this); });

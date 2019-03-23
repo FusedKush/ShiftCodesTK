@@ -87,7 +87,7 @@
       <div class="section src">
         <div class="title">Source:</div>
         <div class="content">
-          <a target="_blank" rel="external noopener" tabindex="-1">
+          <a target="_blank" rel="external noopener">
             <span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>
             <span class="text"></span>
           </a>
@@ -103,7 +103,7 @@
           <div class="content">
             <span class="display"></span>
             <input class="value" hidden aria-hidden="true" tabindex="-1">
-            <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" disabled aria-disabled="true">
+            <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
               <span class="fas fa-clipboard"></span>
             </button>
           </div>
@@ -113,7 +113,7 @@
         <div class="content">
           <span class="display"></span>
           <input class="value" hidden aria-hidden="true" tabindex="-1">
-          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" disabled aria-disabled="true">
+          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
             <span class="fas fa-clipboard"></span>
           </button>
         </div>
@@ -123,7 +123,7 @@
         <div class="content">
           <span class="display"></span>
           <input class="value" hidden aria-hidden="true" tabindex="-1">
-          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" disabled aria-disabled="true">
+          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
             <span class="fas fa-clipboard"></span>
           </button>
         </div>
