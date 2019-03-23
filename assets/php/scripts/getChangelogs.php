@@ -18,14 +18,14 @@ $info = array('version', 'date', 'type', 'notes');
 // SQL Preparation & Execution
 $sql =
   'SELECT
-      Version,
-      Date,
-      Type,
-      Notes
+      version,
+      date,
+      type,
+      notes
    FROM
-      Updates
+      updates
    ORDER BY
-      Version Desc'
+      version Desc'
 ;
 $sqlResult = mysqli_query($con, $sql);
 
@@ -34,7 +34,7 @@ while($row = mysqli_fetch_array($sqlResult)) {
   $update = new Update;
 
   foreach($info as $key => $value) {
-    $update->$value = $row[ucfirst($value)];
+    $update->$value = $row[$value];
   }
 
   $response->response[count($response->response)] = $update;

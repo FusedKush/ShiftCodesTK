@@ -133,14 +133,14 @@
   75% {
     transform: scale(1.2); } }
 /*** Style Declarations ***/
-> .overlay, .shift-header, .feed {
+body > .overlay, .shift-header, .feed {
   opacity: 1;
   transition: opacity 0.2s ease-out; }
-  > .overlay *, .shift-header *, .feed * {
+  body > .overlay *, .shift-header *, .feed * {
     opacity: 1;
     transition: opacity 0.2s ease-out; }
 
-> .overlay {
+body > .overlay {
   position: absolute;
   top: 4em;
   left: 0;
@@ -150,32 +150,32 @@
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease-out; }
-  > .overlay[hidden], > .overlay > *[hidden] {
+  body > .overlay[hidden], body > .overlay > *[hidden] {
     display: inherit; }
-  > .overlay:not([hidden]) {
+  body > .overlay:not([hidden]) {
     opacity: 1;
     z-index: 1; }
-  > .overlay[hidden] {
+  body > .overlay[hidden] {
     opacity: 0;
     z-index: -1; }
-  > .overlay .spinner, > .overlay .error {
+  body > .overlay .spinner, body > .overlay .error {
     position: absolute; }
-  > .overlay .spinner {
+  body > .overlay .spinner {
     transform: scale(1.5);
     transition: opacity 0.2s ease-out; }
-    > .overlay .spinner:not([hidden]) {
+    body > .overlay .spinner:not([hidden]) {
       opacity: 1; }
-    > .overlay .spinner[hidden] {
+    body > .overlay .spinner[hidden] {
       opacity: 0; }
-  > .overlay .error {
+  body > .overlay .error {
     text-align: center;
     font-weight: 600;
     transition: opacity 0.2s ease-out; }
-    > .overlay .error:not([hidden]) {
+    body > .overlay .error:not([hidden]) {
       opacity: 0.25; }
-    > .overlay .error[hidden] {
+    body > .overlay .error[hidden] {
       opacity: 0; }
-    > .overlay .error .fas {
+    body > .overlay .error .fas {
       font-size: 2em;
       padding: 16px 0; }
 
@@ -244,7 +244,8 @@
           display: flex;
           align-items: center;
           justify-content: center;
-          flex: 1; }
+          flex: 1;
+          height: inherit; }
         .shift-header .content-wrapper .section.counters .badge .count {
           background-color: rgba(0, 0, 0, 0.2);
           font-weight: 600; }
@@ -584,6 +585,7 @@
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       padding: 0 8px 8px;
+      margin: 0 2px 2px;
       background-color: rgba(0, 0, 0, 0.2);
       overflow: hidden; }
       .feed .panel .body .background {
@@ -637,13 +639,16 @@
             color: inherit;
             opacity: 1;
             text-decoration: none;
-            width: 100%; }
+            width: 100%;
+            word-wrap: break-word; }
             .feed .panel .body .section .content a:not(:hover):not(:focus) .text {
               text-decoration: none; }
             .feed .panel .body .section .content a:hover .text, .feed .panel .body .section .content a:focus .text {
               text-decoration: underline; }
             .feed .panel .body .section .content a:active {
               opacity: 0.75; }
+            .feed .panel .body .section .content a .fas, .feed .panel .body .section .content a .text {
+              display: inline; }
             .feed .panel .body .section .content a .fas {
               padding-right: 6px; }
           .feed .panel .body .section .content input {
