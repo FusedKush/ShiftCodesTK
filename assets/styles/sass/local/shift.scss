@@ -120,8 +120,8 @@
 }
 
 /*** Style Declarations ***/
-> .overlay, .shift-header, .feed { @include ready; }
-> .overlay {
+body > .overlay, .shift-header, .feed { @include ready; }
+body > .overlay {
   position: absolute;
   top: 4em;
   left: 0;
@@ -232,6 +232,7 @@
             position: relative;
             @include flex;
             flex: 1;
+            height: inherit;
           }
           .count {
             background-color: tpb(0.2);
@@ -591,7 +592,6 @@
         grid-template-rows: auto 1fr;
         padding: 8px;
 
-
         &.notes {
           &.inactive { display: none; }
 
@@ -641,6 +641,7 @@
             opacity: 1;
             text-decoration: none;
             width: 100%;
+            word-wrap: break-word;
 
             &:not(:hover):not(:focus) .text  { text-decoration: none; }
             &:hover, &:focus {
@@ -648,6 +649,7 @@
             }
             &:active                         { opacity: 0.75; }
 
+            .fas, .text { display: inline; }
             .fas { padding-right: 6px; }
           }
           input {
