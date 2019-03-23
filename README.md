@@ -1,5 +1,5 @@
 # ShiftCodesTK Website Source Code #
 
-Current Release Version: **1.1.3**
+Current Release Version: **1.1.4**
 
 https://shiftcodes.tk
