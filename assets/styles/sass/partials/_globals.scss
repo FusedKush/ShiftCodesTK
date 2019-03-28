@@ -86,11 +86,11 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @if $type == default     { display: flex; }
   @else if $type == inline { display: inline-flex; }
 
-  @if $direction == none or $direction == c or $direction == cr {
+  @if $direction == none or $direction == r or $direction == rr {
     align-items: getFlexAlignment($horizontal);
     justify-content: getFlexAlignment($vertical);
   }
-  @else if $direction == r or $direction == rr {
+  @else if $direction == c or $direction == cr {
     align-items: getFlexAlignment($vertical);
     justify-content: getFlexAlignment($horizontal);
   }
