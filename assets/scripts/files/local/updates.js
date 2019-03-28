@@ -112,10 +112,15 @@ function togglePanel (event) {
     })();
     // Add panel to page
     (function () {
-      document.getElementsByTagName('main')[0].appendChild(panel.base);
+      let main = document.getElementsByTagName('main')[0];
+      
+      main.appendChild(panel.base);
       count.total++;
 
-      if (count.retrieved == count.total) { panel.template.remove(); }
+      if (count.retrieved == count.total) {
+        addFocusScrollListeners(main);
+        panel.template.remove();
+      }
     })();
   }
 

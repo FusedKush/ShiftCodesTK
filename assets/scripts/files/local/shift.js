@@ -579,6 +579,7 @@ function addPanelListeners(panel) {
       else if (codeObject.expDate == currentDate) { updateCounter('exp'); }
       if (count.total == 1) { vishidden(overlay, true); }
       if (count.total == count.retrieved) {
+        addFocusScrollListeners(feed);
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
         document.getElementById('panel_template').remove();
