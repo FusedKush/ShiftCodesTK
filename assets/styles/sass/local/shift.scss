@@ -596,6 +596,7 @@ body > .overlay {
           &.inactive { display: none; }
 
           .content {
+            @include flex(c, s, c, true);
             list-style: disc inside;
 
             li {

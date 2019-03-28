@@ -603,6 +603,11 @@ body > .overlay {
         .feed .panel .body .section.notes.inactive {
           display: none; }
         .feed .panel .body .section.notes .content {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          flex-direction: column;
+          flex-wrap: wrap;
           list-style: disc inside; }
           .feed .panel .body .section.notes .content li {
             padding-left: 4px; }
