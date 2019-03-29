@@ -118,6 +118,8 @@ header.main {
     transition: opacity 0.2s ease-out; }
   body[data-theme="main"] header.main {
     border-color: #f00; }
+  body[data-theme="bl1"] header.main {
+    border-color: #dc143c; }
   body[data-theme="bl2"] header.main {
     border-color: #ff4500; }
   body[data-theme="tps"] header.main {

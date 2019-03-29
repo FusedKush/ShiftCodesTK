@@ -41,6 +41,8 @@
       transition: opacity 0.25s ease-out; }
       body[data-theme="main"] .navbar-container .navbar:before {
         background-color: #f00; }
+      body[data-theme="bl1"] .navbar-container .navbar:before {
+        background-color: #dc143c; }
       body[data-theme="bl2"] .navbar-container .navbar:before {
         background-color: #ff4500; }
       body[data-theme="tps"] .navbar-container .navbar:before {

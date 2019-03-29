@@ -11,6 +11,11 @@
     <meta name="description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
     <meta property="og:description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands 2 & Borderlands: The Pre-Sequel">
+    <!-- Hidden until Borderlands: GOTY Release
+    <meta name="description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
+    <meta property="og:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
+    <meta property="twitter:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
+    -->
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk">
     <meta property="og:url" content="https://shiftcodes.tk">
@@ -39,11 +44,16 @@
           <div class="tagline">Less time Scrolling, More time Gaming</div>
         </header>
         <div class="button-group">
+          <!-- Hidden until Borderlands: GOTY Release
+          <a class="bl1" id="banner_btn_bl1" href="/bl1" title="SHiFT Codes for Borderlands: Game of the Year Edition" aria-label="SHiFT Codes for Borderlands: Game of the Year Edition">
+            <span>Borderlands: GOTY</span>
+          </a>
+          -->
           <a class="bl2" id="banner_btn_bl2" href="/bl2" title="SHiFT Codes for Borderlands 2" aria-label="SHiFT Codes for Borderlands 2">
             <span>Borderlands 2</span>
           </a>
           <a class="tps" id="banner_btn_tps" href="/tps" title="SHiFT Codes for Borderlands: The Pre-Sequel" aria-label="SHiFT Codes for Borderlands: The Pre-Sequel">
-            <span>Borderlands: The Pre-Sequel</span>
+            <span>Borderlands: TPS</span>
           </a>
         </div>
       </section>
