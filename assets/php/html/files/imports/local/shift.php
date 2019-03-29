@@ -36,16 +36,16 @@
     </div>
   </div>
 </header>
-<div class="overlay" id="shift_overlay">
-  <!-- Spinner -->
-  <?php include("./assets/php/html/min/imports/spinner.php"); ?>
-  <div class="error" hidden aria-hidden="true">
-    <div>No SHiFT Codes are currently available</div>
-    <span class="fas fa-heart-broken"></span>
-    <div>Please try again later</div>
-  </div>
-</div>
 <main class="feed content-wrapper" id="panel_feed" data-filter="none" data-sort="default">
+  <div class="overlay" id="shift_overlay">
+    <!-- Spinner -->
+    <?php include("./assets/php/html/min/imports/spinner.php"); ?>
+    <div class="error" hidden aria-hidden="true">
+      <div>No SHiFT Codes are currently available</div>
+      <span class="fas fa-heart-broken"></span>
+      <div>Please try again later</div>
+    </div>
+  </div>
 </main>
 <div id="panel_feed_template" hidden aria-hidden="true"></div>
 <template id="panel_template">

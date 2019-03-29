@@ -85,8 +85,7 @@ function getCode ($codeID, $i) {
         shift_codes
      WHERE
         game_id = ?
-        AND exp_date >= CURRENT_DATE()
-        OR exp_date IS NULL
+        AND (exp_date >= CURRENT_DATE() OR exp_date IS NULL)
      ORDER BY
         CASE exp_date
             WHEN CURRENT_DATE

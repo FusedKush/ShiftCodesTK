@@ -3,7 +3,7 @@
     <ul class="content-wrapper" role="menubar">
       <div class="left">
         <li role="menuitem">
-          <button class="btn bubble-parent" id="navbar_sb" title="Open the Sidebar" aria-label="Open the Sidebar" data-pressed="false" aria-pressed="false">
+          <button class="btn bubble-parent" id="navbar_sb" title="Open the Sidebar" aria-label="Open the Sidebar" data-pressed="false" aria-pressed="false" data-noFocusScroll="true">
             <span class="bubble bubble-dynamic"></span>
             <span class="fas fa-bars"></span>
           </button>
@@ -11,7 +11,7 @@
       </div>
       <div class="center">
         <li role="menuitem">
-          <a class="btn bubble-parent" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">
+          <a class="btn bubble-parent" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home" data-noFocusScroll="true">
             <span class="bubble bubble-dynamic"></span>
             <span class="logo" alt="ShiftCodesTK Logo"></span>
           </a>

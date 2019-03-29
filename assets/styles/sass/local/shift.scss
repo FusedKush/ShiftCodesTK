@@ -120,60 +120,7 @@
 }
 
 /*** Style Declarations ***/
-body > .overlay, .shift-header, .feed { @include ready; }
-body > .overlay {
-  position: absolute;
-  top: 4em;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  @include flex;
-  transition: opacity $trd;
-
-  &[hidden], > *[hidden] {
-    display: inherit;
-  }
-  &:not([hidden]) {
-    opacity: 1;
-    z-index: 1;
-  }
-  &[hidden] {
-    opacity: 0;
-    z-index: -1;
-  }
-
-  .spinner, .error {
-    position: absolute;
-  }
-  .spinner {
-    transform: scale(1.5);
-    transition: opacity $trd;
-
-    &:not([hidden]) {
-      opacity: 1;
-    }
-    &[hidden] {
-      opacity: 0;
-    }
-  }
-  .error {
-    text-align: center;
-    font-weight: 600;
-    transition: opacity $trd;
-
-    &:not([hidden]) {
-      opacity: 0.25;
-    }
-    &[hidden] {
-      opacity: 0;
-    }
-
-    .fas {
-      font-size: 2em;
-      padding: 16px 0;
-    }
-  }
-}
+.shift-header, .feed { @include ready; }
 .shift-header {
   background-color: $site-color-lighter;
   border-bottom: 2px solid $site-color-darker;
@@ -199,6 +146,7 @@ body > .overlay {
           margin-right: 6px;
           overflow: hidden;
           transition: opacity $trd;
+          cursor: default;
 
           &.total { background-color: #808080; }
           &.new   { background-color: $badge-new; }
@@ -217,7 +165,11 @@ body > .overlay {
               &[data-pressed="false"]:after { opacity: 0; }
               &[data-pressed="true"]:after  { opacity: 1; }
               &:not(:hover):not(:focus):before { opacity: 0; }
-              &:hover, &:focus { &:before      { opacity: 0.25; }}
+              &:hover, &:focus {
+                cursor: pointer;
+                
+                &:before { opacity: 0.25; }
+              }
               &:active { opacity: 0.75; }
             }
           }
@@ -365,9 +317,63 @@ body > .overlay {
   }
 }
 .feed {
+  position: relative;
   width: 100%;
   padding: 32px 16px 64px;
 
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    @include flex;
+    transition: opacity $trd;
+
+    &[hidden], > *[hidden] {
+      display: inherit;
+    }
+    &:not([hidden]) {
+      opacity: 1;
+      z-index: 1;
+    }
+    &[hidden] {
+      opacity: 0;
+      z-index: -1;
+    }
+
+    .spinner, .error {
+      position: absolute;
+    }
+    .spinner {
+      transform: scale(1.5);
+      transition: opacity $trd;
+
+      &:not([hidden]) {
+        opacity: 1;
+      }
+      &[hidden] {
+        opacity: 0;
+      }
+    }
+    .error {
+      text-align: center;
+      font-weight: 600;
+      transition: opacity $trd;
+
+      &:not([hidden]) {
+        opacity: 0.25;
+      }
+      &[hidden] {
+        opacity: 0;
+      }
+
+      .fas {
+        font-size: 2em;
+        padding: 16px 0;
+      }
+    }
+  }
   .panel {
     position: relative;
     color: inherit;
@@ -596,6 +602,7 @@ body > .overlay {
           &.inactive { display: none; }
 
           .content {
+            @include flex(c, s, c, true);
             list-style: disc inside;
 
             li {

@@ -35,7 +35,7 @@ function disenable (element, state, optTx) {
     element.tabIndex = tabIndexes[state];
   }
 }
-// Updates Hidden State of Elements {
+// Updates Hidden State of Elements
 function vishidden (element, state, optTx) {
   let tabIndexes = {
     true: '-1',
@@ -157,6 +157,41 @@ function getDate (format = 'y-m-d', separator = '-') {
 
   return response;
 }
+// Scroll elements into view when they receive focus
+function addFocusScrollListeners (parent) {
+  let e = parent.getElementsByTagName('*');
+
+  for (i = 0; i < e.length; i++) {
+    if (e[i].tagName == 'BUTTON' || e[i].tagName == 'A') {
+      if (e[i].getAttribute('data-noFocusScroll') === null || e[i].getAttribute('data-noFocusScroll') == 'false') {
+        e[i].addEventListener('focusin', function (event) {
+          let scroll = [
+            document.documentElement,
+            document.body
+          ];
+          let props = {
+            'min': 64,
+            'max': scroll[1].getBoundingClientRect().height,
+            'padding': 16
+          };
+          let pos = {};
+            (function () {
+              pos.base = event.currentTarget.getBoundingClientRect();
+              pos.top = pos.base.top - props.padding;
+              pos.bottom = pos.base.bottom + props.padding;
+            })();
+
+          if (pos.top < props.min) {
+            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
+          }
+          else if (pos.bottom > props.max) {
+            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
+          }
+        });
+      }
+    }
+  }
+}
 
 // *** Immediate Functions ***
 // Determine Webp Support in the browser
@@ -170,3 +205,5 @@ function getDate (format = 'y-m-d', separator = '-') {
 
   document.body.appendChild(img);
 })();
+// Add Focus Scroll Listener to all present elements
+addFocusScrollListeners(document);

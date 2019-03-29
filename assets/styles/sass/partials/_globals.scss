@@ -12,20 +12,15 @@ $site-color-darker:      #060c12;              // Darker Accent
 
 // Secondary Site Themes
 $theme-main:             #f00;                 // Main Theme Color
-$theme-main-dark:        #c00;                 // Main Theme Color (Dark Accent)
-$theme-main-darker:      #900;                 // Main Theme Color (Darker Accent)
+$theme-bl1:              #dc143c;              // BL1: GOTY Theme Color
 $theme-bl2:              #ff4500;              // Borderlands 2 Theme Color
-$theme-bl2-dark:         #cc3700;              // Borderlands 2 Theme Color (Dark Accent)
-$theme-bl2-darker:       #992900;              // Borderlands 2 Theme Color (Darker Accent)
 $theme-tps:              #1e90ff;              // Borderlands: TPS Theme Color
-$theme-tps-dark:         #1976d0;              // Borderlands: TPS Theme Color (Dark Accent)
-$theme-tps-darker:       #145ba0;              // Borderlands: TPS Theme Color (Darker Accent)
 
 // Misc. Site Properties
 $df-color:               #fff;                 // Default Site Color
 $df-font:                Arial, sans-serif;    // Default Site Font
 $df-line-height:         1.25;                 // Default Line-Height
-$trd:                    0.2s ease-out;       // Default Transition Timing & Style
+$trd:                    0.2s ease-out;        // Default Transition Timing & Style
 $trds:                   0.4s ease-out;        // Slower Transition Timing & Style
 $bbl-light:              #fff;                 // Light Bubble Color
 $bbl-dark:               #000;                 // Dark Bubble Color
@@ -86,26 +81,17 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @if $type == default     { display: flex; }
   @else if $type == inline { display: inline-flex; }
 
-  @if $direction == none or $direction == c or $direction == cr {
+  @if $direction == none or $direction == r or $direction == rr {
     align-items: getFlexAlignment($horizontal);
     justify-content: getFlexAlignment($vertical);
   }
-  @else if $direction == r or $direction == rr {
+  @else if $direction == c or $direction == cr {
     align-items: getFlexAlignment($vertical);
     justify-content: getFlexAlignment($horizontal);
   }
 
   @if $direction != none { flex-direction: getFlexDirection($direction); }
   @if $wrap != false     { flex-wrap: wrap; }
-}
-// Overlay (Deprecated - Use @pseudo-fit instead)
-@mixin overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  content: "";
 }
 // Pseduo-Fit
 @mixin pseudo-fit {
@@ -118,17 +104,20 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 }
 // Dynamic Theme Colors
 @mixin dynamicTheme-color {
-  body[data-theme="main"] &         { color: $theme-main; }
-  body[data-theme="bl2"] &          { color: $theme-bl2; }
-  body[data-theme="tps"] &          { color: $theme-tps; }
+  body[data-theme="main"] & { color: $theme-main; }
+  body[data-theme="bl1"] &  { color: $theme-bl1; }
+  body[data-theme="bl2"] &  { color: $theme-bl2; }
+  body[data-theme="tps"] &  { color: $theme-tps; }
 }
 @mixin dynamicTheme-bgColor {
-  body[data-theme="main"] &         { background-color: $theme-main; }
-  body[data-theme="bl2"] &          { background-color: $theme-bl2; }
-  body[data-theme="tps"] &          { background-color: $theme-tps; }
+  body[data-theme="main"] & { background-color: $theme-main; }
+  body[data-theme="bl1"] &  { background-color: $theme-bl1; }
+  body[data-theme="bl2"] &  { background-color: $theme-bl2; }
+  body[data-theme="tps"] &  { background-color: $theme-tps; }
 }
 @mixin dynamicTheme-borderColor {
-  body[data-theme="main"] &         { border-color: $theme-main; }
-  body[data-theme="bl2"] &          { border-color: $theme-bl2; }
-  body[data-theme="tps"] &          { border-color: $theme-tps; }
+  body[data-theme="main"] & { border-color: $theme-main; }
+  body[data-theme="bl1"] &  { border-color: $theme-bl1; }
+  body[data-theme="bl2"] &  { border-color: $theme-bl2; }
+  body[data-theme="tps"] &  { border-color: $theme-tps; }
 }

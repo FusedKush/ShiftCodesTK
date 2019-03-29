@@ -55,6 +55,8 @@
     transition: opacity 0.2s ease-out; }
   body[data-theme="main"] .primary-footer {
     background-color: #f00; }
+  body[data-theme="bl1"] .primary-footer {
+    background-color: #dc143c; }
   body[data-theme="bl2"] .primary-footer {
     background-color: #ff4500; }
   body[data-theme="tps"] .primary-footer {

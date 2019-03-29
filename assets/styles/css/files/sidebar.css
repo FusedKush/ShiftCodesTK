@@ -109,6 +109,8 @@ Sidebar Styles
             transition: opacity 0.2s ease-out; }
           body[data-theme="main"] .sidebar .panel .header .brand .name:before {
             border-color: #f00; }
+          body[data-theme="bl1"] .sidebar .panel .header .brand .name:before {
+            border-color: #dc143c; }
           body[data-theme="bl2"] .sidebar .panel .header .brand .name:before {
             border-color: #ff4500; }
           body[data-theme="tps"] .sidebar .panel .header .brand .name:before {
@@ -119,6 +121,8 @@ Sidebar Styles
             font-weight: bold; }
             body[data-theme="main"] .sidebar .panel .header .brand .name .focus {
               color: #f00; }
+            body[data-theme="bl1"] .sidebar .panel .header .brand .name .focus {
+              color: #dc143c; }
             body[data-theme="bl2"] .sidebar .panel .header .brand .name .focus {
               color: #ff4500; }
             body[data-theme="tps"] .sidebar .panel .header .brand .name .focus {
@@ -183,6 +187,8 @@ Sidebar Styles
           opacity: 0; }
         body[data-theme="main"] .sidebar .panel .link[data-selected="true"]:before {
           background-color: #f00; }
+        body[data-theme="bl1"] .sidebar .panel .link[data-selected="true"]:before {
+          background-color: #dc143c; }
         body[data-theme="bl2"] .sidebar .panel .link[data-selected="true"]:before {
           background-color: #ff4500; }
         body[data-theme="tps"] .sidebar .panel .link[data-selected="true"]:before {
