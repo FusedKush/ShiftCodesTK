@@ -49,6 +49,11 @@ function vishidden (element, state, optTx) {
     element.tabIndex = tabIndexes[state];
   }
 }
+// Update ELement Labels
+function updateLabel(element, label) {
+  element.title = label;
+  element.setAttribute('aria-label', label);
+}
 // Called when Webp Support is determined
 function webpSupportUpdate (support) {
   let e = document.getElementsByTagName('*');

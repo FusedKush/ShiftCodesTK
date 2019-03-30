@@ -169,8 +169,7 @@ function updateFeedSettings(setting, type) {
 
         buttons[i].setAttribute('data-pressed', state);
         buttons[i].setAttribute('aria-pressed', state);
-        buttons[i].title = newLabel;
-        buttons[i].setAttribute('aria-label', newLabel);
+        updateLabel(buttons[i], newLabel);
       }
     })();
   }
@@ -295,8 +294,7 @@ function togglePanel (event) {
 
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
-  event.currentTarget.title = labels[!state];
-  event.currentTarget.setAttribute('aria-label', labels[!state]);
+  updateLabel(event.currentTarget, labels[!state]);
 }
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
@@ -357,10 +355,8 @@ function addPanelListeners(panel) {
       if (name == 'total') { return ''; }
       else                 { return ' (Click to filter)'; }
     })();
-    let label = count[name] + (' ') + labels[name] + action;
 
-    elm.title = label;
-    elm.setAttribute('aria-label', label);
+    updateLabel(elm, count[name] + (' ') + labels[name] + action);
     elm.getElementsByClassName('count')[0].innerHTML = count[name];
 
     if (count[name] == 1) {
@@ -467,8 +463,7 @@ function addPanelListeners(panel) {
             return Math.ceil(difference / (1000 * 3600 * 24));
           }
           function updateProgress(timeLeft, currentWidth) {
-            panel.progress.title = timeLeft;
-            panel.progress.setAttribute('aria-label', timeLeft);
+            updateLabel(panel.progress, timeLeft);
             panel.progress.setAttribute('aria-valuenow', currentWidth);
             panel.progressBar.style.width = currentWidth + ('%');
           }
