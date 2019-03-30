@@ -81,9 +81,9 @@ function updateFeedSettings(setting, type) {
   let feed = document.getElementById('panel_feed');
   let template = document.getElementById('panel_feed_template');
   let panels = template.getElementsByClassName('panel');
-  let codes = [];
+  codes = [];
   let panelsAdded = 0;
-  let today = getDate('m-d-y');
+  let today = getDate('m-d-y', '/');
 
   function addPanel(code) {
     feed.appendChild(code);
@@ -205,13 +205,19 @@ function updateFeedSettings(setting, type) {
       sort ('new');
 
       // Add Expiring Codes
-      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate == today)  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].expDate == today)       { updateCode(i); }
+      }
       // Add New Codes
-      for (let i = 0; i < codes.length; i++) { if (codes[i].relDate == today)  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].relDate == today)       { updateCode(i); }
+      }
       // Add Remaining Codes w/ an Expiration Date
-      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate != 'N/A')  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].expDate != 'N/A')       { updateCode(i); }
+      }
       // Add Remaining Codes w/o an Expiration Date
-      for (let i = 0; i < codes.length; i++)                                   { updateCode(i); }
+      for (let i = 0; i < codes.length; i++) { updateCode(i); }
     }
     if (type == 'newest') {
       sort ('new');
@@ -501,19 +507,31 @@ function addPanelListeners(panel) {
       // Source
       (function () {
         let source = codeObject.source;
-        let label = (function () {
-          let str = 'Source';
 
-          if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
-          else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
+        if (source !== null) {
+          let label = (function () {
+            let str = 'Source';
 
-          return str;
-        })();
+            if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
+            else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
 
-        panel.source.href = source;
-        panel.source.title = label;
-        panel.source.setAttribute('aria-label', label);
-        panel.source.getElementsByClassName('text')[0].innerHTML = source;
+            return str;
+          })();
+
+          panel.source.href = source;
+          panel.source.getElementsByClassName('text')[0].innerHTML = source;
+          updateLabel(panel.source, label);
+        }
+        else {
+          let e = document.createElement('span');
+          let parent = panel.source.parentNode;
+
+          e.innerHTML = 'N/A';
+          updateLabel(e, 'No confirmed source available');
+          parent.appendChild(e);
+          parent.classList.add('inactive');
+          panel.source.remove();
+        }
       })();
       // Notes
       (function () {
@@ -566,6 +584,7 @@ function addPanelListeners(panel) {
       if (count.total == 1) { vishidden(overlay, true); }
       if (count.total == count.retrieved) {
         addFocusScrollListeners(feed);
+        // checkHashTarget();
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
         document.getElementById('panel_template').remove();
