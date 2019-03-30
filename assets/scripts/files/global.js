@@ -139,23 +139,24 @@ function newAjaxRequest (type, file, callback, parameters, requestHeader) {
     request.send(parameters);
   }
 }
-// Handles Time Requests
+// Handles Date Requests
 function getDate (format = 'y-m-d', separator = '-') {
-  let date = new Date();
-  let response;
+  let date = {};
+    (function () {
+      date.base =  new Date();
+      date.year =  date.base.getFullYear();
+      date.month = ('0' + (date.base.getMonth() + 1)).slice(-2);
+      date.day =   ('0' + date.base.getDate()).slice(-2);
+    })();
+  let formats = {
+    'y': 'year',
+    'm': 'month',
+    'd': 'day'
+  };
 
-  if (format == 'y-m-d') {
-    response = date.getFullYear() + separator
-             + ('0' + (date.getMonth() + 1)).slice(-2) + separator
-             + ('0' + date.getDate()).slice(-2);
-  }
-  else if (format == 'm-d-y') {
-    response = ('0' + (date.getMonth() + 1)).slice(-2) + separator
-             + ('0' + date.getDate()).slice(-2) + separator
-             + date.getFullYear();
-  }
-
-  return response;
+  return date[formats[format.slice(0, 1)]] + separator +
+         date[formats[format.slice(2, 3)]] + separator +
+         date[formats[format.slice(4, 5)]];
 }
 // Scroll elements into view when they receive focus
 function addFocusScrollListeners (parent) {

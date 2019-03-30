@@ -415,22 +415,19 @@ function addPanelListeners(panel) {
 
         panel.reward.innerHTML = reward;
 
-        if (reward.length > 20) {
-          panel.description.classList.add('long');
-        }
-        if (reward != '5 Golden Keys') {
-          panel.description.innerHTML = 'Rare SHiFT Code';
-        }
+        if (reward.length > 20) { panel.description.classList.add('long'); }
+        if (reward != '5 Golden Keys') { panel.description.innerHTML = 'Rare SHiFT Code'; }
       })();
-      // Flags & Dates
+      // Handles all dates (Flags, Dates, Progress Bar)
       (function () {
         function convertDate (date) {
           let y = date.substring(0, 4);
           let md = date.substring(5);
 
-          return md + ('-') + y;
+          return (md + ('/') + y).replace(/-/g, '/');
         }
 
+        let today   = getDate('m-d-y', '/');
         let relDate = convertDate(codeObject.relDate);
         let expDate = (function () {
           let exp = codeObject.expDate;
@@ -439,78 +436,67 @@ function addPanelListeners(panel) {
             panel.expDate.classList.add('inactive');
             return 'N/A';
           }
-          else {
-            return convertDate(exp);
-          }
+          else { return convertDate(exp); }
         })();
 
-        panel.relDate.innerHTML = relDate;
-        panel.expDate.innerHTML = expDate;
+        // Flags & Dates
+        (function () {
+          panel.relDate.innerHTML = relDate;
+          panel.expDate.innerHTML = expDate;
 
-        if (codeObject.relDate == currentDate)  { panel.base.classList.add('new'); }
-        else                                    { panel.flags.new.remove(); }
-        if (codeObject.expDate == currentDate)  { panel.base.classList.add('exp'); }
-        else                                    { panel.flags.exp.remove(); }
-      })();
-      // Progress Bar
-      (function () {
-        let rel = codeObject.relDate;
-        let exp = codeObject.expDate;
+          if (today == relDate)  { panel.base.classList.add('new'); }
+          else                   { panel.flags.new.remove(); }
+          if (today == expDate)  { panel.base.classList.add('exp'); }
+          else                   { panel.flags.exp.remove(); }
+        })();
+        // Progress Bar
+        (function () {
+          function getDifference (start, end) {
+            let date = {
+              'start': new Date(start),
+              'end': new Date(end)
+            };
+            let difference = Math.abs(date.end.getTime() - date.start.getTime());
 
-        function getDifference (start, end) {
-          function parse (date) {
-            let str = date.replace(/-/g, ', ');
-            let obj = new Date(str);
-
-            obj.setMonth(obj.getMonth() - 1);
-            obj.setHours(0, 0, 0);
-
-            return obj.getTime();
+            return Math.ceil(difference / (1000 * 3600 * 24));
+          }
+          function updateProgress(timeLeft, currentWidth) {
+            panel.progress.title = timeLeft;
+            panel.progress.setAttribute('aria-label', timeLeft);
+            panel.progress.setAttribute('aria-valuenow', currentWidth);
+            panel.progressBar.style.width = currentWidth + ('%');
           }
 
-          let base = (24 * 60 * 60 * 1000);
-          let startDate = parse(start);
-          let endDate = parse(end);
+          if (expDate != 'N/A') {
+            let width = (function () {
+              let origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
 
-          return Math.round(Math.abs((startDate - endDate) / base));
-        }
-        function updateProgress(timeLeft, currentWidth) {
-          panel.progress.title = timeLeft;
-          panel.progress.setAttribute('aria-label', timeLeft);
-          panel.progress.setAttribute('aria-valuenow', currentWidth);
-          panel.progressBar.style.width = currentWidth + ('%');
-        }
+              if (origin.indexOf('.') != -1)  { return origin.match(/\d{1,2}(?=\.)/)[0]; }
+              else                            { return origin; }
+            })();
+            let countdown = (function () {
+              let time = getDifference(today, expDate);
+              let string = (function () {
+                let plural = '';
 
-        if (exp !== null) {
-          let width = (function () {
-            let base = (getDifference(currentDate, rel) / getDifference(exp, rel) * 100).toString();
-            let result;
+                if (time != 1) { plural = 's'; }
 
-            if (base.indexOf('.') != -1)  { return base.match(/\d{1,2}(?=\.)/)[0]; }
-            else                          { return base; }
-          })();
-          let left = (function () {
-            let time = getDifference(currentDate, exp);
-            let string = (function () {
-              let plural = '';
+                return (' Day') + plural + (' Left');
+              })();
 
-              if (time != 1) { plural = 's'; }
-
-              return (' Day') + plural + (' Left');
+              return time + string;
             })();
 
-            return time + string;
-          })();
+            updateProgress(countdown, width);
+          }
+          else {
+            let width = 0;
+            let countdown = 'No Expiration Date';
 
-          updateProgress(left, width);
-        }
-        else {
-          let width = 0;
-          let left = 'No Expiration Date';
-
-          updateProgress(left, width);
-          panel.progress.classList.add('inactive');
-        }
+            updateProgress(countdown, width);
+            panel.progress.classList.add('inactive');
+          }
+        })();
       })();
       // Source
       (function () {
