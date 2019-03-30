@@ -117,3 +117,4 @@ function getCode ($codeID, $i) {
 
 // Return all SHiFT Codes
 echo json_encode($response);
+?>

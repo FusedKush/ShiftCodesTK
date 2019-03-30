@@ -13,8 +13,10 @@ class Response {
 class GameIDs {
   public $game1 = 'bl2';
   public $game2 = 'tps';
+  public $game3 = 'bl1';
 }
 class GameCounters {
+  public $bl1 = 0;
   public $bl2 = 0;
   public $tps = 0;
 }
