@@ -82,11 +82,12 @@ var devTools = {
 
       for (i = 0; i < links.length; i++) {
         let path = links[i].pathname;
+        let internal = links[i].getAttribute('data-internalLink') !== null;
         let string = links[i].search;
         let type = links[i].rel;
 
-        if (type != 'external noopener') {
-          if (string.indexOf('?') != -1) {
+        if (type != 'external noopener' && internal === false) {
+          if (string.indexOf('?') != -1 && string.indexOf('?dev=') == -1) {
             links[i].href = path + string + ('&dev=') + key.full;
           }
           else {
