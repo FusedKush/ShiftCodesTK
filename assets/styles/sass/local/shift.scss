@@ -167,7 +167,7 @@
               &:not(:hover):not(:focus):before { opacity: 0; }
               &:hover, &:focus {
                 cursor: pointer;
-                
+
                 &:before { opacity: 0.25; }
               }
               &:active { opacity: 0.75; }
@@ -612,8 +612,10 @@
             }
           }
         }
-        &.exp .content.inactive {
-          color: tpw(0.5);
+        &.exp, &.src {
+          .content.inactive {
+            color: tpw(0.5);
+          }
         }
 
         .title {

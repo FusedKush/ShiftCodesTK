@@ -622,7 +622,7 @@
             padding-left: 4px; }
             .feed .panel .body .section.notes .content li:not(:last-child) {
               padding-bottom: 0.25em; }
-        .feed .panel .body .section.exp .content.inactive {
+        .feed .panel .body .section.exp .content.inactive, .feed .panel .body .section.src .content.inactive {
           color: rgba(255, 255, 255, 0.5); }
         .feed .panel .body .section .title {
           grid-column: 1;
