@@ -16,8 +16,7 @@ function togglePanel (event) {
 
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
-  toggle.title = labels[!state];
-  toggle.setAttribute('aria-label', labels[!state]);
+  updateLabel(toggle, labels[!state]);
 }
 
 // *** Immediate Functions ***
@@ -65,8 +64,7 @@ function togglePanel (event) {
       })();
 
       panel.icon.classList.add(icons[type]);
-      panel.icon.title = typeString;
-      panel.icon.setAttribute('aria-label', typeString);
+      updateLabel(panel.icon, typeString);
       panel.version.innerHTML = ('Version ') + updateObject.version;
       panel.date.innerHTML = (function () {
         let date = updateObject.date;
@@ -113,12 +111,13 @@ function togglePanel (event) {
     // Add panel to page
     (function () {
       let main = document.getElementsByTagName('main')[0];
-      
+
       main.appendChild(panel.base);
       count.total++;
 
       if (count.retrieved == count.total) {
         addFocusScrollListeners(main);
+        // checkHashTarget();
         panel.template.remove();
       }
     })();

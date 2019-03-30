@@ -113,34 +113,31 @@ function sidebarEventListenerCheckKey (event) {
 (function () {
     newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
       let alerts = JSON.parse(request).response.alerts;
+      let links = document.getElementById('sidebar').getElementsByClassName('link');
+      let template = document.getElementById('sidebar_template_badges').content.children;
 
-      function updateBadge(id) {
-        let link = document.getElementById('sidebar_link_' + id);
-        let badges = {};
-          (function () {
-            badges.core = document.getElementById('sidebar_template_badges').content.children;
-            badges.base = badges.core[0].cloneNode(true);
-            badges.new = badges.core[1].cloneNode(true);
-            badges.exp = badges.core[2].cloneNode(true);
-          })();
+      for (i = 0; i < links.length; i++) {
+        let badgeID = links[i].getAttribute('data-useBadges');
 
-        if (alerts.new[id] > 0 || alerts.expiring[id] > 0) {
-          let badgeBase;
+        if (badgeID !== null) {
+          if (alerts.new[badgeID] > 0 || alerts.expiring[badgeID] > 0) {
+            let link = document.getElementById('sidebar_link_' + badgeID);
+            let badges = {};
+              (function () {
+                badges.base = template[0].cloneNode(true);
+                badges.new = template[1].cloneNode(true);
+                badges.exp = template[2].cloneNode(true);
+              })();
+            let badgeBase;
 
-          link.appendChild(badges.base);
-          badgeBase = link.getElementsByClassName('badges')[0];
+            link.appendChild(badges.base);
+            badgeBase = link.getElementsByClassName('badges')[0];
 
-          if (alerts.new[id] > 0) {
-            badgeBase.appendChild(badges.new);
-          }
-          if (alerts.expiring[id] > 0) {
-            badgeBase.appendChild(badges.exp);
+            if (alerts.new[badgeID] > 0)      { badgeBase.appendChild(badges.new); }
+            if (alerts.expiring[badgeID] > 0) { badgeBase.appendChild(badges.exp); }
           }
         }
       }
-
-      updateBadge('bl2');
-      updateBadge('tps');
 
       document.getElementById('sidebar_template_badges').remove();
     });

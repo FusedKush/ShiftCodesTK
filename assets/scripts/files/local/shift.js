@@ -81,9 +81,9 @@ function updateFeedSettings(setting, type) {
   let feed = document.getElementById('panel_feed');
   let template = document.getElementById('panel_feed_template');
   let panels = template.getElementsByClassName('panel');
-  let codes = [];
+  codes = [];
   let panelsAdded = 0;
-  let today = getDate('m-d-y');
+  let today = getDate('m-d-y', '/');
 
   function addPanel(code) {
     feed.appendChild(code);
@@ -169,8 +169,7 @@ function updateFeedSettings(setting, type) {
 
         buttons[i].setAttribute('data-pressed', state);
         buttons[i].setAttribute('aria-pressed', state);
-        buttons[i].title = newLabel;
-        buttons[i].setAttribute('aria-label', newLabel);
+        updateLabel(buttons[i], newLabel);
       }
     })();
   }
@@ -205,13 +204,19 @@ function updateFeedSettings(setting, type) {
       sort ('new');
 
       // Add Expiring Codes
-      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate == today)  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].expDate == today)       { updateCode(i); }
+      }
       // Add New Codes
-      for (let i = 0; i < codes.length; i++) { if (codes[i].relDate == today)  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].relDate == today)       { updateCode(i); }
+      }
       // Add Remaining Codes w/ an Expiration Date
-      for (let i = 0; i < codes.length; i++) { if (codes[i].expDate != 'N/A')  { updateCode(i); } }
+      for (let i = 0; i < codes.length; i++) {
+        if (codes[i].expDate != 'N/A')       { updateCode(i); }
+      }
       // Add Remaining Codes w/o an Expiration Date
-      for (let i = 0; i < codes.length; i++)                                   { updateCode(i); }
+      for (let i = 0; i < codes.length; i++) { updateCode(i); }
     }
     if (type == 'newest') {
       sort ('new');
@@ -289,8 +294,7 @@ function togglePanel (event) {
 
   panel.setAttribute('data-expanded', !state);
   panel.setAttribute('aria-expanded', !state);
-  event.currentTarget.title = labels[!state];
-  event.currentTarget.setAttribute('aria-label', labels[!state]);
+  updateLabel(event.currentTarget, labels[!state]);
 }
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
@@ -351,10 +355,8 @@ function addPanelListeners(panel) {
       if (name == 'total') { return ''; }
       else                 { return ' (Click to filter)'; }
     })();
-    let label = count[name] + (' ') + labels[name] + action;
 
-    elm.title = label;
-    elm.setAttribute('aria-label', label);
+    updateLabel(elm, count[name] + (' ') + labels[name] + action);
     elm.getElementsByClassName('count')[0].innerHTML = count[name];
 
     if (count[name] == 1) {
@@ -415,22 +417,19 @@ function addPanelListeners(panel) {
 
         panel.reward.innerHTML = reward;
 
-        if (reward.length > 20) {
-          panel.description.classList.add('long');
-        }
-        if (reward != '5 Golden Keys') {
-          panel.description.innerHTML = 'Rare SHiFT Code';
-        }
+        if (reward.length > 20) { panel.description.classList.add('long'); }
+        if (reward != '5 Golden Keys') { panel.description.innerHTML = 'Rare SHiFT Code'; }
       })();
-      // Flags & Dates
+      // Handles all dates (Flags, Dates, Progress Bar)
       (function () {
         function convertDate (date) {
           let y = date.substring(0, 4);
           let md = date.substring(5);
 
-          return md + ('-') + y;
+          return (md + ('/') + y).replace(/-/g, '/');
         }
 
+        let today   = getDate('m-d-y', '/');
         let relDate = convertDate(codeObject.relDate);
         let expDate = (function () {
           let exp = codeObject.expDate;
@@ -439,95 +438,95 @@ function addPanelListeners(panel) {
             panel.expDate.classList.add('inactive');
             return 'N/A';
           }
-          else {
-            return convertDate(exp);
-          }
+          else { return convertDate(exp); }
         })();
 
-        panel.relDate.innerHTML = relDate;
-        panel.expDate.innerHTML = expDate;
+        // Flags & Dates
+        (function () {
+          panel.relDate.innerHTML = relDate;
+          panel.expDate.innerHTML = expDate;
 
-        if (codeObject.relDate == currentDate)  { panel.base.classList.add('new'); }
-        else                                    { panel.flags.new.remove(); }
-        if (codeObject.expDate == currentDate)  { panel.base.classList.add('exp'); }
-        else                                    { panel.flags.exp.remove(); }
-      })();
-      // Progress Bar
-      (function () {
-        let rel = codeObject.relDate;
-        let exp = codeObject.expDate;
+          if (today == relDate)  { panel.base.classList.add('new'); }
+          else                   { panel.flags.new.remove(); }
+          if (today == expDate)  { panel.base.classList.add('exp'); }
+          else                   { panel.flags.exp.remove(); }
+        })();
+        // Progress Bar
+        (function () {
+          function getDifference (start, end) {
+            let date = {
+              'start': new Date(start),
+              'end': new Date(end)
+            };
+            let difference = Math.abs(date.end.getTime() - date.start.getTime());
 
-        function getDifference (start, end) {
-          function parse (date) {
-            let str = date.replace(/-/g, ', ');
-            let obj = new Date(str);
-
-            obj.setMonth(obj.getMonth() - 1);
-            obj.setHours(0, 0, 0);
-
-            return obj.getTime();
+            return Math.ceil(difference / (1000 * 3600 * 24));
+          }
+          function updateProgress(timeLeft, currentWidth) {
+            updateLabel(panel.progress, timeLeft);
+            panel.progress.setAttribute('aria-valuenow', currentWidth);
+            panel.progressBar.style.width = currentWidth + ('%');
           }
 
-          let base = (24 * 60 * 60 * 1000);
-          let startDate = parse(start);
-          let endDate = parse(end);
+          if (expDate != 'N/A') {
+            let width = (function () {
+              let origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
 
-          return Math.round(Math.abs((startDate - endDate) / base));
-        }
-        function updateProgress(timeLeft, currentWidth) {
-          panel.progress.title = timeLeft;
-          panel.progress.setAttribute('aria-label', timeLeft);
-          panel.progress.setAttribute('aria-valuenow', currentWidth);
-          panel.progressBar.style.width = currentWidth + ('%');
-        }
+              if (origin.indexOf('.') != -1)  { return origin.match(/\d{1,2}(?=\.)/)[0]; }
+              else                            { return origin; }
+            })();
+            let countdown = (function () {
+              let time = getDifference(today, expDate);
+              let string = (function () {
+                let plural = '';
 
-        if (exp !== null) {
-          let width = (function () {
-            let base = (getDifference(currentDate, rel) / getDifference(exp, rel) * 100).toString();
-            let result;
+                if (time != 1) { plural = 's'; }
 
-            if (base.indexOf('.') != -1)  { return base.match(/\d{1,2}(?=\.)/)[0]; }
-            else                          { return base; }
-          })();
-          let left = (function () {
-            let time = getDifference(currentDate, exp);
-            let string = (function () {
-              let plural = '';
+                return (' Day') + plural + (' Left');
+              })();
 
-              if (time != 1) { plural = 's'; }
-
-              return (' Day') + plural + (' Left');
+              return time + string;
             })();
 
-            return time + string;
-          })();
+            updateProgress(countdown, width);
+          }
+          else {
+            let width = 0;
+            let countdown = 'No Expiration Date';
 
-          updateProgress(left, width);
-        }
-        else {
-          let width = 0;
-          let left = 'No Expiration Date';
-
-          updateProgress(left, width);
-          panel.progress.classList.add('inactive');
-        }
+            updateProgress(countdown, width);
+            panel.progress.classList.add('inactive');
+          }
+        })();
       })();
       // Source
       (function () {
         let source = codeObject.source;
-        let label = (function () {
-          let str = 'Source';
 
-          if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
-          else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
+        if (source !== null) {
+          let label = (function () {
+            let str = 'Source';
 
-          return str;
-        })();
+            if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
+            else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
 
-        panel.source.href = source;
-        panel.source.title = label;
-        panel.source.setAttribute('aria-label', label);
-        panel.source.getElementsByClassName('text')[0].innerHTML = source;
+            return str;
+          })();
+
+          panel.source.href = source;
+          panel.source.getElementsByClassName('text')[0].innerHTML = source;
+          updateLabel(panel.source, label);
+        }
+        else {
+          let e = document.createElement('span');
+          let parent = panel.source.parentNode;
+
+          e.innerHTML = 'N/A';
+          updateLabel(e, 'No confirmed source available');
+          parent.appendChild(e);
+          parent.classList.add('inactive');
+          panel.source.remove();
+        }
       })();
       // Notes
       (function () {
@@ -580,6 +579,7 @@ function addPanelListeners(panel) {
       if (count.total == 1) { vishidden(overlay, true); }
       if (count.total == count.retrieved) {
         addFocusScrollListeners(feed);
+        // checkHashTarget();
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
         document.getElementById('panel_template').remove();
