@@ -18,12 +18,12 @@
     overflow: hidden;
     z-index: 100;
 
-    &[data-atTop="true"] {
+    &[data-at-top="true"] {
       &:before        { opacity: 0; }
 
       .bubble-dynamic { background-color: $bbl-light; }
     }
-    &[data-atTop="false"] {
+    &[data-at-top="false"] {
       &:before        { opacity: 1; }
 
       .bubble-dynamic { background-color: $bbl-dark; }

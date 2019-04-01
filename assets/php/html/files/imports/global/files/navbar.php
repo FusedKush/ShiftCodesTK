@@ -1,5 +1,5 @@
 <header class="navbar-container">
-  <nav class="navbar" id="navbar" aria-label="Navigation Bar" data-atTop="true">
+  <nav class="navbar" id="navbar" aria-label="Navigation Bar" data-at-top="true">
     <ul class="content-wrapper" role="menubar">
       <div class="left">
         <li role="menuitem">
