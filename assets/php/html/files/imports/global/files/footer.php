@@ -10,5 +10,8 @@
       </a>
       <a class="version" href="/updates">Version<strong class="num" id="footer_ver">0.0.0</strong></a>
     </div>
+    <a class="return" id="footer_return" href="#" title="Return to Top" aria-label="Return to Top" data-internalLink="true">
+      <span class="fas fa-arrow-alt-circle-up"></span>
+    </a>
   </div>
 </footer>
