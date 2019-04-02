@@ -2,6 +2,9 @@
   Global (Shared) Scripts
 *********************************/
 
+// *** Variables ***
+var globalScrollTimer;
+var globalScrollUpdates = 0;
 // *** Functions ***
 // Writes to the ShiftCodesTK Developer Console (If DevTools are available)
 function consoleLog (message, type) {
@@ -170,30 +173,41 @@ function addFocusScrollListeners (parent) {
   for (i = 0; i < e.length; i++) {
     if (e[i].tagName == 'BUTTON' || e[i].tagName == 'A') {
       if (e[i].getAttribute('data-noFocusScroll') === null || e[i].getAttribute('data-noFocusScroll') == 'false') {
-        e[i].addEventListener('focusin', function (event) {
-          let scroll = [
-            document.documentElement,
-            document.body
-          ];
-          let props = {
-            'min': 64,
-            'max': scroll[1].getBoundingClientRect().height,
-            'padding': 16
-          };
-          let pos = {};
-            (function () {
-              pos.base = event.currentTarget.getBoundingClientRect();
-              pos.top = pos.base.top - props.padding;
-              pos.bottom = pos.base.bottom + props.padding;
-            })();
+        e[i].addEventListener('focusin', function (event) { updateScroll(this); });
+      }
+    }
+  }
+}
+// Update scroll position to push focused element into viewport
+function updateScroll (element) {
+  let scroll = [
+    document.documentElement,
+    document.body
+  ];
+  let props = {
+    'min': 64,
+    'max': scroll[1].getBoundingClientRect().height,
+    'padding': 16
+  };
+  let pos = {};
+    (function () {
+      pos.base = element.getBoundingClientRect();
+      pos.top = pos.base.top - props.padding;
+      pos.bottom = pos.base.bottom + props.padding;
+    })();
+  let matches = {
+    'top': pos.top < props.min,
+    'bottom': pos.bottom > props.max
+  };
 
-          if (pos.top < props.min) {
-            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
-          }
-          else if (pos.bottom > props.max) {
-            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
-          }
-        });
+  if (matches.top) {
+    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
+  }
+  else if (matches.bottom) {
+    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
+  }
+  if (matches.top || matches.bottom) { globalScrollUpdates = 0; }
+}
       }
     }
   }
