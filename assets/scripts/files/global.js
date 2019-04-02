@@ -36,9 +36,7 @@ function disenable (element, state, optTx) {
   element.disabled = state
   element.setAttribute('aria-disabled', state);
 
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
-  }
+  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
 }
 // Updates Hidden State of Elements
 function vishidden (element, state, optTx) {
@@ -50,9 +48,7 @@ function vishidden (element, state, optTx) {
   element.hidden = state;
   element.setAttribute('aria-hidden', state);
 
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
-  }
+  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
 }
 // Update ELement Labels
 function updateLabel(element, label) {
