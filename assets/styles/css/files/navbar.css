@@ -23,13 +23,13 @@
     height: 64px;
     overflow: hidden;
     z-index: 100; }
-    .navbar-container .navbar[data-atTop="true"]:before {
+    .navbar-container .navbar[data-at-top="true"]:before {
       opacity: 0; }
-    .navbar-container .navbar[data-atTop="true"] .bubble-dynamic {
+    .navbar-container .navbar[data-at-top="true"] .bubble-dynamic {
       background-color: #fff; }
-    .navbar-container .navbar[data-atTop="false"]:before {
+    .navbar-container .navbar[data-at-top="false"]:before {
       opacity: 1; }
-    .navbar-container .navbar[data-atTop="false"] .bubble-dynamic {
+    .navbar-container .navbar[data-at-top="false"] .bubble-dynamic {
       background-color: #000; }
     .navbar-container .navbar:before {
       position: absolute;

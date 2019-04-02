@@ -119,9 +119,11 @@ button {
     cursor: pointer;
   }
 }
-[disabled] {
-  opacity: .5;
-  pointer-events: none;
+button, span, div {
+  &[disabled] {
+    opacity: .5;
+    pointer-events: none;
+  }
 }
 .content-wrapper {
   max-width: 1200px;

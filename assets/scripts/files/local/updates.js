@@ -18,6 +18,78 @@ function togglePanel (event) {
   panel.setAttribute('aria-expanded', !state);
   updateLabel(toggle, labels[!state]);
 }
+// Toggle Sort Options Dropdown
+function toggleJumpDropdown(focusToggle) {
+  let jump = document.getElementById('updates_header_jump');
+  let dropdown = document.getElementById('updates_header_jump_dropdown');
+  let options = dropdown.getElementsByTagName('a');
+  let state = dropdown.getAttribute('data-expanded') == 'true';
+
+  function toggleState () {
+    dropdown.setAttribute('data-expanded', !state);
+    dropdown.setAttribute('aria-expanded', !state);
+  }
+
+  jump.setAttribute('data-pressed', !state);
+  jump.setAttribute('data-pressed', !state);
+
+  if (state === false) {
+    vishidden(dropdown, false);
+    window.addEventListener('click', checkJumpDropdownClick);
+    window.addEventListener('keydown', checkJumpDropdownKey);
+
+    setTimeout(function () {
+      toggleState();
+
+      options[0].focus();
+    }, 50);
+  }
+  else {
+    toggleState();
+    window.removeEventListener('click', checkJumpDropdownClick);
+    window.removeEventListener('keydown', checkJumpDropdownKey);
+
+    setTimeout(function () {
+      vishidden(dropdown, true);
+
+      if (focusToggle !== true) { document.activeElement.blur(); }
+      else                      { jump.focus(); }
+    }, 250);
+  }
+}
+// Check Dropdown Clicks
+function checkJumpDropdownClick (event) {
+  let dropdown = document.getElementById('updates_header_jump_dropdown').getElementsByClassName('panel')[0];
+  let targets = [event, event.target.parentNode, event.target.parentNode.parentNode, event.target.parentNode.parentNode.parentNode];
+  let matched = false;
+
+  for (i = 0; i < targets.length; i++) {
+    if (targets[i] == dropdown) {
+      matched = true;
+      break;
+    }
+  }
+
+  if (matched === false) { toggleJumpDropdown(); }
+}
+// Check Dropdown KeyPresses
+function checkJumpDropdownKey (event) {
+  let target = event.target;
+  let options = document.getElementById('updates_header_jump_dropdown').getElementsByTagName('a');
+  let firstOption = options[0];
+  let lastOption = options[options.length - 1];
+
+  if (event.shiftKey === true && event.key == 'Tab' && target == firstOption || event.shiftKey === false && event.key == 'Tab' && target == lastOption) {
+    event.preventDefault();
+
+    if (target == firstOption)     { lastOption.focus(); }
+    else if (target == lastOption) { firstOption.focus(); }
+  }
+  else if (event.key == 'Escape') {
+    event.preventDefault();
+    toggleJumpDropdown(true);
+  }
+}
 
 // *** Immediate Functions ***
 // Handles Changelogs' Construction
@@ -46,7 +118,7 @@ function togglePanel (event) {
     (function () {
       let ver = updateObject.version;
       // Panel ID
-      panel.base.id = ver + ('_changelog');
+      panel.base.id = ('version_') + ver;
       // Panel animation timing
       panel.base.style.animationDelay = (count.total * 0.2) + 's';
     })();
@@ -115,9 +187,54 @@ function togglePanel (event) {
       main.appendChild(panel.base);
       count.total++;
 
+      // Handle Header Updates
+      (function () {
+        let id = panel.base.id;
+        let title = (function () {
+          let start = id.slice(0, 1).toUpperCase();
+          let parsed = id.replace('_', ' ');
+
+          return start + parsed.slice(1);
+        })();
+        let current = document.getElementById('updates_header_current');
+        let dropdown = document.getElementById('updates_header_jump_dropdown').getElementsByClassName('panel')[0];
+
+        // Update Latest Update field
+        if (count.total == 1) {
+          let section = current.parentNode.parentNode;
+
+          current.href = ('#') + id;
+          current.getElementsByTagName('strong')[0].innerHTML = title.replace('Version ', '');
+          updateLabel(current, ('Jump to ') + title + (' Changelog'));
+
+          vishidden(section, false);
+          setTimeout(function () { section.removeAttribute('data-hidden'); }, 50);
+        }
+
+        // Add link to Jump Button
+        (function () {
+          let e = {};
+            (function () {
+              e.li = document.createElement('li');
+              e.a = document.createElement('a');
+              e.span = document.createElement('span');
+            })();
+
+          e.a.href = ('#') + id;
+          e.a.setAttribute('data-internalLink', true);
+          e.a.setAttribute('data-value', title);
+          e.span.innerHTML = title;
+          updateLabel(e.a, ('Jump to ') + title + (' Changelog'))
+
+          e.a.appendChild(e.span);
+          e.li.appendChild(e.a);
+          dropdown.appendChild(e.li);
+          dropdown.lastChild.addEventListener('click', toggleJumpDropdown);
+        })();
+      })();
       if (count.retrieved == count.total) {
         addFocusScrollListeners(main);
-        // checkHashTarget();
+        disenable(document.getElementById('updates_header_jump'), false);
         panel.template.remove();
       }
     })();
@@ -146,3 +263,6 @@ function togglePanel (event) {
     waitForDep();
   })();
 })();
+
+// *** Event Listeners ***
+document.getElementById('updates_header_jump').addEventListener('click', toggleJumpDropdown);

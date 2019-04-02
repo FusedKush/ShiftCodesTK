@@ -18,11 +18,11 @@ function updNav () {
   };
 
   if(pos[1] > 0 || pos[2] > 0 || pos[3] > 0) {
-    nav.setAttribute("data-atTop", "false");
+    nav.setAttribute("data-at-top", false);
     themeColor.setting.content = themeColor.theme;
   }
   else {
-    nav.setAttribute("data-atTop", "true");
+    nav.setAttribute("data-at-top", true);
     themeColor.setting.content = themeColor.background;
   }
 };

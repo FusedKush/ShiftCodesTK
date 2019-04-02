@@ -570,16 +570,15 @@ function addPanelListeners(panel) {
     (function () {
       let overlay = document.getElementById('shift_overlay');
 
-      feed.appendChild(panel.base);
       updateCounter('total');
       updatePanelTiming(panel.base, count.total);
+      feed.appendChild(panel.base);
 
       if (codeObject.relDate == currentDate)      { updateCounter('new'); }
       else if (codeObject.expDate == currentDate) { updateCounter('exp'); }
       if (count.total == 1) { vishidden(overlay, true); }
       if (count.total == count.retrieved) {
         addFocusScrollListeners(feed);
-        // checkHashTarget();
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
         document.getElementById('panel_template').remove();

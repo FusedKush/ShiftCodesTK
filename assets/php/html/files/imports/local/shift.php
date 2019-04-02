@@ -15,7 +15,7 @@
       </button>
     </div>
     <div class="section sort">
-      <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" data-pressed="false" aria-pressed="false" aria-haspopup="true" disabled aria-disabled>
+      <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
         <span class="fas fa-sort-amount-down"></span>
       </button>
       <div class="dropdown" id="shift_header_sort_dropdown" data-expanded="false" aria-expanded="false" hidden data-hidden="true">
@@ -56,6 +56,7 @@
     <div class="flag exp" title="Expiring SHiFT Code" aria-label="Expiring SHiFT Code">
       <span class="fas fa-exclamation-triangle"></span>
     </div>
+    <div class="hashTargetOverlay"></div>
     <div class="header">
       <div class="top">
         <span class="fas fa-key" title="SHiFT Code" aria-label="SHiFT Code"></span>

@@ -110,6 +110,16 @@
     opacity: 0; }
   100% {
     opacity: 1; } }
+@keyframes panelHashTargeted {
+  0%, 50%, 100% {
+    opacity: 0.25; }
+  25%, 75% {
+    opacity: 1; } }
+@keyframes panelHashTargetFade {
+  0% {
+    opacity: 0.75; }
+  100% {
+    opacity: 0; } }
 @keyframes progressClimb {
   0% {
     transform: translateX(-100%); }
@@ -415,6 +425,10 @@
       opacity: 0.25; }
     .feed .panel[data-filtered="true"] .header {
       opacity: 0.25; }
+    .feed .panel[data-hashtarget-highlighted="true"] .hashTargetOverlay {
+      animation: panelHashTargeted 2.5s linear infinite; }
+    .feed .panel[data-hashtarget-highlighted="false"] .hashTargetOverlay {
+      animation: panelHashTargetFade 0.75s linear; }
     .feed .panel:not(.new):not(.exp):before {
       border-color: #060c12; }
     .feed .panel.new:before {
@@ -510,6 +524,16 @@
         top: 2px;
         left: -2px;
         transform: rotate(45deg); }
+    .feed .panel .hashTargetOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      content: "";
+      border: 2px solid;
+      border-radius: 4px;
+      opacity: 0; }
     .feed .panel .header .top {
       display: grid;
       grid-template-columns: auto 1fr auto;

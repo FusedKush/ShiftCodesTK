@@ -103,6 +103,14 @@
   0%    { opacity: 0; }
   100%  { opacity: 1; }
 }
+@keyframes panelHashTargeted {
+  0%, 50%, 100% { opacity: 0.25; }
+  25%, 75%      { opacity: 1; }
+}
+@keyframes panelHashTargetFade {
+  0%   { opacity: 0.75; }
+  100% { opacity: 0; }
+}
 @keyframes progressClimb {
   0%    { transform: translateX(-100%); }
   100%  { transform: translateX(0); }
@@ -408,6 +416,8 @@
       .flag   { opacity: 0.25; }
       .header { opacity: 0.25; }
     }
+    &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
+    &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
     &:not(.new):not(.exp):before { border-color: $site-color-darker; }
     &.new:before                 { border-color: $badge-new; }
     &.exp:before                 { border-color: $badge-exp; }
@@ -492,6 +502,12 @@
         left: -2px;
         transform: rotate(45deg);
       }
+    }
+    .hashTargetOverlay {
+      @include pseudo-fit;
+      border: 2px solid;
+      border-radius: 4px;
+      opacity: 0;
     }
     .header {
       .top {

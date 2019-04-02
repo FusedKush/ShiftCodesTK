@@ -2,6 +2,11 @@
   Global (Shared) Scripts
 *********************************/
 
+// *** Variables ***
+var globalScrollTimer;
+var globalScrollUpdates = 0;
+var hashTargetTimeout;
+
 // *** Functions ***
 // Writes to the ShiftCodesTK Developer Console (If DevTools are available)
 function consoleLog (message, type) {
@@ -31,9 +36,7 @@ function disenable (element, state, optTx) {
   element.disabled = state
   element.setAttribute('aria-disabled', state);
 
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
-  }
+  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
 }
 // Updates Hidden State of Elements
 function vishidden (element, state, optTx) {
@@ -45,9 +48,7 @@ function vishidden (element, state, optTx) {
   element.hidden = state;
   element.setAttribute('aria-hidden', state);
 
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
-  }
+  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
 }
 // Update ELement Labels
 function updateLabel(element, label) {
@@ -170,33 +171,94 @@ function addFocusScrollListeners (parent) {
   for (i = 0; i < e.length; i++) {
     if (e[i].tagName == 'BUTTON' || e[i].tagName == 'A') {
       if (e[i].getAttribute('data-noFocusScroll') === null || e[i].getAttribute('data-noFocusScroll') == 'false') {
-        e[i].addEventListener('focusin', function (event) {
-          let scroll = [
-            document.documentElement,
-            document.body
-          ];
-          let props = {
-            'min': 64,
-            'max': scroll[1].getBoundingClientRect().height,
-            'padding': 16
-          };
-          let pos = {};
-            (function () {
-              pos.base = event.currentTarget.getBoundingClientRect();
-              pos.top = pos.base.top - props.padding;
-              pos.bottom = pos.base.bottom + props.padding;
-            })();
-
-          if (pos.top < props.min) {
-            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
-          }
-          else if (pos.bottom > props.max) {
-            for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
-          }
-        });
+        e[i].addEventListener('focusin', function (event) { updateScroll(this); });
       }
     }
   }
+}
+// Update scroll position to push focused element into viewport
+function updateScroll (element) {
+  let scroll = [
+    document.documentElement,
+    document.body
+  ];
+  let props = {
+    'min': 64,
+    'max': scroll[1].getBoundingClientRect().height,
+    'padding': 16
+  };
+  let pos = {};
+    (function () {
+      pos.base = element.getBoundingClientRect();
+      pos.top = pos.base.top - props.padding;
+      pos.bottom = pos.base.bottom + props.padding;
+    })();
+  let matches = {
+    'top': pos.top < props.min,
+    'bottom': pos.bottom > props.max
+  };
+
+  if (matches.top) {
+    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
+  }
+  else if (matches.bottom) {
+    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
+  }
+  if (matches.top || matches.bottom) { globalScrollUpdates = 0; }
+}
+// Update visibility of hash-targeted elements
+function hashUpdate () {
+  let hash = window.location.hash;
+  let validHash = hash != '';
+
+  // Clear previous target
+  (function () {
+    let e = document.getElementsByTagName('*');
+
+    for (i = 0; i < e.length; i++) {
+      if (e[i].getAttribute('data-hashtarget-highlighted') !== null && (('#') + e[i].id) != hash) {
+        e[i].removeAttribute('data-hashtarget-highlighted');
+        e[i].removeEventListener('mouseover', globalListenerHashTargetHover);
+        e[i].removeEventListener('mouseout', globalListenerHashTargetAway);
+      }
+    }
+  })();
+
+  if (history.replaceState) { history.replaceState(null, null, hash); }
+  else                      { window.location.hash = hash; }
+
+  if (validHash === true) {
+    let target = document.getElementById(hash.replace('#', ''));
+    let validTarget = target !== null;
+
+    if (validTarget === true) {
+      if (target.getAttribute('data-hashtarget-highlighted') != 'true') {
+        target.setAttribute('data-hashtarget-highlighted', true);
+        target.addEventListener('mouseover', globalListenerHashTargetHover);
+        target.addEventListener('mouseout', globalListenerHashTargetAway);
+      }
+
+      updateScroll(target);
+    }
+  }
+}
+
+// *** Event Listener Reference Functions ***
+function globalListenerLoadClearScroll () {
+  globalScrollUpdates = 0;
+  window.removeEventListener('load', globalListenerLoadClearScroll);
+}
+function globalListenerHashTargetHover (event) {
+  let e = this;
+
+  hashTargetTimeout = setTimeout(function () {
+    e.setAttribute('data-hashtarget-highlighted', false);
+    e.removeEventListener('mouseover', globalListenerHashTargetHover);
+    e.removeEventListener('mouseout', globalListenerHashTargetAway);
+  }, 750);
+}
+function globalListenerHashTargetAway () {
+  clearTimeout(hashTargetTimeout);
 }
 
 // *** Immediate Functions ***
@@ -211,5 +273,44 @@ function addFocusScrollListeners (parent) {
 
   document.body.appendChild(img);
 })();
+// Check for hash-targeted elements
+hashUpdate();
+
+// *** Event Listeners ***
+// Intercept Hash Update
+window.addEventListener('hashchange', function (e) {
+  event.preventDefault();
+  hashUpdate();
+});
+// Prevent Anchor-Jumping behind navbar
+window.addEventListener('scroll', function () {
+  if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
+
+  globalScrollUpdates++;
+
+  globalScrollTimer = setTimeout(function () {
+    if (globalScrollUpdates == 1) {
+      let e = document.getElementsByTagName('*');
+
+      for (i = 0; i < e.length; i++) {
+        let pos = e[i].getBoundingClientRect().top;
+
+        if (pos >= 0 && pos <= 1) { hashUpdate(); }
+      }
+    }
+
+    globalScrollUpdates = 0;
+  }, 150);
+});
+// Clear Scroll event count on page load
+window.addEventListener('load', globalListenerLoadClearScroll);
 // Add Focus Scroll Listener to all present elements
 addFocusScrollListeners(document);
+// Intercept all hashed anchors
+(function () {
+  let e = document.getElementsByTagName('a');
+
+  for (i = 0; i < e.length; i++) {
+    if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
+  }
+})();

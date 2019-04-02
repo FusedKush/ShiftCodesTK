@@ -12,10 +12,7 @@
 
     .button-group {
       grid-template-columns: 1fr;
-      /* Hidden until Borderlands: GOTY Release
       grid-template-rows:    repeat(3, 1fr);
-      */
-      grid-template-rows: repeat(2, 1fr)
     }
   }
 }
@@ -27,7 +24,6 @@
 }
 @media screen and (min-width: 400px) and (max-width: 674px) {
   .banner .content-container .button-group {
-    /* Hidden until Borderlands: GOTY Release
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows:    repeat(2, 1fr);
 
@@ -43,18 +39,11 @@
       grid-row: 2;
       grid-column: 2;
     }
-    */
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: 1fr;
   }
 }
 @media screen and (min-width: 675px) {
   .banner .content-container .button-group {
-    /* Hidden until Borderlands: GOTY Release
     grid-template-columns: repeat(3, 1fr);
-    */
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows:    1fr;
   }
 }
 
