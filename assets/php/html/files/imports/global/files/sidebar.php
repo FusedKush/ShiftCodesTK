@@ -10,14 +10,12 @@
       </a>
     </div>
     <ul role="menu">
-      <!-- Hidden until Borderlands: GOTY release
       <li role="menuitem">
         <a class="link" id="sidebar_link_bl1" href="/bl1" aria-labelledby="sidebar_link_bl1_name" data-noFocusScroll="true" data-useBadges="bl1">
           <span class="fas fa-gamepad"></span>
           <span class="name" id="sidebar_link_bl1_name">Borderlands: GOTY</span>
         </a>
       </li>
-      -->
       <li role="menuitem">
         <a class="link" id="sidebar_link_bl2" href="/bl2" aria-labelledby="sidebar_link_bl2_name" data-noFocusScroll="true" data-useBadges="bl2">
           <span class="fas fa-gamepad"></span>
