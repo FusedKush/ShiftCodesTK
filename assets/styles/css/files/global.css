@@ -93,7 +93,7 @@ button {
   button:hover:not([disabled]) {
     cursor: pointer; }
 
-[disabled] {
+button[disabled], span[disabled], div[disabled] {
   opacity: .5;
   pointer-events: none; }
 

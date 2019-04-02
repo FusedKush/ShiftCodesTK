@@ -46,7 +46,7 @@
           <span><span>Current Version:</span><a id="updates_header_current" data-internalLink="true"><strong></strong></a></span>
         </div>
         <div class="section jump">
-          <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" disabled aria-disabled="true">
+          <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
             <span>Jump to <span class="fas fa-caret-down"></span></span>
           </button>
           <div class="dropdown" id="updates_header_jump_dropdown" data-expanded="false" aria-expanded="false" hidden aria-hidden="true" data-hidden="true">
