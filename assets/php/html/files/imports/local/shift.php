@@ -56,6 +56,7 @@
     <div class="flag exp" title="Expiring SHiFT Code" aria-label="Expiring SHiFT Code">
       <span class="fas fa-exclamation-triangle"></span>
     </div>
+    <div class="hashTargetOverlay"></div>
     <div class="header">
       <div class="top">
         <span class="fas fa-key" title="SHiFT Code" aria-label="SHiFT Code"></span>

@@ -14,6 +14,16 @@
     opacity: 0; }
   100% {
     opacity: 1; } }
+@keyframes panelHashTargeted {
+  0%, 50%, 100% {
+    opacity: 0.25; }
+  25%, 75% {
+    opacity: 1; } }
+@keyframes panelHashTargetFade {
+  0% {
+    opacity: 0.75; }
+  100% {
+    opacity: 0; } }
 /*** Media Queries ***/
 @media screen and (max-width: 449px) {
   main .panel .header .title {
@@ -46,18 +56,23 @@ main {
   flex-direction: column;
   padding: 32px 16px 64px;
   overflow: hidden; }
-  main * {
-    opacity: 1;
-    transition: opacity 0.2s ease-out; }
   main .panel {
     position: relative;
     color: inherit;
-    background-color: #1d3f60;
-    border: 2px solid #060c12;
     border-radius: 4px;
     opacity: 0;
     animation: fadeIn 0.4s linear forwards;
     overflow: hidden; }
+    main .panel:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      content: "";
+      background-color: #1d3f60;
+      border: 2px solid #060c12;
+      border-radius: 4px; }
     main .panel[data-expanded="false"] .header .toggle .fas {
       transform: rotate(0deg); }
     main .panel[data-expanded="false"] .body {
@@ -66,6 +81,7 @@ main {
       transform: rotate(180deg); }
     main .panel[data-expanded="true"] .body {
       display: grid; }
+    main .panel[data-hashtarget-highlighted="true"] .hashTargetOverlay {
     main .panel:not(:last-child) {
       margin-bottom: 1.5em; }
     main .panel .header {
@@ -112,6 +128,7 @@ main {
       position: relative;
       background-color: rgba(0, 0, 0, 0.2);
       padding: 16px;
+      margin: 0 2px 2px;
       overflow: hidden; }
       main .panel .body h3 {
         font-size: 1.25em;

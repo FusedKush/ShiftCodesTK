@@ -117,7 +117,7 @@ function togglePanel (event) {
 
       if (count.retrieved == count.total) {
         addFocusScrollListeners(main);
-        // checkHashTarget();
+        disenable(document.getElementById('updates_header_jump'), false);
         panel.template.remove();
       }
     })();

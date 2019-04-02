@@ -5,6 +5,8 @@
 // *** Variables ***
 var globalScrollTimer;
 var globalScrollUpdates = 0;
+var hashTargetTimeout;
+
 // *** Functions ***
 // Writes to the ShiftCodesTK Developer Console (If DevTools are available)
 function consoleLog (message, type) {
@@ -208,9 +210,59 @@ function updateScroll (element) {
   }
   if (matches.top || matches.bottom) { globalScrollUpdates = 0; }
 }
+// Update visibility of hash-targeted elements
+function hashUpdate () {
+  let hash = window.location.hash;
+  let validHash = hash != '';
+
+  // Clear previous target
+  (function () {
+    let e = document.getElementsByTagName('*');
+
+    for (i = 0; i < e.length; i++) {
+      if (e[i].getAttribute('data-hashtarget-highlighted') !== null && (('#') + e[i].id) != hash) {
+        e[i].removeAttribute('data-hashtarget-highlighted');
+        e[i].removeEventListener('mouseover', globalListenerHashTargetHover);
+        e[i].removeEventListener('mouseout', globalListenerHashTargetAway);
       }
     }
+  })();
+
+  if (history.replaceState) { history.replaceState(null, null, hash); }
+  else                      { window.location.hash = hash; }
+
+  if (validHash === true) {
+    let target = document.getElementById(hash.replace('#', ''));
+    let validTarget = target !== null;
+
+    if (validTarget === true) {
+      if (target.getAttribute('data-hashtarget-highlighted') != 'true') {
+        target.setAttribute('data-hashtarget-highlighted', true);
+        target.addEventListener('mouseover', globalListenerHashTargetHover);
+        target.addEventListener('mouseout', globalListenerHashTargetAway);
+      }
+
+      updateScroll(target);
+    }
   }
+}
+
+// *** Event Listener Reference Functions ***
+function globalListenerLoadClearScroll () {
+  globalScrollUpdates = 0;
+  window.removeEventListener('load', globalListenerLoadClearScroll);
+}
+function globalListenerHashTargetHover (event) {
+  let e = this;
+
+  hashTargetTimeout = setTimeout(function () {
+    e.setAttribute('data-hashtarget-highlighted', false);
+    e.removeEventListener('mouseover', globalListenerHashTargetHover);
+    e.removeEventListener('mouseout', globalListenerHashTargetAway);
+  }, 750);
+}
+function globalListenerHashTargetAway () {
+  clearTimeout(hashTargetTimeout);
 }
 
 // *** Immediate Functions ***
@@ -225,5 +277,44 @@ function updateScroll (element) {
 
   document.body.appendChild(img);
 })();
+// Check for hash-targeted elements
+hashUpdate();
+
+// *** Event Listeners ***
+// Intercept Hash Update
+window.addEventListener('hashchange', function (e) {
+  event.preventDefault();
+  hashUpdate();
+});
+// Prevent Anchor-Jumping behind navbar
+window.addEventListener('scroll', function () {
+  if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
+
+  globalScrollUpdates++;
+
+  globalScrollTimer = setTimeout(function () {
+    if (globalScrollUpdates == 1) {
+      let e = document.getElementsByTagName('*');
+
+      for (i = 0; i < e.length; i++) {
+        let pos = e[i].getBoundingClientRect().top;
+
+        if (pos >= 0 && pos <= 1) { hashUpdate(); }
+      }
+    }
+
+    globalScrollUpdates = 0;
+  }, 150);
+});
+// Clear Scroll event count on page load
+window.addEventListener('load', globalListenerLoadClearScroll);
 // Add Focus Scroll Listener to all present elements
 addFocusScrollListeners(document);
+// Intercept all hashed anchors
+(function () {
+  let e = document.getElementsByTagName('a');
+
+  for (i = 0; i < e.length; i++) {
+    if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
+  }
+})();

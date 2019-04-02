@@ -10,6 +10,14 @@
   0%    { opacity: 0; }
   100%  { opacity: 1; }
 }
+@keyframes panelHashTargeted {
+  0%, 50%, 100% { opacity: 0.25; }
+  25%, 75%      { opacity: 1; }
+}
+@keyframes panelHashTargetFade {
+  0%   { opacity: 0.75; }
+  100% { opacity: 0; }
+}
 
 /*** Media Queries ***/
 @media screen and (max-width: 449px) {
@@ -56,12 +64,17 @@ main {
   .panel {
     position: relative;
     color: inherit;
-    background-color: $site-color-lighter;
-    border: 2px solid $site-color-darker;
     border-radius: 4px;
     opacity: 0;
     animation: fadeIn 0.4s linear forwards;
     overflow: hidden;
+
+    &:before {
+      @include pseudo-fit;
+      background-color: $site-color-lighter;
+      border: 2px solid $site-color-darker;
+      border-radius: 4px;
+    }
 
     &[data-expanded="false"] {
       .header .toggle .fas { transform: rotate(0deg); }
@@ -71,9 +84,18 @@ main {
       .header .toggle .fas { transform: rotate(180deg); }
       .body { display: grid; }
     }
+    &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
+    &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
     &:not(:last-child) { margin-bottom: 1.5em; }
 
+    .hashTargetOverlay {
+      @include pseudo-fit;
+      border: 2px solid;
+      border-radius: 4px;
+      opacity: 0;
+    }
     .header {
+      position: relative;
       display: grid;
       grid-template-columns: 2.55em 1fr auto;
       font-size: 1.5em;
@@ -130,6 +152,7 @@ main {
       position: relative;
       background-color: tpb(0.2);
       padding: 16px;
+      margin: 0 2px 2px;
       overflow: hidden;
 
       h3 {
