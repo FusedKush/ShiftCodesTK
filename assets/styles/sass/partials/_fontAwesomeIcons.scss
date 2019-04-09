@@ -30,4 +30,7 @@
   &-chevron-circle-down:before        { @include fa-icon(f13a); }
   &-filter:before                     { @include fa-icon(f0b0); }
   &-caret-down:before                 { @include fa-icon(f0d7); }
+  &-twitter                    { @include fa-icon(f099); }
+  &-facebook-messenger         { @include fa-icon(f39f); }
+  &-question                   { @include fa-icon(f128); }
 }

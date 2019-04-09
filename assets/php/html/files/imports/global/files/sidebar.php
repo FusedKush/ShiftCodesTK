@@ -30,6 +30,12 @@
       </li>
       <div class="separator"></div>
       <li role="menuitem">
+        <a class="link" id="sidebar_link_faq" href="/faq" aria-labelledby="sidebar_link_faq_name" data-noFocusScroll="true">
+          <span class="fas fa-question"></span>
+          <span class="name" id="sidebar_link_faq_name">FAQ</span>
+        </a>
+      </li>
+      <li role="menuitem">
         <a class="link" id="sidebar_link_credits" href="/credits" aria-labelledby="sidebar_link_credits_name" data-noFocusScroll="true">
           <span class="fas fa-award"></span>
           <span class="name" id="sidebar_link_credits_name">Credits</span>

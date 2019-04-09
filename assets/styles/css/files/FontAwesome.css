@@ -75,10 +75,14 @@
   content: "\f161"; }
 .fa-sort-amount-down:before {
   content: "\f160"; }
+.fa-twitter:before {
+  content: "\f099"; }
 .fa-twitter-square:before {
   content: "\f081"; }
 .fa-facebook-square:before {
   content: "\f082"; }
+.fa-facebook-messenger:before {
+  content: "\f39f"; }
 .fa-font-awesome-flag:before {
   content: "\f425"; }
 .fa-spinner:before {
@@ -97,3 +101,5 @@
   content: "\f0b0"; }
 .fa-caret-down:before {
   content: "\f0d7"; }
+.fa-question:before {
+  content: "\f128"; }
