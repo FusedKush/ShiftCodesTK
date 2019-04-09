@@ -21,7 +21,7 @@ Sidebar Styles
   .sidebar * {
     opacity: 1;
     transition: opacity 0.2s ease-out; }
-  .sidebar:before {
+  .sidebar::before {
     position: absolute;
     top: 0;
     left: 0;
@@ -30,12 +30,12 @@ Sidebar Styles
     content: "";
     background-color: rgba(0, 0, 0, 0.5);
     transition: opacity 0.2s ease-out; }
-  .sidebar[data-expanded="false"]:before {
+  .sidebar[data-expanded="false"]::before {
     opacity: 0; }
   .sidebar[data-expanded="false"] .panel {
     transform: translateX(calc(-100% - 0.5em));
     box-shadow: none; }
-  .sidebar[data-expanded="true"]:before {
+  .sidebar[data-expanded="true"]::before {
     opacity: 1; }
   .sidebar[data-expanded="true"] .panel {
     transform: translateX(0);
@@ -85,37 +85,37 @@ Sidebar Styles
         height: 64px;
         padding: 12px 16px;
         font-size: 1.5em; }
-        .sidebar .panel .header .brand:not(:hover):not(:focus) .name:before, .sidebar .panel .header .brand:not(:hover):not(:focus) .name:after {
+        .sidebar .panel .header .brand:not(:hover):not(:focus) .name::before, .sidebar .panel .header .brand:not(:hover):not(:focus) .name::after {
           opacity: 0; }
-        .sidebar .panel .header .brand:hover .name:before, .sidebar .panel .header .brand:focus .name:before {
+        .sidebar .panel .header .brand:hover .name::before, .sidebar .panel .header .brand:focus .name::before {
           opacity: 1; }
-        .sidebar .panel .header .brand:hover .name:after, .sidebar .panel .header .brand:focus .name:after {
+        .sidebar .panel .header .brand:hover .name::after, .sidebar .panel .header .brand:focus .name::after {
           opacity: 0; }
-        .sidebar .panel .header .brand:active .name:before {
+        .sidebar .panel .header .brand:active .name::before {
           opacity: 0; }
-        .sidebar .panel .header .brand:active .name:after {
+        .sidebar .panel .header .brand:active .name::after {
           opacity: 1; }
         .sidebar .panel .header .brand .name {
           position: relative;
           padding: 4px 0; }
-          .sidebar .panel .header .brand .name:before, .sidebar .panel .header .brand .name:after {
+          .sidebar .panel .header .brand .name::before, .sidebar .panel .header .brand .name::after {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             content: "";
-            border-bottom: 2px solid;
-            transition: opacity 0.2s ease-out; }
-          body[data-theme="main"] .sidebar .panel .header .brand .name:before {
+            transition: opacity 0.2s ease-out;
+            border-bottom: 2px solid; }
+          body[data-theme="main"] .sidebar .panel .header .brand .name::before {
             border-color: #f00; }
-          body[data-theme="bl1"] .sidebar .panel .header .brand .name:before {
+          body[data-theme="bl1"] .sidebar .panel .header .brand .name::before {
             border-color: #dc143c; }
-          body[data-theme="bl2"] .sidebar .panel .header .brand .name:before {
+          body[data-theme="bl2"] .sidebar .panel .header .brand .name::before {
             border-color: #ff4500; }
-          body[data-theme="tps"] .sidebar .panel .header .brand .name:before {
+          body[data-theme="tps"] .sidebar .panel .header .brand .name::before {
             border-color: #1e90ff; }
-          .sidebar .panel .header .brand .name:after {
+          .sidebar .panel .header .brand .name::after {
             border-color: #fff; }
           .sidebar .panel .header .brand .name .focus {
             font-weight: bold; }
@@ -130,15 +130,15 @@ Sidebar Styles
     .sidebar .panel li {
       line-height: 0; }
       .sidebar .panel li .link {
+        color: inherit;
+        text-decoration: none;
         display: grid;
         grid-template-columns: 64px 1fr;
         position: relative;
         padding: 16px 32px 16px 0;
         line-height: 1.25;
-        color: inherit;
-        text-decoration: none;
         transition: opacity 0.2s ease-out; }
-        .sidebar .panel li .link:before {
+        .sidebar .panel li .link::before {
           position: absolute;
           top: 0;
           left: 0;
@@ -149,56 +149,56 @@ Sidebar Styles
           transition: opacity 0.2s ease-out; }
         .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"] {
           opacity: 0.75; }
-          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"]:before {
+          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"]::before {
             opacity: 0; }
-          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"] .badges *:before {
+          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"] .badges *::before {
             opacity: 0; }
-          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"] .badges *:after {
+          .sidebar .panel li .link:not(:hover):not(:focus)[data-selected="false"] .badges *::after {
             opacity: 1; }
         .sidebar .panel li .link:hover, .sidebar .panel li .link:focus {
           opacity: 1; }
-          .sidebar .panel li .link:hover:before, .sidebar .panel li .link:focus:before {
+          .sidebar .panel li .link:hover::before, .sidebar .panel li .link:focus::before {
             opacity: 0.2; }
-          .sidebar .panel li .link:hover .badges *:before, .sidebar .panel li .link:focus .badges *:before {
+          .sidebar .panel li .link:hover .badges *::before, .sidebar .panel li .link:focus .badges *::before {
             opacity: 1; }
-          .sidebar .panel li .link:hover .badges *:after, .sidebar .panel li .link:focus .badges *:after {
+          .sidebar .panel li .link:hover .badges *::after, .sidebar .panel li .link:focus .badges *::after {
             opacity: 0; }
         .sidebar .panel li .link:active {
           opacity: 1; }
-          .sidebar .panel li .link:active:before {
+          .sidebar .panel li .link:active::before {
             opacity: 0.4; }
-          .sidebar .panel li .link:active .badges *:before {
+          .sidebar .panel li .link:active .badges *::before {
             opacity: 1; }
-          .sidebar .panel li .link:active .badges *:after {
+          .sidebar .panel li .link:active .badges *::after {
             opacity: 0; }
-        .sidebar .panel li .link[data-selected="false"]:before {
+        .sidebar .panel li .link[data-selected="false"]::before {
           background-color: #000; }
         .sidebar .panel li .link[data-selected="false"] .badges * {
           color: #fff;
           text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.15); }
-          .sidebar .panel li .link[data-selected="false"] .badges *.new:before {
+          .sidebar .panel li .link[data-selected="false"] .badges *.new::before {
             background-color: #0057ff; }
-          .sidebar .panel li .link[data-selected="false"] .badges *.exp:before {
+          .sidebar .panel li .link[data-selected="false"] .badges *.exp::before {
             background-color: #ff8c00; }
         .sidebar .panel li .link[data-selected="true"] {
           opacity: 1; }
-          .sidebar .panel li .link[data-selected="true"]:before {
+          .sidebar .panel li .link[data-selected="true"]::before {
             opacity: 1; }
-          .sidebar .panel li .link[data-selected="true"] .badges *:before {
+          .sidebar .panel li .link[data-selected="true"] .badges *::before {
             opacity: 1; }
-          .sidebar .panel li .link[data-selected="true"] .badges *:after {
+          .sidebar .panel li .link[data-selected="true"] .badges *::after {
             opacity: 0; }
-          body[data-theme="main"] .sidebar .panel li .link[data-selected="true"]:before {
+          body[data-theme="main"] .sidebar .panel li .link[data-selected="true"]::before {
             background-color: #f00; }
-          body[data-theme="bl1"] .sidebar .panel li .link[data-selected="true"]:before {
+          body[data-theme="bl1"] .sidebar .panel li .link[data-selected="true"]::before {
             background-color: #dc143c; }
-          body[data-theme="bl2"] .sidebar .panel li .link[data-selected="true"]:before {
+          body[data-theme="bl2"] .sidebar .panel li .link[data-selected="true"]::before {
             background-color: #ff4500; }
-          body[data-theme="tps"] .sidebar .panel li .link[data-selected="true"]:before {
+          body[data-theme="tps"] .sidebar .panel li .link[data-selected="true"]::before {
             background-color: #1e90ff; }
           .sidebar .panel li .link[data-selected="true"] .badges * {
             color: #000; }
-            .sidebar .panel li .link[data-selected="true"] .badges *:before {
+            .sidebar .panel li .link[data-selected="true"] .badges *::before {
               background-color: #fff;
               border-color: #000; }
         .sidebar .panel li .link .fas {
@@ -229,9 +229,9 @@ Sidebar Styles
             position: relative;
             padding: 5px 10px;
             line-height: 1; }
-            .sidebar .panel li .link .badges .new:after, .sidebar .panel li .link .badges .exp:after {
+            .sidebar .panel li .link .badges .new::after, .sidebar .panel li .link .badges .exp::after {
               border: 1px solid; }
-            .sidebar .panel li .link .badges .new:before, .sidebar .panel li .link .badges .new:after, .sidebar .panel li .link .badges .exp:before, .sidebar .panel li .link .badges .exp:after {
+            .sidebar .panel li .link .badges .new::before, .sidebar .panel li .link .badges .new::after, .sidebar .panel li .link .badges .exp::before, .sidebar .panel li .link .badges .exp::after {
               position: absolute;
               top: 0;
               left: 0;

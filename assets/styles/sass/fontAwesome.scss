@@ -12,21 +12,21 @@ $fa-path: "../../fonts/FontAwesome";
   font-style: normal;
   font-weight: normal;
   src: url("#{$fa-path}/fa-brands-400.eot");
-  src: url("#{$fa-path}/fa-brands-400.eot?iefix") format("embedded-opentype"),
-       url("#{$fa-path}/fa-brands-400.woff") format("woff"),
-       url("#{$fa-path}/fa-brands-400.woff2") format("woff2"),
-       url("#{$fa-path}/fa-brands-400.ttf") format("truetype"),
-       url("#{$fa-path}/fa-brands-400.svg#fontawesome") format("svg");
+  src: url("#{$fa-path}/fa-brands-400.eot?iefix")        format("embedded-opentype"),
+       url("#{$fa-path}/fa-brands-400.woff")             format("woff"),
+       url("#{$fa-path}/fa-brands-400.woff2")            format("woff2"),
+       url("#{$fa-path}/fa-brands-400.ttf")              format("truetype"),
+       url("#{$fa-path}/fa-brands-400.svg#fontawesome")  format("svg");
 }
 @font-face {
   font-family: "Font Awesome 5 Free";
   font-style: normal;
   font-weight: 400;
   src: url("#{$fa-path}/fa-regular-400.eot");
-  src: url("#{$fa-path}/fa-regular-400.eot?iefix") format("embedded-opentype"),
-       url("#{$fa-path}/fa-regular-400.woff") format("woff"),
-       url("#{$fa-path}/fa-regular-400.woff2") format("woff2"),
-       url("#{$fa-path}/fa-regular-400.ttf") format("truetype"),
+  src: url("#{$fa-path}/fa-regular-400.eot?iefix")       format("embedded-opentype"),
+       url("#{$fa-path}/fa-regular-400.woff")            format("woff"),
+       url("#{$fa-path}/fa-regular-400.woff2")           format("woff2"),
+       url("#{$fa-path}/fa-regular-400.ttf")             format("truetype"),
        url("#{$fa-path}/fa-regular-400.svg#fontawesome") format("svg");
 }
 @font-face {
@@ -34,11 +34,11 @@ $fa-path: "../../fonts/FontAwesome";
   font-style: normal;
   font-weight: 900;
   src: url("#{$fa-path}/fa-solid-900.eot");
-  src: url("#{$fa-path}/fa-solid-900.eot?iefix") format("embedded-opentype"),
-       url("#{$fa-path}/fa-solid-900.woff") format("woff"),
-       url("#{$fa-path}/fa-solid-900.woff2") format("woff2"),
-       url("#{$fa-path}/fa-solid-900.ttf") format("truetype"),
-       url("#{$fa-path}/fasolid-900.svg#fontawesome") format("svg");
+  src: url("#{$fa-path}/fa-solid-900.eot?iefix")         format("embedded-opentype"),
+       url("#{$fa-path}/fa-solid-900.woff")              format("woff"),
+       url("#{$fa-path}/fa-solid-900.woff2")             format("woff2"),
+       url("#{$fa-path}/fa-solid-900.ttf")               format("truetype"),
+       url("#{$fa-path}/fasolid-900.svg#fontawesome")    format("svg");
 }
 
 /*** Font Styles ***/
@@ -66,7 +66,7 @@ $fa-path: "../../fonts/FontAwesome";
   @return #{"\"\\"}#{$fa-icon + "\""};
 }
 @mixin fa-icon($fa-icon-code) {
-  content: fa-set($fa-icon-code);
+  &::before { content: fa-set($fa-icon-code); }
 }
 
 @import 'partials/_fontAwesomeIcons';

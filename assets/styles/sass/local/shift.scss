@@ -8,7 +8,7 @@
 /*** Mixins ***/
 @mixin badgePulse($color) {
   66.6%, 100% { box-shadow: none; }
-  83.3% { box-shadow: 0 0 1.5em $color; }
+  83.3%       { box-shadow: 0 0 1.5em $color; }
 }
 @mixin lowerPanelSection($start) {
   .separator    { grid-row: $start; }
@@ -76,9 +76,7 @@
   .feed .panel {
     @include panelLayout(standard);
 
-    .header .top {
-      font-size: 1.5em;
-    }
+    .header .top { font-size: 1.5em; }
   }
 }
 @media screen and (max-width: 549px) {
@@ -136,7 +134,7 @@
   font-size: 1.25em;
 
   .content-wrapper {
-    @include flex(c, sb);
+    @include flex(sb, c);
     padding: 12px 16px;
 
     .section {
@@ -160,23 +158,20 @@
           &.new   { background-color: $badge-new; }
           &.exp   { background-color: $badge-exp; }
           &.new, &.exp {
-            &:before, &:after {
-              @include pseudo-fit;
-              transition: opacity $trd;
-            }
-            &:before { background-color: #000; }
-            &:after {
+            &::before, &::after { @include fill(true, false, true); }
+            &::before { background-color: #000; }
+            &::after {
               border: 2px solid;
               border-radius: 4px;
             }
             &:not(.inactive) {
-              &[data-pressed="false"]:after { opacity: 0; }
-              &[data-pressed="true"]:after  { opacity: 1; }
-              &:not(:hover):not(:focus):before { opacity: 0; }
+              &[data-pressed="false"]::after { opacity: 0; }
+              &[data-pressed="true"]::after  { opacity: 1; }
+              &:not(:hover):not(:focus)::before { opacity: 0; }
               &:hover, &:focus {
                 cursor: pointer;
 
-                &:before { opacity: 0.25; }
+                &::before { opacity: 0.25; }
               }
               &:active { opacity: 0.75; }
             }
@@ -184,7 +179,7 @@
           &.inactive {
             opacity: 0.5;
 
-            &:before, &:after { opacity: 0; }
+            &::before, &::after { opacity: 0; }
           }
           &[disabled] { pointer-events: auto; }
 
@@ -198,9 +193,7 @@
             background-color: tpb(0.2);
             font-weight: 600;
           }
-          .fas {
-            font-size: 0.9em;
-          }
+          .fas { font-size: 0.9em; }
         }
       }
       &.sort {
@@ -218,21 +211,17 @@
           overflow: hidden;
           transition: opacity $trd;
 
-          &:before {
-            @include pseudo-fit;
-            background-color: #fff;
-            transition: opacity $trd;
-          }
+          &::before { @include fill(true, #fff, true); }
 
           &[data-pressed="false"] {
-            &:not(:hover):not(:focus):before  { opacity: 0.2; }
-            &:hover, &:focus       { &:before { opacity: 0.4; } }
+            &:not(:hover):not(:focus)::before  { opacity: 0.2; }
+            &:hover, &:focus       { &::before { opacity: 0.4; } }
             &:active                          { opacity: 0.75; }
           }
           &[data-pressed="true"] {
             opacity: 0.75;
 
-            &:before { opacity: 0.4; }
+            &::before { opacity: 0.4; }
           }
 
           .fas { position: relative; }
@@ -287,17 +276,13 @@
               transition: opacity $trd;
               cursor: pointer;
 
-              &:before {
-                @include pseudo-fit;
-                background-color: #000;
-                transition: opacity $trd;
-              }
+              &::before { @include fill(true, #000, true); }
 
               &[data-pressed="true"] {
                 color: #fff;
                 @include dynamicTheme-bgColor;
 
-                &:before { opacity: 0; }
+                &::before { opacity: 0; }
               }
               &[data-pressed="false"] {
                 color: $site-color-lighter;
@@ -306,14 +291,14 @@
                 &:not(:hover):not(:focus) {
                   opacity: 0.8;
 
-                  &:before { opacity: 0; }
+                  &::before { opacity: 0; }
                 }
                 &:hover, &:focus {
                   opacity: 1;
 
-                  &:before { opacity: 0.15; }
+                  &::before { opacity: 0.15; }
                 }
-                &:active:before { opacity: 0.3; }
+                &:active::before { opacity: 0.3; }
               }
 
               span { position: relative; }
@@ -330,17 +315,10 @@
   padding: 32px 16px 64px;
 
   .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     @include flex;
-    transition: opacity $trd;
+    @include fill(false, false, true);
 
-    &[hidden], > *[hidden] {
-      display: inherit;
-    }
+    &[hidden], > *[hidden] { display: inherit; }
     &:not([hidden]) {
       opacity: 1;
       z-index: 1;
@@ -350,31 +328,21 @@
       z-index: -1;
     }
 
-    .spinner, .error {
-      position: absolute;
-    }
+    .spinner, .error { position: absolute; }
     .spinner {
       transform: scale(1.5);
       transition: opacity $trd;
 
-      &:not([hidden]) {
-        opacity: 1;
-      }
-      &[hidden] {
-        opacity: 0;
-      }
+      &:not([hidden]) { opacity: 1; }
+      &[hidden]       { opacity: 0; }
     }
     .error {
       text-align: center;
       font-weight: 600;
       transition: opacity $trd;
 
-      &:not([hidden]) {
-        opacity: 0.25;
-      }
-      &[hidden] {
-        opacity: 0;
-      }
+      &:not([hidden]) { opacity: 0.25; }
+      &[hidden]       { opacity: 0; }
 
       .fas {
         font-size: 2em;
@@ -390,9 +358,8 @@
     overflow: hidden;
     animation: fadeIn 0.4s linear forwards;
 
-    &:before {
-      @include pseudo-fit;
-      background-color: $site-color-lighter;
+    &::before {
+      @include fill(true, $site-color-lighter);
       border: 2px solid;
       border-radius: 4px;
     }
@@ -405,27 +372,27 @@
       .body  { display: grid; }
     }
     &:not([data-filtered="true"]) {
-      &:before { opacity: 1; }
+      &::before { opacity: 1; }
 
       .flag   { opacity: 1; }
       .header { opacity: 1; }
     }
     &[data-filtered="true"] {
-      &:before { opacity: 0.5; }
+      &::before { opacity: 0.5; }
 
       .flag   { opacity: 0.25; }
       .header { opacity: 0.25; }
     }
     &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
     &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
-    &:not(.new):not(.exp):before { border-color: $site-color-darker; }
-    &.new:before                 { border-color: $badge-new; }
-    &.exp:before                 { border-color: $badge-exp; }
+    &:not(.new):not(.exp)::before { border-color: $site-color-darker; }
+    &.new::before                 { border-color: $badge-new; }
+    &.exp::before                 { border-color: $badge-exp; }
     &:not(:last-child) { margin-bottom: 1.5em; }
 
     > * { position: relative; }
     .filter-overlay {
-      @include pseudo-fit;
+      @include fill(true, false, true);
       @include flex;
       font-size: 1em;
       line-height: 1;
@@ -454,22 +421,19 @@
           border-radius: 4px;
           transition: opacity $trd;
 
-          &:before, &:after {
-            @include pseudo-fit;
-            transition: opacity $trd;
-          }
-          &:before { background-color: #fff; }
-          &:after {
+          &::before, &::after { @include fill(true, false, true); }
+          &::before { background-color: #fff; }
+          &::after {
             @include flex;
             color: $site-color-dark;
             content: "Click to Remove";
           }
 
           &:not(:hover):not(:focus) {
-            &:before, &:after { opacity: 0; }
+            &::before, &::after { opacity: 0; }
           }
           &:hover, &:focus {
-            &:before, &:after { opacity: 1; }
+            &::before, &::after { opacity: 1; }
           }
           &:active            { opacity: 0.75; }
         }
@@ -489,12 +453,8 @@
       transform: rotate(-45deg) translate(-1em, -1.55em);
       z-index: 1;
 
-      &.new {
-        background-color: $badge-new;
-      }
-      &.exp {
-        background-color: $badge-exp;
-      }
+      &.new { background-color: $badge-new; }
+      &.exp { background-color: $badge-exp; }
 
       .fas {
         position: relative;
@@ -504,7 +464,7 @@
       }
     }
     .hashTargetOverlay {
-      @include pseudo-fit;
+      @include fill(true);
       border: 2px solid;
       border-radius: 4px;
       opacity: 0;
@@ -532,12 +492,8 @@
           .reward {
             font-weight: 600;
 
-            &:not(.long) {
-              font-size: 1em;
-            }
-            &.long {
-              font-size: 0.85em;
-            }
+            &:not(.long) { font-size: 1em;  }
+            &.long { font-size: 0.85em; }
           }
           .description {
             opacity: .5;
@@ -618,7 +574,7 @@
           &.inactive { display: none; }
 
           .content {
-            @include flex(c, s, c, true);
+            @include flex(s, c, c, true);
             list-style: disc inside;
 
             li {
@@ -629,9 +585,7 @@
           }
         }
         &.exp, &.src {
-          .content.inactive {
-            color: tpw(0.5);
-          }
+          .content.inactive { color: tpw(0.5); }
         }
 
         .title {
@@ -642,7 +596,7 @@
         }
         .content {
           position: relative;
-          @include flex(c, s, none, true);
+          @include flex(s, c, none, true);
           grid-column: 1;
           grid-row: 2;
           color: inherit;
@@ -654,17 +608,12 @@
           background-color: tpb(0.25);
           overflow: hidden;
 
-          &:not(:hover) .copy {
-            opacity: 0;
-          }
-          &:hover .copy {
-            opacity: 1;
-          }
+          &:not(:hover) .copy { opacity: 0; }
+          &:hover .copy       { opacity: 1; }
 
           a {
-            color: inherit;
+            @include unstyledLink;
             opacity: 1;
-            text-decoration: none;
             width: 100%;
             word-wrap: break-word;
 
@@ -696,16 +645,12 @@
             padding: 8px;
             transition: opacity $trd;
 
-            &:before {
-              @include pseudo-fit;
-              background-color: #fff;
-              transition: opacity $trd;
-            }
+            &::before { @include fill(true, #fff, true); }
             &.animated .fas { animation: copiedToClipboard 0.5s linear; }
 
-            &:not(:hover):not(:focus):before { opacity: 0.3; }
+            &:not(:hover):not(:focus)::before { opacity: 0.3; }
             &:hover, &:focus {
-              &:before                       { opacity: 0.5; }
+              &::before                       { opacity: 0.5; }
             }
             &:focus                          { opacity: 1; }
             &:active                         { opacity: 0.75; }

@@ -16,19 +16,10 @@ Sidebar Styles
   right: 0;
   z-index: 101;
 
-  &:before {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    content: "";
-    background-color: tpb(0.5);
-    transition: opacity $trd;
-  }
+  &::before { @include fill(true, tpb(0.5), true); }
 
   &[data-expanded="false"] {
-    &:before { opacity: 0; }
+    &::before { opacity: 0; }
 
     .panel {
       transform: translateX(calc(-100% - 0.5em));
@@ -36,7 +27,7 @@ Sidebar Styles
     }
   }
   &[data-expanded="true"] {
-    &:before { opacity: 1; }
+    &::before { opacity: 1; }
 
     .panel {
       transform: translateX(0);
@@ -71,9 +62,7 @@ Sidebar Styles
       overflow: hidden;
 
       .toggle {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        @include flex(c, c, none, false, inline);
         height: 64px;
         width: 64px;
 
@@ -87,40 +76,36 @@ Sidebar Styles
         }
       }
       .brand {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: inherit;
-        text-decoration: none;
+        @include flex(c, c, none, false, inline);
+        @include unstyledLink;
         height: 64px;
         padding: 12px 16px;
         font-size: 1.5em;
 
         &:not(:hover):not(:focus) .name {
-          &:before, &:after { opacity: 0; }
+          &::before, &::after { opacity: 0; }
         }
         &:hover, &:focus {
           .name {
-            &:before { opacity: 1; }
-            &:after  { opacity: 0; }
+            &::before { opacity: 1; }
+            &::after  { opacity: 0; }
           }
         }
         &:active .name {
-          &:before { opacity: 0; }
-          &:after  { opacity: 1; }
+          &::before { opacity: 0; }
+          &::after  { opacity: 1; }
         }
 
         .name {
           position: relative;
           padding: 4px 0;
 
-          &:before, &:after {
-            @include pseudo-fit;
+          &::before, &::after {
+            @include fill(true, false, true);
             border-bottom: 2px solid;
-            transition: opacity $trd;
           }
-          &:before { @include dynamicTheme-borderColor; }
-          &:after  { border-color: #fff; }
+          &::before { @include dynamicTheme-borderColor; }
+          &::after  { border-color: #fff; }
 
           .focus {
             @include dynamicTheme-color;
@@ -133,58 +118,48 @@ Sidebar Styles
       line-height: 0;
 
       .link {
+        @include unstyledLink;
         display: grid;
         grid-template-columns: 64px 1fr;
         position: relative;
         padding: 16px 32px 16px 0;
         line-height: $df-line-height;
-        color: inherit;
-        text-decoration: none;
         transition: opacity $trd;
 
-        &:before {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          content: "";
-          background-color: #000;
-          transition: opacity $trd;
-        }
+        &::before { @include fill(true, #000, true); }
 
         @mixin linkStyles($link-fg, $link-bg, $badge-bg, $badge-bd) {
           opacity: $link-fg;
 
-          &:before { opacity: $link-bg; }
+          &::before { opacity: $link-bg; }
 
-          .badges *:before { opacity: $badge-bg; }
-          .badges *:after  { opacity: $badge-bd; }
+          .badges *::before { opacity: $badge-bg; }
+          .badges *::after  { opacity: $badge-bd; }
         }
 
         &:not(:hover):not(:focus)[data-selected="false"] { @include linkStyles(0.75, 0, 0, 1); }
-        &:hover, &:focus { @include linkStyles(1, 0.2, 1, 0); }
-        &:active { @include linkStyles(1, 0.4, 1, 0); }
+        &:hover, &:focus                                 { @include linkStyles(1, 0.2, 1, 0); }
+        &:active                                         { @include linkStyles(1, 0.4, 1, 0); }
         &[data-selected="false"] {
-          &:before { background-color: #000; }
+          &::before { background-color: #000; }
 
           .badges * {
             color: #fff;
             text-shadow: dropShadow(tpb(0.15));
 
-            &.new:before { background-color: $badge-new; }
-            &.exp:before { background-color: $badge-exp; }
+            &.new::before { background-color: $badge-new; }
+            &.exp::before { background-color: $badge-exp; }
           }
         }
         &[data-selected="true"] {
           @include linkStyles(1, 1, 1, 0);
 
-          &:before { @include dynamicTheme-bgColor; }
+          &::before { @include dynamicTheme-bgColor; }
 
           .badges * {
             color: #000;
 
-            &:before {
+            &::before {
               background-color: #fff;
               border-color: #000;
             }
@@ -192,9 +167,7 @@ Sidebar Styles
         }
 
         .fas {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          @include flex;
           grid-column: 1;
           position: relative;
           width: 64px;
@@ -209,9 +182,7 @@ Sidebar Styles
           font-size: 1.25em;
         }
         .badges {
-          display: flex;
-          align-items: center;
-          justify-content: flex-start;
+          @include flex(s, c);
           grid-column: 2;
           position: relative;
           padding: 2px 16px;
@@ -223,11 +194,8 @@ Sidebar Styles
             padding: 5px 10px;
             line-height: 1;
 
-            &:after { border: 1px solid; }
-            &:before, &:after {
-              @include pseudo-fit;
-              transition: opacity $trd;
-            }
+            &::after { border: 1px solid; }
+            &::before, &::after {  @include fill(true, false, true); }
             &:not(:last-child) { margin-right: 4px; }
 
             span { position: relative; }

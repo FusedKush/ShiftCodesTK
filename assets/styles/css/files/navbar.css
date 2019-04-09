@@ -23,29 +23,29 @@
     height: 64px;
     overflow: hidden;
     z-index: 100; }
-    .navbar-container .navbar[data-at-top="true"]:before {
+    .navbar-container .navbar[data-at-top="true"]::before {
       opacity: 0; }
     .navbar-container .navbar[data-at-top="true"] .bubble-dynamic {
       background-color: #fff; }
-    .navbar-container .navbar[data-at-top="false"]:before {
+    .navbar-container .navbar[data-at-top="false"]::before {
       opacity: 1; }
     .navbar-container .navbar[data-at-top="false"] .bubble-dynamic {
       background-color: #000; }
-    .navbar-container .navbar:before {
+    .navbar-container .navbar::before {
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
       content: "";
-      transition: opacity 0.25s ease-out; }
-      body[data-theme="main"] .navbar-container .navbar:before {
+      transition: opacity 0.2s ease-out; }
+      body[data-theme="main"] .navbar-container .navbar::before {
         background-color: #f00; }
-      body[data-theme="bl1"] .navbar-container .navbar:before {
+      body[data-theme="bl1"] .navbar-container .navbar::before {
         background-color: #dc143c; }
-      body[data-theme="bl2"] .navbar-container .navbar:before {
+      body[data-theme="bl2"] .navbar-container .navbar::before {
         background-color: #ff4500; }
-      body[data-theme="tps"] .navbar-container .navbar:before {
+      body[data-theme="tps"] .navbar-container .navbar::before {
         background-color: #1e90ff; }
     .navbar-container .navbar .content-wrapper {
       display: grid;
@@ -72,11 +72,11 @@
           transition: color 0.2s ease-out; }
           .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus):not([data-pressed]) .fas, .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus)[data-pressed="false"] .fas {
             opacity: 0.75; }
-          .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus):not([data-pressed]) .logo:after, .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus)[data-pressed="false"] .logo:after {
+          .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus):not([data-pressed]) .logo::after, .navbar-container .navbar .content-wrapper * li .btn:not(:hover):not(:focus)[data-pressed="false"] .logo::after {
             opacity: 0; }
           .navbar-container .navbar .content-wrapper * li .btn:hover .fas, .navbar-container .navbar .content-wrapper * li .btn:focus .fas, .navbar-container .navbar .content-wrapper * li .btn[data-pressed="true"] .fas {
             opacity: 1; }
-          .navbar-container .navbar .content-wrapper * li .btn:hover .logo:after {
+          .navbar-container .navbar .content-wrapper * li .btn:hover .logo::after {
             opacity: 1; }
           .navbar-container .navbar .content-wrapper * li .btn .fas {
             position: relative;
@@ -92,7 +92,7 @@
             background-size: cover;
             height: 26px;
             width: 26px; }
-            .navbar-container .navbar .content-wrapper * li .btn .logo:after {
+            .navbar-container .navbar .content-wrapper * li .btn .logo::after {
               position: absolute;
               height: calc(100% + 4px);
               width: calc(100% + 4px);

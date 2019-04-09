@@ -43,63 +43,63 @@
 /*********************************
   FontAwesome Icons
 *********************************/
-.fa-arrow-circle-up:before {
+.fa-arrow-circle-up::before {
   content: "\f0aa"; }
-.fa-arrow-alt-circle-up:before {
+.fa-arrow-alt-circle-up::before {
   content: "\f35b"; }
-.fa-bars:before {
+.fa-bars::before {
   content: "\f0c9"; }
-.fa-gamepad:before {
+.fa-gamepad::before {
   content: "\f11b"; }
-.fa-heart:before {
+.fa-heart::before {
   content: "\f004"; }
-.fa-code:before {
+.fa-code::before {
   content: "\f121"; }
-.fa-bug:before {
+.fa-bug::before {
   content: "\f188"; }
-.fa-star:before {
+.fa-star::before {
   content: "\f005"; }
-.fa-exclamation-triangle:before {
+.fa-exclamation-triangle::before {
   content: "\f071"; }
-.fa-key:before {
+.fa-key::before {
   content: "\f084"; }
-.fa-clipboard:before {
+.fa-clipboard::before {
   content: "\f328"; }
-.fa-heart-broken:before {
+.fa-heart-broken::before {
   content: "\f7a9"; }
-.fa-external-link-square-alt:before {
+.fa-external-link-square-alt::before {
   content: "\f360"; }
-.fa-times:before {
+.fa-times::before {
   content: "\f00d"; }
-.fa-sort-amount-up:before {
+.fa-sort-amount-up::before {
   content: "\f161"; }
-.fa-sort-amount-down:before {
+.fa-sort-amount-down::before {
   content: "\f160"; }
-.fa-twitter:before {
+.fa-twitter::before {
   content: "\f099"; }
-.fa-twitter-square:before {
+.fa-twitter-square::before {
   content: "\f081"; }
-.fa-facebook-square:before {
+.fa-facebook-square::before {
   content: "\f082"; }
-.fa-facebook-messenger:before {
+.fa-facebook-messenger::before {
   content: "\f39f"; }
-.fa-font-awesome-flag:before {
+.fa-font-awesome-flag::before {
   content: "\f425"; }
-.fa-spinner:before {
+.fa-spinner::before {
   content: "\f110"; }
-.fa-award:before {
+.fa-award::before {
   content: "\f559"; }
-.fa-tools:before {
+.fa-tools::before {
   content: "\f7d9"; }
-.fa-cogs:before {
+.fa-cogs::before {
   content: "\f085"; }
-.fa-broadcast-tower:before {
+.fa-broadcast-tower::before {
   content: "\f519"; }
-.fa-chevron-circle-down:before {
+.fa-chevron-circle-down::before {
   content: "\f13a"; }
-.fa-filter:before {
+.fa-filter::before {
   content: "\f0b0"; }
-.fa-caret-down:before {
+.fa-caret-down::before {
   content: "\f0d7"; }
-.fa-question:before {
+.fa-question::before {
   content: "\f128"; }

@@ -42,9 +42,7 @@
   }
 }
 @media screen and (min-width: 675px) {
-  .banner .content-container .button-group {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  .banner .content-container .button-group { grid-template-columns: repeat(3, 1fr); }
 }
 
 /*** Style Declarations ***/
@@ -57,25 +55,17 @@
   background-position: center;
   background-size: cover;
 
-  &:before {
-    @include pseudo-fit;
-    background-color: tpb(0.6);
-  }
+  &::before { @include fill(true, tpb(0.6)); }
 
   .content-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    @include flex(c, c, c);
     position: relative;
     height: 100%;
     width: 100%;
     padding: 16px;
 
     .title {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
+      @include flex(c, none, c);
       margin-bottom: 8px;
       position: relative;
       text-align: center;
@@ -104,14 +94,11 @@
       min-width: 90%;
 
       a {
+        @include flex;
+        @include unstyledLink;
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         flex: 1;
-        color: inherit;
         line-height: 1;
-        text-decoration: none;
         text-align: center;
         border-radius: 4px;
         background-position: center;
@@ -120,32 +107,27 @@
         margin: 0.25em;
         padding: 0.6em;
 
-        &:before, &:after {
-          @include pseudo-fit;
-          border: 2px solid;
-          border-radius: 4px;
-          transition: opacity $trd;
-        }
-        &.bl1:before {
-          background-color: $theme-bl1;
-          border-color: $theme-bl1;
-        }
-        &.bl2:before {
-          background-color: $theme-bl2;
-          border-color: $theme-bl2;
-        }
-        &.tps:before {
-          background-color: $theme-tps;
-          border-color: $theme-tps;
+        @mixin indexButtonLinkThemes($color) {
+          background-color: $color;
+          border-color: $color;
         }
 
+        &::before, &::after {
+          @include fill(true, false, true);
+          border: 2px solid;
+          border-radius: 4px;
+        }
+        &.bl1::before { @include indexButtonLinkThemes($theme-bl1); }
+        &.bl2::before { @include indexButtonLinkThemes($theme-bl2); }
+        &.tps::before { @include indexButtonLinkThemes($theme-tps); }
+
         &:not(:hover):not(:focus) {
-          &:before { opacity: 0; }
-          &:after  { opacity: 1; }
+          &::before { opacity: 0; }
+          &::after  { opacity: 1; }
         }
         &:hover, &:focus {
-          &:before { opacity: 1; }
-          &:after  { opacity: 0; }
+          &::before { opacity: 1; }
+          &::after  { opacity: 0; }
         }
         &:active { opacity: 0.75; }
 

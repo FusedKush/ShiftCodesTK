@@ -49,7 +49,7 @@
   .banner * {
     opacity: 1;
     transition: opacity 0.2s ease-out; }
-  .banner:before {
+  .banner::before {
     position: absolute;
     top: 0;
     left: 0;
@@ -92,14 +92,14 @@
       padding-top: 8px;
       min-width: 90%; }
       .banner .content-container .button-group a {
-        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex: 1;
         color: inherit;
-        line-height: 1;
         text-decoration: none;
+        position: relative;
+        flex: 1;
+        line-height: 1;
         text-align: center;
         border-radius: 4px;
         background-position: center;
@@ -107,32 +107,32 @@
         font-size: 0.9em;
         margin: 0.25em;
         padding: 0.6em; }
-        .banner .content-container .button-group a:before, .banner .content-container .button-group a:after {
+        .banner .content-container .button-group a::before, .banner .content-container .button-group a::after {
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
           content: "";
+          transition: opacity 0.2s ease-out;
           border: 2px solid;
-          border-radius: 4px;
-          transition: opacity 0.2s ease-out; }
-        .banner .content-container .button-group a.bl1:before {
+          border-radius: 4px; }
+        .banner .content-container .button-group a.bl1::before {
           background-color: #dc143c;
           border-color: #dc143c; }
-        .banner .content-container .button-group a.bl2:before {
+        .banner .content-container .button-group a.bl2::before {
           background-color: #ff4500;
           border-color: #ff4500; }
-        .banner .content-container .button-group a.tps:before {
+        .banner .content-container .button-group a.tps::before {
           background-color: #1e90ff;
           border-color: #1e90ff; }
-        .banner .content-container .button-group a:not(:hover):not(:focus):before {
+        .banner .content-container .button-group a:not(:hover):not(:focus)::before {
           opacity: 0; }
-        .banner .content-container .button-group a:not(:hover):not(:focus):after {
+        .banner .content-container .button-group a:not(:hover):not(:focus)::after {
           opacity: 1; }
-        .banner .content-container .button-group a:hover:before, .banner .content-container .button-group a:focus:before {
+        .banner .content-container .button-group a:hover::before, .banner .content-container .button-group a:focus::before {
           opacity: 1; }
-        .banner .content-container .button-group a:hover:after, .banner .content-container .button-group a:focus:after {
+        .banner .content-container .button-group a:hover::after, .banner .content-container .button-group a:focus::after {
           opacity: 0; }
         .banner .content-container .button-group a:active {
           opacity: 0.75; }

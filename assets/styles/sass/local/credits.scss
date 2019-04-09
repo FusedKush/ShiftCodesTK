@@ -46,8 +46,7 @@
 .credits {
   @include ready;
 
-  display: flex;
-  flex-wrap: wrap;
+  @include flex(none, none, none, true);
   overflow: hidden;
 
   .banner .header .flag , .module .header .icon {
@@ -74,16 +73,11 @@
     }
 
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flex;
       padding: 16px;
 
       .flag {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
+        @include flex(c, c, none, true);
         text-align: center;
         padding: 16px;
         font-size: 1.25em;
@@ -108,33 +102,28 @@
     }
   }
   .module {
+    @include unstyledLink;
     position: relative;
     flex: 1;
     padding: 16px;
     margin: 8px;
-    color: inherit;
     background-color: $site-color-lighter;
     border: 2px solid $site-color-dark;
     border-radius: 4px;
-    text-decoration: none;
     transition: transform $trd;
 
-    &:before, .header .icon:before {
-      @include pseudo-fit;
-      background-color: #000;
-      transition: opacity $trd;
-    }
+    &::before, .header .icon::before { @include fill(true, #000, true); }
 
     &:not(:hover):not(:focus) {
 
-      &:before              { opacity: 0.2; }
-      .header .icon:before  { opacity: 0; }
+      &::before              { opacity: 0.2; }
+      .header .icon::before  { opacity: 0; }
     }
     &:hover, &:focus {
 
-      &:before              { opacity: 0; }
+      &::before              { opacity: 0; }
       .header .icon {
-        &:before            { opacity: 0.2; }
+        &::before            { opacity: 0.2; }
         .fa-font-awesome-flag { animation-name: fontAwesomeAnimation; }
         .fa-spinner           { animation-name: loadingIoAnimation; }
       }
@@ -142,17 +131,13 @@
     &:active { transform: scale(0.9); }
 
     .header {
+      @include flex(s, c);
       position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
       padding: 8px;
 
       .icon {
+        @include flex;
         position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         font-size: 1.75em;
         height: 1.75em;
         width: 1.75em;

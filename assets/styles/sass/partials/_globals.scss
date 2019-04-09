@@ -82,25 +82,35 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @else if $type == inline { display: inline-flex; }
 
   @if $direction == none or $direction == r or $direction == rr {
-    align-items: getFlexAlignment($horizontal);
-    justify-content: getFlexAlignment($vertical);
+    @if $vertical != none   { align-items: getFlexAlignment($vertical); }
+    @if $horizontal != none { justify-content: getFlexAlignment($horizontal); }
   }
   @else if $direction == c or $direction == cr {
-    align-items: getFlexAlignment($vertical);
-    justify-content: getFlexAlignment($horizontal);
+    @if $horizontal != none { align-items: getFlexAlignment($horizontal); }
+    @if $vertical != none   { justify-content: getFlexAlignment($vertical); }
   }
 
   @if $direction != none { flex-direction: getFlexDirection($direction); }
   @if $wrap != false     { flex-wrap: wrap; }
 }
-// Pseduo-Fit
-@mixin pseudo-fit {
+// Stretch to fill Parent Container
+@mixin fill ($pseudo: false, $background: false, $animated: false) {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  content: "";
+
+  @if $pseudo == true      { content: ""; }
+  @if $background != false { background-color: $background; }
+  @if $animated == true    { transition: opacity $trd; }
+}
+// Mixin for backwards-compatibility;
+@mixin pseudo-fit { @include fill(true); }
+// Unstyled Link
+@mixin unstyledLink {
+  color: inherit;
+  text-decoration: none;
 }
 // Dynamic Theme Colors
 @mixin dynamicTheme-color {

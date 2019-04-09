@@ -3,34 +3,34 @@
 *********************************/
 
 .fa {
-  &-arrow-circle-up:before            { @include fa-icon(f0aa); }
-  &-arrow-alt-circle-up:before        { @include fa-icon(f35b); }
-  &-bars:before                       { @include fa-icon(f0c9); }
-  &-gamepad:before                    { @include fa-icon(f11b); }
-  &-heart:before                      { @include fa-icon(f004); }
-  &-code:before                       { @include fa-icon(f121); }
-  &-bug:before                        { @include fa-icon(f188); }
-  &-star:before                       { @include fa-icon(f005); }
-  &-exclamation-triangle:before       { @include fa-icon(f071); }
-  &-key:before                        { @include fa-icon(f084); }
-  &-clipboard:before                  { @include fa-icon(f328); }
-  &-heart-broken:before               { @include fa-icon(f7a9); }
-  &-external-link-square-alt:before   { @include fa-icon(f360); }
-  &-times:before                      { @include fa-icon(f00d); }
-  &-sort-amount-up:before             { @include fa-icon(f161); }
-  &-sort-amount-down:before           { @include fa-icon(f160); }
-  &-twitter-square:before             { @include fa-icon(f081); }
-  &-facebook-square:before            { @include fa-icon(f082); }
-  &-font-awesome-flag:before          { @include fa-icon(f425); }
-  &-spinner:before                    { @include fa-icon(f110); }
-  &-award:before                      { @include fa-icon(f559); }
-  &-tools:before                      { @include fa-icon(f7d9); }
-  &-cogs:before                       { @include fa-icon(f085); }
-  &-broadcast-tower:before            { @include fa-icon(f519); }
-  &-chevron-circle-down:before        { @include fa-icon(f13a); }
-  &-filter:before                     { @include fa-icon(f0b0); }
-  &-caret-down:before                 { @include fa-icon(f0d7); }
+  &-arrow-circle-up            { @include fa-icon(f0aa); }
+  &-arrow-alt-circle-up        { @include fa-icon(f35b); }
+  &-bars                       { @include fa-icon(f0c9); }
+  &-gamepad                    { @include fa-icon(f11b); }
+  &-heart                      { @include fa-icon(f004); }
+  &-code                       { @include fa-icon(f121); }
+  &-bug                        { @include fa-icon(f188); }
+  &-star                       { @include fa-icon(f005); }
+  &-exclamation-triangle       { @include fa-icon(f071); }
+  &-key                        { @include fa-icon(f084); }
+  &-clipboard                  { @include fa-icon(f328); }
+  &-heart-broken               { @include fa-icon(f7a9); }
+  &-external-link-square-alt   { @include fa-icon(f360); }
+  &-times                      { @include fa-icon(f00d); }
+  &-sort-amount-up             { @include fa-icon(f161); }
+  &-sort-amount-down           { @include fa-icon(f160); }
   &-twitter                    { @include fa-icon(f099); }
+  &-twitter-square             { @include fa-icon(f081); }
+  &-facebook-square            { @include fa-icon(f082); }
   &-facebook-messenger         { @include fa-icon(f39f); }
+  &-font-awesome-flag          { @include fa-icon(f425); }
+  &-spinner                    { @include fa-icon(f110); }
+  &-award                      { @include fa-icon(f559); }
+  &-tools                      { @include fa-icon(f7d9); }
+  &-cogs                       { @include fa-icon(f085); }
+  &-broadcast-tower            { @include fa-icon(f519); }
+  &-chevron-circle-down        { @include fa-icon(f13a); }
+  &-filter                     { @include fa-icon(f0b0); }
+  &-caret-down                 { @include fa-icon(f0d7); }
   &-question                   { @include fa-icon(f128); }
 }

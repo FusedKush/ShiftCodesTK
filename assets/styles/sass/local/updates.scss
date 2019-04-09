@@ -44,8 +44,7 @@
       flex-direction: row;
       align-items: center;
 
-      .date, .type { display: inline; }
-      .separator { display: inline; }
+      .date, .type, .separator { display: inline; }
     }
   }
 }
@@ -69,7 +68,7 @@
   font-size: 1.25em;
 
   .content-wrapper {
-    @include flex(c, sb);
+    @include flex(sb, c);
     padding: 12px 16px;
 
     .section {
@@ -85,9 +84,8 @@
         span {
           span { opacity: 0.75; }
           a {
-            color: inherit;
+            @include unstyledLink;
             padding-left: 0.25em;
-            text-decoration: none;
             transition: opacity $trd;
 
             &:not(:hover):not(:focus) { opacity: 0.75; }
@@ -109,21 +107,23 @@
           overflow: hidden;
           transition: opacity $trd;
 
-          &:before {
+          &::before {
             @include pseudo-fit;
             background-color: #fff;
             transition: opacity $trd;
           }
 
           &[data-pressed="false"] {
-            &:not(:hover):not(:focus):before  { opacity: 0.2; }
-            &:hover, &:focus       { &:before { opacity: 0.4; } }
+            &:not(:hover):not(:focus)::before  { opacity: 0.2; }
+            &:hover, &:focus {
+              &::before                        { opacity: 0.4; }
+            }
             &:active                          { opacity: 0.75; }
           }
           &[data-pressed="true"] {
             opacity: 0.75;
 
-            &:before { opacity: 0.4; }
+            &::before { opacity: 0.4; }
           }
 
           .fas {
@@ -176,31 +176,28 @@
               opacity: 0.35;
             }
             li a {
+              @include unstyledLink;
               position: relative;
               display: inline-block;
               width: 100%;
               font-size: 0.9em;
               text-align: left;
-              color: inherit;
-              text-decoration: none;
               transition: opacity $trd;
               cursor: pointer;
 
-              &:before {
-                @include pseudo-fit;
-                background-color: #000;
-                transition: opacity $trd;
-              }
+              &::before { @include fill(true, #000, true); }
 
               &:not(:hover):not(:focus) {
                 opacity: 0.8;
-                &:before { opacity: 0; }
+
+                &::before       { opacity: 0; }
               }
               &:hover, &:focus {
                 opacity: 1;
-                &:before { opacity: 0.15; }
+
+                &::before       { opacity: 0.15; }
               }
-              &:active:before  { opacity: 0.3; }
+              &:active::before  { opacity: 0.3; }
 
               span { position: relative; }
             }
@@ -212,9 +209,7 @@
 }
 main {
   position: relative;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
+  @include flex(none, none, c);
   padding: 32px 16px 64px;
   overflow: hidden;
 
@@ -226,9 +221,8 @@ main {
     animation: fadeIn 0.4s linear forwards;
     overflow: hidden;
 
-    &:before {
-      @include pseudo-fit;
-      background-color: $site-color-lighter;
+    &::before {
+      @include fill(true, $site-color-lighter);
       border: 2px solid $site-color-darker;
       border-radius: 4px;
     }
@@ -246,7 +240,7 @@ main {
     &:not(:last-child) { margin-bottom: 1.5em; }
 
     .hashTargetOverlay {
-      @include pseudo-fit;
+      @include fill(true);
       border: 2px solid;
       border-radius: 4px;
       opacity: 0;
@@ -264,8 +258,7 @@ main {
       }
       > .icon, .title { align-self: center; }
       > .icon {
-        display: inline-flex;
-        justify-content: center;
+        @include flex(c, none, none, false, inline);
         grid-column: 1;
         font-size: 1.5em;
       }

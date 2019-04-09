@@ -64,7 +64,7 @@
   100% {
     transform: scale(0); } }
 /*** Global Declarations ***/
-*, :before, :after {
+*, ::before, ::after {
   padding: 0;
   margin: 0;
   box-sizing: border-box; }
@@ -113,7 +113,7 @@ header.main {
   background-position: center;
   background-size: cover;
   overflow: hidden; }
-  header.main *, header.main :before, header.main :after {
+  header.main *, header.main ::before, header.main ::after {
     opacity: 1;
     transition: opacity 0.2s ease-out; }
   body[data-theme="main"] header.main {
@@ -124,7 +124,7 @@ header.main {
     border-color: #ff4500; }
   body[data-theme="tps"] header.main {
     border-color: #1e90ff; }
-  header.main:after {
+  header.main::after {
     position: absolute;
     bottom: 0;
     left: 0;

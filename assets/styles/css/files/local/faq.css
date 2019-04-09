@@ -102,11 +102,11 @@ main {
       border-radius: 4px;
       color: rgba(255, 255, 255, 0.75);
       overflow: hidden; }
-      main section .qa[data-hashtarget-highlighted="true"]:before {
+      main section .qa[data-hashtarget-highlighted="true"]::before {
         animation: qaHashTargeted 2.5s linear infinite; }
-      main section .qa[data-hashtarget-highlighted="false"]:before {
+      main section .qa[data-hashtarget-highlighted="false"]::before {
         animation: qaHashTargetFade 0.75s linear; }
-      main section .qa:before {
+      main section .qa::before {
         position: absolute;
         top: 0;
         left: 0;
@@ -180,7 +180,7 @@ main {
           line-height: 1;
           border-radius: 4px;
           overflow: hidden; }
-          .help-footer .body .panel .button-wrapper a:before {
+          .help-footer .body .panel .button-wrapper a::before {
             position: absolute;
             top: 0;
             left: 0;
@@ -189,9 +189,9 @@ main {
             content: "";
             background-color: #fff;
             transition: opacity 0.2s ease-out; }
-          .help-footer .body .panel .button-wrapper a:not(:hover):not(:focus):before {
+          .help-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
             opacity: 0.2; }
-          .help-footer .body .panel .button-wrapper a:hover:before, .help-footer .body .panel .button-wrapper a:focus:before {
+          .help-footer .body .panel .button-wrapper a:hover::before, .help-footer .body .panel .button-wrapper a:focus::before {
             opacity: 0.4; }
           .help-footer .body .panel .button-wrapper a:active {
             opacity: 0.75; }

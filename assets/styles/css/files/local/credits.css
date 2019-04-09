@@ -111,17 +111,17 @@
         color: inherit;
         transition: opacity 0.2s ease-out; }
   .credits .module {
+    color: inherit;
+    text-decoration: none;
     position: relative;
     flex: 1;
     padding: 16px;
     margin: 8px;
-    color: inherit;
     background-color: #1d3f60;
     border: 2px solid #091320;
     border-radius: 4px;
-    text-decoration: none;
     transition: transform 0.2s ease-out; }
-    .credits .module:before, .credits .module .header .icon:before {
+    .credits .module::before, .credits .module .header .icon::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -130,13 +130,13 @@
       content: "";
       background-color: #000;
       transition: opacity 0.2s ease-out; }
-    .credits .module:not(:hover):not(:focus):before {
+    .credits .module:not(:hover):not(:focus)::before {
       opacity: 0.2; }
-    .credits .module:not(:hover):not(:focus) .header .icon:before {
+    .credits .module:not(:hover):not(:focus) .header .icon::before {
       opacity: 0; }
-    .credits .module:hover:before, .credits .module:focus:before {
+    .credits .module:hover::before, .credits .module:focus::before {
       opacity: 0; }
-    .credits .module:hover .header .icon:before, .credits .module:focus .header .icon:before {
+    .credits .module:hover .header .icon::before, .credits .module:focus .header .icon::before {
       opacity: 0.2; }
     .credits .module:hover .header .icon .fa-font-awesome-flag, .credits .module:focus .header .icon .fa-font-awesome-flag {
       animation-name: fontAwesomeAnimation; }
@@ -145,16 +145,16 @@
     .credits .module:active {
       transform: scale(0.9); }
     .credits .module .header {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      position: relative;
       padding: 8px; }
       .credits .module .header .icon {
-        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
+        position: relative;
         font-size: 1.75em;
         height: 1.75em;
         width: 1.75em;

@@ -37,14 +37,10 @@ $qaHashEnd:        0.35; // Q/A Group Hash Target Animation Start Opacity
 
 /*** Media Queries ***/
 @media screen and (max-width: 649px) {
-  .help-footer .body .panel {
-    width: 100%;
-  }
+  .help-footer .body .panel { width: 100%; }
 }
 @media screen and (min-width: 650px) {
-  .help-footer .body .panel {
-    width: 50%;
-  }
+  .help-footer .body .panel { width: 50%; }
 }
 
 /*** Style Declarations ***/
@@ -111,10 +107,10 @@ main {
       color: rgba(255, 255, 255, 0.75);
       overflow: hidden;
 
-      &[data-hashtarget-highlighted="true"]:before  { animation: qaHashTargeted 2.5s linear infinite; }
-      &[data-hashtarget-highlighted="false"]:before { animation: qaHashTargetFade 0.75s linear; }
+      &[data-hashtarget-highlighted="true"]::before  { animation: qaHashTargeted 2.5s linear infinite; }
+      &[data-hashtarget-highlighted="false"]::before { animation: qaHashTargetFade 0.75s linear; }
 
-      &:before {
+      &::before {
         @include fill(true, #fff, true);
         opacity: 0;
       }
@@ -131,8 +127,8 @@ main {
         padding: 0.4em 0 0.4em 12px;
       }
       a {
-        text-decoration: none;
         @include dynamicTheme-color;
+        text-decoration: none;
 
         &:not(:hover):not(:focus) .label { text-decoration: none; }
         &:hover, &:focus {
@@ -187,13 +183,11 @@ main {
           border-radius: 4px;
           overflow: hidden;
 
-          &:before {
-            @include fill(true, #fff, true);
-          }
+          &::before { @include fill(true, #fff, true); }
 
-          &:not(:hover):not(:focus):before { opacity: 0.2; }
+          &:not(:hover):not(:focus)::before { opacity: 0.2; }
           &:hover, &:focus {
-            &:before                       { opacity: 0.4; }
+            &::before                       { opacity: 0.4; }
           }
           &:active                         { opacity: 0.75; }
 

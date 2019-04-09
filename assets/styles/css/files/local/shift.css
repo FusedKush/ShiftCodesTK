@@ -182,7 +182,7 @@
           background-color: #0057ff; }
         .shift-header .content-wrapper .section.counters .badge.exp {
           background-color: #ff8c00; }
-        .shift-header .content-wrapper .section.counters .badge.new:before, .shift-header .content-wrapper .section.counters .badge.new:after, .shift-header .content-wrapper .section.counters .badge.exp:before, .shift-header .content-wrapper .section.counters .badge.exp:after {
+        .shift-header .content-wrapper .section.counters .badge.new::before, .shift-header .content-wrapper .section.counters .badge.new::after, .shift-header .content-wrapper .section.counters .badge.exp::before, .shift-header .content-wrapper .section.counters .badge.exp::after {
           position: absolute;
           top: 0;
           left: 0;
@@ -190,26 +190,26 @@
           bottom: 0;
           content: "";
           transition: opacity 0.2s ease-out; }
-        .shift-header .content-wrapper .section.counters .badge.new:before, .shift-header .content-wrapper .section.counters .badge.exp:before {
+        .shift-header .content-wrapper .section.counters .badge.new::before, .shift-header .content-wrapper .section.counters .badge.exp::before {
           background-color: #000; }
-        .shift-header .content-wrapper .section.counters .badge.new:after, .shift-header .content-wrapper .section.counters .badge.exp:after {
+        .shift-header .content-wrapper .section.counters .badge.new::after, .shift-header .content-wrapper .section.counters .badge.exp::after {
           border: 2px solid;
           border-radius: 4px; }
-        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive)[data-pressed="false"]:after, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive)[data-pressed="false"]:after {
+        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive)[data-pressed="false"]::after, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive)[data-pressed="false"]::after {
           opacity: 0; }
-        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive)[data-pressed="true"]:after, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive)[data-pressed="true"]:after {
+        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive)[data-pressed="true"]::after, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive)[data-pressed="true"]::after {
           opacity: 1; }
-        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):not(:hover):not(:focus):before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):not(:hover):not(:focus):before {
+        .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):not(:hover):not(:focus)::before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):not(:hover):not(:focus)::before {
           opacity: 0; }
         .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):hover, .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):focus, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):hover, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):focus {
           cursor: pointer; }
-          .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):hover:before, .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):focus:before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):hover:before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):focus:before {
+          .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):hover::before, .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):focus::before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):hover::before, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):focus::before {
             opacity: 0.25; }
         .shift-header .content-wrapper .section.counters .badge.new:not(.inactive):active, .shift-header .content-wrapper .section.counters .badge.exp:not(.inactive):active {
           opacity: 0.75; }
         .shift-header .content-wrapper .section.counters .badge.inactive {
           opacity: 0.5; }
-          .shift-header .content-wrapper .section.counters .badge.inactive:before, .shift-header .content-wrapper .section.counters .badge.inactive:after {
+          .shift-header .content-wrapper .section.counters .badge.inactive::before, .shift-header .content-wrapper .section.counters .badge.inactive::after {
             opacity: 0; }
         .shift-header .content-wrapper .section.counters .badge[disabled] {
           pointer-events: auto; }
@@ -240,7 +240,7 @@
           border-radius: 4px;
           overflow: hidden;
           transition: opacity 0.2s ease-out; }
-          .shift-header .content-wrapper .section.sort > button:before {
+          .shift-header .content-wrapper .section.sort > button::before {
             position: absolute;
             top: 0;
             left: 0;
@@ -249,15 +249,15 @@
             content: "";
             background-color: #fff;
             transition: opacity 0.2s ease-out; }
-          .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:not(:hover):not(:focus):before {
+          .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:not(:hover):not(:focus)::before {
             opacity: 0.2; }
-          .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:hover:before, .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:focus:before {
+          .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:hover::before, .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:focus::before {
             opacity: 0.4; }
           .shift-header .content-wrapper .section.sort > button[data-pressed="false"]:active {
             opacity: 0.75; }
           .shift-header .content-wrapper .section.sort > button[data-pressed="true"] {
             opacity: 0.75; }
-            .shift-header .content-wrapper .section.sort > button[data-pressed="true"]:before {
+            .shift-header .content-wrapper .section.sort > button[data-pressed="true"]::before {
               opacity: 0.4; }
           .shift-header .content-wrapper .section.sort > button .fas {
             position: relative; }
@@ -309,7 +309,7 @@
               text-align: left;
               transition: opacity 0.2s ease-out;
               cursor: pointer; }
-              .shift-header .content-wrapper .section.sort .dropdown .panel li button:before {
+              .shift-header .content-wrapper .section.sort .dropdown .panel li button::before {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -328,20 +328,20 @@
                   background-color: #ff4500; }
                 body[data-theme="tps"] .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="true"] {
                   background-color: #1e90ff; }
-                .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="true"]:before {
+                .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="true"]::before {
                   opacity: 0; }
               .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"] {
                 color: #1d3f60;
                 background-color: transparent; }
                 .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:not(:hover):not(:focus) {
                   opacity: 0.8; }
-                  .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:not(:hover):not(:focus):before {
+                  .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:not(:hover):not(:focus)::before {
                     opacity: 0; }
                 .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:hover, .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:focus {
                   opacity: 1; }
-                  .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:hover:before, .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:focus:before {
+                  .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:hover::before, .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:focus::before {
                     opacity: 0.15; }
-                .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:active:before {
+                .shift-header .content-wrapper .section.sort .dropdown .panel li button[data-pressed="false"]:active::before {
                   opacity: 0.3; }
               .shift-header .content-wrapper .section.sort .dropdown .panel li button span {
                 position: relative; }
@@ -351,14 +351,14 @@
   width: 100%;
   padding: 32px 16px 64px; }
   .feed .overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: opacity 0.2s ease-out; }
     .feed .overlay[hidden], .feed .overlay > *[hidden] {
       display: inherit; }
@@ -395,7 +395,7 @@
     opacity: 0;
     overflow: hidden;
     animation: fadeIn 0.4s linear forwards; }
-    .feed .panel:before {
+    .feed .panel::before {
       position: absolute;
       top: 0;
       left: 0;
@@ -413,13 +413,13 @@
       transform: rotate(180deg); }
     .feed .panel[data-expanded="true"] .body {
       display: grid; }
-    .feed .panel:not([data-filtered="true"]):before {
+    .feed .panel:not([data-filtered="true"])::before {
       opacity: 1; }
     .feed .panel:not([data-filtered="true"]) .flag {
       opacity: 1; }
     .feed .panel:not([data-filtered="true"]) .header {
       opacity: 1; }
-    .feed .panel[data-filtered="true"]:before {
+    .feed .panel[data-filtered="true"]::before {
       opacity: 0.5; }
     .feed .panel[data-filtered="true"] .flag {
       opacity: 0.25; }
@@ -429,11 +429,11 @@
       animation: panelHashTargeted 2.5s linear infinite; }
     .feed .panel[data-hashtarget-highlighted="false"] .hashTargetOverlay {
       animation: panelHashTargetFade 0.75s linear; }
-    .feed .panel:not(.new):not(.exp):before {
+    .feed .panel:not(.new):not(.exp)::before {
       border-color: #060c12; }
-    .feed .panel.new:before {
+    .feed .panel.new::before {
       border-color: #0057ff; }
-    .feed .panel.exp:before {
+    .feed .panel.exp::before {
       border-color: #ff8c00; }
     .feed .panel:not(:last-child) {
       margin-bottom: 1.5em; }
@@ -446,6 +446,7 @@
       right: 0;
       bottom: 0;
       content: "";
+      transition: opacity 0.2s ease-out;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -478,7 +479,7 @@
           border: 1px solid #fff;
           border-radius: 4px;
           transition: opacity 0.2s ease-out; }
-          .feed .panel .filter-overlay .content-container .clear:before, .feed .panel .filter-overlay .content-container .clear:after {
+          .feed .panel .filter-overlay .content-container .clear::before, .feed .panel .filter-overlay .content-container .clear::after {
             position: absolute;
             top: 0;
             left: 0;
@@ -486,17 +487,17 @@
             bottom: 0;
             content: "";
             transition: opacity 0.2s ease-out; }
-          .feed .panel .filter-overlay .content-container .clear:before {
+          .feed .panel .filter-overlay .content-container .clear::before {
             background-color: #fff; }
-          .feed .panel .filter-overlay .content-container .clear:after {
+          .feed .panel .filter-overlay .content-container .clear::after {
             display: flex;
             align-items: center;
             justify-content: center;
             color: #091320;
             content: "Click to Remove"; }
-          .feed .panel .filter-overlay .content-container .clear:not(:hover):not(:focus):before, .feed .panel .filter-overlay .content-container .clear:not(:hover):not(:focus):after {
+          .feed .panel .filter-overlay .content-container .clear:not(:hover):not(:focus)::before, .feed .panel .filter-overlay .content-container .clear:not(:hover):not(:focus)::after {
             opacity: 0; }
-          .feed .panel .filter-overlay .content-container .clear:hover:before, .feed .panel .filter-overlay .content-container .clear:hover:after, .feed .panel .filter-overlay .content-container .clear:focus:before, .feed .panel .filter-overlay .content-container .clear:focus:after {
+          .feed .panel .filter-overlay .content-container .clear:hover::before, .feed .panel .filter-overlay .content-container .clear:hover::after, .feed .panel .filter-overlay .content-container .clear:focus::before, .feed .panel .filter-overlay .content-container .clear:focus::after {
             opacity: 1; }
           .feed .panel .filter-overlay .content-container .clear:active {
             opacity: 0.75; }
@@ -675,8 +676,8 @@
             opacity: 1; }
           .feed .panel .body .section .content a {
             color: inherit;
-            opacity: 1;
             text-decoration: none;
+            opacity: 1;
             width: 100%;
             word-wrap: break-word; }
             .feed .panel .body .section .content a:not(:hover):not(:focus) .text {
@@ -705,7 +706,7 @@
             font-size: inherit;
             padding: 8px;
             transition: opacity 0.2s ease-out; }
-            .feed .panel .body .section .content .copy:before {
+            .feed .panel .body .section .content .copy::before {
               position: absolute;
               top: 0;
               left: 0;
@@ -716,9 +717,9 @@
               transition: opacity 0.2s ease-out; }
             .feed .panel .body .section .content .copy.animated .fas {
               animation: copiedToClipboard 0.5s linear; }
-            .feed .panel .body .section .content .copy:not(:hover):not(:focus):before {
+            .feed .panel .body .section .content .copy:not(:hover):not(:focus)::before {
               opacity: 0.3; }
-            .feed .panel .body .section .content .copy:hover:before, .feed .panel .body .section .content .copy:focus:before {
+            .feed .panel .body .section .content .copy:hover::before, .feed .panel .body .section .content .copy:focus::before {
               opacity: 0.5; }
             .feed .panel .body .section .content .copy:focus {
               opacity: 1; }
