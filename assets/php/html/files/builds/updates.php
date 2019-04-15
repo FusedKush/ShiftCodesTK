@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <!-- Page Title -->
     <title>Updates - ShiftCodesTK</title>
+    <meta name="title" content="Updates - ShiftCodesTK">
     <meta property="og:title" content="Updates - ShiftCodesTK">
     <meta property="twitter:title" content="Updates - ShiftCodesTK">
     <!-- Page Description -->
@@ -29,17 +30,9 @@
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <!-- Main Header -->
+    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
     <!-- Main Content -->
-    <header class="main" data-webp='{"path": "/assets/img/banners/updates/", "name": "updates", "alt": ".jpg", "type": "bg"}'>
-      <div class="content-container">
-        <div class="content-wrapper">
-          <div class="content short">
-            <h1 class="title">Updates</h1>
-            <div class="description">Recent changes and updates to ShiftCodesTK</div>
-          </div>
-        </div>
-      </div>
-    </header>
     <header class="updates-header" id="updates_header">
       <div class="content-wrapper">
         <div class="section current" hidden aria-hidden="true" data-hidden="true">

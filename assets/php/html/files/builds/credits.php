@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <!-- Page Title -->
     <title>Credits - ShiftCodesTK</title>
+    <meta name="title" content="Credits - ShiftCodesTK">
     <meta property="og:title" content="Credits - ShiftCodesTK">
     <meta property="twitter:title" content="Credits - ShiftCodesTK">
     <!-- Page Description -->
@@ -28,17 +29,9 @@
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <!-- Main Header -->
+    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
     <!-- Main Content -->
-    <header class="main" data-webp='{"path": "/assets/img/banners/credits/", "name": "credits", "alt": ".jpg", "type": "bg"}'>
-      <div class="content-container">
-        <div class="content-wrapper">
-          <div class="content short">
-            <h1 class="title">Credits</h1>
-            <div class="description">The people and projects that make ShiftCodesTK possible</div>
-          </div>
-        </div>
-      </div>
-    </header>
     <main>
       <section class="credits content-wrapper">
         <div class="banner" id="banner">

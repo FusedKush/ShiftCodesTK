@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <!-- Page Title -->
     <title>Borderlands: Game of the Year Edition - ShiftCodesTK</title>
+    <meta name="title" content="Borderlands: GOTY - ShiftCodesTK">
     <meta property="og:title" content="Borderlands: Game of the Year Edition - ShiftCodesTK">
     <meta property="twitter:title" content="Borderlands: Game of the Year Edition - ShiftCodesTK">
     <!-- Page Description -->
@@ -29,17 +30,9 @@
   <body data-theme="bl1" data-shiftData='{"id": "3", "name": "Borderlands: Game of the Year Edition"}'>
     <!--// Before-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <!-- Main Header -->
+    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
     <!-- Main Content -->
-    <header class="main" data-webp='{"path": "/assets/img/banners/bl1/", "name": "bl1", "alt": ".jpg", "type": "bg"}'>
-      <div class="content-container">
-        <div class="content-wrapper">
-          <div class="content short">
-            <h1 class="title">Borderlands: GOTY Codes</h1>
-            <div class="description">Available SHiFT Codes for Borderlands: Game of the Year Edition</div>
-          </div>
-        </div>
-      </div>
-    </header>
     <!-- SHiFT -->
     <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
     <!--// After-Content Imports \\-->

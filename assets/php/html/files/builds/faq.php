@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <!-- Page Title -->
     <title>Frequently Asked Questions - ShiftCodesTK</title>
+    <meta name="title" content="FAQ - ShiftCodesTK">
     <meta property="og:title" content="Frequently Asked Questions - ShiftCodesTK">
     <meta property="twitter:title" content="Frequently Asked Questions - ShiftCodesTK">
     <!-- Page Description -->
@@ -28,22 +29,9 @@
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <!-- Main Header -->
+    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
     <!-- Main Content -->
-    <header class="main" data-webp='{"path": "/assets/img/banners/faq/", "name": "faq", "alt": ".jpg", "type": "bg"}'>
-      <div class="content-container">
-        <div class="content-wrapper">
-          <div class="content short">
-            <h1 class="title">FAQ</h1>
-            <div class="description">Answers to some frequently asked questions</div>
-          </div>
-        </div>
-      </div>
-    </header>
-    <main class="content-wrapper">
-      <header class="toc">
-        <div class="header"><strong>Table of Contents</strong></div>
-        <div class="section">
-          <a class="title" href="#faq_shift" data-internalLink="true">SHiFT</a>
           <ul>
             <li><a href="#faq_shift_q1" data-internalLink="true">What is SHiFT?</a></li>
             <li><a href="#faq_shift_q2" data-internalLink="true">Do you need an account to use SHiFT?</a></li>
