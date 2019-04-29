@@ -1,7 +1,8 @@
-.sass-cache/
+# Ignore
+.*
+.*/**/*
 node_modules/
-.deprecated/
-.tbd/
-.credentials/
-.updateChecklist
 **/dbConfig.php
+
+# Allow
+!.htaccess
