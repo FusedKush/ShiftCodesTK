@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!--// Styles \\-->
+    <!-- Shared Styles -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <!-- Local Styles -->
+    <link href="/assets/styles/css/min/local/credits.min.css?v=1.0" rel="stylesheet"></link>
+    <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Credits - ShiftCodesTK</title>
     <meta name="title" content="Credits - ShiftCodesTK">
@@ -23,7 +28,7 @@
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="credits.min.css">
-    <!--// Head Imports \\-->
+    <!--// Shared Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
   <body data-theme="main">
@@ -79,5 +84,8 @@
     </main>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <!--// Scripts \\-->
+    <!-- Shared Scripts -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
   </body>
 </html>

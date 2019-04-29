@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!--// Styles \\-->
+    <!-- Shared Styles -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <!-- Local Styles -->
+    <link href="/assets/styles/css/min/local/shift.min.css?v=1.0" rel="stylesheet"></link>
+    <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Borderlands 2 - ShiftCodesTK</title>
     <meta name="title" content="Borderlands 2 - ShiftCodesTK">
@@ -24,7 +29,7 @@
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="shift.min.css">
     <meta class="loader-localFile" content="shift.min.js">
-    <!--// GLobal Head Markup \\-->
+    <!--// Shared Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
   <body data-theme="bl2" data-shiftData='{"id": "1", "name": "Borderlands 2"}'>
@@ -37,5 +42,10 @@
     <?php include_once("./assets/php/html/min/imports/local/shift.php"); ?>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <!--// Scripts \\-->
+    <!-- Shared Scripts -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
+    <!-- Local Scripts -->
+    <script async src="/assets/scripts/min/local/shift.min.js?v=1.0"></script>
   </body>
 </html>

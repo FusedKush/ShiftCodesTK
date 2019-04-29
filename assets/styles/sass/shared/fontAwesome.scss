@@ -5,7 +5,7 @@
 /*** Font Face Properties ***/
 @charset "UTF-8";
 
-$fa-path: "../../fonts/FontAwesome";
+$fa-path: "/assets/fonts/FontAwesome";
 
 @font-face {
   font-family: "Font Awesome 5 Brands";
@@ -69,4 +69,4 @@ $fa-path: "../../fonts/FontAwesome";
   &::before { content: fa-set($fa-icon-code); }
 }
 
-@import 'partials/_fontAwesomeIcons';
+@import '../partials/_fontAwesomeIcons';

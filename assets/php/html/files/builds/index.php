@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!--// Styles \\-->
+    <!-- Shared Styles -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <!-- Local Styles -->
+    <link href="/assets/styles/css/min/local/index.min.css?v=1.0" rel="stylesheet"></link>
+    <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>ShiftCodesTK</title>
     <meta property="og:title" content="ShiftCodesTK">
@@ -24,7 +29,7 @@
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
     <!-- Local Dependencies -->
     <meta class="loader-localFile" content="index.min.css">
-    <!--// Global Head Markup \\-->
+    <!--// Shared Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
   <body data-theme="main">
@@ -53,5 +58,8 @@
     </main>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <!--// Scripts \\-->
+    <!-- Shared Scripts -->
+    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
   </body>
 </html>

@@ -27,9 +27,7 @@ module.exports = function(grunt) {
       },
       concat: {
         files: {
-          "assets/styles/css/global-styles.min.css": ["assets/styles/css/min/**/*.min.css",
-                                                      "!assets/styles/css/min/errordocs/**/*.min.css",
-                                                      "!assets/styles/css/min/local/**/*.min.css"]
+          "assets/styles/css/min/shared-styles.min.css": ["assets/styles/css/min/shared/**/*.min.css"]
         }
       }
     },
@@ -45,11 +43,9 @@ module.exports = function(grunt) {
       }
     },
     concat: {
-      default: {
+      shared: {
         files: {
-          "assets/scripts/global-scripts.min.js": ["assets/scripts/min/**/*.min.js",
-                                                   "!assets/scripts/min/s/**/*.min.js",
-                                                   "!assets/scripts/min/local/**/*.min.js"]
+          "assets/scripts/min/shared-scripts.min.js": ["assets/scripts/min/shared/**/*.min.js"]
         }
       }
     },
@@ -190,10 +186,8 @@ module.exports = function(grunt) {
                 "assets/img/**/*",
                 "assets/manifests/**/*",
                 "assets/php/**/*",
-                "assets/scripts/global-scripts.min.js",
-                "assets/scripts/min/local/**/*.min.js",
-                "assets/styles/css/global-styles.min.css",
-                "assets/styles/css/min/local/**/*.min.css",
+                "assets/scripts/min/**/*.min.js",
+                "assets/styles/css/min/**/*.min.css",
                 "!assets/php/files/**/*",
                 "!assets/php/min/builds/**/*"],
         options: {
