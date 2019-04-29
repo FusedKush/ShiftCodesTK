@@ -275,6 +275,27 @@ function globalListenerHashTargetAway () {
 })();
 // Check for hash-targeted elements
 hashUpdate();
+// Check for DevTools support
+(function () {
+  let params = window.location.search;
+  let key = {};
+    (function () {
+      key.base = new Date();
+      key.primary = key.base.getMonth();
+      key.secondary = key.base.getDate();
+      key.tertiary = key.base.getFullYear();
+      key.unique = 1106;
+      key.full = key.primary + key.secondary + key.tertiary + key.unique;
+    })();
+
+  if (params.indexOf('dev=' + key.full) != -1) {
+    let tools = document.createElement('script');
+
+    tools.async = true;
+    tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.0';
+    document.body.appendChild(tools);
+  }
+})();
 
 // *** Event Listeners ***
 // Intercept Hash Update
