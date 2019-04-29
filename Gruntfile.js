@@ -27,7 +27,8 @@ module.exports = function(grunt) {
       },
       concat: {
         files: {
-          "assets/styles/css/min/shared-styles.min.css": ["assets/styles/css/min/shared/**/*.min.css"]
+          "assets/styles/css/min/shared-styles.min.css": ["assets/styles/css/min/shared/global.min.css",
+                                                          "assets/styles/css/min/shared/**/*.min.css"]
         }
       }
     },
@@ -45,7 +46,8 @@ module.exports = function(grunt) {
     concat: {
       shared: {
         files: {
-          "assets/scripts/min/shared-scripts.min.js": ["assets/scripts/min/shared/**/*.min.js"]
+          "assets/scripts/min/shared-scripts.min.js": ["assets/scripts/min/shared/global.min.js",
+                                                       "assets/scripts/min/shared/**/*.min.js"]
         }
       }
     },
