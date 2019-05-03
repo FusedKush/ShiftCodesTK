@@ -16,7 +16,33 @@ module.exports = function(grunt) {
       }
     },
     cssmin: {
+      shared: {
+        files: {
+        "assets/styles/css/min/shared-styles.min.css": ["assets/styles/css/min/shared/global.min.css",
+                                                        "assets/styles/css/min/shared/**/*.min.css"]
+        }
+      }
+    },
+    postcss: {
+      prefix: {
+        options: {
+          processors: [
+            require('autoprefixer')({browsers: 'defaults'})
+          ]
+        },
+        files: [{
+          expand: true,
+          cwd: "assets/styles/css/files",
+          src: ["**/*.css"],
+          dest: "assets/styles/css/files"
+        }]
+      },
       minify: {
+        options: {
+          processors: [
+            require('cssnano')()
+          ]
+        },
         files: [{
           expand: true,
           cwd: "assets/styles/css/files",
@@ -24,12 +50,6 @@ module.exports = function(grunt) {
           dest: "assets/styles/css/min",
           ext: ".min.css"
         }]
-      },
-      concat: {
-        files: {
-          "assets/styles/css/min/shared-styles.min.css": ["assets/styles/css/min/shared/global.min.css",
-                                                          "assets/styles/css/min/shared/**/*.min.css"]
-        }
       }
     },
     uglify: {
@@ -126,20 +146,20 @@ module.exports = function(grunt) {
     watch: {
       sassPartials: {
         files: ["assets/styles/sass/partials/**/*.scss"],
-        tasks: ["sass", "cssmin:minify", "cssmin:concat"]
+        tasks: ["processAllCSS"]
       },
       sass: {
         files: ["assets/styles/sass/**/*.scss",
                 "!assets/styles/sass/partials/**/*.scss"],
-        tasks: ["newer:sass", "newer:cssmin:minify", "newer:cssmin:concat"]
+        tasks: ["processCSS"]
       },
       js: {
         files: ["assets/scripts/files/**/*.js"],
-        tasks: ["newer:uglify", "newer:concat"]
+        tasks: ["processJS"]
       },
       html: {
         files: ["assets/php/html/files/**/*.php"],
-        tasks: ["newer:htmlmin", "newer:copy:html"]
+        tasks: ["processHTML"]
       },
       copy: {
         files: ["**/*",
@@ -157,7 +177,7 @@ module.exports = function(grunt) {
                 "!assets/scripts/files/**/*",
                 "!assets/styles/css/files/**/*",
                 "!assets/styles/sass/**/*"],
-        tasks: ["newer:copy:public"]
+        tasks: ["publicCopy"]
       },
       config: {
         files: ["Gruntfile.js"],
@@ -184,10 +204,23 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks("grunt-newer");
   grunt.loadNpmTasks("grunt-contrib-sass");
   grunt.loadNpmTasks("grunt-contrib-cssmin");
+  grunt.loadNpmTasks("grunt-postcss");
   grunt.loadNpmTasks("grunt-contrib-uglify-es");
   grunt.loadNpmTasks("grunt-contrib-concat");
   grunt.loadNpmTasks("grunt-contrib-htmlmin");
   grunt.loadNpmTasks("grunt-contrib-copy");
   grunt.loadNpmTasks("grunt-contrib-watch");
-  grunt.registerTask("default", ["watch"]);
+
+  // Compile All SASS to CSS, Add Prefixes, Minify, and Concatenate shared stylesheets
+  grunt.registerTask("processAllCSS", ["sass", "postcss", "cssmin"]);
+  // Compile New SASS to CSS, Add Prefixes, Minify, and Concatenate shared stylesheets
+  grunt.registerTask("processCSS", ["newer:sass", "newer:postcss", "newer:cssmin"]);
+  // Minify JS and Concatenate shared scripts
+  grunt.registerTask("processJS", ["newer:uglify", "newer:concat"]);
+  // Minify HTML and Copy to required location
+  grunt.registerTask("processHTML", ["newer:htmlmin", "newer:copy:html"]);
+  // Copy required files to Public directory
+  grunt.registerTask("publicCopy", ["newer:copy:public"]);
+  // Update all changed files & start watch
+  grunt.registerTask("default", ["processCSS", "processJS", "processHTML", "publicCopy", "watch"]);
 };
