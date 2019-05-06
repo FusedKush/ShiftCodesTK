@@ -27,8 +27,6 @@
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Google Metadata (Landing Page Only) -->
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
-    <!-- Local Dependencies -->
-    <meta class="loader-localFile" content="index.min.css">
     <!--// Shared Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>

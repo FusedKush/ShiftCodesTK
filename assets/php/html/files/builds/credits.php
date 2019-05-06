@@ -26,8 +26,6 @@
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!-- Local Dependencies -->
-    <meta class="loader-localFile" content="credits.min.css">
     <!--// Shared Head Markup \\-->
     <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
   </head>
