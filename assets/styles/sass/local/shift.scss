@@ -4,544 +4,461 @@
 
 /*** Imports ***/
 @import "../partials/_globals";
-
-/*** Mixins ***/
-@mixin badgePulse($color) {
-  66.6%, 100% { box-shadow: none; }
-  83.3%       { box-shadow: 0 0 1.5em $color; }
-}
-@mixin lowerPanelSection($start) {
-  .separator    { grid-row: $start; }
-  .section {
-    &.pc        { grid-row: $start + 1; }
-    &.xbox      { grid-row: $start + 2; }
-    &.ps        { grid-row: $start + 3; }
-  }
-}
-@mixin panelStructure ($extraInfo, $rows) {
-  .body {
-    grid-template-rows: repeat($rows, auto);
-    .background { grid-row: 1 / span $rows; }
-
-    @if $extraInfo == false {
-      @include lowerPanelSection($rows - 3);
-    }
-    @else if $extraInfo == true {
-      .section.notes { grid-row: $rows - 4; }
-      @include lowerPanelSection($rows - 3);
-    }
-  }
-}
-@mixin panelLayout($type) {
-  &[data-extraInfo="false"] {
-    @if $type == standard    { @include panelStructure(false, 6); }
-    @else if $type == mobile { @include panelStructure(false, 7); }
-  }
-  &[data-extraInfo="true"] {
-    @if $type == standard    { @include panelStructure(true, 7); }
-    @else if $type == mobile { @include panelStructure(true, 8); }
-  }
-
-  .body {
-    @if $type == standard {
-      .section {
-        &.rel                                        { grid-column: 1 }
-        &.exp                                        { grid-column: 2; }
-        &.src, &.notes, &.pc, &.xbox, &.ps, &.report { grid-column: 1 / span 2; }
-        &.rel, &.exp { grid-row: 1; }
-        &.src        { grid-row: 2; }
-      }
-    }
-    @else if $type == mobile {
-      .section {
-        grid-column: 1 / span 2;
-
-        &.rel { grid-row: 1; }
-        &.exp { grid-row: 2; }
-        &.src { grid-row: 3; }
-      }
-    }
-  }
-}
-
-/*** Media Queries ***/
-@media screen and (max-width: 379px) {
-  .feed .panel {
-    @include panelLayout(mobile);
-
-    .header .top { font-size: 1.25em; }
-   }
-}
-@media screen and (min-width: 380px) {
-  .feed .panel {
-    @include panelLayout(standard);
-
-    .header .top { font-size: 1.5em; }
-  }
-}
-@media screen and (max-width: 549px) {
-  .overlay .error { font-size: 1.75em; }
-  .shift-header .content-wrapper .sort .dropdown .panel {
-    .description, li button { padding: 6px 18px 6px 9px; }
-  }
-  .feed .panel .body .background {
-    font-size: 15em;
-  }
-}
-@media screen and (min-width: 550px) {
-  .overlay .error { font-size: 2em; }
-  .shift-header .content-wrapper .sort .dropdown .panel {
-    .description, li button { padding: 4px 16px 4px 8px; }
-  }
-  .feed .panel .body .background { font-size: 20em; }
-}
-
-/*** Animations ***/
-@keyframes fadeIn {
-  0%    { opacity: 0; }
-  100%  { opacity: 1; }
-}
-@keyframes panelHashTargeted {
-  0%, 50%, 100% { opacity: 0.25; }
-  25%, 75%      { opacity: 1; }
-}
-@keyframes panelHashTargetFade {
-  0%   { opacity: 0.75; }
-  100% { opacity: 0; }
-}
-@keyframes progressClimb {
-  0%    { transform: translateX(-100%); }
-  100%  { transform: translateX(0); }
-}
-@keyframes relPulseBadge {
-  @include badgePulse($badge-new);
-}
-@keyframes expPulseBadge {
-  @include badgePulse($badge-exp);
-}
-@keyframes copiedToClipboard {
-  0%, 50%, 100% { transform: scale(1); }
-  25%           { transform: scale(0.8); }
-  75%           { transform: scale(1.2); }
-}
+@import "../partials/_spinner";
 
 /*** Style Declarations ***/
 .shift-header, .feed { @include ready; }
 .shift-header {
   background-color: $site-color-lighter;
-  border-bottom: 2px solid $site-color-darker;
+  border-bottom: bd(2px, $site-color-darker);
   width: 100%;
   font-size: 1.25em;
 
   .content-wrapper {
-    @include flex(sb, c);
+    @include flexbox(c, sb);
     padding: 12px 16px;
+  }
+  .section { @include flexbox; }
+  .badge {
+    display: flex;
+    @include sizing(1.7em, 3.4em);
+    font-size: 1em;
+    border-radius: 4px;
+    text-shadow: dropShadow(tpb(0.25));
+    margin-right: 6px;
+    overflow: hidden;
+    cursor: default;
 
-    .section {
-      @include flex;
+    // Individual Theming
+    & {
+      $colors: (
+        total: #808080,
+        new: $badge-new,
+        exp: $badge-exp
+        );
 
-      &.counters {
-        .badge {
-          position: relative;
-          display: flex;
-          height: 1.7em;
-          width: 3.4em;
-          font-size: 1em;
-          border-radius: 4px;
-          text-shadow: dropShadow(tpb(0.25));
-          margin-right: 6px;
-          overflow: hidden;
-          transition: opacity $trd;
-          cursor: default;
-
-          &.total { background-color: #808080; }
-          &.new   { background-color: $badge-new; }
-          &.exp   { background-color: $badge-exp; }
-          &.new, &.exp {
-            &::before, &::after { @include fill(true, false, true); }
-            &::before { background-color: #000; }
-            &::after {
-              border: 2px solid;
-              border-radius: 4px;
-            }
-            &:not(.inactive) {
-              &[data-pressed="false"]::after { opacity: 0; }
-              &[data-pressed="true"]::after  { opacity: 1; }
-              &:not(:hover):not(:focus)::before { opacity: 0; }
-              &:hover, &:focus {
-                cursor: pointer;
-
-                &::before { opacity: 0.25; }
-              }
-              &:active { opacity: 0.75; }
-            }
-          }
-          &.inactive {
-            opacity: 0.5;
-
-            &::before, &::after { opacity: 0; }
-          }
-          &[disabled] { pointer-events: auto; }
-
-          .count, .fas {
-            position: relative;
-            @include flex;
-            flex: 1;
-            height: inherit;
-          }
-          .count {
-            background-color: tpb(0.2);
-            font-weight: 600;
-          }
-          .fas { font-size: 0.9em; }
-        }
+      @each $colorN, $colorV in $colors {
+        &.#{$colorN} { background-color: $colorV; }
       }
-      &.sort {
-        position: relative;
-
-        > button {
-          position: relative;
-          @include flex;
-          width: 1.5em;
-          height: 1.5em;
-          font-size: 1.25em;
-          padding: 0.25em;
-          line-height: 1;
-          border-radius: 4px;
-          overflow: hidden;
-          transition: opacity $trd;
-
-          &::before { @include fill(true, #fff, true); }
-
-          &[data-pressed="false"] {
-            &:not(:hover):not(:focus)::before  { opacity: 0.2; }
-            &:hover, &:focus       { &::before { opacity: 0.4; } }
-            &:active                          { opacity: 0.75; }
-          }
-          &[data-pressed="true"] {
-            opacity: 0.75;
-
-            &::before { opacity: 0.4; }
-          }
-
-          .fas { position: relative; }
+    }
+    &.new, &.exp {
+      &::before { background-color: #000; }
+      &::after {
+        border: bd(2px);
+        border-radius: 4px;
+      }
+      @include pshared { @include fill(true); }
+      &:not(.inactive) {
+        &[data-pressed="false"]::after { opacity: 0; }
+        &[data-pressed="true"]::after  { opacity: 1; }
+        @include mouseState(noHover) {
+          &::before                    { opacity: 0; }
         }
-        .dropdown {
-          position: absolute;
-          flex-direction: column;
-          height: 100%;
+        @include mouseState(hover) {
+          cursor: pointer;
+
+          &::before                    { opacity: 0.25; }
+        }
+        @include mouseState(click)     { opacity: 0.75; }
+      }
+      &.inactive {
+        opacity: 0.5;
+
+        @include pshared { opacity: 0; }
+      }
+    }
+
+    .count { background-color: tpb(0.2); }
+    .fas { font-size: 0.9em; }
+    .count, .fas {
+      @include flexbox;
+      flex: 1;
+      height: inherit;
+    }
+  }
+  .sort {
+    > button {
+      @include flexbox;
+      @include multiProp(1.5em, sizing);
+      font-size: 1.25em;
+      padding: 0.25em;
+      line-height: 1;
+      border-radius: 4px;
+      overflow: hidden;
+
+      &::before { @include fill(true, #fff); }
+
+      &[data-pressed="false"] {
+        @include mouseState(noHover) {
+          &::before                { opacity: 0.2; }
+        }
+        @include mouseState(hover) {
+          &::before                { opacity: 0.4; }
+        }
+        @include mouseState(click) { opacity: 0.75; }
+      }
+      &[data-pressed="true"] {
+        opacity: 0.75;
+
+        &::before { opacity: 0.4; }
+      }
+    }
+    .dropdown {
+      position: absolute;
+      flex-direction: column;
+      @include multiProp(100%, sizing);
+      transform: translateY(100%);
+      z-index: 1;
+
+      @include hiddenToggle(flex);
+      &[data-expanded="false"] { opacity: 0; }
+      &[data-expanded="true"]  { opacity: 1; }
+
+      .arrow {
+        position: absolute;
+        @include multiProp(1rem, sizing);
+        @include pull(t);
+        transform: translateY(calc(-15% + 0.75em)) rotate(45deg);
+        align-self: center;
+        background: linear-gradient(to bottom right, #fff 0.4em, transparent 0.4em);
+        z-index: 1;
+      }
+      .panel {
+        position: absolute;
+        @include pull(t);
+        transform: translateY(15%);
+        align-self: flex-end;
+        font-size: 1.1rem;
+        white-space: nowrap;
+        border-radius: 4px;
+        @include colors($site-color-lighter, #fff);
+        box-shadow: shadow(tpb(0.75), 0.5em);
+        overflow: hidden;
+
+        .description {
+          display: block;
+          opacity: 0.35;
+        }
+        button {
           width: 100%;
-          transform: translateY(100%);
-          z-index: 1;
-          transition: opacity $trd;
+          font-size: 0.9em;
+          text-align: left;
+          cursor: pointer;
 
-          &[hidden]       { display: none; }
-          &:not([hidden]) { display: flex; }
-          &[data-expanded="false"] { opacity: 0; }
-          &[data-expanded="true"]  { opacity: 1; }
+          &::before { @include fill(true, #000); }
 
-          .arrow {
-            position: absolute;
-            height: 1rem;
-            width: 1rem;
-            top: 0;
-            transform: translateY(calc(-15% + 0.75em)) rotate(45deg);
-            align-self: center;
-            background: linear-gradient(to bottom right, #fff 0.4em, transparent 0.4em);
-            z-index: 1;
+          &[data-pressed="true"] {
+            color: #fff;
+            @include theme(bg);
+
+            &::before { opacity: 0; }
           }
-          .panel {
-            position: absolute;
-            top: 0;
-            transform: translateY(15%);
-            align-self: flex-end;
-            font-size: 1.1rem;
-            white-space: nowrap;
-            border-radius: 4px;
-            color: $site-color-lighter;
-            background-color: #fff;
-            box-shadow: shadow(tpb(0.75), 0.5em);
-            list-style: none;
-            overflow: hidden;
+          &[data-pressed="false"] {
+            @include mouseState(noHover) {
+              opacity: 0.8;
 
-            .description {
-              display: block;
-              opacity: 0.35;
+              &::before { opacity: 0; }
             }
-            li button {
-              position: relative;
-              width: 100%;
-              font-size: 0.9em;
-              text-align: left;
-              transition: opacity $trd;
-              cursor: pointer;
+            @include mouseState(hover) {
+              opacity: 1;
 
-              &::before { @include fill(true, #000, true); }
-
-              &[data-pressed="true"] {
-                color: #fff;
-                @include dynamicTheme-bgColor;
-
-                &::before { opacity: 0; }
-              }
-              &[data-pressed="false"] {
-                color: $site-color-lighter;
-                background-color: transparent;
-
-                &:not(:hover):not(:focus) {
-                  opacity: 0.8;
-
-                  &::before { opacity: 0; }
-                }
-                &:hover, &:focus {
-                  opacity: 1;
-
-                  &::before { opacity: 0.15; }
-                }
-                &:active::before { opacity: 0.3; }
-              }
-
-              span { position: relative; }
+              &::before { opacity: 0.15; }
+            }
+            @include mouseState(click) {
+              &::before { opacity: 0.3; }
             }
           }
+        }
+
+        @media screen and (max-width: 549px) {
+          .description, button { padding: 6px 18px 6px 9px; }
+        }
+        @media screen and (min-width: 550px) {
+          .description, button { padding: 4px 16px 4px 8px; }
         }
       }
     }
   }
 }
 .feed {
-  position: relative;
   width: 100%;
   padding: 32px 16px 64px;
 
-  .overlay {
-    @include flex;
-    @include fill(false, false, true);
-
-    &[hidden], > *[hidden] { display: inherit; }
-    &:not([hidden]) {
-      opacity: 1;
-      z-index: 1;
-    }
-    &[hidden] {
-      opacity: 0;
-      z-index: -1;
+  .panel {
+    @keyframes panelFadeIn {
+      0%    { opacity: 0; }
+      100%  { opacity: 1; }
     }
 
-    .spinner, .error { position: absolute; }
-    .spinner {
-      transform: scale(1.5);
-      transition: opacity $trd;
-
-      &:not([hidden]) { opacity: 1; }
-      &[hidden]       { opacity: 0; }
-    }
-    .error {
-      text-align: center;
-      font-weight: 600;
-      transition: opacity $trd;
-
-      &:not([hidden]) { opacity: 0.25; }
-      &[hidden]       { opacity: 0; }
-
-      .fas {
-        font-size: 2em;
-        padding: 16px 0;
+    @mixin lowerPanelSection($start) {
+      .separator    { grid-row: $start; }
+      .section {
+        &.pc        { grid-row: $start + 1; }
+        &.xbox      { grid-row: $start + 2; }
+        &.ps        { grid-row: $start + 3; }
       }
     }
-  }
-  .panel {
-    position: relative;
+    @mixin panelStructure ($extraInfo, $rows) {
+      .body {
+        grid-template-rows: repeat($rows, auto);
+        .background { grid-row: 1 / span $rows; }
+
+        @if $extraInfo == false {
+          @include lowerPanelSection($rows - 3);
+        }
+        @else if $extraInfo == true {
+          .section.notes { grid-row: $rows - 4; }
+          @include lowerPanelSection($rows - 3);
+        }
+      }
+    }
+    @mixin panelLayout($type) {
+      &[data-extraInfo="false"] {
+        @if $type == standard    { @include panelStructure(false, 6); }
+        @else if $type == mobile { @include panelStructure(false, 7); }
+      }
+      &[data-extraInfo="true"] {
+        @if $type == standard    { @include panelStructure(true, 7); }
+        @else if $type == mobile { @include panelStructure(true, 8); }
+      }
+
+      .body {
+        @if $type == standard {
+          .section {
+            &.rel                                        { grid-column: 1 }
+            &.exp                                        { grid-column: 2; }
+            &.src, &.notes, &.pc, &.xbox, &.ps, &.report { grid-column: 1 / span 2; }
+            &.rel, &.exp { grid-row: 1; }
+            &.src        { grid-row: 2; }
+          }
+        }
+        @else if $type == mobile {
+          .section {
+            grid-column: 1 / span 2;
+
+            &.rel { grid-row: 1; }
+            &.exp { grid-row: 2; }
+            &.src { grid-row: 3; }
+          }
+        }
+      }
+    }
+    @mixin panelRoot {
+      @at-root .feed .panel { @content; }
+    }
+
     color: inherit;
     border-radius: 4px;
     opacity: 0;
     overflow: hidden;
-    animation: fadeIn 0.4s linear forwards;
+    animation: panelFadeIn 0.4s linear forwards;
 
     &::before {
       @include fill(true, $site-color-lighter);
-      border: 2px solid;
+      border: bd(2px);
       border-radius: 4px;
     }
-    &[data-expanded="false"] {
-      .header .top .toggle .fas { transform: rotate(0deg); }
-      .body  { display: none; }
-    }
-    &[data-expanded="true"] {
-      .header .top .toggle .fas { transform: rotate(180deg); }
-      .body  { display: grid; }
-    }
-    &:not([data-filtered="true"]) {
-      &::before { opacity: 1; }
+    &:not([data-filtered="true"])::before { opacity: 1; }
+    &[data-filtered="false"]::before      { opacity: 0.5; }
 
-      .flag   { opacity: 1; }
-      .header { opacity: 1; }
-    }
-    &[data-filtered="true"] {
-      &::before { opacity: 0.5; }
+    @media screen and (max-width: 379px) { @include panelLayout(mobile); }
+    @media screen and (min-width: 380px) { @include panelLayout(standard); }
 
-      .flag   { opacity: 0.25; }
-      .header { opacity: 0.25; }
+    // Border Theming
+    & {
+      $colors: (
+        none: $site-color-darker,
+        new: $badge-new,
+        exp: $badge-exp
+        );
+
+      @each $colorN, $colorV in $colors {
+        $selector: "";
+
+        @if $colorN != none { $selector: ".#{$colorN}"; }
+        @else               {
+          @each $altN, $altV in $colors {
+            @if $altN != none { $selector: $selector + ":not(.#{$altN})"; }
+          }
+        }
+
+        &#{unquote($selector)}::before { border-color: $colorV; }
+      }
     }
-    &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
-    &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
-    &:not(.new):not(.exp)::before { border-color: $site-color-darker; }
-    &.new::before                 { border-color: $badge-new; }
-    &.exp::before                 { border-color: $badge-exp; }
     &:not(:last-child) { margin-bottom: 1.5em; }
 
-    > * { position: relative; }
     .filter-overlay {
-      @include fill(true, false, true);
-      @include flex;
+      @include fill(true);
+      @include flexbox;
       font-size: 1em;
       line-height: 1;
-      text-shadow: 1px 1px 2px tpb(0.5);
-      transition: opacity $trd;
+      text-shadow: dropShadow(tpb(0.5));
 
       &[data-visible*="hide"] { opacity: 0; }
       &[data-visible*="show"] { opacity: 1; }
 
       .content-container {
-        @include flex(c, c, c);
+        @include flexbox($direction: c);
         padding: 8px;
+      }
+      .title {
+        @include flexbox;
+        font-size: 1.25em;
+        padding-bottom: 8px;
 
-        .title {
-          @include flex;
-          font-size: 1.25em;
-          padding-bottom: 8px;
+        .fas { padding-right: 8px; }
+      }
+      .clear {
+        font-size: 1em;
+        padding: 6px 12px;
+        border: bd(1px, #fff);
+        border-radius: 4px;
 
-          .fas { padding-right: 8px; }
+        @include pshared { @include fill(true); }
+        &::before { background-color: #fff; }
+        &::after {
+          @include flexbox;
+          color: $site-color-dark;
+          content: "Click to Remove";
         }
-        .clear {
-          position: relative;
-          font-size: 1em;
-          padding: 6px 12px;
-          border: 1px solid #fff;
-          border-radius: 4px;
-          transition: opacity $trd;
 
-          &::before, &::after { @include fill(true, false, true); }
-          &::before { background-color: #fff; }
-          &::after {
-            @include flex;
-            color: $site-color-dark;
-            content: "Click to Remove";
-          }
-
-          &:not(:hover):not(:focus) {
-            &::before, &::after { opacity: 0; }
-          }
-          &:hover, &:focus {
-            &::before, &::after { opacity: 1; }
-          }
-          &:active            { opacity: 0.75; }
+        @include mouseState(noHover) {
+          @include pshared         { opacity: 0; }
         }
+        @include mouseState(hover) {
+          @include pshared         { opacity: 1; }
+        }
+        @include mouseState(click) { opacity: 0.75; }
       }
     }
     .flag {
-      @include flex;
+      @include flexbox;
       position: absolute;
-      top: 0;
-      left: 0;
-      height: 2.5em;
-      width: 5.5em;
+      @include pull(t, l);
+      @include sizing(2.5em, 5.5em);
       font-size: 1.1em;
       padding: 8px;
       box-shadow: shadow(tpb(0.25));
       text-shadow: dropShadow(tpb(0.25));
       transform: rotate(-45deg) translate(-1em, -1.55em);
-      z-index: 1;
+      z-index: zOrder(higher);
 
-      &.new { background-color: $badge-new; }
-      &.exp { background-color: $badge-exp; }
+      // Flag Theming
+      & {
+        $colors: (
+          new: $badge-new,
+          exp: $badge-exp
+          );
+
+        @each $colorN, $colorV in $colors {
+          &.#{$colorN} { background-color: $colorV; }
+        }
+      }
+
+      @include panelRoot {
+        &[data-filtered="false"] .flag { opacity: 1; }
+        &[data-filtered="true"] .flag  { opacity: 0.25; }
+      }
 
       .fas {
-        position: relative;
         top: 2px;
         left: -2px;
         transform: rotate(45deg);
       }
     }
     .hashTargetOverlay {
+      @keyframes panelHashTargeted {
+        0%, 50%, 100% { opacity: 0.25; }
+        25%, 75%      { opacity: 1; }
+      }
+      @keyframes panelHashTargetFade {
+        0%   { opacity: 0.75; }
+        100% { opacity: 0; }
+      }
+
       @include fill(true);
-      border: 2px solid;
+      border: bd(2px);
       border-radius: 4px;
       opacity: 0;
+
+      @include panelRoot {
+        &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
+        &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
+      }
     }
     .header {
+      @include panelRoot {
+        &:not([data-filtered="true"]) .header  { opacity: 1; }
+        &[data-filtered="true"] .header        { opacity: 0.25; }
+      }
+
       .top {
         display: grid;
         grid-template-columns: auto 1fr auto;
         padding: 8px;
 
-        > .fas, .title, .toggle {
-          grid-row: 1;
-          padding: 8px;
-        }
-        > .fas, .title {
-          align-self: center;
-        }
         > .fas {
           grid-column: 1;
           font-size: 1.5em;
         }
-        .title {
-          grid-column: 2;
-
+        .title { grid-column: 2; }
           .reward {
-            font-weight: 600;
-
-            &:not(.long) { font-size: 1em;  }
-            &.long { font-size: 0.85em; }
+            &:not(.long) { font-size: 1em; }
+            &.long       { font-size: 0.85em; }
           }
           .description {
-            opacity: .5;
             font-size: 0.75em;
+            opacity: 0.5;
           }
-        }
         .toggle {
-          @include flex;
+          @include flexbox;
           grid-column: 3;
           font-size: 1em;
-          height: 2em;
-          width: 2em;
-          transition: opacity $trd;
+          @include multiProp(2em, sizing);
 
-          &:not(:hover):not(:focus):not([hidden]) { opacity: 0.75; }
-          &:hover, &:focus                        { opacity: 1; }
-
-          .fas {
-            position: relative;
-            transition: transform $trd;
+          @include mouseState(noHover) {
+            &:not([hidden])          { opacity: 0.75; }
+          }
+          @include mouseState(hover) { opacity: 1; }
+          @include panelRoot {
+            &[data-expanded="false"] .toggle { transform: rotate(0deg); }
+            &[data-expanded="true"] .toggle  { transform: rotate(180deg); }
           }
         }
+        > .fas, .title, .toggle {
+          grid-row: 1;
+          padding: 8px;
+        }
+        > .fas, .title { align-self: center; }
+
+        @media screen and (max-width: 379px) { font-size: 1.25em; }
+        @media screen and (min-width: 380px) { font-size: 1.5em; }
       }
       .bottom {
         padding: 0 8px 8px 8px;
 
         .progress-bar {
-          position: relative;
           height: 9px;
-          padding: 0;
-          margin: 0 8px 8px 8px;
+          @include spacing(0 8px 8px 8px, 0);
           background-color: tpb(0.4);
-          border: 1px solid tpb(0.4);
+          border: bd(1px, tpb(0.4));
           border-radius: 4px;
           overflow: hidden;
 
           &.inactive { opacity: 0.5; }
 
           .progress {
+            @keyframes progressClimb {
+              0%    { transform: translateX(-100%); }
+              100%  { transform: translateX(0); }
+            }
+
             position: absolute;
+            @include pull(t, l);
             display: inherit;
-            top: 0;
-            left: 0;
             height: 100%;
-            width: 0;
-            @include dynamicTheme-color;
-            @include dynamicTheme-bgColor;
-            box-shadow: 0 0 1em;
+            @include theme(c, bg);
+            box-shadow: shadow($radius: 1em);
             border-radius: 4px;
             transform: translateX(-100%);
             animation: progressClimb 1.2s 0.4s linear forwards;
@@ -550,22 +467,28 @@
       }
     }
     .body {
-      position: relative;
-      display: grid;
       grid-template-columns: repeat(2, 1fr);
-      padding: 0 8px 8px;
-      margin: 0 2px 2px;
+      @include spacing(0 2px 2px, 0 8px 8px);
       background-color: tpb(0.2);
       overflow: hidden;
 
+      @include panelRoot {
+        &[data-expanded="false"] .body { display: none; }
+        &[data-expanded="true"] .body  { display: grid; }
+        &:not([data-filtered="true"]) .body { opacity: 1; }
+        &[data-filtered="true"] .body       { opacity: 0.25; }
+      }
+
       .background {
-        @include flex;
+        @include flexbox;
         grid-column: 1 / span 2;
         color: #000;
         opacity: 0.1;
+
+        @media screen and (max-width: 549px) { font-size: 15em; }
+        @media screen and (min-width: 550px) { font-size: 20em; }
       }
       .section {
-        position: relative;
         display: grid;
         grid-template-rows: auto 1fr;
         padding: 8px;
@@ -573,98 +496,122 @@
         &.notes {
           &.inactive { display: none; }
 
-          .content {
-            @include flex(s, c, c, true);
-            list-style: disc inside;
-
-            li {
-              padding-left: 4px;
-
-              &:not(:last-child) { padding-bottom: 0.25em; }
-            }
-          }
-        }
-        &.exp, &.src {
-          .content.inactive { color: tpw(0.5); }
+          .content { @include flexbox(c, s, $direction: c, $wrap: true); }
+          li { padding-left: 4px; }
         }
 
         .title {
           grid-column: 1;
           grid-row: 1;
-          font-weight: 600;
           padding: 8px 8px 8px 0;
         }
         .content {
-          position: relative;
-          @include flex(s, c, none, true);
+          @include flexbox(c, s, $wrap: true);;
           grid-column: 1;
           grid-row: 2;
-          color: inherit;
-          border: inherit;
-          line-height: inherit;
-          font-size: inherit;
+          @include multiProp(inherit, color, border, line-height, font-size);
           border-radius: 4px;
           padding: 8px;
           background-color: tpb(0.25);
           overflow: hidden;
 
-          &:not(:hover) .copy { opacity: 0; }
-          &:hover .copy       { opacity: 1; }
+          &.inactive { color: tpw(0.5); }
 
           a {
-            @include unstyledLink;
             opacity: 1;
             width: 100%;
             word-wrap: break-word;
 
-            &:not(:hover):not(:focus) .text  { text-decoration: none; }
-            &:hover, &:focus {
-              .text                          { text-decoration: underline; }
+            @include mouseState(noHover) {
+              .text                    { text-decoration: none; }
             }
-            &:active                         { opacity: 0.75; }
+            @include mouseState(hover) {
+              .text                    { text-decoration: underline; }
+            }
+            @include mouseState(click) { opacity: 0.75; }
 
             .fas, .text { display: inline; }
-            .fas { padding-right: 6px; }
           }
           input {
             position: absolute;
-            top: 0;
-            left: 0;
+            @include pull(t, l);
             display: block;
             transform: translateY(-100%);
             opacity: 0;
           }
-
+          .display { max-width: 85%; }
           .copy {
+            @keyframes copiedToClipboard {
+              0%, 50%, 100% { transform: scale(1); }
+              25%           { transform: scale(0.8); }
+              75%           { transform: scale(1.2); }
+            }
+
             position: absolute;
-            top: 0;
-            right: 0;
-            height: 100%;
-            width: 15%;
+            @include pull(t, r);
+            @include sizing(100%, 15%);
             font-size: inherit;
             padding: 8px;
-            transition: opacity $trd;
 
-            &::before { @include fill(true, #fff, true); }
+            &::before { @include fill(true, #fff); }
             &.animated .fas { animation: copiedToClipboard 0.5s linear; }
 
-            &:not(:hover):not(:focus)::before { opacity: 0.3; }
-            &:hover, &:focus {
-              &::before                       { opacity: 0.5; }
+            @include mouseState(noHover) {
+              &::before                { opacity: 0.3; }
             }
-            &:focus                          { opacity: 1; }
-            &:active                         { opacity: 0.75; }
+            @include mouseState(hover) {
+              &::before                { opacity: 0.5; }
+            }
+            &:focus                    { opacity: 1; }
+            @include mouseState(click) { opacity: 0.75; }
           }
         }
       }
       .separator {
         grid-column: 1 / span 2;
         color: #000;
-        border-bottom: 3px solid;
+        border-bottom: bd(3px);
         opacity: 0.25;
         margin: 16px 8px 4px 8px;
       }
     }
   }
 }
-template, #panel-feed-template { display: none; }
+.overlay {
+  @include flexbox;
+  @include fill;
+
+  &[hidden], > [hidden] {
+    display: inherit;
+  }
+  &:not([hidden]) {
+    @include multiProp(1, opacity, z-index);
+  }
+  &[hidden] {
+    opacity: 0;
+    z-index: -1;
+  }
+
+  .spinner {
+    transform: scale(1.5);
+
+    &:not([hidden]) { opacity: 1; }
+    &[hidden]       { opacity: 0; }
+  }
+  .error {
+    text-align: center;
+
+    &:not([hidden]) { opacity: 0.25; }
+    &[hidden]       { opacity: 0; }
+
+    .fas {
+      font-size: 2em;
+      padding: 16px 0;
+    }
+
+    @media screen and (max-width: 549px) { font-size: 1.75em; }
+    @media screen and (min-width: 550px) { font-size: 2em; }
+  }
+  .spinner, .error { position: absolute; }
+}
+#panel-feed-template { display: none; }

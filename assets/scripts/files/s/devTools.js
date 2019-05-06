@@ -38,8 +38,8 @@ var devTools = {
   (function () {
     let alert = document.createElement('div');
 
-    alert.classList.add('devmode-message');
-    alert.innerHTML = 'Development Mode<strong>Enabled</strong>';
+    alert.classList.add('devtools-message');
+    alert.innerHTML = 'Development Tools&nbsp;<strong>Enabled</strong>';
 
     document.getElementById('footer').appendChild(alert);
   })();

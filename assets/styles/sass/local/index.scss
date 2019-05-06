@@ -5,133 +5,113 @@
 /*** Imports ***/
 @import "../partials/_globals";
 
-/*** Media Queries ***/
-@media screen and (max-width: 399px) {
-  .banner .content-container {
-    font-size: 1.5em;
-
-    .button-group {
-      grid-template-columns: 1fr;
-      grid-template-rows:    repeat(3, 1fr);
-    }
-  }
-}
-@media screen and (min-width: 400px) and (max-width: 499px) {
-  .banner .content-container { font-size: 1.75em; }
-}
-@media screen and (min-width: 500px) {
-  .banner .content-container { font-size: 2em; }
-}
-@media screen and (min-width: 400px) and (max-width: 674px) {
-  .banner .content-container .button-group {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows:    repeat(2, 1fr);
-
-    a.bl1 {
-      grid-row: 1;
-      grid-column: 1 / span 2;
-    }
-    a.bl2 {
-      grid-row: 2;
-      grid-column: 1;
-    }
-    a.tps {
-      grid-row: 2;
-      grid-column: 2;
-    }
-  }
-}
-@media screen and (min-width: 675px) {
-  .banner .content-container .button-group { grid-template-columns: repeat(3, 1fr); }
-}
-
 /*** Style Declarations ***/
 .banner {
-  @include ready;
+  @media screen and (max-width: 399px) {
+    font-size: 1.5em;
+  }
+  @media screen and (min-width: 400px) and (max-width: 499px) {
+    font-size: 1.75em;
+  }
+  @media screen and (min-width: 500px) {
+    font-size: 2em;
+  }
 
-  position: relative;
-  height: 100%;
-  width: 100%;
-  background-position: center;
-  background-size: cover;
+  @include ready;
+  @include multiProp(100%, sizing);
+  @include bgImg;
 
   &::before { @include fill(true, tpb(0.6)); }
 
   .content-container {
-    @include flex(c, c, c);
-    position: relative;
-    height: 100%;
-    width: 100%;
+    @include flexbox($direction: c);
+    @include multiProp(100%, sizing);
     padding: 16px;
+  }
+  .title {
+    @include flexbox(none, c, $direction: c);
+    margin-bottom: 8px;
+    text-align: center;
+    text-shadow: dropShadow(tpb(0.6));
 
-    .title {
-      @include flex(c, none, c);
+    .logo {
+      @include multiProp(3.5em, sizing);
       margin-bottom: 8px;
-      position: relative;
-      text-align: center;
-      text-shadow: dropShadow(tpb(0.6));
+      border-radius: 50%;
+      box-shadow: shadow(tpb(0.6));
+    }
+    .name { font-size: 1.5em; }
+    .tagline {
+      opacity: .8;
+      font-size: 1em;
+    }
+  }
+  .button-group {
+    display: grid;
+    padding-top: 8px;
+    min-width: 90%;
 
-      .logo {
-        margin-bottom: 8px;
-        border-radius: 50%;
-        box-shadow: shadow(tpb(0.6));
-        height: 3.5em;
-        width: 3.5em;
+    @media screen and (max-width: 399px) {
+      grid-template-columns: 1fr;
+      grid-template-rows:    repeat(3, 1fr);
+    }
+    @media screen and (min-width: 400px) and (max-width: 674px) {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows:    repeat(2, 1fr);
+
+      a.bl1 {
+        grid-row: 1;
+        grid-column: 1 / span 2;
       }
-      .name {
-        font-weight: 600;
-        font-size: 1.5em;
+      a.bl2 {
+        grid-row: 2;
+        grid-column: 1;
       }
-      .tagline {
-        opacity: .8;
-        font-size: 1em;
+      a.tps {
+        grid-row: 2;
+        grid-column: 2;
       }
     }
-    .button-group {
-      position: relative;
-      display: grid;
-      padding-top: 8px;
-      min-width: 90%;
+    @media screen and (min-width: 675px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
 
-      a {
-        @include flex;
-        @include unstyledLink;
-        position: relative;
-        flex: 1;
-        line-height: 1;
-        text-align: center;
+    a {
+      @include flexbox;
+      flex: 1;
+      line-height: 1;
+      text-align: center;
+      border-radius: 4px;
+      font-size: 0.9em;
+      @include spacing(0.25em, 0.6em);
+
+      @include pshared {
+        @include fill(true);
+        border: bd(2px);
         border-radius: 4px;
-        background-position: center;
-        background-size: cover;
-        font-size: 0.9em;
-        margin: 0.25em;
-        padding: 0.6em;
+      }
 
-        @mixin indexButtonLinkThemes($color) {
-          background-color: $color;
-          border-color: $color;
+      // Individual Theming
+      & {
+        @each $colorN, $colorV in $themeColors {
+          @if $colorN != main {
+            &.#{$colorN}::before {
+              @include multiProp($colorV, background-color, border-color);
+            }
+          }
         }
+      }
 
-        &::before, &::after {
-          @include fill(true, false, true);
-          border: 2px solid;
-          border-radius: 4px;
-        }
-        &.bl1::before { @include indexButtonLinkThemes($theme-bl1); }
-        &.bl2::before { @include indexButtonLinkThemes($theme-bl2); }
-        &.tps::before { @include indexButtonLinkThemes($theme-tps); }
-
-        &:not(:hover):not(:focus) {
-          &::before { opacity: 0; }
-          &::after  { opacity: 1; }
-        }
-        &:hover, &:focus {
-          &::before { opacity: 1; }
-          &::after  { opacity: 0; }
-        }
-        &:active { opacity: 0.75; }
-
-        span { position: relative; }
+      @include mouseState(noHover) {
+        &::before { opacity: 0; }
+        &::after  { opacity: 1; }
+      }
+      @include mouseState(hover) {
+        &::before { opacity: 1; }
+        &::after  { opacity: 0; }
+      }
+      @include mouseState(click) {
+        opacity: 0.75;
       }
     }
   }

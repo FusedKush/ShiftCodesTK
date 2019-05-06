@@ -1,1 +1,1 @@
-<noscript><link href="/assets/styles/css/min/global.min.css?v=1"rel=stylesheet><link href="/assets/styles/css/min/errordocs/noscript.min.css?v=1"rel=stylesheet></noscript>
+<noscript><link href="/assets/styles/css/min/errordocs/noscript.min.css?v=1"rel=stylesheet></noscript>

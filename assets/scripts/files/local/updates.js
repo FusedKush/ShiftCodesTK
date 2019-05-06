@@ -157,7 +157,7 @@ function checkJumpDropdownKey (event) {
         // Replace Markdown with HTML Markup
         // Format Sections
         notes = notes.replace(/(#{3}\s{1})(?=\w)/g, '</ul><h3>');
-        notes = notes.replace(/\s{1}#{3}/g, '</h3><ul>');
+        notes = notes.replace(/\s{1}#{3}/g, '</h3><ul class="styled">');
         // Format Lists
         notes = notes.replace(/-.*/g, updateChanges);
         // Format Bolded Content

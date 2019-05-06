@@ -2,15 +2,15 @@
   <div class="content-wrapper">
     <div class="section counters">
       <div class="badge total inactive" id="shift_header_count_total" title="No SHiFT Codes Available" aria-label="No SHiFT Codes Available">
-        <span class="count">0</span>
+        <strong class="count">0</strong>
         <span class="fas fa-key"></span>
       </div>
       <button class="badge new inactive" id="shift_header_count_new" title="No New SHiFT Codes" aria-label="No New SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
-        <span class="count">0</span>
+        <strong class="count">0</strong>
         <span class="fas fa-star"></span>
       </button>
       <button class="badge exp inactive" id="shift_header_count_exp" title="No Expiring SHiFT Codes" aria-label="No Expiring SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
-        <span class="count">0</span>
+        <strong class="count">0</strong>
         <span class="fas fa-exclamation-triangle"></span>
       </button>
     </div>
@@ -39,11 +39,13 @@
 <main class="feed content-wrapper" id="panel_feed" data-filter="none" data-sort="default">
   <div class="overlay" id="shift_overlay">
     <!-- Spinner -->
-    <?php include("./assets/php/html/min/imports/spinner.php"); ?>
+    <?php include("./assets/php/html/min/imports/local/spinner.php"); ?>
     <div class="error" hidden aria-hidden="true">
-      <div>No SHiFT Codes are currently available</div>
-      <span class="fas fa-heart-broken"></span>
-      <div>Please try again later</div>
+      <strong>
+        <div>No SHiFT Codes are currently available</div>
+        <span class="fas fa-heart-broken"></span>
+        <div>Please try again later</div>
+      </strong>
     </div>
   </div>
 </main>
@@ -61,7 +63,7 @@
       <div class="top">
         <span class="fas fa-key" title="SHiFT Code" aria-label="SHiFT Code"></span>
         <div class="title">
-          <div class="reward">5 Golden Keys</div>
+          <strong class="reward">5 Golden Keys</strong>
           <div class="description">SHiFT Code</div>
         </div>
         <button class="toggle bubble-parent" title="Expand SHiFT Code" aria-label="Expand SHiFT Code">
@@ -78,29 +80,29 @@
     <div class="body">
       <span class="background fas fa-key"></span>
       <div class="section rel">
-        <div class="title">Release Date:</div>
+        <strong class="title">Release Date:</strong>
         <div class="content"></div>
       </div>
       <div class="section exp">
-        <div class="title">Expiration Date:</div>
+        <strong class="title">Expiration Date:</strong>
         <div class="content"></div>
       </div>
       <div class="section src">
-        <div class="title">Source:</div>
+        <strong class="title">Source:</strong>
         <div class="content">
           <a target="_blank" rel="external noopener">
-            <span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>
+            <span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>&nbsp;
             <span class="text"></span>
           </a>
         </div>
       </div>
       <div class="section notes inactive">
-        <div class="title">Notes:</div>
-        <ul class="content"></ul>
+        <strong class="title">Notes:</strong>
+        <ul class="content styled"></ul>
       </div>
       <div class="separator"></div>
       <div class="section pc">
-        <div class="title"></div>
+        <strong class="title"></strong>
           <div class="content">
             <span class="display"></span>
             <input class="value" hidden aria-hidden="true" tabindex="-1">
@@ -110,7 +112,7 @@
           </div>
         </div>
       <div class="section xbox">
-        <div class="title"></div>
+        <strong class="title"></strong>
         <div class="content">
           <span class="display"></span>
           <input class="value" hidden aria-hidden="true" tabindex="-1">
@@ -120,7 +122,7 @@
         </div>
       </div>
       <div class="section ps">
-        <div class="title"></div>
+        <strong class="title"></strong>
         <div class="content">
           <span class="display"></span>
           <input class="value" hidden aria-hidden="true" tabindex="-1">

@@ -11,21 +11,41 @@
 /*** Variables ***/
 /*** Mixins ***/
 /*** Animations ***/
+@-webkit-keyframes sectionHashTargeted {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
 @keyframes sectionHashTargeted {
   0%, 50%, 100% {
     opacity: 1; }
   25%, 75% {
     opacity: 0.25; } }
+@-webkit-keyframes sectionHashTargetSolidify {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
 @keyframes sectionHashTargetSolidify {
   0% {
     opacity: 0.25; }
   100% {
     opacity: 1; } }
+@-webkit-keyframes qaHashTargeted {
+  0%, 50%, 100% {
+    opacity: 0; }
+  25%, 75% {
+    opacity: 0.35; } }
 @keyframes qaHashTargeted {
   0%, 50%, 100% {
     opacity: 0; }
   25%, 75% {
     opacity: 0.35; } }
+@-webkit-keyframes qaHashTargetFade {
+  0% {
+    opacity: 0.35; }
+  100% {
+    opacity: 0; } }
 @keyframes qaHashTargetFade {
   0% {
     opacity: 0.35; }
@@ -39,12 +59,8 @@
   .help-footer .body .panel {
     width: 50%; } }
 /*** Style Declarations ***/
-main, .help-footer {
-  opacity: 1;
-  transition: opacity 0.2s ease-out; }
-  main *, .help-footer * {
-    opacity: 1;
-    transition: opacity 0.2s ease-out; }
+main, main *, .help-footer, .help-footer * {
+  opacity: 1; }
 
 main {
   padding: 16px 16px 32px; }
@@ -85,9 +101,11 @@ main {
   main section {
     margin: 2.5em 0; }
     main section[data-hashtarget-highlighted="true"] header h2 {
-      animation: sectionHashTargeted 2.5s linear infinite; }
+      -webkit-animation: sectionHashTargeted 2.5s linear infinite;
+              animation: sectionHashTargeted 2.5s linear infinite; }
     main section[data-hashtarget-highlighted="false"] header h2 {
-      animation: sectionHashTargetSolidify 0.75s linear; }
+      -webkit-animation: sectionHashTargetSolidify 0.75s linear;
+              animation: sectionHashTargetSolidify 0.75s linear; }
     main section header {
       padding: 6px 9px;
       margin-bottom: 1em;
@@ -103,18 +121,19 @@ main {
       color: rgba(255, 255, 255, 0.75);
       overflow: hidden; }
       main section .qa[data-hashtarget-highlighted="true"]::before {
-        animation: qaHashTargeted 2.5s linear infinite; }
+        -webkit-animation: qaHashTargeted 2.5s linear infinite;
+                animation: qaHashTargeted 2.5s linear infinite; }
       main section .qa[data-hashtarget-highlighted="false"]::before {
-        animation: qaHashTargetFade 0.75s linear; }
+        -webkit-animation: qaHashTargetFade 0.75s linear;
+                animation: qaHashTargetFade 0.75s linear; }
       main section .qa::before {
         position: absolute;
         top: 0;
         left: 0;
-        right: 0;
         bottom: 0;
+        right: 0;
         content: "";
         background-color: #fff;
-        transition: opacity 0.2s ease-out;
         opacity: 0; }
       main section .qa * {
         position: relative; }
@@ -169,8 +188,6 @@ main {
         align-items: center;
         justify-content: center; }
         .help-footer .body .panel .button-wrapper a {
-          color: inherit;
-          text-decoration: none;
           position: relative;
           display: flex;
           align-items: center;
@@ -184,11 +201,10 @@ main {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
             bottom: 0;
+            right: 0;
             content: "";
-            background-color: #fff;
-            transition: opacity 0.2s ease-out; }
+            background-color: #fff; }
           .help-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
             opacity: 0.2; }
           .help-footer .body .panel .button-wrapper a:hover::before, .help-footer .body .panel .button-wrapper a:focus::before {
@@ -202,8 +218,8 @@ main {
             padding-right: 8px; }
           .help-footer .body .panel .button-wrapper a .label {
             display: flex;
-            align-items: flex-start;
             justify-content: center;
+            align-items: flex-start;
             flex-direction: column;
             line-height: normal;
             font-size: 0.75em; }

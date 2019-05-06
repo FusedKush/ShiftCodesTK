@@ -113,7 +113,7 @@ function sidebarEventListenerCheckKey (event) {
 (function () {
     newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
       let alerts = JSON.parse(request).response.alerts;
-      let links = document.getElementById('sidebar').getElementsByClassName('link');
+      let links = document.getElementById('sidebar').getElementsByTagName('a');
       let template = document.getElementById('sidebar_template_badges').content.children;
 
       for (i = 0; i < links.length; i++) {

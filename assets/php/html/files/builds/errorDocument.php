@@ -40,7 +40,7 @@
         opacity: 0;
       }
     </style>
-    <link rel="stylesheet" href="/assets/styles/css/min/global.min.css?v=1">
+    <link rel="stylesheet" href="/assets/styles/css/min/shared/global.min.css?v=1">
     <link rel="stylesheet" href="/assets/styles/css/min/errordocs/errorDocument.min.css?v=1">
     <!-- Important Metadata -->
     <title><?php echo $errorTitle . ' - ShiftCodesTK'?></title>

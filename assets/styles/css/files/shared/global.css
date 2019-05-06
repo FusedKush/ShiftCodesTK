@@ -8,66 +8,15 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
-/*** Media Queries ***/
-@media screen and (max-width: 474px) {
-  header.main .content-container .content-wrapper .content.short {
-    font-size: 1em; }
-  header.main .content-container .content-wrapper .content.long {
-    font-size: 0.75em; } }
-@media screen and (min-width: 475px) and (max-width: 699px) {
-  header.main .content-container .content-wrapper .content.short {
-    font-size: 1.25em; }
-  header.main .content-container .content-wrapper .content.long {
-    font-size: 1em; } }
-@media screen and (min-width: 700px) {
-  header.main .content-container .content-wrapper .content.short {
-    font-size: 1.5em; }
-  header.main .content-container .content-wrapper .content.long {
-    font-size: 1.25em; } }
-/*** Animations ***/
-@keyframes externalLinkIconEnter {
-  0% {
-    transform: scale(1); }
-  25% {
-    transform: scale(0.8); }
-  50% {
-    transform: scale(1); }
-  75% {
-    transform: scale(1.2); }
-  100% {
-    transform: scale(1); } }
-@keyframes externalLinkIconLeave {
-  0% {
-    transform: scale(1); }
-  50% {
-    transform: scale(1.2); }
-  100% {
-    transform: scale(1); } }
-@keyframes externalLinkIconClick {
-  0% {
-    opacity: 1; }
-  100% {
-    opacity: 0.75; } }
-@keyframes animateSpinner1 {
-  0% {
-    transform: scale(0); }
-  100% {
-    transform: scale(1); } }
-@keyframes animateSpinner2 {
-  0% {
-    transform: translate(0, 0); }
-  100% {
-    transform: translate(19px, 0); } }
-@keyframes animateSpinner3 {
-  0% {
-    transform: scale(1); }
-  100% {
-    transform: scale(0); } }
 /*** Global Declarations ***/
 *, ::before, ::after {
-  padding: 0;
+  position: relative;
   margin: 0;
-  box-sizing: border-box; }
+  padding: 0;
+  box-sizing: border-box;
+  transition: opacity 0.2s ease-out, -webkit-transform 0.2s ease-out;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out, -webkit-transform 0.2s ease-out; }
 
 html, body {
   height: 100%;
@@ -78,12 +27,14 @@ body {
   background-color: #0f1d2c;
   font-family: Arial, sans-serif;
   line-height: 1.25;
-  opacity: 1;
-  transition: opacity 0.2s ease-out; }
-  body[data-popup-active="true"] {
-    overflow: hidden; }
-  body[data-popup-active="false"] {
-    overflow: auto; }
+  opacity: 1; }
+
+a {
+  text-decoration: none; }
+  a:not(.colored) {
+    color: inherit; }
+  a.colored {
+    color: #0ff; }
 
 button {
   background: transparent;
@@ -92,30 +43,53 @@ button {
   font-family: inherit; }
   button:hover:not([disabled]) {
     cursor: pointer; }
+  button[disabled] {
+    opacity: .5;
+    cursor: not-allowed; }
 
-button[disabled], span[disabled], div[disabled] {
-  opacity: .5;
-  pointer-events: none; }
+ul.styled {
+  list-style: disc inside; }
 
-.content-wrapper {
-  max-width: 1200px;
-  margin: 0 auto; }
+ol.styled {
+  list-style: decimal inside; }
+
+ul.styled, ol.styled {
+  padding: 0 12px; }
+  ul.styled:not(:first-child), ol.styled:not(:first-child) {
+    padding-top: 12px; }
+  ul.styled:not(:last-child), ol.styled:not(:last-child) {
+    padding-bottom: 12px; }
+  ul.styled li, ol.styled li {
+    padding: 2px 0; }
+ul:not(.styled), ol:not(.styled) {
+  list-style: none; }
+
+code {
+  padding: 3px 6px; }
+
+pre {
+  margin: 8px 0;
+  padding: 8px; }
+  pre code {
+    background-color: transparent;
+    padding: 0; }
+
+pre, code {
+  font-family: inherit;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.25); }
 
 template, .webp-support {
   display: none; }
 
 header.main {
-  opacity: 1;
-  transition: opacity 0.2s ease-out;
-  position: relative;
   width: 100%;
   border-bottom: 4px solid;
   background-position: center;
   background-size: cover;
   overflow: hidden; }
-  header.main *, header.main ::before, header.main ::after {
-    opacity: 1;
-    transition: opacity 0.2s ease-out; }
+  header.main, header.main * {
+    opacity: 1; }
   body[data-theme="main"] header.main {
     border-color: #f00; }
   body[data-theme="bl1"] header.main {
@@ -136,100 +110,141 @@ header.main {
     width: 100%;
     padding-top: 64px;
     background-color: rgba(0, 0, 0, 0.6); }
-    header.main .content-container .content-wrapper {
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-      height: 100%;
-      width: 100%;
-      padding: 32px 16px; }
-      header.main .content-container .content-wrapper .content {
-        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-        max-width: 85%; }
-        header.main .content-container .content-wrapper .content .title {
-          font-size: 2em;
-          font-weight: bold;
-          line-height: 1.1; }
-        header.main .content-container .content-wrapper .content .description {
-          font-size: 1.1em;
-          opacity: 0.75;
-          padding-top: 4px; }
+  header.main .content-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    height: 100%;
+    width: 100%;
+    padding: 32px 16px; }
+  header.main .content {
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    max-width: 85%; }
+    @media screen and (max-width: 474px) {
+      header.main .content.short {
+        font-size: 1em; }
+      header.main .content.long {
+        font-size: 0.75em; } }
+    @media screen and (min-width: 475px) and (max-width: 699px) {
+      header.main .content.short {
+        font-size: 1.25em; }
+      header.main .content.long {
+        font-size: 1em; } }
+    @media screen and (min-width: 700px) {
+      header.main .content.short {
+        font-size: 1.5em; }
+      header.main .content.long {
+        font-size: 1.25em; } }
+  header.main .title {
+    font-size: 2em;
+    line-height: 1.1; }
+  header.main .description {
+    font-size: 1.1em;
+    opacity: 0.75;
+    padding-top: 4px; }
 
 main {
-  opacity: 1;
-  transition: opacity 0.2s ease-out; }
+  opacity: 1; }
   main > .content-wrapper {
     padding: 32px 16px; }
     main > .content-wrapper.no-header {
       padding-top: 80px; }
 
-/*** Global Classes ***/
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto; }
+
+/*** Custom Elements ***/
 .bubble-parent {
-  position: relative;
   display: flex;
   align-items: center;
   justify-content: center; }
   .bubble-parent:not(:hover):not(:focus) .bubble {
     opacity: 0;
-    transform: scale(0); }
+    -webkit-transform: scale(0);
+            transform: scale(0); }
   .bubble-parent:hover .bubble, .bubble-parent:focus .bubble {
     opacity: 0.3;
-    transform: scale(1); }
+    -webkit-transform: scale(1);
+            transform: scale(1); }
   .bubble-parent:active .bubble {
-    opacity: 0.5; }
+    opacity: 0.5;
+    -webkit-transform: scale(1);
+            transform: scale(1); }
   .bubble-parent .bubble {
     position: absolute;
     border-radius: 50%;
     height: 80%;
-    width: 80%;
-    transition: opacity 0.2s ease-out, transform 0.2s ease-out; }
+    width: 80%; }
     .bubble-parent .bubble-light {
       background-color: #fff; }
     .bubble-parent .bubble-dark {
       background-color: #000; }
 
-.spinner {
-  position: relative;
-  display: inline-block;
-  width: 64px;
-  height: 64px; }
-  .spinner .dot {
-    position: absolute;
-    top: 27px;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background-color: #fff;
-    animation-timing-function: cubic-bezier(0, 1, 1, 0); }
-    .spinner .dot:nth-child(1) {
-      left: 6px;
-      animation: animateSpinner1 0.6s infinite; }
-    .spinner .dot:nth-child(2) {
-      left: 6px;
-      animation: animateSpinner2 0.6s infinite; }
-    .spinner .dot:nth-child(3) {
-      left: 26px;
-      animation: animateSpinner2 0.6s infinite; }
-    .spinner .dot:nth-child(4) {
-      left: 45px;
-      animation: animateSpinner3 0.6s infinite; }
-
 .external-link-icon {
-  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center; }
+@-webkit-keyframes externalLinkIconEnter {
+  0%, 50%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  25% {
+    -webkit-transform: scale(0.8);
+            transform: scale(0.8); }
+  75% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2); } }
+@keyframes externalLinkIconEnter {
+  0%, 50%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  25% {
+    -webkit-transform: scale(0.8);
+            transform: scale(0.8); }
+  75% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2); } }
+@-webkit-keyframes externalLinkIconLeave {
+  0%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  50% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2); } }
+@keyframes externalLinkIconLeave {
+  0%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  50% {
+    -webkit-transform: scale(1.2);
+            transform: scale(1.2); } }
+@-webkit-keyframes externalLinkIconClick {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0.75; } }
+@keyframes externalLinkIconClick {
+  0% {
+    opacity: 1; }
+  100% {
+    opacity: 0.75; } }
   .external-link-icon:not(:hover):not(:focus) .external {
     opacity: 0; }
   .external-link-icon:not(:hover):not(:focus) .icon {
     opacity: 1;
-    animation: externalLinkIconLeave 0.25s linear forwards; }
+    -webkit-animation-name: externalLinkIconLeave;
+            animation-name: externalLinkIconLeave; }
   .external-link-icon:hover .external, .external-link-icon:focus .external {
     opacity: 1;
-    animation: externalLinkIconEnter 0.25s linear forwards; }
+    -webkit-animation-name: externalLinkIconEnter;
+            animation-name: externalLinkIconEnter; }
   .external-link-icon:hover .icon, .external-link-icon:focus .icon {
     opacity: 0; }
   .external-link-icon:active .external {
-    animation: externalLinkIconClick 0.25s linear forwards; }
+    -webkit-animation-name: externalLinkIconClick;
+            animation-name: externalLinkIconClick; }
   .external-link-icon .external, .external-link-icon .icon {
-    position: absolute; }
+    position: absolute;
+    -webkit-animation: 0.25s linear forwards;
+            animation: 0.25s linear forwards; }

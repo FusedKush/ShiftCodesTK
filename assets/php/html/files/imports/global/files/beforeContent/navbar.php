@@ -13,7 +13,9 @@
         <li role="menuitem">
           <a class="btn bubble-parent" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home" data-noFocusScroll="true">
             <span class="bubble bubble-dynamic"></span>
-            <span class="logo" alt="ShiftCodesTK Logo"></span>
+            <span class="logo">
+              <img src="/assets/img/logo.svg?v=1" alt="ShiftCodesTK Logo">
+            </span>
           </a>
         </li>
       </div>

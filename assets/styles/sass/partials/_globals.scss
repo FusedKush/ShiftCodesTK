@@ -15,6 +15,12 @@ $theme-main:             #f00;                 // Main Theme Color
 $theme-bl1:              #dc143c;              // BL1: GOTY Theme Color
 $theme-bl2:              #ff4500;              // Borderlands 2 Theme Color
 $theme-tps:              #1e90ff;              // Borderlands: TPS Theme Color
+$themeColors: (                                // Theme Color Definition List
+                         main: $theme-main,
+                         bl1: $theme-bl1,
+                         bl2: $theme-bl2,
+                         tps: $theme-tps
+              );
 
 // Misc. Site Properties
 $df-color:               #fff;                 // Default Site Color
@@ -22,12 +28,39 @@ $df-font:                Arial, sans-serif;    // Default Site Font
 $df-line-height:         1.25;                 // Default Line-Height
 $trd:                    0.2s ease-out;        // Default Transition Timing & Style
 $trds:                   0.4s ease-out;        // Slower Transition Timing & Style
+
 $bbl-light:              #fff;                 // Light Bubble Color
 $bbl-dark:               #000;                 // Dark Bubble Color
 $badge-new:              #0057ff;              // New! Badge Color
 $badge-exp:              #ff8c00;              // Expiring! Badge Color
 
 /*** Functions ***/
+// Default Transition Timing
+@function trd($duration) {
+  @return ease-out $duration;
+}
+// Z-Index Stacking Order
+@function zOrder($type) {
+  $stackingOrder: (
+    hidden: -1,
+    default: 0,
+    higher: 1,
+    navbar: 100,
+    sidebar: 101,
+    popup: 102
+    );
+
+  @return map-get($stackingOrder, $type);
+}
+// Default Border Properties
+@function bd($width, $color: none) {
+  $val: null;
+
+  @if $color == none { $val: $width solid; }
+  @else              { $val: $width solid $color; }
+
+  @return $val;
+}
 // Transparent Black
 @function tpb($opacity) {
   @return rgba(0, 0, 0, $opacity);
@@ -36,12 +69,8 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 @function tpw($opacity) {
   @return rgba(255, 255, 255, $opacity);
 }
-// Default Transition Timing
-@function trd($duration) {
-  @return ease-out $duration;
-}
 // Default Box-Shadow / Text-Shadow Properties
-@function shadow($color: tpb(0.5), $radius: 1em) {
+@function shadow($color: currentcolor, $radius: 1em) {
   @return 0 0 $radius $color;
 }
 // Default Drop-Shadow Properties
@@ -50,84 +79,189 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 }
 
 /*** Mixins ***/
-// Ready Content
+// Content Styles Loaded
 @mixin ready {
-  opacity: 1;
-  transition: opacity $trd;
+  &, * { opacity: 1; }
+}
+// Layout //
+// Flexbox
+@mixin flexbox($vAlign: c, $hAlign: c, $type: default, $direction: default, $wrap: false) {
+  $axisList: (
+    v: $vAlign,
+    h: $hAlign
+    );
+  $alignments: (
+    c: center,
+    s: flex-start,
+    e: flex-end,
+    sb: space-between,
+    sa: space-around,
+    se: space-evenly
+    );
+  $directions: (
+    r: row,
+    rr: row-reverse,
+    c: column,
+    cr: column-reverse
+    );
 
-  * {
-    opacity: 1;
-    transition: opacity $trd;
-  }
-}
-// Flex
-// Mixin-Dependent Functions
-@function getFlexAlignment ($align) {
-  @if $align == c       { @return center; }
-  @else if $align == s  { @return flex-start; }
-  @else if $align == e  { @return flex-end; }
-  @else if $align == sa { @return space-around; }
-  @else if $align == sb { @return space-between; }
-  @else if $align == se { @return space-evenly; }
-}
-@function getFlexDirection ($direction) {
-  @if $direction == c       { @return column; }
-  @else if $direction == cr { @return column-reverse; }
-  @else if $direction == r  { @return row; }
-  @else if $direction == rr { @return row-reverse; }
-}
-// Mixin
-@mixin flex($horizontal: c, $vertical: c, $direction: none, $wrap: false, $type: default) {
-  @if $type == default     { display: flex; }
-  @else if $type == inline { display: inline-flex; }
+  // Type
+  @if $type == default { display: flex; }
+  @else                { display: inline-flex; }
+  // Alignment
+  @each $axisN, $axisV in $axisList {
+    @if $axisV != none {
+      $selector: none;
 
-  @if $direction == none or $direction == r or $direction == rr {
-    @if $vertical != none   { align-items: getFlexAlignment($vertical); }
-    @if $horizontal != none { justify-content: getFlexAlignment($horizontal); }
-  }
-  @else if $direction == c or $direction == cr {
-    @if $horizontal != none { align-items: getFlexAlignment($horizontal); }
-    @if $vertical != none   { justify-content: getFlexAlignment($vertical); }
-  }
+      @if $direction == default or $direction == r or $direction == rr {
+        @if $axisN == v      { $selector: align-items;  }
+        @else if $axisN == h { $selector: justify-content; }
+      }
+      @else if $direction == c or $direction == cr {
+        @if $axisN == v      { $selector: justify-content;  }
+        @else if $axisN == h { $selector: align-items; }
+      }
 
-  @if $direction != none { flex-direction: getFlexDirection($direction); }
-  @if $wrap != false     { flex-wrap: wrap; }
+      #{$selector}: map-get($alignments, $axisV);
+    }
+  }
+  // Direction
+  @if $direction != default { flex-direction: map-get($directions, $direction); }
+  // Wrap
+  @if $wrap == true { flex-wrap: wrap; }
 }
-// Stretch to fill Parent Container
-@mixin fill ($pseudo: false, $background: false, $animated: false) {
+// Absolutely Fill Parent Container
+@mixin fill($pseudo: false, $background: false, $deprecatedParameterAnimated: false) {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  @include pull(all);
 
   @if $pseudo == true      { content: ""; }
   @if $background != false { background-color: $background; }
-  @if $animated == true    { transition: opacity $trd; }
 }
-// Mixin for backwards-compatibility;
-@mixin pseudo-fit { @include fill(true); }
-// Unstyled Link
-@mixin unstyledLink {
-  color: inherit;
-  text-decoration: none;
+// Stretch to fill parent container (Warning! May become deprecated in future releases; Use multiProp Sizing instead.)
+@mixin stretch($type: both) {
+  @if $type == both or $type == h { height: 100%; }
+  @if $type == both or $type == w { width: 100%; }
 }
-// Dynamic Theme Colors
-@mixin dynamicTheme-color {
-  body[data-theme="main"] & { color: $theme-main; }
-  body[data-theme="bl1"] &  { color: $theme-bl1; }
-  body[data-theme="bl2"] &  { color: $theme-bl2; }
-  body[data-theme="tps"] &  { color: $theme-tps; }
+// Element Pull
+@mixin pull($sides...) {
+  $sideNames: (
+    t: top,
+    l: left,
+    b: bottom,
+    r: right
+    );
+
+  @each $side in $sides {
+    $selected: none;
+
+    @if $side == all     { $selected: t, l, b, r; }
+    @else if $side == tb { $selected: t, b; }
+    @else if $side == lr { $selected: l, r; }
+    @else                { $selected: $side; }
+
+    @each $selection in $selected {
+      #{map-get($sideNames, $selection)}: 0;
+    }
+  }
 }
-@mixin dynamicTheme-bgColor {
-  body[data-theme="main"] & { background-color: $theme-main; }
-  body[data-theme="bl1"] &  { background-color: $theme-bl1; }
-  body[data-theme="bl2"] &  { background-color: $theme-bl2; }
-  body[data-theme="tps"] &  { background-color: $theme-tps; }
+
+// Shorthands //
+// Color / Background Color / Border Color Shorthand
+@mixin colors($color: none, $bgColor:none, $bcColor: none) {
+  $rules: (
+    color: $color,
+    background-color: $bgColor,
+    border-color: $bcColor
+    );
+
+  @each $ruleN, $ruleV in $rules {
+    @if $ruleV != none { #{$ruleN}: $ruleV; }
+  }
 }
-@mixin dynamicTheme-borderColor {
-  body[data-theme="main"] & { border-color: $theme-main; }
-  body[data-theme="bl1"] &  { border-color: $theme-bl1; }
-  body[data-theme="bl2"] &  { border-color: $theme-bl2; }
-  body[data-theme="tps"] &  { border-color: $theme-tps; }
+// Height / Width Shorthand
+@mixin sizing($height, $width) {
+  height: $height;
+  width: $width;
+}
+// Padding / Margin Shorthand
+@mixin spacing($margin, $padding) {
+  margin: $margin;
+  padding: $padding;
+}
+// Before / After Pseudo Element Shorthand
+@mixin pshared {
+  &::before, &::after { @content; }
+}
+// Shorthand Listed Animation Properties
+@mixin animation($duration: unset, $timing: unset, $count: unset, $fill: unset, $delay: unset) {
+  $props: (
+    duration: $duration,
+    timing-function: $timing,
+    iteration-count: $count,
+    fill-mode: $fill,
+    delay: $delay
+    );
+
+  @each $propN, $propV in $props {
+    @if $propV != unset {
+      animation-#{$propN}: $propV;
+    }
+  }
+}
+// Multiple Properties with the same value
+@mixin multiProp($value, $properties...) {
+  @each $property in $properties {
+    $shorthandProps: none;
+
+    @if $property == colors  { $shorthandProps: color, background-color; }
+    @if $property == sizing  { $shorthandProps: height, width; }
+    @if $property == spacing { $shorthandProps: margin, padding; }
+    @if $shorthandProps != none {
+      @each $sProp in $shorthandProps {
+        #{$sProp}: $value;
+      }
+    }
+    @else { #{$property}: $value; }
+  }
+}
+
+// Element States //
+// Hover, Focus, Active States
+@mixin mouseState($type) {
+  $types: (
+    noHover: "&:not(:hover):not(:focus)",
+    hover: "&:hover, &:focus",
+    click: "&:active"
+    );
+
+  #{unquote(map-get($types, $type))} { @content; }
+}
+// Use "hidden" attribute to determine display type
+@mixin hiddenToggle($visibleType) {
+  &[hidden]       { display: none; }
+  &:not([hidden]) { display: $visibleType; }
+}
+
+// Theming //
+// Theme Colors
+@mixin theme($types...) {
+  $typeNames: (
+    c: color,
+    bg: background-color,
+    bc: border-color
+    );
+
+  @each $type in $types {
+    @each $colorN, $colorV in $themeColors {
+      body[data-theme="#{$colorN}"] & { #{map-get($typeNames, $type)}: $colorV; }
+    }
+  }
+}
+// Background Image Positioning
+@mixin bgImg($imgURL: false) {
+  background-position: center;
+  background-size: cover;
+
+  @if $imgURL != false { background-image: url(#{$imgURL}); }
 }

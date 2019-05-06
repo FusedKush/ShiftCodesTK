@@ -5,80 +5,16 @@
 /*** Imports ***/
 @import "../partials/_globals";
 
-/*** Media Queries ***/
-@media screen and (max-width: 474px) {
-  header.main .content-container .content-wrapper .content {
-    &.short {
-      font-size: 1em;
-    }
-    &.long {
-      font-size: 0.75em;
-    }
-  }
-}
-@media screen and (min-width: 475px) and (max-width: 699px) {
-  header.main .content-container .content-wrapper .content {
-    &.short {
-      font-size: 1.25em;
-    }
-    &.long {
-      font-size: 1em;
-    }
-  }
-}
-@media screen and (min-width: 700px) {
-  header.main .content-container .content-wrapper .content {
-    &.short {
-      font-size: 1.5em;
-    }
-    &.long {
-      font-size: 1.25em;
-    }
-  }
-}
-
-/*** Animations ***/
-@keyframes externalLinkIconEnter {
-  0%   { transform: scale(1); }
-  25%  { transform: scale(0.8); }
-  50%  { transform: scale(1); }
-  75%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-@keyframes externalLinkIconLeave {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-@keyframes externalLinkIconClick {
-  0%   { opacity: 1; }
-  100% { opacity: 0.75; }
-}
-@keyframes animateSpinner1 {
-  0%   { transform: scale(0); }
-  100% { transform: scale(1); }
-}
-@keyframes animateSpinner2 {
-  0%   { transform: translate(0, 0); }
-  100% { transform: translate(19px, 0); }
-}
-@keyframes animateSpinner3 {
-  0%   { transform: scale(1); }
-  100% { transform: scale(0); }
-}
-
 /*** Global Declarations ***/
-// CSS Reset
-* {
-  padding: 0;
-  margin: 0;
+// Default Styles
+*, ::before, ::after {
+  position: relative;
+  @include multiProp(0, spacing);
   box-sizing: border-box;
-
-  &::before, &::after { @extend *; }
+  transition: opacity $trd, transform $trd;
 }
 html, body {
-  height: 100%;
-  width: 100%;
+  @include multiProp(100%, sizing);
 }
 body {
   color: $df-color;
@@ -86,177 +22,182 @@ body {
   font-family: $df-font;
   line-height: $df-line-height;
   opacity: 1;
-  transition: opacity $trd;
+}
+a {
+  text-decoration: none;
 
-  &[data-popup-active="true"]  { overflow: hidden; }
-  &[data-popup-active="false"] { overflow: auto; }
+  &:not(.colored) { color: inherit; }
+  &.colored       { color: #0ff; }
 }
 button {
   background: transparent;
   border: none;
-  color: inherit;
-  font-family: inherit;
+  @include multiProp(inherit, color, font-family);
 
-  &:hover:not([disabled]) { cursor: pointer; }
-}
-button, span, div {
+  &:hover:not([disabled]) {
+    cursor: pointer;
+  }
   &[disabled] {
     opacity: .5;
-    pointer-events: none;
+    cursor: not-allowed;
   }
 }
-.content-wrapper {
-  max-width: 1200px;
-  margin: 0 auto;
+ul.styled { list-style: disc inside; }
+ol.styled { list-style: decimal inside; }
+ul, ol {
+  &.styled {
+    $padding: 12px;
+
+    padding: 0 $padding;
+
+    &:not(:first-child) { padding-top: $padding; }
+    &:not(:last-child)  { padding-bottom: $padding; }
+
+    li { padding: 2px 0; }
+  }
+  &:not(.styled) { list-style: none; }
+}
+code { padding: 3px 6px; }
+pre {
+  @include spacing(8px 0, 8px);
+
+  code {
+    background-color: transparent;
+    padding: 0;
+  }
+}
+pre, code {
+  font-family: inherit;
+  border-radius: 4px;
+  background-color: tpw(0.25);
 }
 template, .webp-support { display: none; }
-// Main Content Styles
+// Reusable Classes
 header.main {
   @include ready;
 
-  position: relative;
   width: 100%;
   border-bottom: 4px solid;
-  @include dynamicTheme-borderColor;
-  background-position: center;
-  background-size: cover;
+  @include theme(bc);
+  @include bgImg;
   overflow: hidden;
 
   &::after {
     position: absolute;
-    bottom: 0;
-    left: 0;
+    @include pull(b, l);
     width: 100%;
     box-shadow: 0 0 1em 0.5em tpb(0.75);
     content: "";
   }
 
   .content-container {
-    height: 100%;
-    width: 100%;
+    @include multiProp(100%, sizing);
     padding-top: 64px;
     background-color: tpb(0.6);
+  }
 
-    .content-wrapper {
-      @include flex(s, e);
-      height: 100%;
-      width: 100%;
-      padding: 32px 16px;
+  .content-wrapper {
+    @include flexbox(e, s);
+    @include multiProp(100%, sizing);
+    padding: 32px 16px;
+  }
 
-      .content {
-        text-shadow: 1px 1px 4px tpb(0.8);
-        max-width: 85%;
-
-        .title {
-          font-size: 2em;
-          font-weight: bold;
-          line-height: 1.1;
-        }
-        .description {
-          font-size: 1.1em;
-          opacity: 0.75;
-          padding-top: 4px;
-        }
+  .content {
+    @media screen and (max-width: 474px) {
+      &.short {
+        font-size: 1em;
+      }
+      &.long {
+        font-size: 0.75em;
       }
     }
+    @media screen and (min-width: 475px) and (max-width: 699px) {
+      &.short {
+        font-size: 1.25em;
+      }
+      &.long {
+        font-size: 1em;
+      }
+    }
+    @media screen and (min-width: 700px) {
+      &.short {
+        font-size: 1.5em;
+      }
+      &.long {
+        font-size: 1.25em;
+      }
+    }
+
+    text-shadow: 1px 1px 4px tpb(0.8);
+    max-width: 85%;
+  }
+
+  .title {
+    font-size: 2em;
+    line-height: 1.1;
+  }
+  .description {
+    font-size: 1.1em;
+    opacity: 0.75;
+    padding-top: 4px;
   }
 }
 main {
   opacity: 1;
-  transition: opacity $trd;
 
   > .content-wrapper {
     padding: 32px 16px;
 
-    &.no-header {
-      padding-top: 80px;
-    }
+    &.no-header { padding-top: 80px; }
   }
 }
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-/*** Global Classes ***/
+/*** Custom Elements ***/
 // Bubbles
-@mixin bubble-off {
-  opacity: 0;
-  transform: scale(0);
-}
-@mixin bubble-on {
-  opacity: 0.3;
-  transform: scale(1);
-}
-@mixin bubble-active {
-  opacity: 0.5;
+@mixin bubbleStates ($opacity, $scale) {
+  opacity: $opacity;
+  transform: scale($scale);
 }
 
 .bubble-parent {
-  position: relative;
-  @include flex;
+  @include flexbox;
 
-  &:not(:hover):not(:focus) .bubble {
-    @include bubble-off;
-  }
+  &:not(:hover):not(:focus) .bubble { @include bubbleStates(0, 0); }
   &:hover, &:focus {
-    .bubble {
-      @include bubble-on;
-    }
+    .bubble                         { @include bubbleStates(0.3, 1); }
   }
-  &:active .bubble {
-    @include bubble-active;
-  }
+  &:active .bubble                  { @include bubbleStates(0.5, 1); }
 
   .bubble {
     position: absolute;
     border-radius: 50%;
-    height: 80%;
-    width: 80%;
-    transition: opacity $trd, transform $trd;
+    @include multiProp(80%, sizing);
 
-    &-light {
-      background-color: $bbl-light;
-    }
-    &-dark {
-      background-color: $bbl-dark;
-    }
-  }
-}
-// Spinners
-.spinner {
-  position: relative;
-  display: inline-block;
-  width: 64px;
-  height: 64px;
-
-  .dot {
-    position: absolute;
-    top: 27px;
-    width: 11px;
-    height: 11px;
-    border-radius: 50%;
-    background-color: #fff;
-    animation-timing-function: cubic-bezier(0, 1, 1, 0);
-
-    &:nth-child(1) {
-      left: 6px;
-      animation: animateSpinner1 0.6s infinite;
-    }
-    &:nth-child(2) {
-      left: 6px;
-      animation: animateSpinner2 0.6s infinite;
-    }
-    &:nth-child(3) {
-      left: 26px;
-      animation: animateSpinner2 0.6s infinite;
-    }
-    &:nth-child(4) {
-      left: 45px;
-      animation: animateSpinner3 0.6s infinite;
-    }
+    &-light { background-color: $bbl-light; }
+    &-dark  { background-color: $bbl-dark; }
   }
 }
 // External Link Icons
 .external-link-icon {
-  position: relative;
-  @include flex(c, c, none, false, inline);
+  @keyframes externalLinkIconEnter {
+    0%, 50%, 100% { transform: scale(1); }
+    25%           { transform: scale(0.8); }
+    75%           { transform: scale(1.2); }
+  }
+  @keyframes externalLinkIconLeave {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+  }
+  @keyframes externalLinkIconClick {
+    0%   { opacity: 1; }
+    100% { opacity: 0.75; }
+  }
+
+  @include flexbox($type: inline);
 
   &:not(:hover):not(:focus) {
     .external {
@@ -264,13 +205,13 @@ main {
     }
     .icon {
       opacity: 1;
-      animation: externalLinkIconLeave 0.25s linear forwards;
+      animation-name: externalLinkIconLeave;
     }
   }
   &:hover, &:focus {
     .external {
       opacity: 1;
-      animation: externalLinkIconEnter 0.25s linear forwards;
+      animation-name: externalLinkIconEnter;
     }
     .icon {
       opacity: 0;
@@ -278,9 +219,11 @@ main {
   }
   &:active {
     .external {
-      animation: externalLinkIconClick 0.25s linear forwards;
+      animation-name: externalLinkIconClick;
     }
   }
-
-  .external, .icon { position: absolute; }
+  .external, .icon {
+    position: absolute;
+     animation: 0.25s linear forwards;
+  }
 }

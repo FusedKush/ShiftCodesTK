@@ -111,7 +111,7 @@ main {
       &[data-hashtarget-highlighted="false"]::before { animation: qaHashTargetFade 0.75s linear; }
 
       &::before {
-        @include fill(true, #fff, true);
+        @include fill(true, #fff);
         opacity: 0;
       }
 
@@ -127,7 +127,7 @@ main {
         padding: 0.4em 0 0.4em 12px;
       }
       a {
-        @include dynamicTheme-color;
+        @include theme(c);
         text-decoration: none;
 
         &:not(:hover):not(:focus) .label { text-decoration: none; }
@@ -169,10 +169,9 @@ main {
         line-height: 1;
       }
       .button-wrapper {
-        @include flex;
+        @include flexbox;
 
         a {
-          @include unstyledLink;
           position: relative;
           display: flex;
           align-items: center;
@@ -183,7 +182,7 @@ main {
           border-radius: 4px;
           overflow: hidden;
 
-          &::before { @include fill(true, #fff, true); }
+          &::before { @include fill(true, #fff); }
 
           &:not(:hover):not(:focus)::before { opacity: 0.2; }
           &:hover, &:focus {
@@ -197,7 +196,7 @@ main {
             padding-right: 8px;
           }
           .label {
-            @include flex(s, c, c);
+            @include flexbox(c, s, $direction: c);
             line-height: normal;
             font-size: 0.75em;
           }
