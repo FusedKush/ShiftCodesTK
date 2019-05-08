@@ -95,6 +95,8 @@
   content: "\f085"; }
 .fa-broadcast-tower::before {
   content: "\f519"; }
+.fa-chevron-down::before {
+  content: "\f078"; }
 .fa-chevron-circle-down::before {
   content: "\f13a"; }
 .fa-filter::before {

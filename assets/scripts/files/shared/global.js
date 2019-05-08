@@ -216,8 +216,14 @@ function hashUpdate () {
     let e = document.getElementsByTagName('*');
 
     for (i = 0; i < e.length; i++) {
+      // Deprecated
       if (e[i].getAttribute('data-hashtarget-highlighted') !== null && (('#') + e[i].id) != hash) {
         e[i].removeAttribute('data-hashtarget-highlighted');
+        e[i].removeEventListener('mouseover', globalListenerHashTargetHover);
+        e[i].removeEventListener('mouseout', globalListenerHashTargetAway);
+      }
+      if (e[i].getAttribute('data-hashtarget') !== null && (('#') + e[i].id) != hash) {
+        e[i].removeAttribute('data-hashtarget');
         e[i].removeEventListener('mouseover', globalListenerHashTargetHover);
         e[i].removeEventListener('mouseout', globalListenerHashTargetAway);
       }
@@ -232,8 +238,14 @@ function hashUpdate () {
     let validTarget = target !== null;
 
     if (validTarget === true) {
+      // Deprecated
       if (target.getAttribute('data-hashtarget-highlighted') != 'true') {
         target.setAttribute('data-hashtarget-highlighted', true);
+        target.addEventListener('mouseover', globalListenerHashTargetHover);
+        target.addEventListener('mouseout', globalListenerHashTargetAway);
+      }
+      if (target.getAttribute('data-hashtarget') != 'true') {
+        target.setAttribute('data-hashtarget', 'visible');
         target.addEventListener('mouseover', globalListenerHashTargetHover);
         target.addEventListener('mouseout', globalListenerHashTargetAway);
       }
@@ -241,6 +253,28 @@ function hashUpdate () {
       updateScroll(target);
     }
   }
+}
+// Toggle Dropdown Panel
+function toggleDropdownPanel(toggler) {
+  let panel = toggler.parentNode;
+  let defaultLabels = {
+    false: 'Expand Panel',
+    true: 'Collapse Panel'
+  };
+  let labels = (function () {
+    let customLabels = toggler.getAttribute('data-custom-labels');
+
+    if (customLabels === null) { return defaultLabels; }
+    else                       { return JSON.parse(customLabels); }
+  })();
+  let state = panel.getAttribute('data-expanded') == 'true';
+
+  panel.setAttribute('data-expanded', !state);
+  panel.setAttribute('aria-expanded', !state);
+  toggler.setAttribute('data-pressed', !state);
+  toggler.setAttribute('aria-pressed', !state);
+  toggler.title = labels[!state];
+  toggler.setAttribute('aria-label', labels[!state]);
 }
 
 // *** Event Listener Reference Functions ***
@@ -252,7 +286,8 @@ function globalListenerHashTargetHover (event) {
   let e = this;
 
   hashTargetTimeout = setTimeout(function () {
-    e.setAttribute('data-hashtarget-highlighted', false);
+    e.setAttribute('data-hashtarget-highlighted', false); // Deprecated
+    e.setAttribute('data-hashtarget', 'seen');
     e.removeEventListener('mouseover', globalListenerHashTargetHover);
     e.removeEventListener('mouseout', globalListenerHashTargetAway);
   }, 750);
@@ -275,6 +310,18 @@ function globalListenerHashTargetAway () {
 })();
 // Check for hash-targeted elements
 hashUpdate();
+// Automatic Dropdown Panel Functions
+(function () {
+  let panels = document.getElementsByClassName('dropdown-panel');
+
+  for(let i = 0; i < panels.length; i++) {
+    let hashTargetOverlay = document.createElement('span');
+
+    hashTargetOverlay.className = 'overlay-hashtarget';
+    panels[i].insertBefore(hashTargetOverlay, panels[i].childNodes[0]);
+    panels[i].getElementsByClassName('header')[0].addEventListener('click', function (e) { toggleDropdownPanel(this); });
+  }
+})();
 // Check for DevTools support
 (function () {
   let params = window.location.search;
