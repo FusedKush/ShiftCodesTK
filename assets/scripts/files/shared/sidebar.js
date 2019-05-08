@@ -65,9 +65,8 @@ function sidebarCheckKeys (event) {
   let e = {};
     (function () {
       e.toggle = document.getElementById('sidebar_toggle');
-      e.links = document.getElementById('sidebar').getElementsByClassName('panel')[0].getElementsByClassName('link');
+      e.links = document.getElementById('sidebar').getElementsByTagName('a');
       e.last = e.links[e.links.length - 1];
-    });
     })();
 
   if (event.shiftKey === false && event.key == 'Tab' && active == e.last || event.shiftKey === true && event.key == 'Tab' && active == e.toggle) {
@@ -91,6 +90,23 @@ function sidebarEventListenerCheckKey (event) {
 }
 
 // *** Immediate Functions ***
+// Add required markup to sidebar entries
+(function () {
+  let sidebar = document.getElementById('sidebar');
+  let links = sidebar.getElementsByTagName('a');
+
+  for (i = 0; i < links.length; i++) {
+    let link = links[i];
+
+    if (link.className.indexOf('no-auto-markup') == -1) {
+      let id = ('sidebar_link_') + i;
+
+      link.id = id;
+      link.setAttribute('aria-labelledby', id + ('_name'));
+      link.getElementsByClassName('name')[0].id = id + ('_name');
+    }
+  }
+})();
 // Check for Current Page and update Sidebar Links
 (function () {
   let loc = window.location.pathname;
@@ -122,7 +138,7 @@ function sidebarEventListenerCheckKey (event) {
 
         if (badgeID !== null) {
           if (alerts.new[badgeID] > 0 || alerts.expiring[badgeID] > 0) {
-            let link = document.getElementById('sidebar_link_' + badgeID);
+            let link = links[i];
             let badges = {};
               (function () {
                 badges.base = template[0].cloneNode(true);

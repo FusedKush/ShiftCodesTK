@@ -1,44 +1,46 @@
 <aside class="sidebar" id="sidebar" data-expanded="false" aria-expanded="false" hidden="true" aria-hidden="true">
   <nav class="panel" aria-label="Sidebar">
     <div class="header">
-      <button class="toggle bubble-parent" id="sidebar_toggle" title="Close the Sidebar" aria-label="Close the Sidebar" data-noFocusScroll="true">
+      <button class="toggle bubble-parent no-focus-scroll" id="sidebar_toggle" title="Close the Sidebar" aria-label="Close the Sidebar">
         <span class="bubble bubble-light"></span>
         <span class="fas fa-bars"></span>
       </button>
-      <a class="brand" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home" data-noFocusScroll="true">
+      <a class="brand no-focus-scroll no-auto-markup" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">
         <span class="name">ShiftCodes<strong class="focus">TK</strong></span>
       </a>
     </div>
     <ul role="menu">
       <li role="menuitem">
-        <a id="sidebar_link_bl1" href="/bl1" aria-labelledby="sidebar_link_bl1_name" data-noFocusScroll="true" data-useBadges="bl1">
+        <a class="no-focus-scroll" href="/bl1" data-useBadges="bl1">
           <span class="fas fa-gamepad"></span>
-          <span class="name" id="sidebar_link_bl1_name">Borderlands: GOTY</span>
+          <span class="name">Borderlands: GOTY</span>
         </a>
       </li>
       <li role="menuitem">
-        <a id="sidebar_link_bl2" href="/bl2" aria-labelledby="sidebar_link_bl2_name" data-noFocusScroll="true" data-useBadges="bl2">
+        <a class="no-focus-scroll" href="/bl2" data-useBadges="bl2">
           <span class="fas fa-gamepad"></span>
-          <span class="name" id="sidebar_link_bl2_name">Borderlands 2</span>
+          <span class="name">Borderlands 2</span>
         </a>
       </li>
       <li role="menuitem">
-        <a id="sidebar_link_tps" href="/tps" aria-labelledby="sidebar_link_tps_name" data-noFocusScroll="true" data-useBadges="tps">
+        <a class="no-focus-scroll" href="/tps" data-useBadges="tps">
           <span class="fas fa-gamepad"></span>
-          <span class="name" id="sidebar_link_tps_name">Borderlands: TPS</span>
+          <span class="name">Borderlands: TPS</span>
         </a>
       </li>
       <div class="separator"></div>
       <li role="menuitem">
-        <a id="sidebar_link_faq" href="/faq" aria-labelledby="sidebar_link_faq_name" data-noFocusScroll="true">
+        <a class="no-focus-scroll" href="/faq">
           <span class="fas fa-question"></span>
-          <span class="name" id="sidebar_link_faq_name">FAQ</span>
+          <span class="name">FAQ</span>
         </a>
       </li>
       <li role="menuitem">
         <a id="sidebar_link_credits" href="/credits" aria-labelledby="sidebar_link_credits_name" data-noFocusScroll="true">
+      <li role="menuitem">
+        <a class="no-focus-scroll" href="/credits">
           <span class="fas fa-award"></span>
-          <span class="name" id="sidebar_link_credits_name">Credits</span>
+          <span class="name">Credits</span>
         </a>
       </li>
     </ul>

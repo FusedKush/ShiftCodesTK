@@ -24,6 +24,7 @@ Sidebar Styles
     @include flexbox(none, none, $direction: c);
     @include colors(inherit, $site-color-lighter);
     box-shadow: shadow(tpb(0.5), 0.5em);
+    max-width: 19em;
     overflow: auto;
 
     @at-root .sidebar {

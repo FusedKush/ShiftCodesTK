@@ -44,6 +44,7 @@ Sidebar Styles
     color: inherit;
     background-color: #1d3f60;
     box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.5);
+    max-width: 19em;
     overflow: auto; }
     .sidebar[data-expanded="false"] .panel {
       -webkit-transform: translateX(calc(-100% - 0.5em));
