@@ -170,7 +170,7 @@ function addFocusScrollListeners (parent) {
 
   for (i = 0; i < e.length; i++) {
     if (e[i].tagName == 'BUTTON' || e[i].tagName == 'A') {
-      if (e[i].getAttribute('data-noFocusScroll') === null || e[i].getAttribute('data-noFocusScroll') == 'false') {
+      if (e[i].className.indexOf('no-focus-scroll') == -1) {
         e[i].addEventListener('focusin', function (event) { updateScroll(this); });
       }
     }
