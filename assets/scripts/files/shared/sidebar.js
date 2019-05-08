@@ -68,6 +68,7 @@ function sidebarCheckKeys (event) {
       e.links = document.getElementById('sidebar').getElementsByClassName('panel')[0].getElementsByClassName('link');
       e.last = e.links[e.links.length - 1];
     });
+    })();
 
   if (event.shiftKey === false && event.key == 'Tab' && active == e.last || event.shiftKey === true && event.key == 'Tab' && active == e.toggle) {
     event.preventDefault();
