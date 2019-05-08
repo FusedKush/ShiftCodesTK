@@ -29,6 +29,7 @@ a {
   &:not(.colored) { color: inherit; }
   &.colored       { color: #0ff; }
 }
+p:not(:first-child) { margin-top: $df-elm-spacing; }
 button {
   background: transparent;
   border: none;
@@ -46,12 +47,12 @@ ul.styled { list-style: disc inside; }
 ol.styled { list-style: decimal inside; }
 ul, ol {
   &.styled {
-    $padding: 12px;
+    $margins: $df-elm-spacing;
 
-    padding: 0 $padding;
+    margin-left: $margins;
 
-    &:not(:first-child) { padding-top: $padding; }
-    &:not(:last-child)  { padding-bottom: $padding; }
+    &:not(:first-child) { margin-top: $margins; }
+    &:not(:last-child)  { margin-bottom: $margins; }
 
     li { padding: 2px 0; }
   }
@@ -59,7 +60,7 @@ ul, ol {
 }
 code { padding: 3px 6px; }
 pre {
-  @include spacing(8px 0, 8px);
+  @include spacing($df-elm-spacing 0, 8px);
 
   code {
     background-color: transparent;
@@ -145,11 +146,8 @@ header.main {
 main {
   opacity: 1;
 
-  > .content-wrapper {
-    padding: 32px 16px;
-
-    &.no-header { padding-top: 80px; }
-  }
+  &.content-wrapper { padding: 32px 16px; }
+  &.no-header { padding-top: 80px; }
 }
 .content-wrapper {
   max-width: 1200px;
@@ -158,6 +156,7 @@ main {
 
 /*** Custom Elements ***/
 // Bubbles
+.spacer { padding: 6px 0; }
 @mixin bubbleStates ($opacity, $scale) {
   opacity: $opacity;
   transform: scale($scale);

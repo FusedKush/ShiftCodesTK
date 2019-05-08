@@ -36,6 +36,9 @@ a {
   a.colored {
     color: #0ff; }
 
+p:not(:first-child) {
+  margin-top: 12px; }
+
 button {
   background: transparent;
   border: none;
@@ -54,11 +57,11 @@ ol.styled {
   list-style: decimal inside; }
 
 ul.styled, ol.styled {
-  padding: 0 12px; }
+  margin-left: 12px; }
   ul.styled:not(:first-child), ol.styled:not(:first-child) {
-    padding-top: 12px; }
+    margin-top: 12px; }
   ul.styled:not(:last-child), ol.styled:not(:last-child) {
-    padding-bottom: 12px; }
+    margin-bottom: 12px; }
   ul.styled li, ol.styled li {
     padding: 2px 0; }
 ul:not(.styled), ol:not(.styled) {
@@ -68,7 +71,7 @@ code {
   padding: 3px 6px; }
 
 pre {
-  margin: 8px 0;
+  margin: 12px 0;
   padding: 8px; }
   pre code {
     background-color: transparent;
@@ -145,16 +148,19 @@ header.main {
 
 main {
   opacity: 1; }
-  main > .content-wrapper {
+  main.content-wrapper {
     padding: 32px 16px; }
-    main > .content-wrapper.no-header {
-      padding-top: 80px; }
+  main.no-header {
+    padding-top: 80px; }
 
 .content-wrapper {
   max-width: 1200px;
   margin: 0 auto; }
 
 /*** Custom Elements ***/
+.spacer {
+  padding: 6px 0; }
+
 .bubble-parent {
   display: flex;
   align-items: center;
