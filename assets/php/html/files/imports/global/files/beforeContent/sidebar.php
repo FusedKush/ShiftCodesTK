@@ -36,7 +36,12 @@
         </a>
       </li>
       <li role="menuitem">
-        <a id="sidebar_link_credits" href="/credits" aria-labelledby="sidebar_link_credits_name" data-noFocusScroll="true">
+        <a class="no-focus-scroll" href="/clearing-your-system-cache">
+          <span class="fas fa-question"></span>
+          <span class="name">Clearing your System Cache</span>
+        </a>
+      </li>
+      <div class="separator"></div>
       <li role="menuitem">
         <a class="no-focus-scroll" href="/credits">
           <span class="fas fa-award"></span>

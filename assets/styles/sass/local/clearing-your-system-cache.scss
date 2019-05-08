@@ -1,0 +1,10 @@
+/*********************************
+  Clearing your System Cache Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+@import "../partials/_support-footer";
+
+/*** Style Declarations ***/
+main { @include ready; }
