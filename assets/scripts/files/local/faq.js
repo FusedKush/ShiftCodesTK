@@ -27,7 +27,9 @@
     let panels = group.getElementsByClassName('dropdown-panel');
     let tocEntry = {};
       (function () {
-        tocEntry.root = document.getElementById('toc_entry_template').content.children[0].cloneNode(true);
+        tocEntry.template = document.getElementById('toc_entry_template');
+        tocEntry.listitemTemplate = document.getElementById('toc_entry_listitem_template');
+        tocEntry.root = tocEntry.template.content.children[0].cloneNode(true);
         tocEntry.title = tocEntry.root.getElementsByTagName('h3')[0].getElementsByTagName('a')[0];
         tocEntry.list = tocEntry.root.getElementsByTagName('ul')[0];
       })();
@@ -41,7 +43,7 @@
       let panelID = convertToId(panelName);
       let listitem = {};
         (function () {
-          listitem.root = document.getElementById('toc_entry_listitem_template').content.children[0].cloneNode(true);
+          listitem.root = tocEntry.listitemTemplate.content.children[0].cloneNode(true);
           listitem.link = listitem.root.getElementsByTagName('a')[0];
         })();
 
@@ -51,6 +53,8 @@
     }
 
     toc.appendChild(tocEntry.root);
+    tocEntry.template.remove();
+    tocEntry.listitemTemplate.remove();
   }
 })();
 
