@@ -6,7 +6,7 @@
     <!-- Shared Styles -->
     <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/styles/css/min/local/clearing-your-system-cache.min.css?v=1.0" rel="stylesheet"></link>
+    <link href="/assets/styles/css/min/local/clearing-your-system-cache.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
     <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Clearing your System Cache - ShiftCodesTK</title>

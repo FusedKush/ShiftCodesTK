@@ -6,7 +6,7 @@
     <!-- Shared Styles -->
     <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/styles/css/min/local/updates.min.css?v=1.0" rel="stylesheet"></link>
+    <link href="/assets/styles/css/min/local/updates.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
     <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Updates - ShiftCodesTK</title>
@@ -83,6 +83,6 @@
     <!-- Shared Scripts -->
     <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/scripts/min/local/updates.min.js?v=1.0"></script>
+    <script async src="/assets/scripts/min/local/updates.min.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>
