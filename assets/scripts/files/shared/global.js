@@ -6,6 +6,10 @@
 var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
+var defaultDropdownPanelLabels = {
+  false: 'Expand Panel',
+  true: 'Collapse Panel'
+};
 
 // *** Functions ***
 // Writes to the ShiftCodesTK Developer Console (If DevTools are available)
@@ -254,27 +258,29 @@ function hashUpdate () {
     }
   }
 }
-// Toggle Dropdown Panel
-function toggleDropdownPanel(toggler) {
-  let panel = toggler.parentNode;
-  let defaultLabels = {
-    false: 'Expand Panel',
-    true: 'Collapse Panel'
-  };
+// Update Dropdown Panel Attributes
+function updateDropdownPanelAttributes(panel, state) {
+  let toggler = panel.getElementsByClassName('header')[0];
   let labels = (function () {
     let customLabels = toggler.getAttribute('data-custom-labels');
 
-    if (customLabels === null) { return defaultLabels; }
+    if (customLabels === null) { return defaultDropdownPanelLabels; }
     else                       { return JSON.parse(customLabels); }
   })();
+
+  panel.setAttribute('data-expanded', state);
+  panel.setAttribute('aria-expanded', state);
+  toggler.setAttribute('data-pressed', state);
+  toggler.setAttribute('aria-pressed', state);
+  toggler.title = labels[state];
+  toggler.setAttribute('aria-label', labels[state]);
+}
+// Toggle Dropdown Panel
+function toggleDropdownPanel(toggler) {
+  let panel = toggler.parentNode;
   let state = panel.getAttribute('data-expanded') == 'true';
 
-  panel.setAttribute('data-expanded', !state);
-  panel.setAttribute('aria-expanded', !state);
-  toggler.setAttribute('data-pressed', !state);
-  toggler.setAttribute('aria-pressed', !state);
-  toggler.title = labels[!state];
-  toggler.setAttribute('aria-label', labels[!state]);
+  updateDropdownPanelAttributes(panel, !state);
 }
 
 // *** Event Listener Reference Functions ***
@@ -341,6 +347,14 @@ hashUpdate();
     tools.async = true;
     tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.0';
     document.body.appendChild(tools);
+  }
+})();
+// Add labels to Dropdown Panels
+(function () {
+  let panels = document.getElementsByClassName('dropdown-panel');
+
+  for (i = 0; i < panels.length; i++) {
+    updateDropdownPanelAttributes(panels[i], false);
   }
 })();
 

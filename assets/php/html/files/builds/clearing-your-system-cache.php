@@ -43,8 +43,8 @@
         <p><em><b>Note:</b>&nbsp;Clearing your cache will not affect any of your save data or game progress.</em></p>
       </div>
       <div class="dropdown-panel-group">
-        <section class="dropdown-panel" id="steam" data-expanded="false" aria-expanded="false">
-          <button class="header" data-pressed="false" aria-pressed="false" title="Expand Panel" aria-label="Expand Panel">
+        <section class="dropdown-panel" id="steam">
+          <button class="header">
             <div class="wrapper">
               <div class="title">
                 <div class="string">
@@ -67,8 +67,8 @@
             <p><em><b>Note:</b>&nbsp;One or more files may fail to verify. This is normal for most Steam games, as the files that fail to verify are local configuration files that should not be replaced during the process. You can safely ignore this message.</em></p>
           </div>
         </section>
-        <section class="dropdown-panel" id="xb1" data-expanded="false" aria-expanded="false">
-          <button class="header" data-pressed="false" aria-pressed="false" title="Expand Panel" aria-label="Expand Panel">
+        <section class="dropdown-panel" id="xb1">
+          <button class="header">
             <div class="wrapper">
               <div class="title">
                 <div class="string">
@@ -91,8 +91,8 @@
             </ol>
           </div>
         </section>
-        <section class="dropdown-panel" id="xb360" data-expanded="false" aria-expanded="false">
-          <button class="header" data-pressed="false" aria-pressed="false" title="Expand Panel" aria-label="Expand Panel">
+        <section class="dropdown-panel" id="xb360">
+          <button class="header">
             <div class="wrapper">
               <div class="title">
                 <div class="string">
@@ -115,8 +115,8 @@
             </ol>
           </div>
         </section>
-        <section class="dropdown-panel" id="ps4" data-expanded="false" aria-expanded="false">
-          <button class="header" data-pressed="false" aria-pressed="false" title="Expand Panel" aria-label="Expand Panel">
+        <section class="dropdown-panel" id="ps4">
+          <button class="header">
             <div class="wrapper">
               <div class="title">
                 <div class="string">
@@ -138,8 +138,8 @@
             </ol>
           </div>
         </section>
-        <section class="dropdown-panel" id="ps3" data-expanded="false" aria-expanded="false">
-          <button class="header" data-pressed="false" aria-pressed="false" title="Expand Panel" aria-label="Expand Panel">
+        <section class="dropdown-panel" id="ps3">
+          <button class="header">
             <div class="wrapper">
               <div class="title">
                 <div class="string">
@@ -173,6 +173,5 @@
     <!-- Shared Scripts -->
     <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <!-- <script async src="/assets/scripts/min/local/clearing-your-system-cache.min.js?v=1.0"></script> -->
   </body>
 </html>
