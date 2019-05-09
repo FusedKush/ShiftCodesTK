@@ -8,218 +8,147 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
-/*** Variables ***/
-/*** Mixins ***/
-/*** Animations ***/
-@-webkit-keyframes sectionHashTargeted {
-  0%, 50%, 100% {
-    opacity: 1; }
-  25%, 75% {
-    opacity: 0.25; } }
-@keyframes sectionHashTargeted {
-  0%, 50%, 100% {
-    opacity: 1; }
-  25%, 75% {
-    opacity: 0.25; } }
-@-webkit-keyframes sectionHashTargetSolidify {
-  0% {
-    opacity: 0.25; }
-  100% {
-    opacity: 1; } }
-@keyframes sectionHashTargetSolidify {
-  0% {
-    opacity: 0.25; }
-  100% {
-    opacity: 1; } }
-@-webkit-keyframes qaHashTargeted {
-  0%, 50%, 100% {
-    opacity: 0; }
-  25%, 75% {
-    opacity: 0.35; } }
-@keyframes qaHashTargeted {
-  0%, 50%, 100% {
-    opacity: 0; }
-  25%, 75% {
-    opacity: 0.35; } }
-@-webkit-keyframes qaHashTargetFade {
-  0% {
-    opacity: 0.35; }
-  100% {
-    opacity: 0; } }
-@keyframes qaHashTargetFade {
-  0% {
-    opacity: 0.35; }
-  100% {
-    opacity: 0; } }
-/*** Media Queries ***/
-@media screen and (max-width: 649px) {
-  .help-footer .body .panel {
-    width: 100%; } }
-@media screen and (min-width: 650px) {
-  .help-footer .body .panel {
-    width: 50%; } }
-/*** Style Declarations ***/
-main, main *, .help-footer, .help-footer * {
-  opacity: 1; }
-
-main {
-  padding: 16px 16px 32px; }
-  main .toc {
-    border: 1.5px solid rgba(255, 255, 255, 0.75);
-    border-radius: 4px;
-    margin-bottom: 1.25em;
-    padding-bottom: 16px; }
-    main .toc .header {
-      padding: 16px;
-      font-size: 1.5em;
-      margin-bottom: 8px;
-      background-color: rgba(255, 255, 255, 0.2); }
-    main .toc .section {
-      padding: 8px 16px 0; }
-      main .toc .section .title {
-        font-size: 1.25em;
-        font-weight: 600; }
-        main .toc .section .title:not(:hover):not(:focus) {
-          text-decoration: none; }
-        main .toc .section .title:hover, main .toc .section .title:focus {
-          text-decoration: underline; }
-        main .toc .section .title:active {
-          opacity: 0.75; }
-      main .toc .section a {
-        color: inherit; }
-      main .toc .section li a {
-        text-decoration: none; }
-        main .toc .section li a:not(:hover):not(:focus) {
-          opacity: 0.75; }
-        main .toc .section li a:hover, main .toc .section li a:focus {
-          opacity: 1; }
-        main .toc .section li a:active {
-          text-decoration: underline; }
-    main .toc ul {
-      list-style: disc inside;
-      padding: 0.4em 0 0.4em 12px; }
-  main section {
-    margin: 2.5em 0; }
-    main section[data-hashtarget-highlighted="true"] header h2 {
-      -webkit-animation: sectionHashTargeted 2.5s linear infinite;
-              animation: sectionHashTargeted 2.5s linear infinite; }
-    main section[data-hashtarget-highlighted="false"] header h2 {
-      -webkit-animation: sectionHashTargetSolidify 0.75s linear;
-              animation: sectionHashTargetSolidify 0.75s linear; }
-    main section header {
-      padding: 6px 9px;
-      margin-bottom: 1em;
-      background-color: rgba(255, 255, 255, 0.25); }
-      main section header h2 {
-        font-size: 1.75em; }
-    main section .qa {
-      position: relative;
-      margin-bottom: 0.75em;
-      padding: 9px 12px;
-      border: 1.5px solid;
-      border-radius: 4px;
-      color: rgba(255, 255, 255, 0.75);
-      overflow: hidden; }
-      main section .qa[data-hashtarget-highlighted="true"]::before {
-        -webkit-animation: qaHashTargeted 2.5s linear infinite;
-                animation: qaHashTargeted 2.5s linear infinite; }
-      main section .qa[data-hashtarget-highlighted="false"]::before {
-        -webkit-animation: qaHashTargetFade 0.75s linear;
-                animation: qaHashTargetFade 0.75s linear; }
-      main section .qa::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        content: "";
-        background-color: #fff;
-        opacity: 0; }
-      main section .qa * {
-        position: relative; }
-      main section .qa h3 {
-        font-size: 1.35em;
-        margin-bottom: 0.2em;
-        color: #fff; }
-      main section .qa ul {
-        list-style: disc inside;
-        padding: 0.4em 0 0.4em 12px; }
-      main section .qa a {
-        text-decoration: none; }
-        body[data-theme="main"] main section .qa a {
-          color: #f00; }
-        body[data-theme="bl1"] main section .qa a {
-          color: #dc143c; }
-        body[data-theme="bl2"] main section .qa a {
-          color: #ff4500; }
-        body[data-theme="tps"] main section .qa a {
-          color: #1e90ff; }
-        main section .qa a:not(:hover):not(:focus) .label {
-          text-decoration: none; }
-        main section .qa a:hover .label, main section .qa a:focus .label {
-          text-decoration: underline; }
-        main section .qa a:active {
-          opacity: 0.75; }
-        main section .qa a .fas {
-          font-size: 0.9em;
-          padding-right: 0.15em; }
-
-.help-footer {
+/*********************************
+  Support Footer Styles
+*********************************/
+.support-footer {
   background-color: #1d3f60; }
-  .help-footer .header {
+  .support-footer, .support-footer * {
+    opacity: 1; }
+  .support-footer .header {
     font-size: 1.5em;
     padding: 16px;
     text-align: center;
     background-color: rgba(0, 0, 0, 0.25); }
-  .help-footer .body {
+  .support-footer .body .content-wrapper {
     display: flex;
     flex-wrap: wrap; }
-    .help-footer .body .panel {
-      padding: 8px; }
-      .help-footer .body .panel.external {
-        background-color: rgba(0, 0, 0, 0.1); }
-      .help-footer .body .panel .title {
-        font-size: 1.25em;
-        margin: 8px;
-        text-align: center;
-        line-height: 1; }
-      .help-footer .body .panel .button-wrapper {
+  .support-footer .body .panel {
+    padding: 8px; }
+    @media screen and (max-width: 649px) {
+      .support-footer .body .panel {
+        width: 100%; } }
+    @media screen and (min-width: 650px) {
+      .support-footer .body .panel {
+        width: calc(50% - 1px); } }
+    .support-footer .body .panel .title {
+      font-size: 1.25em;
+      margin: 8px;
+      text-align: center;
+      line-height: 1; }
+    .support-footer .body .panel .button-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .support-footer .body .panel .button-wrapper a {
+        position: relative;
         display: flex;
         align-items: center;
-        justify-content: center; }
-        .help-footer .body .panel .button-wrapper a {
-          position: relative;
+        font-size: 1em;
+        margin: 8px;
+        padding: 8px;
+        line-height: 1;
+        border-radius: 4px;
+        overflow: hidden; }
+        .support-footer .body .panel .button-wrapper a::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          content: "";
+          background-color: #fff; }
+        .support-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
+          opacity: 0.2; }
+        .support-footer .body .panel .button-wrapper a:hover::before, .support-footer .body .panel .button-wrapper a:focus::before {
+          opacity: 0.4; }
+        .support-footer .body .panel .button-wrapper a:active {
+          opacity: 0.75; }
+        .support-footer .body .panel .button-wrapper a * {
+          position: relative; }
+        .support-footer .body .panel .button-wrapper a .icon {
+          font-size: 1.5em;
+          padding-right: 8px; }
+        .support-footer .body .panel .button-wrapper a .label {
           display: flex;
-          align-items: center;
-          font-size: 1em;
-          margin: 8px;
-          padding: 8px;
-          line-height: 1;
-          border-radius: 4px;
-          overflow: hidden; }
-          .help-footer .body .panel .button-wrapper a::before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            content: "";
-            background-color: #fff; }
-          .help-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
-            opacity: 0.2; }
-          .help-footer .body .panel .button-wrapper a:hover::before, .help-footer .body .panel .button-wrapper a:focus::before {
-            opacity: 0.4; }
-          .help-footer .body .panel .button-wrapper a:active {
-            opacity: 0.75; }
-          .help-footer .body .panel .button-wrapper a * {
-            position: relative; }
-          .help-footer .body .panel .button-wrapper a .icon {
-            font-size: 1.5em;
-            padding-right: 8px; }
-          .help-footer .body .panel .button-wrapper a .label {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-direction: column;
-            line-height: normal;
-            font-size: 0.75em; }
+          justify-content: center;
+          align-items: flex-start;
+          flex-direction: column;
+          line-height: normal;
+          font-size: 0.75em; }
+  .support-footer .body .separator {
+    background-color: rgba(15, 29, 44, 0.35); }
+    @media screen and (max-width: 649px) {
+      .support-footer .body .separator {
+        height: 2px;
+        width: 100%;
+        margin: 0 8px; } }
+    @media screen and (min-width: 650px) {
+      .support-footer .body .separator {
+        width: 2px;
+        margin: 8px 0; } }
+
+/*** Style Declarations ***/
+main, main * {
+  opacity: 1; }
+
+h2 {
+  font-size: 1.5em; }
+
+.toc {
+  border-radius: 4px; }
+  .toc::before {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.25); }
+  .toc .title {
+    font-size: 1.5em; }
+  .toc .section {
+    margin-top: 8px; }
+  .toc h3 a:not(:hover):not(:focus) {
+    text-decoration: none; }
+  .toc h3 a:hover, .toc h3 a:focus {
+    text-decoration: underline; }
+  .toc h3 a:active {
+    opacity: 0.75; }
+  .toc ul {
+    margin-bottom: 12px; }
+  .toc li a:not(:hover):not(:focus) {
+    opacity: 0.75; }
+  .toc li a:hover, .toc li a:focus {
+    opacity: 1; }
+  .toc li a:active {
+    text-decoration: underline; }
+
+section.group:not(:first-child) {
+  margin-top: 32px; }
+section.group header {
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.25); }
+@-webkit-keyframes headerHashTargetVisible {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
+@keyframes headerHashTargetVisible {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
+@-webkit-keyframes headerHashTargetSeen {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
+@keyframes headerHashTargetSeen {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
+  section.group[data-hashtarget="visible"] h2 {
+    -webkit-animation: headerHashTargetVisible 2.5s linear infinite;
+            animation: headerHashTargetVisible 2.5s linear infinite; }
+  section.group[data-hashtarget="seen"] h2 {
+    -webkit-animation: headerHashTargetSeen 0.75s linear;
+            animation: headerHashTargetSeen 0.75s linear; }

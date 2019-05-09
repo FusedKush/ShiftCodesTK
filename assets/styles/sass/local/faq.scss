@@ -4,204 +4,55 @@
 
 /*** Imports ***/
 @import "../partials/_globals";
+@import "../partials/support-footer";
 
-/*** Variables ***/
-$sectionHashStart: 1;    // Section Hash Target Animation Start Opacity
-$sectionHashEnd:   0.25; // Section Hash Target Animation End Opacity
-$qaHashStart:      0;    // Q/A Group Hash Target Animation Start Opacity
-$qaHashEnd:        0.35; // Q/A Group Hash Target Animation Start Opacity
-
-/*** Mixins ***/
-@mixin baseHashTargetActive ($start, $end) {
-  0%, 50%, 100% { opacity: $start; }
-  25%, 75%      { opacity: $end; }
-}
-@mixin baseHashTargetFade ($start, $end) {
-  0%   { opacity: $start; }
-  100% { opacity: $end; }
-}
-
-/*** Animations ***/
-@keyframes sectionHashTargeted {
-  @include baseHashTargetActive($sectionHashStart, $sectionHashEnd);
-}
-@keyframes sectionHashTargetSolidify {
-  @include baseHashTargetFade($sectionHashEnd, $sectionHashStart);
-}
-@keyframes qaHashTargeted {
-  @include baseHashTargetActive($qaHashStart, $qaHashEnd);
-}
-@keyframes qaHashTargetFade {
-  @include baseHashTargetFade($qaHashEnd, $qaHashStart);
-}
-
-/*** Media Queries ***/
-@media screen and (max-width: 649px) {
-  .help-footer .body .panel { width: 100%; }
-}
-@media screen and (min-width: 650px) {
-  .help-footer .body .panel { width: 50%; }
-}
 
 /*** Style Declarations ***/
-main, .help-footer { @include ready; }
-main {
-  padding: 16px 16px 32px;
+main { @include ready; }
+h2 { font-size: 1.5em; }
+.toc {
+  border-radius: 4px;
 
-  .toc {
-    border: 1.5px solid rgba(255, 255, 255, 0.75);
-    border-radius: 4px;
-    margin-bottom: 1.25em;
-    padding-bottom: 16px;
-
-    .header {
-      padding: 16px;
-      font-size: 1.5em;
-      margin-bottom: 8px;
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-    .section {
-      padding: 8px 16px 0;
-
-      .title {
-        font-size: 1.25em;
-        font-weight: 600;
-
-        &:not(:hover):not(:focus) { text-decoration: none; }
-        &:hover, &:focus          { text-decoration: underline; }
-        &:active                  { opacity: 0.75; }
-      }
-      a { color: inherit; }
-      li a {
-        text-decoration: none;
-
-        &:not(:hover):not(:focus) { opacity: 0.75; }
-        &:hover, &:focus          { opacity: 1; }
-        &:active                  { text-decoration: underline; }
-      }
-    }
-    ul {
-      list-style: disc inside;
-      padding: 0.4em 0 0.4em 12px;
-    }
+  &::before {
+    background-color: tpw(0.25);
+    border-color: tpw(0.25);
   }
-  section {
-    margin: 2.5em 0;
 
-    &[data-hashtarget-highlighted="true"] header h2  { animation: sectionHashTargeted 2.5s linear infinite; }
-    &[data-hashtarget-highlighted="false"] header h2 { animation: sectionHashTargetSolidify 0.75s linear; }
-
-    header {
-      padding: 6px 9px;
-      margin-bottom: 1em;
-      background-color: rgba(255, 255, 255, 0.25);
-
-      h2 { font-size: 1.75em; }
-    }
-    .qa {
-      position: relative;
-      margin-bottom: 0.75em;
-      padding: 9px 12px;
-      border: 1.5px solid;
-      border-radius: 4px;
-      color: rgba(255, 255, 255, 0.75);
-      overflow: hidden;
-
-      &[data-hashtarget-highlighted="true"]::before  { animation: qaHashTargeted 2.5s linear infinite; }
-      &[data-hashtarget-highlighted="false"]::before { animation: qaHashTargetFade 0.75s linear; }
-
-      &::before {
-        @include fill(true, #fff);
-        opacity: 0;
-      }
-
-      * { position: relative; }
-
-      h3 {
-        font-size: 1.35em;
-        margin-bottom: 0.2em;
-        color: #fff;
-      }
-      ul {
-        list-style: disc inside;
-        padding: 0.4em 0 0.4em 12px;
-      }
-      a {
-        @include theme(c);
-        text-decoration: none;
-
-        &:not(:hover):not(:focus) .label { text-decoration: none; }
-        &:hover, &:focus {
-          .label                         { text-decoration: underline; }
-        }
-        &:active                         { opacity: 0.75; }
-
-        .fas {
-          font-size: 0.9em;
-          padding-right: 0.15em;
-        }
-      }
-    }
+  .title { font-size: 1.5em; }
+  .section { margin-top: 8px; }
+  h3 a {
+    @include mouseState(noHover) { text-decoration: none; }
+    @include mouseState(hover)   { text-decoration: underline; }
+    @include mouseState(click)   { opacity: 0.75; }
+  }
+  ul { margin-bottom: 12px; }
+  li a {
+    @include mouseState(noHover) { opacity: 0.75; }
+    @include mouseState(hover)   { opacity: 1; }
+    @include mouseState(click)   { text-decoration: underline; }
   }
 }
-.help-footer {
-  background-color: $site-color-lighter;
+section.group {
+  &:not(:first-child) { margin-top: 32px; }
 
-  .header {
-    font-size: 1.5em;
-    padding: 16px;
-    text-align: center;
-    background-color: tpb(0.25);
-  }
-  .body {
-    display: flex;
-    flex-wrap: wrap;
+  header {
+    @keyframes headerHashTargetVisible {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75%      { opacity: 0.25; }
+    }
+    @keyframes headerHashTargetSeen {
+      0%   { opacity: 0.25; }
+      100% { opacity: 1; }
+    }
 
-    .panel {
-      padding: 8px;
+    margin-bottom: 16px;
+    padding: 8px;
+    background-color: tpw(0.25);
+    border: bd(2px, tpw(0.25));
 
-      &.external { background-color: tpb(0.1); }
-
-      .title {
-        font-size: 1.25em;
-        margin: 8px;
-        text-align: center;
-        line-height: 1;
-      }
-      .button-wrapper {
-        @include flexbox;
-
-        a {
-          position: relative;
-          display: flex;
-          align-items: center;
-          font-size: 1em;
-          margin: 8px;
-          padding: 8px;
-          line-height: 1;
-          border-radius: 4px;
-          overflow: hidden;
-
-          &::before { @include fill(true, #fff); }
-
-          &:not(:hover):not(:focus)::before { opacity: 0.2; }
-          &:hover, &:focus {
-            &::before                       { opacity: 0.4; }
-          }
-          &:active                         { opacity: 0.75; }
-
-          * { position: relative; }
-          .icon {
-            font-size: 1.5em;
-            padding-right: 8px;
-          }
-          .label {
-            @include flexbox(c, s, $direction: c);
-            line-height: normal;
-            font-size: 0.75em;
-          }
-        }
-      }
+    @at-root section.group {
+      &[data-hashtarget="visible"] h2 { animation: headerHashTargetVisible 2.5s linear infinite; }
+      &[data-hashtarget="seen"] h2 { animation: headerHashTargetSeen 0.75s linear; }
     }
   }
 }
