@@ -8,6 +8,10 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
+/*** Style Declarations ***/
+main, main * {
+  opacity: 1; }
+
 /*********************************
   Support Footer Styles
 *********************************/
@@ -87,7 +91,3 @@
       .support-footer .body .separator {
         width: 2px;
         margin: 8px 0; } }
-
-/*** Style Declarations ***/
-main, main * {
-  opacity: 1; }

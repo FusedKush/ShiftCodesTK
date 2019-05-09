@@ -4,8 +4,6 @@
 
 /*** Imports ***/
 @import "../partials/_globals";
-@import "../partials/support-footer";
-
 
 /*** Style Declarations ***/
 main { @include ready; }
@@ -19,13 +17,12 @@ h2 { font-size: 1.5em; }
   }
 
   .title { font-size: 1.5em; }
-  .section { margin-top: 8px; }
+  .section:not(:first-child) { margin-top: 12px; }
   h3 a {
     @include mouseState(noHover) { text-decoration: none; }
     @include mouseState(hover)   { text-decoration: underline; }
     @include mouseState(click)   { opacity: 0.75; }
   }
-  ul { margin-bottom: 12px; }
   li a {
     @include mouseState(noHover) { opacity: 0.75; }
     @include mouseState(hover)   { opacity: 1; }
@@ -56,3 +53,6 @@ section.group {
     }
   }
 }
+
+// Support Footer
+@import "../partials/support-footer";

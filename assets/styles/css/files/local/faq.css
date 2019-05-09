@@ -8,6 +8,69 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
+/*** Style Declarations ***/
+main, main * {
+  opacity: 1; }
+
+h2 {
+  font-size: 1.5em; }
+
+.toc {
+  border-radius: 4px; }
+  .toc::before {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.25); }
+  .toc .title {
+    font-size: 1.5em; }
+  .toc .section:not(:first-child) {
+    margin-top: 12px; }
+  .toc h3 a:not(:hover):not(:focus) {
+    text-decoration: none; }
+  .toc h3 a:hover, .toc h3 a:focus {
+    text-decoration: underline; }
+  .toc h3 a:active {
+    opacity: 0.75; }
+  .toc li a:not(:hover):not(:focus) {
+    opacity: 0.75; }
+  .toc li a:hover, .toc li a:focus {
+    opacity: 1; }
+  .toc li a:active {
+    text-decoration: underline; }
+
+section.group:not(:first-child) {
+  margin-top: 32px; }
+section.group header {
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.25); }
+@-webkit-keyframes headerHashTargetVisible {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
+@keyframes headerHashTargetVisible {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
+@-webkit-keyframes headerHashTargetSeen {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
+@keyframes headerHashTargetSeen {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
+  section.group[data-hashtarget="visible"] h2 {
+    -webkit-animation: headerHashTargetVisible 2.5s linear infinite;
+            animation: headerHashTargetVisible 2.5s linear infinite; }
+  section.group[data-hashtarget="seen"] h2 {
+    -webkit-animation: headerHashTargetSeen 0.75s linear;
+            animation: headerHashTargetSeen 0.75s linear; }
+
 /*********************************
   Support Footer Styles
 *********************************/
@@ -87,68 +150,3 @@
       .support-footer .body .separator {
         width: 2px;
         margin: 8px 0; } }
-
-/*** Style Declarations ***/
-main, main * {
-  opacity: 1; }
-
-h2 {
-  font-size: 1.5em; }
-
-.toc {
-  border-radius: 4px; }
-  .toc::before {
-    background-color: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.25); }
-  .toc .title {
-    font-size: 1.5em; }
-  .toc .section {
-    margin-top: 8px; }
-  .toc h3 a:not(:hover):not(:focus) {
-    text-decoration: none; }
-  .toc h3 a:hover, .toc h3 a:focus {
-    text-decoration: underline; }
-  .toc h3 a:active {
-    opacity: 0.75; }
-  .toc ul {
-    margin-bottom: 12px; }
-  .toc li a:not(:hover):not(:focus) {
-    opacity: 0.75; }
-  .toc li a:hover, .toc li a:focus {
-    opacity: 1; }
-  .toc li a:active {
-    text-decoration: underline; }
-
-section.group:not(:first-child) {
-  margin-top: 32px; }
-section.group header {
-  margin-bottom: 16px;
-  padding: 8px;
-  background-color: rgba(255, 255, 255, 0.25);
-  border: 2px solid rgba(255, 255, 255, 0.25); }
-@-webkit-keyframes headerHashTargetVisible {
-  0%, 50%, 100% {
-    opacity: 1; }
-  25%, 75% {
-    opacity: 0.25; } }
-@keyframes headerHashTargetVisible {
-  0%, 50%, 100% {
-    opacity: 1; }
-  25%, 75% {
-    opacity: 0.25; } }
-@-webkit-keyframes headerHashTargetSeen {
-  0% {
-    opacity: 0.25; }
-  100% {
-    opacity: 1; } }
-@keyframes headerHashTargetSeen {
-  0% {
-    opacity: 0.25; }
-  100% {
-    opacity: 1; } }
-  section.group[data-hashtarget="visible"] h2 {
-    -webkit-animation: headerHashTargetVisible 2.5s linear infinite;
-            animation: headerHashTargetVisible 2.5s linear infinite; }
-  section.group[data-hashtarget="seen"] h2 {
-    -webkit-animation: headerHashTargetSeen 0.75s linear;
-            animation: headerHashTargetSeen 0.75s linear; }
