@@ -258,7 +258,6 @@ main {
 .dropdown-panel {
   border-radius: 4px;
   padding: 2px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   overflow: hidden; }
   .dropdown-panel::before {
     position: absolute;
@@ -273,9 +272,9 @@ main {
     border: 2px solid #060c12;
     border-radius: inherit; }
   .dropdown-panel:not(:first-child) {
-    margin-top: 12px; }
+    margin-top: 8px; }
   .dropdown-panel:not(:last-child) {
-    margin-bottom: 12px; }
+    margin-bottom: 8px; }
   .dropdown-panel .overlay-hashtarget {
     position: absolute;
     top: 0;
@@ -339,6 +338,7 @@ main {
       align-items: center;
       justify-content: flex-start;
       align-self: center;
+      text-align: start;
       grid-column: 1;
       font-size: 1.15em; }
       .dropdown-panel .header .title .icon {
@@ -364,15 +364,11 @@ main {
       padding: 8px;
       grid-column: 2;
       font-size: 1.25em;
-      line-height: 1; }
-      .dropdown-panel .header .indicator.sticky {
-        align-self: flex-start; }
-      .dropdown-panel[data-expanded="false"] .header .indicator {
-        -webkit-transform: rotate(0deg);
-                transform: rotate(0deg); }
-      .dropdown-panel[data-expanded="true"] .header .indicator {
-        -webkit-transform: rotate(180deg);
-                transform: rotate(180deg); }
+      line-height: 1;
+      align-self: flex-start; }
+      .dropdown-panel[data-expanded="true"] .header .indicator .fas {
+        -webkit-transform: rotate(90deg);
+                transform: rotate(90deg); }
     .dropdown-panel .header .title, .dropdown-panel .header .indicator {
       grid-row: 1; }
     .dropdown-panel .header .full-width {

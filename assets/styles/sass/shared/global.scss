@@ -228,11 +228,10 @@ main {
 }
 // Dropdown Panel
 .dropdown-panel {
-  $margins: 12px;
+  $margins: 8px;
 
   border-radius: 4px;
   padding: 2px;
-  box-shadow: shadow(tpb(0.25), 10px);
   overflow: hidden;
 
   &::before {
@@ -293,6 +292,7 @@ main {
     .title {
       @include flexbox($hAlign: s);
       align-self: center;
+      text-align: start;
       grid-column: 1;
       font-size: 1.15em;
 
@@ -317,14 +317,10 @@ main {
       grid-column: 2;
       font-size: 1.25em;
       line-height: 1;
-
-      &.sticky { align-self: flex-start; }
+      align-self: flex-start;
 
       @include panelRoot {
-        $this: unquote(".header .indicator");
-
-        &[data-expanded="false"] #{$this} { transform: rotate(0deg); }
-        &[data-expanded="true"] #{$this}  { transform: rotate(180deg); }
+        &[data-expanded="true"] .header .indicator .fas { transform: rotate(90deg); }
       }
     }
     .title, .indicator { grid-row: 1; }

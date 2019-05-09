@@ -52,7 +52,7 @@
                 </div>
               </div>
               <div class="indicator">
-                <span class="fas fa-chevron-down"></span>
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
           </button>
@@ -76,7 +76,7 @@
                 </div>
               </div>
               <div class="indicator">
-                <span class="fas fa-chevron-down"></span>
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
           </button>
@@ -100,7 +100,7 @@
                 </div>
               </div>
               <div class="indicator">
-                <span class="fas fa-chevron-down"></span>
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
           </button>
@@ -124,7 +124,7 @@
                 </div>
               </div>
               <div class="indicator">
-                <span class="fas fa-chevron-down"></span>
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
           </button>
@@ -147,7 +147,7 @@
                 </div>
               </div>
               <div class="indicator">
-                <span class="fas fa-chevron-down"></span>
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
           </button>

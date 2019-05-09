@@ -259,7 +259,7 @@ function hashUpdate () {
   }
 }
 // Update Dropdown Panel Attributes
-function updateDropdownPanelAttributes(panel, state) {
+function updateDropdownPanelAttributes (panel, state) {
   let toggler = panel.getElementsByClassName('header')[0];
   let labels = (function () {
     let customLabels = toggler.getAttribute('data-custom-labels');
@@ -276,7 +276,7 @@ function updateDropdownPanelAttributes(panel, state) {
   toggler.setAttribute('aria-label', labels[state]);
 }
 // Toggle Dropdown Panel
-function toggleDropdownPanel(toggler) {
+function toggleDropdownPanel (toggler) {
   let panel = toggler.parentNode;
   let state = panel.getAttribute('data-expanded') == 'true';
 
