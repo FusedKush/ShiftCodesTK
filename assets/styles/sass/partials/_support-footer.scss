@@ -1,7 +1,6 @@
 /*********************************
   Support Footer Styles
 *********************************/
-
 .support-footer {
   @include ready;
 
@@ -14,16 +13,12 @@
     background-color: tpb(0.25);
   }
   .body {
-    display: flex;
-    flex-wrap: wrap;
-
+    .content-wrapper { @include flexbox(none, none, default, $wrap: true); }
     .panel {
       padding: 8px;
 
-      &.external { background-color: tpb(0.1); }
-
       @media screen and (max-width: 649px) { width: 100%; }
-      @media screen and (min-width: 650px) { width: 50%; }
+      @media screen and (min-width: 650px) { width: calc(50% - 1px); }
 
       .title {
         font-size: 1.25em;
@@ -64,6 +59,18 @@
             font-size: 0.75em;
           }
         }
+      }
+    }
+    .separator {
+      background-color: rgba(15, 29, 44, 0.35);
+
+      @media screen and (max-width: 649px) {
+        @include sizing(2px, 100%);
+        margin: 0 8px;
+      }
+      @media screen and (min-width: 650px) {
+        width: 2px;
+        margin: 8px 0;
       }
     }
   }
