@@ -135,6 +135,7 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 @mixin fill($pseudo: false, $background: false, $deprecatedParameterAnimated: false) {
   position: absolute;
   @include pull(all);
+  border-radius: inherit;
 
   @if $pseudo == true      { content: ""; }
   @if $background != false { background-color: $background; }

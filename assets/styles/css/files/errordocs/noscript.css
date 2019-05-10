@@ -25,6 +25,7 @@ noscript {
   left: 0;
   bottom: 0;
   right: 0;
+  border-radius: inherit;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,6 +45,7 @@ noscript {
     left: 0;
     bottom: 0;
     right: 0;
+    border-radius: inherit;
     content: "";
     background-color: #000;
     opacity: 0.75; }
@@ -77,6 +79,7 @@ noscript {
       left: 0;
       bottom: 0;
       right: 0;
+      border-radius: inherit;
       content: "";
       background-color: #000; }
     noscript .refresh:not(:hover):not(:focus)::before {

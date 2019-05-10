@@ -24,6 +24,7 @@ Sidebar Styles
     left: 0;
     bottom: 0;
     right: 0;
+    border-radius: inherit;
     content: "";
     background-color: rgba(0, 0, 0, 0.5); }
   .sidebar[data-expanded="false"]::before {
@@ -95,6 +96,7 @@ Sidebar Styles
         left: 0;
         bottom: 0;
         right: 0;
+        border-radius: inherit;
         content: "";
         border-bottom: 2px solid; }
       body[data-theme="main"] .sidebar .brand .name::before {
@@ -128,6 +130,7 @@ Sidebar Styles
         left: 0;
         bottom: 0;
         right: 0;
+        border-radius: inherit;
         content: "";
         background-color: #000; }
       .sidebar li a:not([data-selected="true"])::before, .sidebar li a[data-selected="false"]::before {
@@ -213,6 +216,7 @@ Sidebar Styles
           left: 0;
           bottom: 0;
           right: 0;
+          border-radius: inherit;
           content: ""; }
         .sidebar li .badges .badge:not(:last-child) {
           margin-right: 4px; }

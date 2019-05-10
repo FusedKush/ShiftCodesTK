@@ -28,13 +28,8 @@ main, main * {
     display: flex;
     flex-wrap: wrap; }
   .support-footer .body .panel {
-    padding: 8px; }
-    @media screen and (max-width: 649px) {
-      .support-footer .body .panel {
-        width: 100%; } }
-    @media screen and (min-width: 650px) {
-      .support-footer .body .panel {
-        width: calc(50% - 1px); } }
+    padding: 8px;
+    flex: 1; }
     .support-footer .body .panel .title {
       font-size: 1.25em;
       margin: 8px;
@@ -60,6 +55,7 @@ main, main * {
           left: 0;
           bottom: 0;
           right: 0;
+          border-radius: inherit;
           content: "";
           background-color: #fff; }
         .support-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
@@ -89,5 +85,5 @@ main, main * {
         margin: 0 8px; } }
     @media screen and (min-width: 650px) {
       .support-footer .body .separator {
-        width: 2px;
+        width: 3px;
         margin: 8px 0; } }

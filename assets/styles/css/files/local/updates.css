@@ -55,6 +55,7 @@
         left: 0;
         bottom: 0;
         right: 0;
+        border-radius: inherit;
         content: "";
         background-color: #fff; }
       .updates-header .section.jump > button[data-pressed="false"]:not(:hover):not(:focus)::before {
@@ -123,6 +124,7 @@
           left: 0;
           bottom: 0;
           right: 0;
+          border-radius: inherit;
           content: "";
           background-color: #000; }
         .updates-header .section.jump .dropdown li a:not(:hover):not(:focus) {
@@ -170,6 +172,7 @@ main {
       left: 0;
       bottom: 0;
       right: 0;
+      border-radius: inherit;
       content: "";
       background-color: #1d3f60;
       border: 2px solid #060c12;
@@ -182,6 +185,7 @@ main {
       left: 0;
       bottom: 0;
       right: 0;
+      border-radius: inherit;
       content: "";
       border: 2px solid;
       border-radius: 4px;

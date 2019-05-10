@@ -2,8 +2,6 @@
   FAQ Page Scripts
 *********************************/
 
-// *** Functions ***
-
 // *** Immediate Functions ***
 // Constructs Dropdown IDs and Table of Contents
 (function () {
@@ -57,5 +55,3 @@
     tocEntry.listitemTemplate.remove();
   }
 })();
-
-// *** Event Listeners ***

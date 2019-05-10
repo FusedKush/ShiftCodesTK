@@ -16,9 +16,7 @@
     .content-wrapper { @include flexbox(none, none, default, $wrap: true); }
     .panel {
       padding: 8px;
-
-      @media screen and (max-width: 649px) { width: 100%; }
-      @media screen and (min-width: 650px) { width: calc(50% - 1px); }
+      flex: 1;
 
       .title {
         font-size: 1.25em;
@@ -69,7 +67,7 @@
         margin: 0 8px;
       }
       @media screen and (min-width: 650px) {
-        width: 2px;
+        width: 3px;
         margin: 8px 0;
       }
     }

@@ -31,9 +31,21 @@ body {
 
 a {
   text-decoration: none; }
-  a:not(.colored) {
+  a.tr-underline:not(:hover):not(:focus), a.themed:not(:hover):not(:focus) {
+    text-decoration: none; }
+  a.tr-underline:hover, a.themed:hover, a.tr-underline:focus, a.themed:focus {
+    text-decoration: underline; }
+  a.tr-underline:active, a.themed:active {
+    opacity: 0.75; }
+  a.tr-appear:not(:hover):not(:focus) {
+    opacity: 0.75; }
+  a.tr-appear:hover, a.tr-appear:focus {
+    opacity: 1; }
+  a.tr-appear:active {
+    text-decoration: underline; }
+  a:not(.themed) {
     color: inherit; }
-  a.colored {
+  a.themed {
     color: #0ff; }
 
 p:not(:first-child) {
@@ -44,11 +56,12 @@ button {
   border: none;
   color: inherit;
   font-family: inherit; }
-  button:hover:not([disabled]) {
-    cursor: pointer; }
-  button[disabled] {
-    opacity: .5;
-    cursor: not-allowed; }
+
+button:hover:not([disabled]), a:hover:not([disabled]) {
+  cursor: pointer; }
+button[disabled], a[disabled] {
+  opacity: .5;
+  cursor: not-allowed; }
 
 ul.styled {
   list-style: disc inside; }
@@ -265,6 +278,7 @@ main {
     left: 0;
     bottom: 0;
     right: 0;
+    border-radius: inherit;
     content: "";
     background-color: #1d3f60;
     height: 100%;
@@ -281,6 +295,7 @@ main {
     left: 0;
     bottom: 0;
     right: 0;
+    border-radius: inherit;
     content: "";
     border: 2px solid #fff;
     border-radius: inherit;
@@ -320,6 +335,7 @@ main {
       left: 0;
       bottom: 0;
       right: 0;
+      border-radius: inherit;
       content: "";
       background-color: #fff; }
     .dropdown-panel .header:not(:hover):not(:focus)::before {

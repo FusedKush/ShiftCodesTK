@@ -136,6 +136,7 @@
       left: 0;
       bottom: 0;
       right: 0;
+      border-radius: inherit;
       content: "";
       background-color: #000; }
     .credits .module:not(:hover):not(:focus)::before {
@@ -169,6 +170,7 @@
         left: 0;
         bottom: 0;
         right: 0;
+        border-radius: inherit;
         content: "";
         background-color: #000; }
       .credits .module:not(:hover):not(:focus) .icon::before {

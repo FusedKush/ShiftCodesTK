@@ -26,15 +26,31 @@ body {
 a {
   text-decoration: none;
 
-  &:not(.colored) { color: inherit; }
-  &.colored       { color: #0ff; }
+  &.tr-underline {
+    @include mouseState(noHover) { text-decoration: none; }
+    @include mouseState(hover)   { text-decoration: underline; }
+    @include mouseState(click)   { opacity: 0.75; }
+  }
+  &.tr-appear {
+    @include mouseState(noHover) { opacity: 0.75; }
+    @include mouseState(hover)   { opacity: 1; }
+    @include mouseState(click)   { text-decoration: underline; }
+  }
+  &:not(.themed) { color: inherit; }
+  // Warning! .colored will be deprecated in the future. Use .themed instead.
+  &.themed {
+    color: #0ff;
+
+    @extend a.tr-underline;
+  }
 }
 p:not(:first-child) { margin-top: $df-elm-spacing; }
 button {
   background: transparent;
   border: none;
   @include multiProp(inherit, color, font-family);
-
+}
+button, a {
   &:hover:not([disabled]) {
     cursor: pointer;
   }

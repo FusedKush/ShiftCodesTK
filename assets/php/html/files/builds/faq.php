@@ -90,7 +90,7 @@
             </div>
           </button>
           <div class="body content-container">
-            <p>Yes. You can create a free account&nbsp;<a class="colored" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT" aria-label="Register for SHiFT"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span><span class="label">here</span></a>.</p>
+            <p>Yes. You can create a free account&nbsp;<a class="themed" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT (External Link)" aria-label="Register for SHiFT (External Link)"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>&nbsp;<span class="label">here</span></a>.</p>
           </div>
         </div>
         <div class="dropdown-panel">
