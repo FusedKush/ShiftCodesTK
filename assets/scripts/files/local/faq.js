@@ -51,7 +51,7 @@
     }
 
     toc.appendChild(tocEntry.root);
-    tocEntry.template.remove();
-    tocEntry.listitemTemplate.remove();
   }
+  tocEntry.template.remove();
+  tocEntry.listitemTemplate.remove();
 })();
