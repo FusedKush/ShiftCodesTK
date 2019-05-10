@@ -30,18 +30,11 @@
       </li>
       <div class="separator"></div>
       <li role="menuitem">
-        <a class="no-focus-scroll" href="/faq">
+        <a class="no-focus-scroll" href="/help">
           <span class="fas fa-question"></span>
-          <span class="name">FAQ</span>
+          <span class="name">Help Center</span>
         </a>
       </li>
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/clearing-your-system-cache">
-          <span class="fas fa-question"></span>
-          <span class="name">Clearing your System Cache</span>
-        </a>
-      </li>
-      <div class="separator"></div>
       <li role="menuitem">
         <a class="no-focus-scroll" href="/credits">
           <span class="fas fa-award"></span>

@@ -1,0 +1,104 @@
+/*********************************
+  Help Center Page Styles
+*********************************/
+
+// GLobals
+@import "../partials/_globals";
+
+// Section Border
+@mixin sectionBorder {
+  border: bd(1.5px, tpw(0.5));
+  border-radius: 4px;
+}
+
+main { @include ready; }
+
+h2, h3 {
+  width: 100%;
+  margin-bottom: 8px;
+  text-align: center;
+}
+section { margin-top: 24px; }
+.intro {
+  display: block;
+  font-size: 1.25em;
+  text-align: center;
+  opacity: 0.75;
+}
+.resource {
+  $radius: 4px;
+
+  @include flexbox(none, s);
+  flex: 1;
+  border-radius: $radius;
+  margin: 4px;
+  background-color: $site-color-lighter;
+
+  &::before { @include fill(true, #fff); }
+
+  @include mouseState(noHover) {
+    &::before                { opacity: 0; }
+  }
+  @include mouseState(hover) {
+    &::before                { opacity: 0.2; }
+  }
+  @include mouseState(click) { opacity: 0.75; }
+
+  .icon {
+    font-size: 1.75em;
+    padding: 16px;
+    line-height: 0;
+    border-radius: $radius 0 0 $radius;
+    background-color: tpb(0.25);
+
+    .fas, .fab { @include multiProp(1em, sizing); }
+    &, .fas, .fab { @include flexbox; }
+  }
+  .content { padding: 16px; }
+}
+.articles {
+  .wrapper {
+    @include flexbox(none, none, $wrap: true);
+    @include sectionBorder;
+    padding: 8px 6px;
+
+    .resource {
+      .content { min-width: 14em; }
+      .title { font-size: 1.25em; }
+      .description {
+        margin-top: 4px;
+        opacity: 0.75;
+      }
+    }
+  }
+}
+.links {
+  $margins: -4px;
+
+  @include flexbox(none, none, $wrap: true);
+  margin-left: $margins;
+  margin-right: $margins;
+
+  .wrapper {
+    @include flexbox($type: inline, $wrap: true);
+    flex: 1;
+    width: 50%;
+    @include spacing(4px, 8px 6px);
+    @include sectionBorder;
+  }
+  h3 {
+    font-size: 1.25em;
+    margin-top: 4px;
+  }
+  .resource {
+    .content { min-width: 10em; }
+  }
+}
+.notice {
+  padding: 8px;
+  border: bd(1.5px, tpw(0.5));
+  border-radius: 4px;
+  text-align: center;
+
+  h2 { font-size: 1.25em; }
+}

@@ -135,3 +135,6 @@
 
 .fa-list-alt::before {
   content: "\f022"; }
+
+.fa-file-alt::before {
+  content: "\f15c"; }
