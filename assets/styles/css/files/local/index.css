@@ -94,7 +94,8 @@
       border-radius: 4px;
       font-size: 0.9em;
       margin: 0.25em;
-      padding: 0.6em; }
+      padding: 0.6em;
+      overflow: hidden; }
       .banner .button-group a::before, .banner .button-group a::after {
         position: absolute;
         top: 0;
@@ -124,3 +125,39 @@
         opacity: 0; }
       .banner .button-group a:active {
         opacity: 0.75; }
+      .banner .button-group a .flags {
+        display: flex;
+        justify-content: space-between;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1; }
+        .banner .button-group a .flags .flag {
+          display: flex;
+          align-items: flex-start;
+          justify-content: center;
+          height: 3em;
+          width: 6em;
+          margin: 0 4px;
+          padding: 0.5em;
+          font-size: 0.5em;
+          border: 1.5px solid rgba(0, 0, 0, 0.25);
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25); }
+          .banner .button-group a .flags .flag:first-child {
+            -webkit-transform: rotate(135deg) translate(1.25em, 2.25em);
+                    transform: rotate(135deg) translate(1.25em, 2.25em); }
+            .banner .button-group a .flags .flag:first-child .fas {
+              -webkit-transform: rotate(-135deg);
+                      transform: rotate(-135deg); }
+          .banner .button-group a .flags .flag:not(:first-child) {
+            -webkit-transform: rotate(-135deg) translate(-1.25em, 2.25em);
+                    transform: rotate(-135deg) translate(-1.25em, 2.25em); }
+            .banner .button-group a .flags .flag:not(:first-child) .fas {
+              -webkit-transform: rotate(135deg);
+                      transform: rotate(135deg); }
+          .banner .button-group a .flags .flag.new {
+            background-color: #0057ff; }
+          .banner .button-group a .flags .flag.exp {
+            background-color: #ff8c00; }

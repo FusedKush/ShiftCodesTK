@@ -111,7 +111,7 @@ function newAjaxRequest (type, file, callback, parameters, requestHeader) {
         processResponse();
       }
       catch(e) {
-        consoleLog(('Caught Exception in Ajax ') + type + (' Request: ') + e + ('. Requested File: ') + file, 'error');
+        console.error(('Caught Exception in Ajax ') + type + (' Request: ') + e + ('. Requested File: ') + file);
       }
     }
   }
@@ -317,6 +317,12 @@ hashUpdate();
   for(let i = 0; i < panels.length; i++) {
     dropdownPanelSetup(panels[i]);
   }
+})();
+// Get SHiFT Badge count and update variable
+(function () {
+  newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
+    shiftBadgeCount = JSON.parse(request).response.alerts;
+  });
 })();
 // Check for DevTools support
 (function () {

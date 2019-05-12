@@ -378,12 +378,13 @@ function addPanelListeners(panel) {
       // Reward
       (function () {
         let reward = codeObject.reward;
+        let description = panel.labels.description;
 
         // if (reward.length > 20) { panel.description.classList.add('long'); }
         if (reward != '5 Golden Keys') {
           panel.reward.innerHTML = reward;
-          updateLabel(panel.labels.description, 'Rare SHiFT Code');
-          panel.labels.description.innerHTML = 'Rare SHiFT Code';
+          updateLabel(description, 'Rare SHiFT Code');
+          description.childNodes[0].innerHTML = 'Rare SHiFT Code';
         }
       })();
       // Handles all dates (Flags, Dates, Progress Bar)

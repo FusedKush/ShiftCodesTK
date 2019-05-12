@@ -84,6 +84,7 @@
       border-radius: 4px;
       font-size: 0.9em;
       @include spacing(0.25em, 0.6em);
+      overflow: hidden;
 
       @include pshared {
         @include fill(true);
@@ -112,6 +113,40 @@
       }
       @include mouseState(click) {
         opacity: 0.75;
+      }
+
+      .flags {
+        @include flexbox(none, sb);
+        position: absolute;
+        @include pull(t, lr);
+        z-index: zOrder(higher);
+
+        .flag {
+          $xPos: 1.25em;
+          $yPos: 2.25em;
+          $rotation: 135deg;
+
+          @include flexbox(s, c);
+          @include sizing(3em, 6em);
+          @include spacing(0 4px, 0.5em);
+          font-size: 0.5em;
+          border: bd(1.5px, tpb(0.25));
+          box-shadow: shadow(tpb(0.5), 10px);
+          text-shadow: dropShadow(tpb(0.25));
+
+          &:first-child {
+            transform: rotate($rotation) translate($xPos, $yPos);
+
+            .fas { transform: rotate(-$rotation); }
+          }
+          &:not(:first-child) {
+            transform: rotate(-$rotation) translate(-$xPos, $yPos);
+
+            .fas { transform: rotate($rotation); }
+          }
+          &.new { background-color: $badge-new; }
+          &.exp { background-color: $badge-exp; }
+        }
       }
     }
   }

@@ -54,10 +54,22 @@
         </div>
       </section>
     </main>
+    <template id="flag_template">
+      <div class="flags">
+        <div class="flag new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!">
+          <span class="fas fa-star"></span>
+        </div>
+        <div class="flag exp" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!">
+          <span class="fas fa-exclamation-triangle"></span>
+        </div>
+      </div>
+    </template>
     <!--// After-Content Imports \\-->
     <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
+    <!-- Local Scripts -->
+    <script async src="/assets/scripts/min/local/index.min.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>

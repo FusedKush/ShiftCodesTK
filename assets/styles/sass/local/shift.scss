@@ -262,7 +262,6 @@
 
       @include flexbox(mone, none, $wrap: true);
       font-size: 0.65em;
-      font-weight: 600;
       margin: 2px $cMargins $cMargins;
       width: calc(100% + 1.25em + 24px);
       opacity: 1;
@@ -271,21 +270,31 @@
         @include flexbox;
         margin: 2px;
         padding: 4px 8px;
-        border: bd(1.5px, tpw(0.5));
+        border: bd(1.5px);
         border-radius: 4px;
         text-shadow: dropShadow(tpb(0.25));
         line-height: 1;
 
+        &::before {
+          @include fill(true);
+          border-radius: 0;
+          opacity: 0.25;
+        }
+
         // Theming
         & {
           $bgColors: (
-            description: tpw(0.25),
+            description: #fff,
             new: $badge-new,
             exp: $badge-exp
             );
 
           @each $label, $color in $bgColors {
-            &.#{$label} { background-color: $color; }
+            &.#{$label} {
+              border-color: $color;
+
+              &::before { background-color: $color; }
+            }
           }
         }
       }

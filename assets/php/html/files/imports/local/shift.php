@@ -61,9 +61,15 @@
           <div class="string">
             <h2 class="primary reward">5 Golden Keys</h2>
             <span class="secondary labels">
-              <span class="label description" title="SHiFT Code" aria-label="SHiFT Code">SHiFT Code</span>
-              <span class="label new" title="New SHiFT Code" aria-label="New SHiFT Code">New!</span>
-              <span class="label exp" title="Expiring SHiFT Code" aria-label="Expiring SHiFT Code">Expiring!</span>
+              <span class="label description" title="SHiFT Code" aria-label="SHiFT Code">
+                <span>SHiFT Code</span>
+              </span>
+              <span class="label new" title="New SHiFT Code" aria-label="New SHiFT Code">
+                <span>New!</span>
+              </span>
+              <span class="label exp" title="Expiring SHiFT Code" aria-label="Expiring SHiFT Code">
+                <span>Expiring!</span>
+              </span>
             </span>
           </div>
         </div>
