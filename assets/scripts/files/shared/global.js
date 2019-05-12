@@ -12,24 +12,6 @@ var defaultDropdownPanelLabels = {
 };
 
 // *** Functions ***
-// Writes to the ShiftCodesTK Developer Console (If DevTools are available)
-function consoleLog (message, type) {
-  if (typeof devTools != 'undefined') {
-    if (devTools.writeToConsole === true) {
-      let title = '</> ShiftCodesTK Developer Console';
-      let styles = 'color: #0f1d2c; background-color: #fff; padding: 0 18px;';
-
-      console.group(('%c') + title, styles);
-
-      if (type == 'info') { console.info(message); }
-      else if (type == 'warn') { console.warn(message); }
-      else if (type == 'error') { console.error(message); }
-      else { console.log(message); }
-
-      console.groupEnd();
-    }
-  }
-}
 // Updates Disabled State of elements
 function disenable (element, state, optTx) {
   let tabIndexes = {
@@ -72,7 +54,6 @@ function webpSupportUpdate (support) {
   };
 
   document.getElementsByClassName('webp-support')[0].remove();
-  consoleLog(('Webp Support: ') + supportStrings[support], logTypes[support]);
 
   for (i = 0; i < e.length; i++) {
     let webp = e[i].getAttribute('data-webp');
@@ -354,7 +335,7 @@ hashUpdate();
     let tools = document.createElement('script');
 
     tools.async = true;
-    tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.0';
+    tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.1';
     document.body.appendChild(tools);
   }
 })();

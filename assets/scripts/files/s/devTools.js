@@ -4,8 +4,6 @@
 
 // Developer Tools
 var devTools = {
-  // Writes to ShiftCodesTK Developer Console
-  'writeToConsole': true,
   // Enables Live Reload
   'liveReloadEnabled': true,
   // Patches links with ?dev string
@@ -13,26 +11,14 @@ var devTools = {
   // Enables all disabled elements
   'unlockDisabledElements': false,
   // Prevents Ajax Requests from catching errors during debugging
-  'preventAjaxErrorCatching': true
+  'suppressAjaxErrorCatching': true
 };
 
 // Handles Developer Tools
 (function () {
-  // Wait for console to load before calling
-  function waitForConsole (message, type) {
-    if (typeof consoleLog == 'function') {
-      consoleLog(message, type);
-    }
-    else {
-      setTimeout(function () {
-        waitForConsole(message, type);
-      }, 50);
-    }
-  }
-
   // Writes Startup Message to Console
   (function () {
-    waitForConsole('Development Mode Enabled Successfully', 'info');
+    console.log('Development Tools Enabled Successfully.');
   })();
   // Adds notice to footer
   (function () {
@@ -48,17 +34,22 @@ var devTools = {
     if (devTools.liveReloadEnabled === true) {
       let rel = document.createElement('script');
       let host = window.location.hostname;
+      let port = 35729;
 
-      rel.src = ('//') + host + (':35729/livereload.js');
+      rel.src = ('//') + host + (':' + port + '/livereload.js');
       rel.id = 'live_reload';
       rel.async = true;
       rel.onload = function() {
-        waitForConsole('LiveReload Enabled on Port 35729.', 'info');
+        console.group('devTools_liveReloadEnabled')
+        console.info('LiveReload Enabled on Port ' + port);
+        console.groupEnd();
         document.getElementById('live_reload').removeAttribute('onload');
         document.getElementById('live_reload').removeAttribute('onerror');
       };
       rel.onerror = function() {
-        waitForConsole('LiveReload Failed to Initialize.', 'error');
+        console.group('devTools_liveReloadEnabled')
+        console.error('LiveReload Failed to Initialize');
+        console.groupEnd();
         document.getElementById('live_reload').removeAttribute('onload');
         document.getElementById('live_reload').removeAttribute('onerror');
       };
@@ -96,7 +87,9 @@ var devTools = {
         }
       }
 
-      waitForConsole('Links successfully Patched.', 'info');
+      console.group('devTools_patchLinks');
+      console.info('Links sucessfully Patched.');
+      console.groupEnd();
     }
   })();
   // Enables all Disabled Elements
@@ -109,8 +102,19 @@ var devTools = {
           disenable(elms[i], false);
         }
       }
-
-      waitForConsole('Disabled Elements successfully Enabled.', 'info');
+      console.group('devTools_unlockDisabledElements')
+      console.info('Disabled Elements successfully Enabled.');
+      console.warn('Warning! Enabled Elements may cause Keyboard Navigation to work incorrectly.');
+      console.groupEnd();
+    }
+  })();
+  // Writes notice message if Ajax Errors are Suppressed
+  (function () {
+    if (devTools.suppressAjaxErrorCatching === true) {
+      console.group('devTools_suppressAjaxErrorCatching')
+      console.info('Ajax Errors successfully Suppressed.');
+      console.warn('Warning! Errors with Ajax Requests may cause scripts to stop working.');
+      console.groupEnd();
     }
   })();
 })();
