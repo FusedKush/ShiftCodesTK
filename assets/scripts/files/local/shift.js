@@ -58,8 +58,8 @@ function toggleSortDropdown() {
 // Update Feed Filter & Sort Settings
 function updateFeedSettings(setting, type) {
   let feed = document.getElementById('shift_code_feed');
-  let template = document.getElementById('shift_code_cache');
-  let panels = template.getElementsByClassName('shift-code');
+  let cache = document.getElementById('shift_code_cache');
+  let panels = cache.getElementsByClassName('shift-code');
   codes = [];
   let panelsAdded = 0;
   let today = getDate('m-d-y', '/');
@@ -77,11 +77,26 @@ function updateFeedSettings(setting, type) {
 
   // Get Codes & Clear Feed
   (function () {
+    let feedPanels = feed.getElementsByClassName('shift-code');
+
     for (i = 0; i < panels.length; i++) {
+      let panel = panels[i]
+      let currentStoredState = panel.getAttribute('data-expanded') == 'true';
+
+      for (x = 0; x < feedPanels.length; x++) {
+        let feedPanel = feedPanels[x];
+        let currentState = feedPanel.getAttribute('data-expanded') == 'true';
+
+        if (feedPanel.id == panel.id && currentState != currentStoredState) {
+          console.warn("Current Stored State: " + currentStoredState + " | Updating to: " + !currentStoredState);
+          updateDropdownPanelAttributes(panel, !currentStoredState);
+        }
+      }
+
       codes[i] = {};
-      codes[i].panel = panels[i].cloneNode(true);
-      codes[i].relDate = panels[i].getElementsByClassName('section rel')[0].getElementsByClassName('content')[0].innerHTML;
-      codes[i].expDate = panels[i].getElementsByClassName('section exp')[0].getElementsByClassName('content')[0].innerHTML;
+      codes[i].panel = panel.cloneNode(true);
+      codes[i].relDate = panel.getElementsByClassName('section rel')[0].getElementsByClassName('content')[0].innerHTML;
+      codes[i].expDate = panel.getElementsByClassName('section exp')[0].getElementsByClassName('content')[0].innerHTML;
     }
     feed.innerHTML = '';
   })();
