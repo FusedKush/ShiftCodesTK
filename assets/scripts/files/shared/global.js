@@ -275,6 +275,19 @@ function updateDropdownPanelAttributes (panel, state) {
   toggler.title = labels[state];
   toggler.setAttribute('aria-label', labels[state]);
 }
+// Add Dropdown Panel Listener
+function addDropdownPanelListener (panel) {
+  panel.getElementsByClassName('header')[0].addEventListener('click', function (e) { toggleDropdownPanel(this); });
+}
+// Set up Dropdown Panel
+function dropdownPanelSetup (panel) {
+  let hashTargetOverlay = document.createElement('span');
+
+  updateDropdownPanelAttributes(panel, false);
+  addDropdownPanelListener(panel);
+  hashTargetOverlay.className = 'overlay-hashtarget';
+  panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
+}
 // Toggle Dropdown Panel
 function toggleDropdownPanel (toggler) {
   let panel = toggler.parentNode;
@@ -321,11 +334,7 @@ hashUpdate();
   let panels = document.getElementsByClassName('dropdown-panel');
 
   for(let i = 0; i < panels.length; i++) {
-    let hashTargetOverlay = document.createElement('span');
-
-    hashTargetOverlay.className = 'overlay-hashtarget';
-    panels[i].insertBefore(hashTargetOverlay, panels[i].childNodes[0]);
-    panels[i].getElementsByClassName('header')[0].addEventListener('click', function (e) { toggleDropdownPanel(this); });
+    dropdownPanelSetup(panels[i]);
   }
 })();
 // Check for DevTools support
@@ -347,14 +356,6 @@ hashUpdate();
     tools.async = true;
     tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.0';
     document.body.appendChild(tools);
-  }
-})();
-// Add labels to Dropdown Panels
-(function () {
-  let panels = document.getElementsByClassName('dropdown-panel');
-
-  for (i = 0; i < panels.length; i++) {
-    updateDropdownPanelAttributes(panels[i], false);
   }
 })();
 

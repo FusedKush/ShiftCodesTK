@@ -267,3 +267,8 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 
   @if $imgURL != false { background-image: url(#{$imgURL}); }
 }
+// Icon with maintained aspect ratio
+@mixin boxIcon {
+  @include flexbox;
+  @include multiProp(1em, sizing);
+}

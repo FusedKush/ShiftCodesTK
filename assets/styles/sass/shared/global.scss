@@ -169,6 +169,7 @@ main {
   max-width: 1200px;
   margin: 0 auto;
 }
+.box-icon { @include boxIcon; }
 
 /*** Custom Elements ***/
 // Bubbles
@@ -253,7 +254,7 @@ main {
   &::before {
     @include fill(true, $site-color-lighter);
     @include multiProp(100%, sizing);
-    border: bd(2px, $site-color-darker);
+    border: bd(2px, tpw(0.25));
     border-radius: inherit;
   }
   &:not(:first-child) { margin-top: $margins; }
@@ -341,7 +342,7 @@ main {
     }
     .title, .indicator { grid-row: 1; }
     .full-width { grid-column: 1 / span 2; }
-    .fas { @include multiProp(1em, sizing); }
+    .fas { @include boxIcon; }
   }
   .body {
     background-color: rgba(0, 0, 0, 0.2);
@@ -353,5 +354,6 @@ main {
       &[data-expanded="true"] .body  { display: block; }
     }
   }
+  .header, .body { overflow: hidden; }
 }
 .dropdown-panel-group { margin: 24px 0; }

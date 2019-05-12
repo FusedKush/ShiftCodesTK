@@ -183,399 +183,6 @@
 .feed {
   width: 100%;
   padding: 32px 16px 64px;
-
-  .panel {
-    @keyframes panelFadeIn {
-      0%    { opacity: 0; }
-      100%  { opacity: 1; }
-    }
-
-    @mixin lowerPanelSection($start) {
-      .separator    { grid-row: $start; }
-      .section {
-        &.pc        { grid-row: $start + 1; }
-        &.xbox      { grid-row: $start + 2; }
-        &.ps        { grid-row: $start + 3; }
-      }
-    }
-    @mixin panelStructure ($extraInfo, $rows) {
-      .body {
-        grid-template-rows: repeat($rows, auto);
-        .background { grid-row: 1 / span $rows; }
-
-        @if $extraInfo == false {
-          @include lowerPanelSection($rows - 3);
-        }
-        @else if $extraInfo == true {
-          .section.notes { grid-row: $rows - 4; }
-          @include lowerPanelSection($rows - 3);
-        }
-      }
-    }
-    @mixin panelLayout($type) {
-      &[data-extraInfo="false"] {
-        @if $type == standard    { @include panelStructure(false, 6); }
-        @else if $type == mobile { @include panelStructure(false, 7); }
-      }
-      &[data-extraInfo="true"] {
-        @if $type == standard    { @include panelStructure(true, 7); }
-        @else if $type == mobile { @include panelStructure(true, 8); }
-      }
-
-      .body {
-        @if $type == standard {
-          .section {
-            &.rel                                        { grid-column: 1 }
-            &.exp                                        { grid-column: 2; }
-            &.src, &.notes, &.pc, &.xbox, &.ps, &.report { grid-column: 1 / span 2; }
-            &.rel, &.exp { grid-row: 1; }
-            &.src        { grid-row: 2; }
-          }
-        }
-        @else if $type == mobile {
-          .section {
-            grid-column: 1 / span 2;
-
-            &.rel { grid-row: 1; }
-            &.exp { grid-row: 2; }
-            &.src { grid-row: 3; }
-          }
-        }
-      }
-    }
-    @mixin panelRoot {
-      @at-root .feed .panel { @content; }
-    }
-
-    color: inherit;
-    border-radius: 4px;
-    opacity: 0;
-    overflow: hidden;
-    animation: panelFadeIn 0.4s linear forwards;
-
-    &::before {
-      @include fill(true, $site-color-lighter);
-      border: bd(2px);
-      border-radius: 4px;
-    }
-    &:not([data-filtered="true"])::before { opacity: 1; }
-    &[data-filtered="false"]::before      { opacity: 0.5; }
-
-    @media screen and (max-width: 379px) { @include panelLayout(mobile); }
-    @media screen and (min-width: 380px) { @include panelLayout(standard); }
-
-    // Border Theming
-    & {
-      $colors: (
-        none: $site-color-darker,
-        new: $badge-new,
-        exp: $badge-exp
-        );
-
-      @each $colorN, $colorV in $colors {
-        $selector: "";
-
-        @if $colorN != none { $selector: ".#{$colorN}"; }
-        @else               {
-          @each $altN, $altV in $colors {
-            @if $altN != none { $selector: $selector + ":not(.#{$altN})"; }
-          }
-        }
-
-        &#{unquote($selector)}::before { border-color: $colorV; }
-      }
-    }
-    &:not(:last-child) { margin-bottom: 1.5em; }
-
-    .filter-overlay {
-      @include fill(true);
-      @include flexbox;
-      font-size: 1em;
-      line-height: 1;
-      text-shadow: dropShadow(tpb(0.5));
-
-      &[data-visible*="hide"] { opacity: 0; }
-      &[data-visible*="show"] { opacity: 1; }
-
-      .content-container {
-        @include flexbox($direction: c);
-        padding: 8px;
-      }
-      .title {
-        @include flexbox;
-        font-size: 1.25em;
-        padding-bottom: 8px;
-
-        .fas { padding-right: 8px; }
-      }
-      .clear {
-        font-size: 1em;
-        padding: 6px 12px;
-        border: bd(1px, #fff);
-        border-radius: 4px;
-
-        @include pshared { @include fill(true); }
-        &::before { background-color: #fff; }
-        &::after {
-          @include flexbox;
-          color: $site-color-dark;
-          content: "Click to Remove";
-        }
-
-        @include mouseState(noHover) {
-          @include pshared         { opacity: 0; }
-        }
-        @include mouseState(hover) {
-          @include pshared         { opacity: 1; }
-        }
-        @include mouseState(click) { opacity: 0.75; }
-      }
-    }
-    .flag {
-      @include flexbox;
-      position: absolute;
-      @include pull(t, l);
-      @include sizing(2.5em, 5.5em);
-      font-size: 1.1em;
-      padding: 8px;
-      box-shadow: shadow(tpb(0.25));
-      text-shadow: dropShadow(tpb(0.25));
-      transform: rotate(-45deg) translate(-1em, -1.55em);
-      z-index: zOrder(higher);
-
-      // Flag Theming
-      & {
-        $colors: (
-          new: $badge-new,
-          exp: $badge-exp
-          );
-
-        @each $colorN, $colorV in $colors {
-          &.#{$colorN} { background-color: $colorV; }
-        }
-      }
-
-      @include panelRoot {
-        &[data-filtered="false"] .flag { opacity: 1; }
-        &[data-filtered="true"] .flag  { opacity: 0.25; }
-      }
-
-      .fas {
-        top: 2px;
-        left: -2px;
-        transform: rotate(45deg);
-      }
-    }
-    .hashTargetOverlay {
-      @keyframes panelHashTargeted {
-        0%, 50%, 100% { opacity: 0.25; }
-        25%, 75%      { opacity: 1; }
-      }
-      @keyframes panelHashTargetFade {
-        0%   { opacity: 0.75; }
-        100% { opacity: 0; }
-      }
-
-      @include fill(true);
-      border: bd(2px);
-      border-radius: 4px;
-      opacity: 0;
-
-      @include panelRoot {
-        &[data-hashtarget-highlighted="true"] .hashTargetOverlay  { animation: panelHashTargeted 2.5s linear infinite; }
-        &[data-hashtarget-highlighted="false"] .hashTargetOverlay { animation: panelHashTargetFade 0.75s linear; }
-      }
-    }
-    .header {
-      @include panelRoot {
-        &:not([data-filtered="true"]) .header  { opacity: 1; }
-        &[data-filtered="true"] .header        { opacity: 0.25; }
-      }
-
-      .top {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        padding: 8px;
-
-        > .fas {
-          grid-column: 1;
-          font-size: 1.5em;
-        }
-        .title { grid-column: 2; }
-          .reward {
-            &:not(.long) { font-size: 1em; }
-            &.long       { font-size: 0.85em; }
-          }
-          .description {
-            font-size: 0.75em;
-            opacity: 0.5;
-          }
-        .toggle {
-          @include flexbox;
-          grid-column: 3;
-          font-size: 1em;
-          @include multiProp(2em, sizing);
-
-          @include mouseState(noHover) {
-            &:not([hidden])          { opacity: 0.75; }
-          }
-          @include mouseState(hover) { opacity: 1; }
-          @include panelRoot {
-            &[data-expanded="false"] .toggle { transform: rotate(0deg); }
-            &[data-expanded="true"] .toggle  { transform: rotate(180deg); }
-          }
-        }
-        > .fas, .title, .toggle {
-          grid-row: 1;
-          padding: 8px;
-        }
-        > .fas, .title { align-self: center; }
-
-        @media screen and (max-width: 379px) { font-size: 1.25em; }
-        @media screen and (min-width: 380px) { font-size: 1.5em; }
-      }
-      .bottom {
-        padding: 0 8px 8px 8px;
-
-        .progress-bar {
-          height: 9px;
-          @include spacing(0 8px 8px 8px, 0);
-          background-color: tpb(0.4);
-          border: bd(1px, tpb(0.4));
-          border-radius: 4px;
-          overflow: hidden;
-
-          &.inactive { opacity: 0.5; }
-
-          .progress {
-            @keyframes progressClimb {
-              0%    { transform: translateX(-100%); }
-              100%  { transform: translateX(0); }
-            }
-
-            position: absolute;
-            @include pull(t, l);
-            display: inherit;
-            height: 100%;
-            @include theme(c, bg);
-            box-shadow: shadow($radius: 1em);
-            border-radius: 4px;
-            transform: translateX(-100%);
-            animation: progressClimb 1.2s 0.4s linear forwards;
-          }
-        }
-      }
-    }
-    .body {
-      grid-template-columns: repeat(2, 1fr);
-      @include spacing(0 2px 2px, 0 8px 8px);
-      background-color: tpb(0.2);
-      overflow: hidden;
-
-      @include panelRoot {
-        &[data-expanded="false"] .body { display: none; }
-        &[data-expanded="true"] .body  { display: grid; }
-        &:not([data-filtered="true"]) .body { opacity: 1; }
-        &[data-filtered="true"] .body       { opacity: 0.25; }
-      }
-
-      .background {
-        @include flexbox;
-        grid-column: 1 / span 2;
-        color: #000;
-        opacity: 0.1;
-
-        @media screen and (max-width: 549px) { font-size: 15em; }
-        @media screen and (min-width: 550px) { font-size: 20em; }
-      }
-      .section {
-        display: grid;
-        grid-template-rows: auto 1fr;
-        padding: 8px;
-
-        &.notes {
-          &.inactive { display: none; }
-
-          .content { @include flexbox(c, s, $direction: c, $wrap: true); }
-          li { padding-left: 4px; }
-        }
-
-        .title {
-          grid-column: 1;
-          grid-row: 1;
-          padding: 8px 8px 8px 0;
-        }
-        .content {
-          @include flexbox(c, s, $wrap: true);;
-          grid-column: 1;
-          grid-row: 2;
-          @include multiProp(inherit, color, border, line-height, font-size);
-          border-radius: 4px;
-          padding: 8px;
-          background-color: tpb(0.25);
-          overflow: hidden;
-
-          &.inactive { color: tpw(0.5); }
-
-          a {
-            opacity: 1;
-            width: 100%;
-            word-wrap: break-word;
-
-            @include mouseState(noHover) {
-              .text                    { text-decoration: none; }
-            }
-            @include mouseState(hover) {
-              .text                    { text-decoration: underline; }
-            }
-            @include mouseState(click) { opacity: 0.75; }
-
-            .fas, .text { display: inline; }
-          }
-          input {
-            position: absolute;
-            @include pull(t, l);
-            display: block;
-            transform: translateY(-100%);
-            opacity: 0;
-          }
-          .display { max-width: 85%; }
-          .copy {
-            @keyframes copiedToClipboard {
-              0%, 50%, 100% { transform: scale(1); }
-              25%           { transform: scale(0.8); }
-              75%           { transform: scale(1.2); }
-            }
-
-            position: absolute;
-            @include pull(t, r);
-            @include sizing(100%, 15%);
-            font-size: inherit;
-            padding: 8px;
-
-            &::before { @include fill(true, #fff); }
-            &.animated .fas { animation: copiedToClipboard 0.5s linear; }
-
-            @include mouseState(noHover) {
-              &::before                { opacity: 0.3; }
-            }
-            @include mouseState(hover) {
-              &::before                { opacity: 0.5; }
-            }
-            &:focus                    { opacity: 1; }
-            @include mouseState(click) { opacity: 0.75; }
-          }
-        }
-      }
-      .separator {
-        grid-column: 1 / span 2;
-        color: #000;
-        border-bottom: bd(3px);
-        opacity: 0.25;
-        margin: 16px 8px 4px 8px;
-      }
-    }
-  }
 }
 .overlay {
   @include flexbox;
@@ -614,4 +221,188 @@
   }
   .spinner, .error { position: absolute; }
 }
-#panel-feed-template { display: none; }
+.dropdown-panel.shift-code {
+  $margins: 16px;
+
+  @keyframes panelFadeIn {
+    0%    { opacity: 0; }
+    100%  { opacity: 1; }
+  }
+
+  opacity: 0;
+  animation: panelFadeIn 0.4s linear forwards;
+
+  &[data-filtered="true"] {
+    &::before, .header { opacity: 0.5; }
+  }
+  &:not(:first-child) { margin-top: $margins; }
+  &:not(:last-child)  { margin-bottom: $margins; }
+  &.new::before { border-color: $badge-new; }
+  &.exp::before { border-color: $badge-exp; }
+  &.new.exp::before {
+    $colors: (
+      top: $badge-new,
+      left: $badge-new,
+      bottom: $badge-exp,
+      right: $badge-exp
+      );
+
+    @each $side, $color in $colors {
+      border-#{$side}-color: $color;
+    }
+  }
+
+  .header {
+    .title {
+      @media screen and (min-width: 435px) { font-size: 1.3em; }
+    }
+    .icon { font-size: 1.5em; }
+    .labels {
+      $cMargins: -2px;
+
+      @include flexbox(mone, none, $wrap: true);
+      font-size: 0.65em;
+      font-weight: 600;
+      margin: 2px $cMargins $cMargins;
+      width: calc(100% + 1.25em + 24px);
+      opacity: 1;
+
+      .label {
+        @include flexbox;
+        margin: 2px;
+        padding: 4px 8px;
+        border: bd(1.5px, tpw(0.5));
+        border-radius: 4px;
+        text-shadow: dropShadow(tpb(0.25));
+        line-height: 1;
+
+        // Theming
+        & {
+          $bgColors: (
+            description: tpw(0.25),
+            new: $badge-new,
+            exp: $badge-exp
+            );
+
+          @each $label, $color in $bgColors {
+            &.#{$label} { background-color: $color; }
+          }
+        }
+      }
+    }
+    .full-width { padding: 8px; }
+    .progress-bar {
+      @include sizing(9px, 100%);
+      border: bd(1px);
+      border-radius: 4px;
+      @include multiProp(tpb(0.25), background-color, border-color);
+      overflow: hidden;
+
+      &.inactive { opacity: 0.5; }
+    }
+    .progress {
+      @keyframes progressClimb {
+        0%    { transform: translateX(-100%); }
+        100%  { transform: translateX(0); }
+      }
+
+      position: absolute;
+      height: 100%;
+      @include theme(c, bg);
+      border-radius: inherit;
+      box-shadow: 0 0 10px;
+      transform: translateX(-100%);
+      animation: progressClimb 1.2s 0.4s linear forwards;
+    }
+  }
+  .body {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 8px;
+
+    @mixin fullWidth { grid-column: 1 / span 2; }
+
+    @at-root .dropdown-panel[data-expanded="true"] .body { display: grid; }
+
+    .section {
+      padding: 8px;
+
+      &:not(.can-split) { @include fullWidth; }
+
+      @media screen and (max-width: 380px) { @include fullWidth; }
+    }
+    .content {
+      $padding: 8px;
+
+      margin-top: 8px;
+      border-radius: 4px;
+      background-color: tpb(0.2);
+      word-wrap: break-word;
+      overflow: hidden;
+
+      &.inactive { color: tpw(0.5); }
+      &:not(.code) { padding: $padding; }
+      &.code {
+        display: grid;
+        grid-template-columns: 1fr auto;
+      }
+
+      a { word-break: break-all; }
+      ul { margin-left: 8px; }
+      input {
+        display: block;
+        position: absolute;
+        transform: translateY(calc(-100% - 8px));
+        width: 100%;
+      }
+      .display { padding: $padding; }
+      .copy {
+        @keyframes copiedToClipboard {
+          0%, 50%, 100% { transform: scale(1); }
+          25%           { transform: scale(0.8); }
+          75%           { transform: scale(1.2); }
+        }
+
+        font-size: 1.1em;
+        padding: $padding 32px;
+
+        &::before { @include fill(true, #fff); }
+        &.animated .fas { animation: copiedToClipboard 0.5s linear; }
+
+        @at-root .dropdown-panel .section .content {
+          @include mouseState(noHover) {
+            .copy:not(:focus) { opacity: 0; }
+          }
+          @include mouseState(hover) {
+            .copy             { opacity: 1; }
+          }
+        }
+        @include mouseState(noHover) {
+          &::before                { opacity: 0.2; }
+        }
+        @include mouseState(hover) {
+          &::before                { opacity: 0.4; }
+        }
+        @include mouseState(click) { opacity: 0.75; }
+
+        .fas { @include multiProp(1em, sizing); }
+      }
+    }
+    .separator {
+      @include fullWidth;
+      margin: 8px;
+      height: 4px;
+      background-color: tpb(0.15);
+      border-radius: 4px;
+    }
+    .background {
+      @include fill;
+      @include flexbox;
+      color: #000;
+      opacity: 0.1;
+      overflow: hidden;
+
+      @media screen and (max-width: 499px) { font-size: 16em; }
+      @media screen and (min-width: 500px) { font-size: 22em; }
+    }
+  }
+}

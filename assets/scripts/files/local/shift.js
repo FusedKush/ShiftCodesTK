@@ -55,41 +55,24 @@ function toggleSortDropdown() {
     }, 250);
   }
 }
-// Toggle Filter Overlay
-function toggleFilterOverlay(event, type) {
-  let overlay = (function () {
-    if (event.classList.contains('filter-overlay')) { return event; }
-    else                                            { return event.parentNode.parentNode; }
-  })();
-  let state = overlay.getAttribute('data-visible');
-
-  function updateState() { overlay.setAttribute('data-visible', type); }
-
-  if (type == 'hover-show' || type == 'button-show' && state != 'hover-show') {
-    vishidden(overlay, false);
-
-    setTimeout(updateState, 50);
-  }
-  else if (type == 'hover-hide' || type == 'button-hide' && state != 'hover-show') {
-    overlay.setAttribute('data-visible', type);
-
-    setTimeout(updateState, 250);
-  }
-}
 // Update Feed Filter & Sort Settings
 function updateFeedSettings(setting, type) {
-  let feed = document.getElementById('panel_feed');
-  let template = document.getElementById('panel_feed_template');
-  let panels = template.getElementsByClassName('panel');
+  let feed = document.getElementById('shift_code_feed');
+  let template = document.getElementById('shift_code_cache');
+  let panels = template.getElementsByClassName('shift-code');
   codes = [];
   let panelsAdded = 0;
   let today = getDate('m-d-y', '/');
 
   function addPanel(code) {
+    let panel;
+
     feed.appendChild(code);
     panelsAdded++;
-    updatePanelTiming(feed.children[panelsAdded - 1], (panelsAdded));
-    addPanelListeners(feed.children[panelsAdded - 1]);
+    panel = feed.children[panelsAdded - 1];
+    updatePanelTiming(panel, (panelsAdded));
+    addDropdownPanelListener(panel)
+    addPanelListeners(panel);
   }
 
   // Get Codes & Clear Feed
@@ -116,38 +99,6 @@ function updateFeedSettings(setting, type) {
       for (let i = 0; i < codes.length; i++) {
         if (type == 'new' && codes[i].relDate == today)      { updateCode(codes[i]); }
         else if (type == 'exp' && codes[i].expDate == today) { updateCode(codes[i]); }
-      }
-      for (let i = 0; i < codes.length; i++) {
-        if (codes[i].used !== true) {
-          let focusable = {
-            'buttons': codes[i].panel.getElementsByTagName('button'),
-            'links': codes[i].panel.getElementsByTagName('a')
-          };
-
-          // Disable Buttons & Links in filtered panels
-          for (x = 0; x < focusable.buttons.length; x++) { disenable(focusable.buttons[x], true); }
-          for (x = 0; x < focusable.links.length; x++)   { disenable(focusable.links[x], true); }
-
-          // Add Filter Overlay to Panel
-          (function () {
-            let overlay = document.getElementById('panel_filter_overlay_template').content.children[0].cloneNode(true);
-            let clear;
-
-            codes[i].panel.setAttribute('data-filtered', 'true');
-            codes[i].panel.appendChild(overlay);
-
-            overlay = codes[i].panel.getElementsByClassName('filter-overlay')[0];
-            clear = overlay.getElementsByClassName('clear')[0];
-
-            overlay.addEventListener('mouseenter', function(e) { toggleFilterOverlay(this, 'hover-show'); });
-            overlay.addEventListener('mouseleave', function(e) { toggleFilterOverlay(this, 'hover-hide'); });
-            clear.addEventListener('focus', function(e) { toggleFilterOverlay(this, 'button-show'); });
-            clear.addEventListener('blur', function(e) { toggleFilterOverlay(this, 'button-hide'); });
-            clear.addEventListener('click', function(e) { updateFeedSettings('filter', 'none'); });
-          })();
-
-          updateCode(codes[i]);
-        }
       }
     }
     else { updateFeedSettings('sort', feed.getAttribute('data-sort')); }
@@ -312,10 +263,7 @@ function updatePanelTiming (panel, id) {
 }
 // Adds SHiFT Code Panel Event Listeners
 function addPanelListeners(panel) {
-  let toggle = panel.getElementsByClassName('toggle')[0];
   let copy = panel.getElementsByClassName('copy');
-
-  toggle.addEventListener('click', togglePanel);
 
   for (i = 0; i < copy.length; i++) {
     copy[i].addEventListener('click', function (e) { copyCode(this); });
@@ -326,7 +274,7 @@ function addPanelListeners(panel) {
 // Handles Page Construction
 (function () {
   let header = document.getElementById('shift_header');
-  let feed = document.getElementById('panel_feed');
+  let feed = document.getElementById('shift_code_feed');
   let count = {
     'retrieved': 0,
     'total': 0,
@@ -366,41 +314,42 @@ function addPanelListeners(panel) {
   }
   // Construct the SHiFT Code Panel and add it to the feed
   function constructPanel (codeObject) {
-    let panel = {}; // SHiFT Code Panel Elements
+    let panel = {};
       (function () {
-        panel.base = document.getElementById('panel_template').content.children[0].cloneNode(true);
-          panel.flags = {};
-            panel.flags.new = panel.base.getElementsByClassName('flag new')[0];
-            panel.flags.exp = panel.base.getElementsByClassName('flag exp')[0];
-          panel.header = panel.base.getElementsByClassName('header')[0];
-            panel.title = panel.header.getElementsByClassName('top')[0].getElementsByClassName('title')[0];
-              panel.reward = panel.title.getElementsByClassName('reward')[0];
-              panel.description = panel.title.getElementsByClassName('description')[0];
-            panel.progress = panel.header.getElementsByClassName('bottom')[0].getElementsByClassName('progress-bar')[0];
-              panel.progressBar = panel.progress.getElementsByClassName('progress')[0];
-          panel.body = panel.base.getElementsByClassName('body')[0];
-            panel.relDate = panel.body.getElementsByClassName('rel')[0].getElementsByClassName('content')[0];
-            panel.expDate = panel.body.getElementsByClassName('exp')[0].getElementsByClassName('content')[0];
-            panel.source = panel.body.getElementsByClassName('src')[0].getElementsByClassName('content')[0].firstChild;
-            panel.notes = panel.body.getElementsByClassName('notes')[0].getElementsByClassName('content')[0];
-            panel.codePC = {};
-                  panel.codePC.title = panel.body.getElementsByClassName('pc')[0].getElementsByClassName('title')[0];
-                  panel.codePC.base = panel.body.getElementsByClassName('pc')[0].getElementsByClassName('content')[0];
-                  panel.codePC.display = panel.codePC.base.getElementsByClassName('display')[0];
-                  panel.codePC.value = panel.codePC.base.getElementsByClassName('value')[0];
-                  panel.codePC.copy = panel.codePC.base.getElementsByClassName('copy')[0];
-            panel.codeXbox = {};
-                  panel.codeXbox.title = panel.body.getElementsByClassName('xbox')[0].getElementsByClassName('title')[0];
-                  panel.codeXbox.base = panel.body.getElementsByClassName('xbox')[0].getElementsByClassName('content')[0];
-                  panel.codeXbox.display = panel.codeXbox.base.getElementsByClassName('display')[0];
-                  panel.codeXbox.value = panel.codeXbox.base.getElementsByClassName('value')[0];
-                  panel.codeXbox.copy = panel.codeXbox.base.getElementsByClassName('copy')[0];
-            panel.codePS = {};
-                  panel.codePS.title = panel.body.getElementsByClassName('ps')[0].getElementsByClassName('title')[0];
-                  panel.codePS.base = panel.body.getElementsByClassName('ps')[0].getElementsByClassName('content')[0];
-                  panel.codePS.display = panel.codePS.base.getElementsByClassName('display')[0];
-                  panel.codePS.value = panel.codePS.base.getElementsByClassName('value')[0];
-                  panel.codePS.copy = panel.codePS.base.getElementsByClassName('copy')[0];
+        function returnContent(className) {
+          return panel.body.getElementsByClassName(className)[0].getElementsByClassName('content')[0];
+        }
+        function returnCode(codeName) {
+          let result = {};
+            (function () {
+              result.title = panel.body.getElementsByClassName(codeName)[0].getElementsByClassName('title')[0];
+              result.base = returnContent(codeName);
+              result.value = result.base.getElementsByClassName('value')[0];
+              result.display = result.base.getElementsByClassName('display')[0];
+              result.copy = result.base.getElementsByClassName('copy')[0];
+            })();
+          return result;
+        }
+
+        panel.template = document.getElementById('shift_code_template');
+        panel.base = panel.template.content.children[0].cloneNode(true);
+        panel.header = panel.base.getElementsByClassName('header')[0];
+          panel.title = panel.header.getElementsByClassName('title')[0].getElementsByClassName('string')[0];
+            panel.reward = panel.title.getElementsByClassName('reward')[0];
+            panel.labels = {};
+              panel.labels.description = panel.title.getElementsByClassName('label description')[0];
+              panel.labels.new = panel.base.getElementsByClassName('label new')[0];
+              panel.labels.exp = panel.base.getElementsByClassName('label exp')[0];
+          panel.progress = panel.header.getElementsByClassName('progress-bar')[0];
+            panel.progressBar = panel.progress.getElementsByClassName('progress')[0];
+        panel.body = panel.base.getElementsByClassName('body')[0];
+          panel.relDate = returnContent('rel');
+          panel.expDate = returnContent('exp');
+          panel.source = returnContent('src').getElementsByTagName('a')[0];
+          panel.notes = returnContent('notes').getElementsByTagName('ul')[0];
+          panel.codePC = returnCode('pc');
+          panel.codeXbox = returnCode('xbox');
+          panel.codePS = returnCode('ps');
       })();
     let currentDate = getDate();
 
@@ -415,10 +364,12 @@ function addPanelListeners(panel) {
       (function () {
         let reward = codeObject.reward;
 
-        panel.reward.innerHTML = reward;
-
-        if (reward.length > 20) { panel.description.classList.add('long'); }
-        if (reward != '5 Golden Keys') { panel.description.innerHTML = 'Rare SHiFT Code'; }
+        // if (reward.length > 20) { panel.description.classList.add('long'); }
+        if (reward != '5 Golden Keys') {
+          panel.reward.innerHTML = reward;
+          updateLabel(panel.labels.description, 'Rare SHiFT Code');
+          panel.labels.description.innerHTML = 'Rare SHiFT Code';
+        }
       })();
       // Handles all dates (Flags, Dates, Progress Bar)
       (function () {
@@ -447,9 +398,9 @@ function addPanelListeners(panel) {
           panel.expDate.innerHTML = expDate;
 
           if (today == relDate)  { panel.base.classList.add('new'); }
-          else                   { panel.flags.new.remove(); }
+          else                   { panel.labels.new.remove(); }
           if (today == expDate)  { panel.base.classList.add('exp'); }
-          else                   { panel.flags.exp.remove(); }
+          else                   { panel.labels.exp.remove(); }
         })();
         // Progress Bar
         (function () {
@@ -470,10 +421,13 @@ function addPanelListeners(panel) {
 
           if (expDate != 'N/A') {
             let width = (function () {
-              let origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
+              if (relDate != expDate) {
+                let origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
 
-              if (origin.indexOf('.') != -1)  { return origin.match(/\d{1,2}(?=\.)/)[0]; }
-              else                            { return origin; }
+                if (origin.indexOf('.') != -1)  { return origin.match(/\d{1,2}(?=\.)/)[0]; }
+                else                            { return origin; }
+              }
+              else { return 100; }
             })();
             let countdown = (function () {
               let time = getDifference(today, expDate);
@@ -514,7 +468,7 @@ function addPanelListeners(panel) {
           })();
 
           panel.source.href = source;
-          panel.source.getElementsByClassName('text')[0].innerHTML = source;
+          panel.source.innerHTML += source;
           updateLabel(panel.source, label);
         }
         else {
@@ -534,8 +488,6 @@ function addPanelListeners(panel) {
 
         // Notes Attribute
         if (notes !== null) {
-          panel.base.setAttribute('data-extraInfo', true);
-          panel.notes.parentNode.classList.remove('inactive');
           panel.notes.innerHTML = (function () {
             if (notes.indexOf('-') == -1) {
               return ('<li><i>') + notes + ('</i></li>');
@@ -547,6 +499,7 @@ function addPanelListeners(panel) {
             }
           })();
         }
+        else { panel.notes.parentNode.parentNode.remove(); }
       })();
     })();
     // Handle Body Properties
@@ -554,8 +507,9 @@ function addPanelListeners(panel) {
       let fields = ['PC', 'Xbox', 'PS'];
 
       for (i = 0; i < fields.length; i++) {
-        let elm = panel[('code') + fields[i]];
-        let entry = codeObject[('code') + fields[i]];
+        let code = ('code') + fields[i];
+        let elm = panel[code];
+        let entry = codeObject[code];
 
         elm.title.innerHTML = codeObject[('platforms') + fields[i]] + (':');
         elm.display.innerHTML = entry;
@@ -563,7 +517,9 @@ function addPanelListeners(panel) {
       }
     })();
 
-    // Update Panel Event Listeners
+    // Configure Dropdown Panels
+    dropdownPanelSetup(panel.base);
+    // Update Copy Listeners
     addPanelListeners(panel.base);
 
     // Add panel to feed
@@ -581,13 +537,13 @@ function addPanelListeners(panel) {
         addFocusScrollListeners(feed);
         disenable(document.getElementById('shift_header_sort'), false);
         overlay.remove();
-        document.getElementById('panel_template').remove();
+        document.getElementById('shift_code_template').remove();
 
-        // Copy Panels to Template
+        // Copy Panels to Cache
         for (i = 0; i < feed.children.length; i++) {
           let panel = feed.children[i].cloneNode(true);
 
-          document.getElementById('panel_feed_template').appendChild(panel);
+          document.getElementById('shift_code_cache').appendChild(panel);
         }
       }
     })();
@@ -625,7 +581,6 @@ function addPanelListeners(panel) {
     executeWhenReady();
   })();
 })();
-
 // *** Event Listeners ***
 document.getElementById('shift_header_sort').addEventListener('click', toggleSortDropdown);
 // Filter Button Listeners
@@ -636,8 +591,8 @@ document.getElementById('shift_header_sort').addEventListener('click', toggleSor
     counters[i].addEventListener('click', function (e) {
       let call = this.classList[1];
 
-      if (call != document.getElementById('panel_feed').getAttribute('data-filter')) { updateFeedSettings('filter', call); }
-      else                                                                           { updateFeedSettings('filter', 'none'); }
+      if (call != document.getElementById('shift_code_feed').getAttribute('data-filter')) { updateFeedSettings('filter', call); }
+      else                                                                                { updateFeedSettings('filter', 'none'); }
     });
   }
 })();
@@ -649,7 +604,7 @@ document.getElementById('shift_header_sort').addEventListener('click', toggleSor
     choices[i].addEventListener('click', function (e) {
       let call = this.getAttribute('data-value');
 
-      if (call != document.getElementById('panel_feed').getAttribute('data-filter')) { updateFeedSettings('sort', call); }
+      if (call != document.getElementById('shift_code_feed').getAttribute('data-filter')) { updateFeedSettings('sort', call); }
 
       toggleSortDropdown();
     });
