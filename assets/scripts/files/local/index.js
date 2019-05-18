@@ -33,9 +33,8 @@ function addLandingFlags () {
       }
     }
   }
-  else { addLandingFlagsRetry = setInterval(addLandingFlags, 250); }
 }
 
 // *** Immediate Functions ***
 // Add landing flags
-addLandingFlags();
+addLandingFlagsRetry = setInterval(addLandingFlags, 250);

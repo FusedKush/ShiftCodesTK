@@ -38,7 +38,6 @@ function addSidebarBadges () {
 
     document.getElementById('sidebar_template_badges').remove();
   }
-  else { addSidebarBadgesRetry = setInterval(addSidebarBadges, 250); }
 };
 // Toggle the Sidebar
 function toggleSB (outsideClickTrue) {
@@ -165,7 +164,7 @@ function sidebarEventListenerCheckKey (event) {
   }
 })();
 // Update sidebar badges
-addSidebarBadges();
+ addSidebarBadgesRetry = setInterval(addSidebarBadges, 250);
 
 // *** Event Listeners ***
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);
