@@ -72,23 +72,25 @@ var devTools = {
         })();
 
       for (i = 0; i < links.length; i++) {
-        let path = links[i].pathname;
-        let internal = links[i].getAttribute('data-internalLink') !== null;
-        let string = links[i].search;
-        let type = links[i].rel;
+        let link = links[i];
+        let path = link.pathname;
+        let internal = link.classList.contains('internal') === true;
+        let string = link.search;
+        let type = link.rel;
 
         if (type != 'external noopener' && internal === false) {
           if (string.indexOf('?') != -1 && string.indexOf('?dev=') == -1) {
-            links[i].href = path + string + ('&dev=') + key.full;
+            link.href = path + string + ('&dev=') + key.full;
           }
           else {
-            links[i].href = path + ('?dev=') + key.full;
+            link.href = path + ('?dev=') + key.full;
           }
         }
       }
 
       console.group('devTools_patchLinks');
       console.info('Links sucessfully Patched.');
+      console.warn('Note: Some links added via scripting may not be patched properly. This is expected to be resolved at a later date.');
       console.groupEnd();
     }
   })();

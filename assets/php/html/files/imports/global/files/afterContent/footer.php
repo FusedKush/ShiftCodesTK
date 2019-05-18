@@ -18,7 +18,7 @@
         <strong class="num" id="footer_ver"><?php echo $serverVersion; ?></strong>
       </a>
     </div>
-    <a class="return" id="footer_return" href="#" title="Return to Top" aria-label="Return to Top" data-internalLink="true">
+    <a class="return internal" id="footer_return" href="#" title="Return to Top" aria-label="Return to Top">
       <span class="fas fa-arrow-alt-circle-up"></span>
     </a>
   </div>
