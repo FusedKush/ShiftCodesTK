@@ -11,50 +11,6 @@ let shiftData = {};
   })();
 
 // *** Functions ***
-// Toggle Sort Options Dropdown
-function toggleSortDropdown() {
-  let sort = document.getElementById('shift_header_sort');
-  let dropdown = document.getElementById('shift_header_sort_dropdown');
-  let options = dropdown.getElementsByTagName('button');
-  let state = dropdown.getAttribute('data-expanded') == 'true';
-
-  function toggleState () {
-    dropdown.setAttribute('data-expanded', !state);
-    dropdown.setAttribute('aria-expanded', !state);
-  }
-
-  sort.setAttribute('data-pressed', !state);
-  sort.setAttribute('data-pressed', !state);
-  for (i = 0; i < options.length; i++) {
-    disenable(options[i], state);
-  }
-
-  if (state === false) {
-    vishidden(dropdown, false);
-    window.addEventListener('click', checkSortDropdownClick);
-    window.addEventListener('keydown', checkSortDropdownKey);
-
-    setTimeout(function () {
-      let choices = dropdown.getElementsByTagName('button');
-
-      toggleState();
-
-      for (i = 0; i < choices.length; i++) {
-        if (choices[i].getAttribute('data-pressed') == 'true') { choices[i].focus(); }
-      }
-    }, 50);
-  }
-  else {
-    toggleState();
-    window.removeEventListener('click', checkSortDropdownClick);
-    window.removeEventListener('keydown', checkSortDropdownKey);
-
-    setTimeout(function () {
-      vishidden(dropdown, true);
-      sort.focus();
-    }, 250);
-  }
-}
 // Update Feed Filter & Sort Settings
 function updateFeedSettings(setting, type) {
   let feed = document.getElementById('shift_code_feed');
@@ -211,56 +167,6 @@ function updateFeedSettings(setting, type) {
       }, 250);
     })();
   }
-}
-// Check Dropdown Clicks
-function checkSortDropdownClick (event) {
-  let dropdown = document.getElementById('shift_header_sort_dropdown').getElementsByClassName('panel')[0];
-  let targets = [event, event.target.parentNode, event.target.parentNode.parentNode, event.target.parentNode.parentNode.parentNode];
-  let matched = false;
-
-  for (i = 0; i < targets.length; i++) {
-    if (targets[i] == dropdown) {
-      matched = true;
-      break;
-    }
-  }
-
-  if (matched === false) { toggleSortDropdown(); }
-}
-// Check Dropdown KeyPresses
-function checkSortDropdownKey (event) {
-  let target = event.target;
-  let options = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('button');
-  let firstOption = options[0];
-  let lastOption = options[options.length - 1];
-
-  if (event.shiftKey === true && event.key == 'Tab' && target == firstOption || event.shiftKey === false && event.key == 'Tab' && target == lastOption) {
-    event.preventDefault();
-
-    if (target == firstOption)     { lastOption.focus(); }
-    else if (target == lastOption) { firstOption.focus(); }
-  }
-}
-// Toggles SHiFT Code Panels
-function togglePanel (event) {
-  let panel = event.currentTarget.parentNode.parentNode.parentNode;
-  let e = {}; // Panel Elements
-    (function () {
-      e.body = panel.getElementsByClassName('body')[0];
-        e.body.link = e.body.getElementsByClassName('src')[0].getElementsByClassName('content')[0].getElementsByTagName('a')[0];
-        e.body.copyPC = e.body.getElementsByClassName('pc')[0].getElementsByClassName('content')[0].getElementsByClassName('copy')[0];
-        e.body.copyXbox = e.body.getElementsByClassName('xbox')[0].getElementsByClassName('content')[0].getElementsByClassName('copy')[0];
-        e.body.copyPS = e.body.getElementsByClassName('ps')[0].getElementsByClassName('content')[0].getElementsByClassName('copy')[0];
-      })();
-  let state = panel.getAttribute('data-expanded') == 'true';
-  let labels = {
-    true: 'Collapse SHiFT Code',
-    false: 'Expand SHiFT Code'
-  };
-
-  panel.setAttribute('data-expanded', !state);
-  panel.setAttribute('aria-expanded', !state);
-  updateLabel(event.currentTarget, labels[!state]);
 }
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
@@ -597,8 +503,6 @@ function addPanelListeners(panel) {
     executeWhenReady();
   })();
 })();
-// *** Event Listeners ***
-document.getElementById('shift_header_sort').addEventListener('click', toggleSortDropdown);
 // Filter Button Listeners
 (function () {
   let counters = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
@@ -614,15 +518,16 @@ document.getElementById('shift_header_sort').addEventListener('click', toggleSor
 })();
 // Sort Options Dropdown Listeners
 (function () {
-  let choices = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('BUTTON');
+  let dropdown = document.getElementById('shift_header_sort_dropdown');
+  let choices = dropdown.getElementsByTagName('BUTTON');
 
   for (i = 0; i < choices.length; i++) {
     choices[i].addEventListener('click', function (e) {
       let call = this.getAttribute('data-value');
 
-      if (call != document.getElementById('shift_code_feed').getAttribute('data-filter')) { updateFeedSettings('sort', call); }
+      if (call != document.getElementById('shift_code_feed').getAttribute('data-sort')) { updateFeedSettings('sort', call); }
 
-      toggleSortDropdown();
+      toggleDropdownMenu(dropdown);
     });
   }
 })();

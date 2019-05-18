@@ -357,3 +357,181 @@ main {
   .header, .body { overflow: hidden; }
 }
 .dropdown-panel-group { margin: 24px 0; }
+// Dropdown Menus
+.dropdown-menu-container {
+  @include ready;
+  @include fill;
+}
+.dropdown-menu-target { z-index: zOrder(aboveNormal); }
+.dropdown-menu {
+  position: absolute;
+  font-size: 1rem;
+  z-index: zOrder(higher);
+
+  @mixin menuRoot {
+    @at-root .dropdown-menu { @content; }
+  }
+
+  &[hidden]                { display: none; }
+  &:not([hidden])          { display: grid; }
+  &[data-expanded="false"] { opacity: 0; }
+  &[data-expanded="true"]  { opacity: 1; }
+
+  .arrow {
+    position: absolute;
+    @include multiProp(0, sizing);
+    border: bd(0.5em, transparent);
+    border-bottom-color: #fff;
+
+    @mixin pos($translation, $rotation) {
+      transform: translate($translation) rotate($rotation);
+    }
+
+    // Positioning
+    & {
+      $posList: (
+        bottom: (0 -0.5em, 0deg),
+        top: (0 0.5em, 180deg),
+        right: (-0.5em 0, 270deg),
+        left: (0.5em 0, 90deg)
+        );
+
+      @include menuRoot {
+        @each $posN, $posL in $posList {
+          &[data-pos="#{$posN}"] .arrow {
+            transform: translate(nth($posL, 1)) rotate(nth($posL, 2));
+
+            @if $posN == bottom or $posN == top      { justify-self: center; }
+            @else if $posN == right or $posN == left { align-self: center; }
+          }
+        }
+      }
+    }
+  }
+  .panel {
+    position: absolute;
+    @include colors(#000, #fff);
+    border-radius: 4px;
+    box-shadow: shadow(tpb(0.5));
+
+    // Positioning
+    & {
+      $posList: (
+        bottom: 0 0.5em,
+        top: 0 -0.5em,
+        right: 0.5em 0,
+        left: -0.5em 0
+        );
+      @mixin declarations ($alignments, $property, $min) {
+        $pos: unquote('');
+        $neg: unquote('');
+
+        @each $alignN, $alignV in $alignments {
+          $selector: '[data-align="#{$alignN}"]';
+          $pos: #{$pos}#{'&'}#{$selector}#{' .panel, '};
+          $neg: #{$neg}#{':not('}#{$selector}#{')'};
+
+          &#{unquote($selector)} .panel { #{$property}: $alignV; }
+        }
+        #{unquote($pos)}        { min-#{$min}: calc(50% + 1em); }
+        &#{unquote($neg)} .panel { #{$property}: center; }
+      }
+
+      @include menuRoot {
+        @each $posN, $posV in $posList {
+          &[data-pos="#{$posN}"] .panel { transform: translate($posV); }
+        }
+        &[data-pos="top"], &[data-pos="bottom"] {
+          $alignmentList: (
+            left: flex-start,
+            right: flex-end
+            );
+
+          @include declarations($alignmentList, justify-self, width);
+        }
+        &[data-pos="left"], &[data-pos="right"] {
+          $alignmentList: (
+            top: flex-start,
+            bottom: flex-end
+            );
+
+          @include declarations($alignmentList, align-self, height);
+        }
+      }
+    }
+    .title {
+      opacity: 0.4;
+      font-size: 1.2em;
+      cursor: default;
+    }
+    .choice-list.scrollable {
+      max-height: 12.5em;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+    .choice {
+      display: block;
+      font-size: 1.1em;
+      cursor: pointer;
+
+      &::before { @include fill(true); }
+
+      &[data-pressed="false"], &:not([data-pressed]) {
+        color: #000;
+
+        &::before { background-color: $site-color-lighter; }
+
+        @include mouseState(noHover) {
+          opacity: 0.8;
+
+          &::before { opacity: 0; }
+        }
+        @include mouseState(hover) {
+          opacity: 1;
+
+          &::before { opacity: 0.25; }
+        }
+        @include mouseState(click) {
+          &::before { opacity: 0.5; }
+        }
+      }
+      &[data-pressed="true"] {
+        color: #fff;
+
+        &::before { @include theme(bg); }
+
+        @include mouseState(noHover) {
+          &::before { opacity: 1; }
+        }
+        @include mouseState(hover) {
+          &::before { opacity: 0.75; }
+        }
+        @include mouseState(click) {
+          opacity: 0.75;
+        }
+      }
+    }
+    .title, .choice {
+      $basePadding: 6px;
+
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+      padding: $basePadding ($basePadding * 4) $basePadding ($basePadding * 2);
+    }
+  }
+  .arrow, .panel {
+    $posList: (
+      bottom: top,
+      top: bottom,
+      right: left,
+      left: right
+      );
+
+    @each $posN, $posD in $posList {
+      @include menuRoot {
+        &[data-pos="#{$posN}"] .arrow, &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
+      }
+    }
+  }
+}

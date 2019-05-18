@@ -34,12 +34,6 @@
         opacity: 1; }
       .updates-header .section.current .title {
         opacity: 0.75; }
-      .updates-header .section.current .currentver:not(:hover):not(:focus) {
-        opacity: 0.75; }
-      .updates-header .section.current .currentver:hover, .updates-header .section.current .currentver:focus {
-        opacity: 1; }
-      .updates-header .section.current .currentver:active {
-        text-decoration: underline; }
     .updates-header .section.jump > button {
       display: flex;
       align-items: center;
@@ -149,13 +143,11 @@ main {
   flex-direction: column;
   padding: 32px 16px 64px;
   overflow: hidden; }
-  main .panel {
-    color: inherit;
-    border-radius: 4px;
-    opacity: 0;
-    -webkit-animation: panelFadeIn 0.4s linear forwards;
-            animation: panelFadeIn 0.4s linear forwards;
-    overflow: hidden; }
+
+.changelog {
+  opacity: 0;
+  -webkit-animation: panelFadeIn 0.4s linear forwards;
+          animation: panelFadeIn 0.4s linear forwards; }
 @-webkit-keyframes panelFadeIn {
   0% {
     opacity: 0; }
@@ -166,131 +158,30 @@ main {
     opacity: 0; }
   100% {
     opacity: 1; } }
-    main .panel::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: inherit;
-      content: "";
-      background-color: #1d3f60;
-      border: 2px solid #060c12;
-      border-radius: 4px; }
-    main .panel:not(:last-child) {
-      margin-bottom: 1.5em; }
-    main .panel .hashTargetOverlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      border-radius: inherit;
-      content: "";
-      border: 2px solid;
-      border-radius: 4px;
-      opacity: 0; }
-@-webkit-keyframes panelHashTargeted {
-  0%, 50%, 100% {
-    opacity: 0.25; }
-  25%, 75% {
-    opacity: 1; } }
-@keyframes panelHashTargeted {
-  0%, 50%, 100% {
-    opacity: 0.25; }
-  25%, 75% {
-    opacity: 1; } }
-@-webkit-keyframes panelHashTargetFade {
-  0% {
-    opacity: 0.75; }
-  100% {
-    opacity: 0; } }
-@keyframes panelHashTargetFade {
-  0% {
-    opacity: 0.75; }
-  100% {
-    opacity: 0; } }
-      main .panel[data-hashtarget-highlighted="true"] .hashTargetOverlay {
-        -webkit-animation: panelHashTargeted 2.5s linear infinite;
-                animation: panelHashTargeted 2.5s linear infinite; }
-      main .panel[data-hashtarget-highlighted="false"] .hashTargetOverlay {
-        -webkit-animation: panelHashTargetFade 0.75s linear;
-                animation: panelHashTargetFade 0.75s linear; }
-    main .panel .header {
-      display: grid;
-      grid-template-columns: 2.55em 1fr auto;
+  .changelog .header .title {
+    font-size: 1.25em; }
+  .changelog .info {
+    display: flex; }
+    @media screen and (max-width: 399px) {
+      .changelog .info {
+        flex-direction: column;
+        align-items: flex-start; } }
+    @media screen and (min-width: 400px) {
+      .changelog .info {
+        flex-direction: row;
+        align-items: center; } }
+    @media screen and (max-width: 399px) {
+      .changelog .info .date, .changelog .info .type {
+        display: list-item;
+        list-style: disc inside; }
+      .changelog .info .separator {
+        display: none; } }
+    @media screen and (min-width: 400px) {
+      .changelog .info .date, .changelog .info .type, .changelog .info .separator {
+        display: inline; } }
+    .changelog .info .separator {
       font-size: 1.5em;
-      padding: 8px; }
-      main .panel .header > .icon {
-        display: inline-flex;
-        justify-content: center;
-        grid-column: 1;
-        font-size: 1.5em; }
-      main .panel .header .title {
-        grid-column: 2; }
-        @media screen and (max-width: 449px) {
-          main .panel .header .title {
-            font-size: 0.9em; } }
-        @media screen and (min-width: 450px) {
-          main .panel .header .title {
-            font-size: 1em; } }
-      main .panel .header .version {
-        font-size: 1em; }
-      main .panel .header .info {
-        display: flex;
-        opacity: 0.5;
-        font-size: 0.75em; }
-        @media screen and (max-width: 449px) {
-          main .panel .header .info {
-            flex-direction: column;
-            align-items: flex-start; } }
-        @media screen and (min-width: 450px) {
-          main .panel .header .info {
-            flex-direction: row;
-            align-items: center; } }
-      main .panel .header .separator {
-        font-size: 1.5em;
-        padding: 0 0.35em;
-        line-height: 0; }
-      @media screen and (max-width: 449px) {
-        main .panel .header .date, main .panel .header .type {
-          display: list-item;
-          list-style: disc inside; }
-        main .panel .header .separator {
-          display: none; } }
-      @media screen and (min-width: 450px) {
-        main .panel .header .date, main .panel .header .type, main .panel .header .separator {
-          display: inline; } }
-      main .panel .header .toggle {
-        grid-column: 3;
-        font-size: 1em;
-        height: 2em;
-        width: 2em; }
-        main .panel .header .toggle:not(:hover):not(:focus):not([hidden]) {
-          opacity: 0.75; }
-        main .panel .header .toggle:hover, main .panel .header .toggle:focus {
-          opacity: 1; }
-        main .panel[data-expanded="false"] .header .toggle {
-          -webkit-transform: rotate(0deg);
-                  transform: rotate(0deg); }
-        main .panel[data-expanded="true"] .header .toggle {
-          -webkit-transform: rotate(180deg);
-                  transform: rotate(180deg); }
-      main .panel .header > .icon, main .panel .header .title, main .panel .header .toggle {
-        grid-row: 1;
-        padding: 8px; }
-      main .panel .header > .icon, main .panel .header .title {
-        align-self: center; }
-    main .panel .body {
-      background-color: rgba(0, 0, 0, 0.2);
-      margin: 0 2px 2px;
-      padding: 16px;
-      overflow: hidden; }
-      main .panel[data-expanded="false"] .body {
-        display: none; }
-      main .panel[data-expanded="true"] .body {
-        display: grid; }
-      main .panel .body h3 {
-        font-size: 1.25em; }
-        main .panel .body h3:not(:first-child) {
-          margin-top: 8px; }
+      padding: 0 0.35em;
+      line-height: 0; }
+  .changelog h3 {
+    font-size: 1.15em; }

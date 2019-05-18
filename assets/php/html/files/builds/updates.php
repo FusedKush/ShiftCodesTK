@@ -38,42 +38,45 @@
     <header class="updates-header" id="updates_header">
       <div class="content-wrapper">
         <div class="section current" hidden aria-hidden="true" data-hidden="true">
-          <span><span class="title">Current Version:</span>&nbsp; <a class="currentver" id="updates_header_current" data-internalLink="true"><strong></strong></a></span>
+          <span><span class="title">Current Version:</span>&nbsp;<a class="currentver tr-underline interal" id="updates_header_current"><strong></strong></a></span>
         </div>
         <div class="section jump">
           <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
             <span>Jump to&nbsp;<span class="fas fa-caret-down"></span></span>
           </button>
-          <div class="dropdown" id="updates_header_jump_dropdown" data-expanded="false" aria-expanded="false" hidden aria-hidden="true" data-hidden="true">
-            <span class="arrow"></span>
-            <ul class="panel noDefaults" role="menu">
-              <span class="description">Jump to:</span>
-            </ul>
+          <div class="dropdown-menu no-refocus" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom">
+            <div class="panel">
+              <div class="title">Jump to:</div>
+              <ul class="choice-list scrollable"></ul>
+            </div>
           </div>
         </div>
       </div>
     </header>
     <main class="content-wrapper">
       <template id="panel_template">
-        <section class="panel" data-expanded="false" aria-expanded="false">
-          <div class="hashTargetOverlay"></div>
-          <div class="header">
-            <span class="icon fas"></span>
-            <div class="title">
-              <h2 class="version"></h2>
-              <div class="info">
-                <span class="date"></span>
-                <span class="separator">&bull;</span>
-                <span class="type"></span>
+        <section class="dropdown-panel changelog">
+          <button class="header" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
+            <div class="wrapper">
+              <div class="title">
+                <div class="icon">
+                  <span class="fas"></span>
+                </div>
+                <div class="string">
+                  <h2 class="primary version"></h2>
+                  <div class="secondary info">
+                    <span class="date"></span>
+                    <span class="separator">&bull;</span>
+                    <span class="type"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="indicator">
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
-            <button class="toggle bubble-parent" title="Expand Changelog" aria-label="Expand Changelog">
-              <span class="fas fa-chevron-circle-down"></span>
-              <span class="bubble bubble-light"></span>
-            </button>
-          </div>
-          <div class="body">
-          </div>
+          </button>
+          <div class="body content-container"></div>
         </section>
       </template>
     </main>

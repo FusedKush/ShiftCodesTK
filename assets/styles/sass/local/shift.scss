@@ -76,8 +76,7 @@
       height: inherit;
     }
   }
-  .sort {
-    > button {
+  .sort > button {
       @include flexbox;
       @include multiProp(1.5em, sizing);
       font-size: 1.25em;
@@ -103,82 +102,6 @@
         &::before { opacity: 0.4; }
       }
     }
-    .dropdown {
-      position: absolute;
-      flex-direction: column;
-      @include multiProp(100%, sizing);
-      transform: translateY(100%);
-      z-index: 1;
-
-      @include hiddenToggle(flex);
-      &[data-expanded="false"] { opacity: 0; }
-      &[data-expanded="true"]  { opacity: 1; }
-
-      .arrow {
-        position: absolute;
-        @include multiProp(1rem, sizing);
-        @include pull(t);
-        transform: translateY(calc(-15% + 0.75em)) rotate(45deg);
-        align-self: center;
-        background: linear-gradient(to bottom right, #fff 0.4em, transparent 0.4em);
-        z-index: 1;
-      }
-      .panel {
-        position: absolute;
-        @include pull(t);
-        transform: translateY(15%);
-        align-self: flex-end;
-        font-size: 1.1rem;
-        white-space: nowrap;
-        border-radius: 4px;
-        @include colors($site-color-lighter, #fff);
-        box-shadow: shadow(tpb(0.75), 0.5em);
-        overflow: hidden;
-
-        .description {
-          display: block;
-          opacity: 0.35;
-        }
-        button {
-          width: 100%;
-          font-size: 0.9em;
-          text-align: left;
-          cursor: pointer;
-
-          &::before { @include fill(true, #000); }
-
-          &[data-pressed="true"] {
-            color: #fff;
-            @include theme(bg);
-
-            &::before { opacity: 0; }
-          }
-          &[data-pressed="false"] {
-            @include mouseState(noHover) {
-              opacity: 0.8;
-
-              &::before { opacity: 0; }
-            }
-            @include mouseState(hover) {
-              opacity: 1;
-
-              &::before { opacity: 0.15; }
-            }
-            @include mouseState(click) {
-              &::before { opacity: 0.3; }
-            }
-          }
-        }
-
-        @media screen and (max-width: 549px) {
-          .description, button { padding: 6px 18px 6px 9px; }
-        }
-        @media screen and (min-width: 550px) {
-          .description, button { padding: 4px 16px 4px 8px; }
-        }
-      }
-    }
-  }
 }
 .feed {
   width: 100%;

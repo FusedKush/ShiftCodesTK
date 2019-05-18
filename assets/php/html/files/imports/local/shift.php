@@ -15,9 +15,20 @@
       </button>
     </div>
     <div class="section sort">
-      <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
+      <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" disabled aria-disabled="true">
         <span class="fas fa-sort-amount-down"></span>
       </button>
+      <div class="dropdown-menu" id="shift_header_sort_dropdown" data-target="shift_header_sort" data-pos="bottom" data-align="right">
+        <div class="panel">
+          <div class="title">Sort by:</div>
+          <ul class="choice-list">
+            <li><button class="choice" data-value="default" data-pressed="true" aria-pressed="true">Default</button></li>
+            <li><button class="choice" data-value="newest">Newest</button></li>
+            <li><button class="choice" data-value="oldest">Oldest</button></li>
+          </ul>
+        </div>
+      </div>
+      <!--
       <div class="dropdown" id="shift_header_sort_dropdown" data-expanded="false" aria-expanded="false" hidden data-hidden="true">
         <span class="arrow"></span>
         <ul class="panel" role="menu">
@@ -33,6 +44,7 @@
           </li>
         </ul>
       </div>
+      -->
     </div>
   </div>
 </header>
