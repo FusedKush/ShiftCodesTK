@@ -1,12 +1,13 @@
+<?php include_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/html/min/imports/importPath.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/styles/css/min/local/faq.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
+    <link href="/assets/styles/css/min/local/help/faq.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
     <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>FAQ - ShiftCodesTK</title>
@@ -18,22 +19,22 @@
     <meta property="og:description" content="Answers to some frequently asked questions">
     <meta property="twitter:description" content="Answers to some frequently asked questions">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/faq">
-    <meta property="og:url" content="https://shiftcodes.tk/faq">
+    <meta name="canonical" href="https://shiftcodes.tk/help/faq">
+    <meta property="og:url" content="https://shiftcodes.tk/help/faq">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/faq.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/faq.png">
+    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/help/faq.png">
+    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/help/faq.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!--// Shared Head Markup \\-->
-    <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
+    <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->
-    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
+    <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <header class="toc dropdown-panel">
@@ -90,7 +91,7 @@
             </div>
           </button>
           <div class="body content-container">
-            <p>Yes. You can create a free account&nbsp;<a class="themed" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT (External Link)" aria-label="Register for SHiFT (External Link)"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link"></span>&nbsp;<span class="label">here</span></a>.</p>
+            <p>Yes. You can create a free account&nbsp;<a class="themed" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT (External Link)" aria-label="Register for SHiFT (External Link)"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span><span class="label">here</span></a>.</p>
           </div>
         </div>
         <div class="dropdown-panel">
@@ -292,13 +293,13 @@
       <li><a data-internalLink="true"></a></li>
     </template>
     <!-- Support Footer -->
-    <?php include_once('./assets/php/html/min/imports/local/support-footer.php'); ?>
+    <?php include_once('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
+    <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/scripts/min/local/faq.min.js<?php echo $svQueryString; ?>"></script>
+    <script async src="/assets/scripts/min/local/help/faq.min.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>

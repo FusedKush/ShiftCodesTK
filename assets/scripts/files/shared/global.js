@@ -44,14 +44,6 @@ function updateLabel(element, label) {
 // Called when Webp Support is determined
 function webpSupportUpdate (support) {
   let e = document.getElementsByTagName('*');
-  let supportStrings = {
-    true: 'Supported',
-    false: 'Not Supported'
-  };
-  let logTypes = {
-    true: 'info',
-    false: 'warn'
-  };
 
   document.getElementsByClassName('webp-support')[0].remove();
 
@@ -60,7 +52,7 @@ function webpSupportUpdate (support) {
 
     if (webp !== null) {
       webp = JSON.parse(webp);
-      webp.fullPath = webp.path + webp.name;
+      webp.fullPath = webp.path + ('/') + webp.path.replace(/\/.+\//g, '');
 
       if (support === true) {
         webp.fullPath += '.webp';
@@ -557,7 +549,7 @@ hashUpdate();
     let tools = document.createElement('script');
 
     tools.async = true;
-    tools.src = 'assets/scripts/min/s/devTools.min.js?v=1.1';
+    tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
     document.body.appendChild(tools);
   }
 })();

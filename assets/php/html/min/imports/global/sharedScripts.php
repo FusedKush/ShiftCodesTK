@@ -1,6 +1,6 @@
 <?php
   // Server Version Number
-  require_once('./assets/php/scripts/serverVersion.php');
+  require_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/scripts/serverVersion.php');
 
   // Configuration
   $dir = '/assets/scripts/min/'; // Assets Directory

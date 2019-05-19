@@ -30,7 +30,7 @@
       </li>
       <div class="separator"></div>
       <li role="menuitem">
-        <a class="no-focus-scroll" href="/help">
+        <a class="no-focus-scroll" href="/help/">
           <span class="fas fa-question"></span>
           <span class="name">Help Center</span>
         </a>

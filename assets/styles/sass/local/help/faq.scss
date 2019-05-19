@@ -3,7 +3,7 @@
 *********************************/
 
 /*** Imports ***/
-@import "../partials/_globals";
+@import "../../partials/_globals";
 
 /*** Style Declarations ***/
 main { @include ready; }
@@ -55,4 +55,4 @@ section.group {
 }
 
 // Support Footer
-@import "../partials/support-footer";
+@import "../../partials/_support-footer";

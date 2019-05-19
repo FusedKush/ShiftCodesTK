@@ -1,8 +1,8 @@
 <?php
   // Inlined Startup Styles
-  include_once('files/inlineStyles.php');
+  include_once('global/files/inlineStyles.php');
   // Server Version Number
-  require_once('./assets/php/scripts/serverVersion.php');
+  require_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/scripts/serverVersion.php');
 
   // Configuration
   $dir = '/assets/styles/css/min/'; // Assets Directory

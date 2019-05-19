@@ -1,10 +1,11 @@
+<?php include_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/html/min/imports/importPath.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
     <link href="/assets/styles/css/min/local/index.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
     <!--// Page-Specific Metadata \\-->
@@ -28,13 +29,13 @@
     <!-- Google Metadata (Landing Page Only) -->
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
     <!--// Shared Head Markup \\-->
-    <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
+    <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
-    <main class="no-header banner" id="banner" data-webp='{"path": "/assets/img/banners/landing/", "name": "landing", "alt": ".jpg", "type": "bg"}'>
+    <main class="no-header banner" id="banner" data-webp='{"path": "/assets/img/banners/landing", "alt": ".jpg", "type": "bg"}'>
       <section class="content-container content-wrapper">
         <header class="title">
           <img class="logo" src="/assets/img/logo.svg" alt="ShiftCodesTK Logo">
@@ -65,10 +66,10 @@
       </div>
     </template>
     <!--// After-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
+    <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
     <script async src="/assets/scripts/min/local/index.min.js<?php echo $svQueryString; ?>"></script>
   </body>

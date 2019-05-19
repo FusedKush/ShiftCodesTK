@@ -4,7 +4,7 @@
   $title = str_replace(" - ShiftCodesTK", "", $meta['title']);
   $description = $meta['description'];
 ?>
-<header class="main" data-webp='{"path": "/assets/img/banners<?php echo $loc; ?>", "name": "<?php echo $loc; ?>", "alt": ".jpg", "type": "bg"}'>
+<header class="main" data-webp='{"path": "/assets/img/banners<?php echo $loc; ?>", "alt": ".jpg", "type": "bg"}'>
   <div class="content-container">
     <div class="content-wrapper">
       <div class="content short">

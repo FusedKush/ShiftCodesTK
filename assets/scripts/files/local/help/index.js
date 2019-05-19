@@ -6,18 +6,18 @@ var helpCenterArticles = [
   {
     'title': 'FAQ',
     'description': 'Answers to some frequently asked questions',
-    'link': '/faq'
+    'link': 'faq'
   },
   {
     'title': 'Clearing your System Cache',
     'description': 'How to clear your system cache on PC, Xbox, and Playstation',
-    'link': '/clearing-your-system-cache'
+    'link': 'clearing-your-system-cache'
   },
   /*
   {
     'title': 'Supported Devices & Browsers',
     'description': 'Devices and Browsers supported by ShiftCodesTK',
-    'link': '/supported-devices-and-browsers'
+    'link': 'supported-devices-and-browsers'
   }
   */
 ];
@@ -42,7 +42,7 @@ var helpCenterArticles = [
     if (typeof current.icon == 'undefined') { link.icon.className = defaultIcon; }
     else                                    { link.icon.className = current.icon; }
 
-    link.root.href = current.link;
+    link.root.href = ('/help/') + current.link;
     link.title.innerHTML = current.title;
     link.description.innerHTML = current.description;
     container.appendChild(link.root);

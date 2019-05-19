@@ -1,12 +1,13 @@
+<?php include_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/html/min/imports/importPath.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedStyles.php'); ?>
+    <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/styles/css/min/local/clearing-your-system-cache.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
+    <link href="/assets/styles/css/min/local/help/clearing-your-system-cache.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
     <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Clearing your System Cache - ShiftCodesTK</title>
@@ -18,22 +19,22 @@
     <meta property="og:description" content="How to clear your system cache on PC, Xbox, or Playstation">
     <meta property="twitter:description" content="How to clear your system cache on PC, Xbox, or Playstation">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/clearing-your-system-cache">
-    <meta property="og:url" content="https://shiftcodes.tk/clearing-your-system-cache">
+    <meta name="canonical" href="https://shiftcodes.tk/help/clearing-your-system-cache">
+    <meta property="og:url" content="https://shiftcodes.tk/help/clearing-your-system-cache">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/clearing-your-system-cache.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/clearing-your-system-cache.png">
+    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/help/clearing-your-system-cache.png">
+    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/help/clearing-your-system-cache.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!--// Shared Head Markup \\-->
-    <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
+    <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->
-    <?php include_once('./assets/php/html/min/imports/global/main-header.php'); ?>
+    <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <div class="intro">
@@ -166,12 +167,12 @@
       <p>Once you have cleared your system cache, relaunch the game and try redeeming the SHiFT Code again.</p>
     </main>
     <!-- Support Footer -->
-    <?php include_once('./assets/php/html/min/imports/local/support-footer.php'); ?>
+    <?php include_once('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('./assets/php/html/min/imports/global/sharedScripts.php'); ?>
+    <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
   </body>
 </html>
