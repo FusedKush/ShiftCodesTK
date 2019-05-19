@@ -118,8 +118,8 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           src: ["**/*",
-                ".htaccess",
                 "!.*",
+                ".htaccess",
                 "!.*/**/*",
                 "!Gruntfile.js",
                 "!package-lock.json",
@@ -163,8 +163,8 @@ module.exports = function(grunt) {
       },
       copy: {
         files: ["**/*",
-                ".htaccess",
                 "!.*",
+                ".htaccess",
                 "!.*/**/*",
                 "!Gruntfile.js",
                 "!package-lock.json",
