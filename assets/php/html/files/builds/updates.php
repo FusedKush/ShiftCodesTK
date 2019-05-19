@@ -21,6 +21,7 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/updates">
     <meta property="og:url" content="https://shiftcodes.tk/updates">
+    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Updates", "url": "/updates"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
@@ -45,7 +46,7 @@
           <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
             <span>Jump to&nbsp;<span class="fas fa-caret-down"></span></span>
           </button>
-          <div class="dropdown-menu no-refocus" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom">
+          <div class="dropdown-menu no-refocus" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom" data-align="right">
             <div class="panel">
               <div class="title">Jump to:</div>
               <ul class="choice-list scrollable"></ul>

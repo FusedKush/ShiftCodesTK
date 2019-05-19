@@ -21,6 +21,7 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/credits">
     <meta property="og:url" content="https://shiftcodes.tk/credits">
+    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Credits", "url": "/credits"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">

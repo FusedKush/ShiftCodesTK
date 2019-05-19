@@ -19,7 +19,26 @@ body[data-theme="bl2"] .primary-footer {
   background-color: #ff4500; }
 body[data-theme="tps"] .primary-footer {
   background-color: #1e90ff; }
-.primary-footer .content-wrapper {
+.primary-footer .breadcrumbs {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.2); }
+  .primary-footer .breadcrumbs .content-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 12px; }
+  .primary-footer .breadcrumbs .separator {
+    opacity: 0.5; }
+  .primary-footer .breadcrumbs .separator, .primary-footer .breadcrumbs b.crumb {
+    cursor: default; }
+  .primary-footer .breadcrumbs .separator, .primary-footer .breadcrumbs .crumb {
+    margin: 4px;
+    padding: 4px 8px;
+    line-height: 1;
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px; }
+.primary-footer .primary.content-wrapper {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: repeat(2, auto);

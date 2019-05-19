@@ -21,6 +21,7 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/help">
     <meta property="og:url" content="https://shiftcodes.tk/help">
+    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Help Center", "url": "/help/"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/help/index.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/help/index.png">

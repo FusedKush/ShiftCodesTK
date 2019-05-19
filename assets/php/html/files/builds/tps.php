@@ -21,6 +21,7 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/tps">
     <meta property="og:url" content="https://shiftcodes.tk/tps">
+    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Borderlands: The Pre-Sequel", "url": "/tpb"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">

@@ -10,7 +10,25 @@
   @include ready;
   @include theme(bg);
 
-  .content-wrapper {
+  .breadcrumbs {
+    display: flex;
+    background-color: tpb(0.2);
+
+    .content-wrapper {
+      @include flexbox($vAlign: none, $wrap: true);
+      padding: 12px;
+    }
+    .separator { opacity: 0.5; }
+    .separator, b.crumb { cursor: default; }
+    .separator, .crumb {
+      @include spacing(4px, 4px 8px);
+      line-height: 1;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.5));
+      border-radius: 4px;
+    }
+  }
+  .primary.content-wrapper {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr;
     grid-template-rows: repeat(2, auto);
