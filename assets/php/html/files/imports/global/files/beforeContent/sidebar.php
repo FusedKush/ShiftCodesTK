@@ -29,6 +29,10 @@
         </a>
       </li>
       <div class="separator"></div>
+      <li>
+        <a href="/about-us">
+          <span class="fas fa-users"></span>
+          <span class="name">About us</span>
         </a>
       </li>
       <li>

@@ -169,7 +169,9 @@ main {
   max-width: 1200px;
   margin: 0 auto;
 }
-.box-icon { @include boxIcon; }
+.fa, .fas, .fab, .fal, .far {
+  &.box-icon { @include boxIcon; }  
+}
 
 /*** Custom Elements ***/
 // Bubbles

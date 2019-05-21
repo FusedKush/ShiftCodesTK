@@ -40,101 +40,110 @@
   line-height: 1; }
 
 /*** Icons ***/
-.fa-arrow-circle-up::before {
-  content: "\f0aa"; }
-
 .fa-arrow-alt-circle-up::before {
   content: "\f35b"; }
 
-.fa-bars::before {
-  content: "\f0c9"; }
-
-.fa-gamepad::before {
-  content: "\f11b"; }
-
-.fa-heart::before {
-  content: "\f004"; }
-
-.fa-code::before {
-  content: "\f121"; }
-
-.fa-bug::before {
-  content: "\f188"; }
-
-.fa-star::before {
-  content: "\f005"; }
-
-.fa-exclamation-triangle::before {
-  content: "\f071"; }
-
-.fa-key::before {
-  content: "\f084"; }
-
-.fa-clipboard::before {
-  content: "\f328"; }
-
-.fa-heart-broken::before {
-  content: "\f7a9"; }
-
-.fa-external-link-square-alt::before {
-  content: "\f360"; }
-
-.fa-times::before {
-  content: "\f00d"; }
-
-.fa-sort-amount-up::before {
-  content: "\f161"; }
-
-.fa-sort-amount-down::before {
-  content: "\f160"; }
-
-.fa-twitter::before {
-  content: "\f099"; }
-
-.fa-twitter-square::before {
-  content: "\f081"; }
-
-.fa-facebook-square::before {
-  content: "\f082"; }
-
-.fa-facebook-messenger::before {
-  content: "\f39f"; }
-
-.fa-font-awesome-flag::before {
-  content: "\f425"; }
-
-.fa-spinner::before {
-  content: "\f110"; }
+.fa-arrow-circle-up::before {
+  content: "\f0aa"; }
 
 .fa-award::before {
   content: "\f559"; }
 
-.fa-tools::before {
-  content: "\f7d9"; }
-
-.fa-cogs::before {
-  content: "\f085"; }
+.fa-bars::before {
+  content: "\f0c9"; }
 
 .fa-broadcast-tower::before {
   content: "\f519"; }
 
-.fa-chevron-right::before {
-  content: "\f054"; }
-
-.fa-chevron-circle-down::before {
-  content: "\f13a"; }
-
-.fa-filter::before {
-  content: "\f0b0"; }
+.fa-bug::before {
+  content: "\f188"; }
 
 .fa-caret-down::before {
   content: "\f0d7"; }
 
-.fa-question::before {
-  content: "\f128"; }
+.fa-chevron-circle-down::before {
+  content: "\f13a"; }
+
+.fa-chevron-right::before {
+  content: "\f054"; }
+
+.fa-clipboard::before {
+  content: "\f328"; }
+
+.fa-code::before {
+  content: "\f121"; }
+
+.fa-cogs::before {
+  content: "\f085"; }
+
+.fa-exclamation-triangle::before {
+  content: "\f071"; }
+
+.fa-external-link-square-alt::before {
+  content: "\f360"; }
+
+.fa-facebook-messenger::before {
+  content: "\f39f"; }
+
+.fa-facebook-square::before {
+  content: "\f082"; }
+
+.fa-file-alt::before {
+  content: "\f15c"; }
+
+.fa-filter::before {
+  content: "\f0b0"; }
+
+.fa-font-awesome-flag::before {
+  content: "\f425"; }
+
+.fa-gamepad::before {
+  content: "\f11b"; }
+
+.fa-heart-broken::before {
+  content: "\f7a9"; }
+
+.fa-heart::before {
+  content: "\f004"; }
+
+.fa-key::before {
+  content: "\f084"; }
+
+.fa-laptop-code::before {
+  content: "\f5fc"; }
 
 .fa-list-alt::before {
   content: "\f022"; }
 
-.fa-file-alt::before {
-  content: "\f15c"; }
+.fa-question::before {
+  content: "\f128"; }
+
+.fa-sort-amount-down::before {
+  content: "\f160"; }
+
+.fa-sort-amount-up::before {
+  content: "\f161"; }
+
+.fa-spinner::before {
+  content: "\f110"; }
+
+.fa-star::before {
+  content: "\f005"; }
+
+.fa-times::before {
+  content: "\f00d"; }
+
+.fa-toolbox::before {
+  content: "\f552"; }
+
+.fa-tools::before {
+  content: "\f7d9"; }
+
+.fa-twitter-square::before {
+  content: "\f081"; }
+
+.fa-twitter::before {
+  content: "\f099"; }
+
+.fa-users::before {
+  content: "\f0c0"; }

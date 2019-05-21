@@ -170,7 +170,7 @@ main {
   max-width: 1200px;
   margin: 0 auto; }
 
-.box-icon {
+.fa.box-icon, .fas.box-icon, .fab.box-icon, .fal.box-icon, .far.box-icon {
   display: flex;
   align-items: center;
   justify-content: center;
