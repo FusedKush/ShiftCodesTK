@@ -14,7 +14,7 @@ function addSidebarBadges () {
     clearInterval(addSidebarBadgesRetry);
 
     for (i = 0; i < links.length; i++) {
-      let badgeID = links[i].getAttribute('data-useBadges');
+      let badgeID = links[i].getAttribute('data-use-badges');
 
       if (badgeID !== null) {
         if (shiftBadgeCount.new[badgeID] > 0 || shiftBadgeCount.expiring[badgeID] > 0) {
@@ -130,18 +130,20 @@ function sidebarEventListenerCheckKey (event) {
 // Add required markup to sidebar entries
 (function () {
   let sidebar = document.getElementById('sidebar');
+  let li = sidebar.getElementsByTagName('li');
   let links = sidebar.getElementsByTagName('a');
 
+  for (i = 0; i < li.length; i++) {
+    let link = li[i].getElementsByTagName('a')[0];
+    let id = ('sidebar_link_') + i;
+
+    li[i].setAttribute('role', 'menuitem');
+    link.id = id;
+    link.setAttribute('aria-labelledby', id + ('_name'));
+    link.getElementsByClassName('name')[0].id = id + ('_name');
+  }
   for (i = 0; i < links.length; i++) {
-    let link = links[i];
-
-    if (link.className.indexOf('no-auto-markup') == -1) {
-      let id = ('sidebar_link_') + i;
-
-      link.id = id;
-      link.setAttribute('aria-labelledby', id + ('_name'));
-      link.getElementsByClassName('name')[0].id = id + ('_name');
-    }
+    links[i].classList.add('no-focus-scroll');
   }
 })();
 // Check for Current Page and update Sidebar Links

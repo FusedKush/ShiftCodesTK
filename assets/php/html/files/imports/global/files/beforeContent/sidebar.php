@@ -5,40 +5,42 @@
         <span class="bubble bubble-light"></span>
         <span class="fas fa-bars"></span>
       </button>
-      <a class="brand no-focus-scroll no-auto-markup" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">
+      <a class="brand" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">
         <span class="name">ShiftCodes<strong class="focus">TK</strong></span>
       </a>
     </div>
     <ul role="menu">
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/bl1" data-useBadges="bl1">
+      <li>
+        <a href="/bl1" data-use-badges="bl1">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands: GOTY</span>
         </a>
       </li>
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/bl2" data-useBadges="bl2">
+      <li>
+        <a href="/bl2" data-use-badges="bl2">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 2</span>
         </a>
       </li>
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/tps" data-useBadges="tps">
+      <li>
+        <a href="/tps" data-use-badges="tps">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands: TPS</span>
         </a>
       </li>
       <div class="separator"></div>
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/help/">
-          <span class="fas fa-question"></span>
-          <span class="name">Help Center</span>
         </a>
       </li>
-      <li role="menuitem">
-        <a class="no-focus-scroll" href="/credits">
+      <li>
+        <a href="/credits">
           <span class="fas fa-award"></span>
           <span class="name">Credits</span>
+        </a>
+      </li>
+      <li>
+        <a href="/help/">
+          <span class="fas fa-question"></span>
+          <span class="name">Help Center</span>
         </a>
       </li>
     </ul>
