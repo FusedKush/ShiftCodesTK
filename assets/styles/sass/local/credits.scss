@@ -10,14 +10,13 @@
   @include ready;
 
   @include flexbox(none, none, $wrap: true);
+  padding: 16px 8px;
   overflow: hidden;
 
   .banner {
     width: 100%;
     margin: 8px;
     background-color: $theme-main;
-    border: bd(2px, tpb(0.5));
-    border-radius: 4px;
 
     @mixin bannerRoot {
       @at-root .credits .banner { @content; }
@@ -90,10 +89,8 @@
   }
   .module {
     flex: 1;
-    @include spacing(8px, 16px);
+    @include spacing(8px, 8px);
     background-color: $site-color-lighter;
-    border: bd(2px, $site-color-dark);
-    border-radius: 4px;
 
     &::before { @include fill(true, #000); }
 
@@ -150,6 +147,17 @@
       }
       h3 { font-size: 1.5em; }
     }
-    .description { padding: 8px; }
+    .description { @include spacing(0, 8px); }
+  }
+  .shoutout {
+    @include spacing(8px, 16px);
+    width: 100%;
+    background-color: tpw(0.25);
+    border-radius: 4px;
+    text-align: center;
+  }
+  .banner, .module, .shoutout {
+    border: bd(2px, tpw(0.25));
+    border-radius: 4px;
   }
 }

@@ -80,6 +80,7 @@
           </div>
           <p class="description" id="module_loading_io_description">Loading.io provided the cool, lightweight loading icons that are used on the site.</p>
         </a>
+        <div class="shoutout">All images, logos, and trademarks are the rightful property of their respective owners.</div>
       </section>
     </main>
     <!--// After-Content Imports \\-->

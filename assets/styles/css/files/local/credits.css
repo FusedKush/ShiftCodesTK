@@ -12,15 +12,14 @@
 .credits {
   display: flex;
   flex-wrap: wrap;
+  padding: 16px 8px;
   overflow: hidden; }
   .credits, .credits * {
     opacity: 1; }
   .credits .banner {
     width: 100%;
     margin: 8px;
-    background-color: #f00;
-    border: 2px solid rgba(0, 0, 0, 0.5);
-    border-radius: 4px; }
+    background-color: #f00; }
     .credits .banner .header {
       display: flex;
       align-items: center;
@@ -126,10 +125,8 @@
   .credits .module {
     flex: 1;
     margin: 8px;
-    padding: 16px;
-    background-color: #1d3f60;
-    border: 2px solid #091320;
-    border-radius: 4px; }
+    padding: 8px;
+    background-color: #1d3f60; }
     .credits .module::before {
       position: absolute;
       top: 0;
@@ -217,4 +214,15 @@
       .credits .module .icon h3 {
         font-size: 1.5em; }
     .credits .module .description {
+      margin: 0;
       padding: 8px; }
+  .credits .shoutout {
+    margin: 8px;
+    padding: 16px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    text-align: center; }
+  .credits .banner, .credits .module, .credits .shoutout {
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px; }
