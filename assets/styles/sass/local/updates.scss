@@ -175,4 +175,12 @@ main {
     }
   }
   h3 { font-size: 1.15em; }
+  .full-changelog-link {
+    border: bd(1.5px);
+    border-radius: 4px;
+    @include multiProp(tpw(0.25), background-color, border-color);
+    padding: 8px;
+    margin-top: 16px;
+    text-align: center;
+  }
 }

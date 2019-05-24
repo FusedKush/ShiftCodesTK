@@ -22,11 +22,12 @@
           panel.date = panel.header.getElementsByClassName('info')[0].getElementsByClassName('date')[0];
           panel.type = panel.header.getElementsByClassName('info')[0].getElementsByClassName('type')[0];
         panel.body = panel.base.getElementsByClassName('body')[0];
+          panel.fullLink = panel.body.getElementsByClassName('full-changelog-link')[0].getElementsByTagName('a')[0];
       })();
+    let ver = updateObject.version;
 
     // Handle Panel Properties
     (function () {
-      let ver = updateObject.version;
       // Panel ID
       panel.base.id = ('version_') + ver;
       // Panel animation timing
@@ -59,7 +60,10 @@
     })();
     // Handle Body Properties
     (function () {
-      panel.body.innerHTML = (function () {
+      let updateNotes = document.createElement('div');
+
+      updateNotes.className = 'update-notes';
+      updateNotes.innerHTML = (function () {
         let notes = updateObject.notes;
 
         function updateChanges (match) { return match.replace(/-\s{1}/g, '<li>') + '</li>'; }
@@ -85,6 +89,10 @@
 
         return notes;
       })();
+
+      panel.body.insertBefore(updateNotes, panel.body.childNodes[0]);
+      panel.fullLink.href = ('https://github.com/FusedKush/ShiftCodesTK/releases/tag/v') + ver;
+      updateLabel(panel.fullLink, ('Complete Release Notes for Version ') + ver + (' (External Link)'));
     })();
     // Handle Panel Event Listeners
     (function () {

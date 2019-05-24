@@ -78,7 +78,12 @@
               </div>
             </div>
           </button>
-          <div class="body content-container"></div>
+          <div class="body content-container">
+            <div class="full-changelog-link">
+              This is a simplified list of changes related to ShiftCodesTK's service. For the complete list of changes, view the full release on&nbsp;
+              <a class="themed" rel="external noopener" target="_blank"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span>GitHub</a>
+            </div>
+          </div>
         </section>
       </template>
     </main>
