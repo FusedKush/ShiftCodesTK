@@ -221,7 +221,7 @@
             </div>
           </button>
           <div class="body content-container">
-            <p>SHiFT Codes are typically released on Twitter and Facebook via official ahndles, but are also sometimes released during special events and livestreams.</p>
+            <p>SHiFT Codes are typically released on Twitter and Facebook via official handles, but are also sometimes released during special events and livestreams.</p>
           </div>
         </div>
         <div class="dropdown-panel">
