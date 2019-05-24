@@ -1,7 +1,8 @@
 RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule .*\.()$ - [F,NC]
-RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php [NC,L]
 
 ErrorDocument 400 /errorDocument.php?statusCode=400
 ErrorDocument 401 /errorDocument.php?statusCode=401

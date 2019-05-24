@@ -1,1 +1,1 @@
-<?php include_once("files/footer.php"); ?><?php include_once("files/errordocs/noscript-markup.php"); ?>
+<?php include_once("files/afterContent/footer.php"); ?><?php include_once("files/afterContent/noscript-markup.php"); ?>

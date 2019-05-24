@@ -1,0 +1,75 @@
+/*********************************
+  Support Footer Styles
+*********************************/
+.support-footer {
+  @include ready;
+
+  background-color: $site-color-lighter;
+
+  .header {
+    font-size: 1.5em;
+    padding: 16px;
+    text-align: center;
+    background-color: tpb(0.25);
+  }
+  .body {
+    .content-wrapper { @include flexbox(none, none, default, $wrap: true); }
+    .panel {
+      padding: 8px;
+      flex: 1;
+
+      .title {
+        font-size: 1.25em;
+        margin: 8px;
+        text-align: center;
+        line-height: 1;
+      }
+      .button-wrapper {
+        @include flexbox;
+
+        a {
+          position: relative;
+          display: flex;
+          align-items: center;
+          font-size: 1em;
+          margin: 8px;
+          padding: 8px;
+          line-height: 1;
+          border-radius: 4px;
+          overflow: hidden;
+
+          &::before { @include fill(true, #fff); }
+
+          &:not(:hover):not(:focus)::before { opacity: 0.2; }
+          &:hover, &:focus {
+            &::before                       { opacity: 0.4; }
+          }
+          &:active                         { opacity: 0.75; }
+
+          * { position: relative; }
+          .icon {
+            font-size: 1.5em;
+            padding-right: 8px;
+          }
+          .label {
+            @include flexbox(c, s, $direction: c);
+            line-height: normal;
+            font-size: 0.75em;
+          }
+        }
+      }
+    }
+    .separator {
+      background-color: rgba(15, 29, 44, 0.35);
+
+      @media screen and (max-width: 649px) {
+        @include sizing(2px, 100%);
+        margin: 0 8px;
+      }
+      @media screen and (min-width: 650px) {
+        width: 3px;
+        margin: 8px 0;
+      }
+    }
+  }
+}

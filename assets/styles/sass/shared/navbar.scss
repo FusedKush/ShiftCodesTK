@@ -1,0 +1,97 @@
+/*********************************
+  Navbar Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Style Declarations ***/
+.navbar-container { @include ready; }
+.navbar {
+  position: fixed;
+  @include pull(t, lr);
+  height: 64px;
+  overflow: hidden;
+  z-index: 100;
+
+  &[data-at-top="true"] {
+    &::before        { opacity: 0; }
+
+    .bubble-dynamic { background-color: $bbl-light; }
+  }
+  &[data-at-top="false"] {
+    &::before        { opacity: 1; }
+
+    .bubble-dynamic { background-color: $bbl-dark; }
+  }
+
+  &::before {
+    @include fill(true);
+    @include theme(bg);
+  }
+
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 64px;
+    @include multiProp(100%, sizing);
+  }
+  // Positioning
+  & {
+    $columns: (
+      left: 1,
+      center: 2,
+      right: 3
+      );
+    $names: (
+      left: start,
+      center: center,
+      right: end
+      );
+
+    @each $columnN, $columnC in $columns {
+      .#{$columnN} {
+        grid-column: $columnC;
+        justify-self: map-get($names, $columnN);
+      }
+    }
+  }
+  li {
+    display: inline-block;
+    height: 100%;
+  }
+  .btn {
+    @include flexbox;
+    height: 100%;
+    min-width: 64px;
+    padding: 16px;
+
+    @include mouseState(noHover) {
+      &:not([data-pressed]), &[data-pressed="false"] {
+        .fas         { opacity: 0.75; }
+        .logo::after { opacity: 0; }
+      }
+    }
+    @at-root %btnHover {
+      .fas, .logo::after { opacity: 1; }
+    }
+    @include mouseState(hover) { @extend %btnHover; }
+    &[data-pressed="true"]     { @extend %btnHover; }
+  }
+  .fas { font-size: 26px; }
+  .logo {
+    @include flexbox;
+    @include bgImg;
+    @include multiProp(26px, sizing);
+
+    &::after {
+      position: absolute;
+      @include multiProp(calc(100% + 4px), sizing);
+      border: bd(2px, #fff);
+      border-radius: 50%;
+      content: "";
+    }
+
+    img { @include multiProp(inherit, sizing); }
+  }
+}

@@ -5,93 +5,66 @@
 /*** Imports ***/
 @import "../partials/_globals";
 
-/*** Media Queries ***/
-@media screen and (max-width: 379px) {
-  .credits .banner .description { font-size: 0.9em; }
-  .credits .module { font-size: 0.9em; }
-}
-@media screen and (min-width: 380px) {
-  .credits .banner .description { font-size: 1em; }
-  .credits .module { font-size: 1em; }
-}
-@media screen and (max-width: 419px) {
-  .credits .banner .header .flag strong { width: 100%; }
-}
-@media screen and (min-width: 420px) {
-  .credits .banner .header .flag strong { padding-left: 6px; }
-}
-
-/*** Animations ***/
-@keyframes bannerAnimation1 {
-  20%, 50%, 80% { transform: rotate(0deg); }
-  35%           { transform: rotate(-15deg); }
-  65%           { transform: rotate(15deg); }
-}
-@keyframes bannerAnimation2 {
-  0%, 60%, 100% { transform: scale(1); }
-  25%           { transform: scale(0.95); }
-  40%           { transform: scale(1.05); }
-  75%           { transform: scale(1.1); }
-}
-@keyframes fontAwesomeAnimation {
-  0%, 100%      { text-shadow: none; }
-  35%           { text-shadow: shadow(#fff, 0.5em); }
-}
-@keyframes loadingIoAnimation {
-  0%            { transform: rotate(0deg); }
-  100%          { transform: rotate(360deg); }
-}
-
 /*** Style Declarations ***/
 .credits {
   @include ready;
 
-  display: flex;
-  flex-wrap: wrap;
+  @include flexbox(none, none, $wrap: true);
+  padding: 16px 8px;
   overflow: hidden;
 
-  .banner .header .flag , .module .header .icon {
-    .fas, .fab {
-      animation-duration: 1.5s;
-      animation-timing-function: linear;
-      animation-iteration-count: infinite;
-    }
-  }
   .banner {
     width: 100%;
     margin: 8px;
     background-color: $theme-main;
-    border: 2px solid tpb(0.5);
-    border-radius: 4px;
 
-    &:not(:hover) .description p { opacity: 0.85; }
-    &:hover {
-      .header .flag {
-        .fa-code  { animation-name: bannerAnimation1; }
-        .fa-heart { animation-name: bannerAnimation2; }
-      }
-      .description p { opacity: 1; }
+    @mixin bannerRoot {
+      @at-root .credits .banner { @content; }
     }
 
     .header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @include flexbox;
       padding: 16px;
 
       .flag {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
+        @include flexbox($wrap: true);
         text-align: center;
         padding: 16px;
         font-size: 1.25em;
         background-color: tpb(0.25);
-        border: 2px solid tpb(0.25);
+        border: bd(2px, tpb(0.25));
         border-radius: 4px;
         cursor: default;
 
+        @media screen and (max-width: 419px) {
+          strong { width: 100%; }
+        }
+        @media screen and (min-width: 420px) {
+          strong { padding-left: 6px; }
+        }
+
+        @include bannerRoot {
+          &:hover {
+            .fa-code      { animation-name: bannerAnimation1; }
+            .fa-heart     { animation-name: bannerAnimation2; }
+          }
+        }
+
+        .fas {
+          @keyframes bannerAnimation1 {
+            20%, 50%, 80% { transform: rotate(0deg); }
+            35%           { transform: rotate(-15deg); }
+            65%           { transform: rotate(15deg); }
+          }
+          @keyframes bannerAnimation2 {
+            0%, 60%, 100% { transform: scale(1); }
+            25%           { transform: scale(0.95); }
+            40%           { transform: scale(1.05); }
+            75%           { transform: scale(1.1); }
+          }
+
+          @include animation(1.5s, linear, infinite);
+        }
         .fa-code  { padding-right: 6px; }
         .fa-heart { padding: 0 6px; }
       }
@@ -101,75 +74,90 @@
       text-align: center;
       background-color: tpb(0.25);
 
+      @media screen and (max-width: 379px) { font-size: 0.9em; }
+      @media screen and (min-width: 380px) { font-size: 1em; }
+
       p {
         color: inherit;
-        transition: opacity $trd;
+
+        @include bannerRoot {
+          &:not(:hover) p { opacity: 0.85; }
+          &:hover p       { opacity: 1; }
+        }
       }
     }
   }
   .module {
-    position: relative;
     flex: 1;
-    padding: 16px;
-    margin: 8px;
-    color: inherit;
+    @include spacing(8px, 8px);
     background-color: $site-color-lighter;
-    border: 2px solid $site-color-dark;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: transform $trd;
 
-    &:before, .header .icon:before {
-      @include pseudo-fit;
-      background-color: #000;
-      transition: opacity $trd;
+    &::before { @include fill(true, #000); }
+
+    @include mouseState(noHover) {
+      &::before                { opacity: 0.2; }
     }
-
-    &:not(:hover):not(:focus) {
-
-      &:before              { opacity: 0.2; }
-      .header .icon:before  { opacity: 0; }
+    @include mouseState(hover) {
+      &::before                { opacity: 0; }
     }
-    &:hover, &:focus {
-
-      &:before              { opacity: 0; }
-      .header .icon {
-        &:before            { opacity: 0.2; }
-        .fa-font-awesome-flag { animation-name: fontAwesomeAnimation; }
-        .fa-spinner           { animation-name: loadingIoAnimation; }
-      }
-    }
-    &:active { transform: scale(0.9); }
+    @include mouseState(click) { transform: scale(0.9); }
 
     .header {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
+      @include flexbox(c, s);
       padding: 8px;
+    }
+    .icon {
+      @include flexbox;
+      font-size: 1.75em;
+      @include multiProp(1.75em, sizing);
+      padding: 8px;
+      margin-right: 16px;
+      background-color: $site-color-lighter;
+      border: bd(1.5px, $site-color-dark);
+      border-radius: 4px;
+      overflow: hidden;
 
-      .icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75em;
-        height: 1.75em;
-        width: 1.75em;
-        padding: 8px;
-        margin-right: 16px;
-        background-color: $site-color-lighter;
-        border: 1.5px solid $site-color-dark;
-        border-radius: 4px;
-        overflow: hidden;
 
-        .fas, .fab { position: relative; }
+      &::before { @include fill(true, #000); }
+
+      @at-root .credits .module {
+        @include mouseState(noHover) {
+          .icon::before           { opacity: 0; }
+        }
+        @include mouseState(hover) {
+          .icon {
+            &::before             { opacity: 0.2; }
+            .fa-font-awesome-flag { animation-name: fontAwesomeAnimation; }
+            .fa-spinner           { animation-name: loadingIoAnimation; }
+          }
+        }
       }
-      .info h3 { font-size: 1.5em; }
+
+      .fas, .fab {
+        @keyframes fontAwesomeAnimation {
+          0%, 100%      { text-shadow: none; }
+          35%           { text-shadow: shadow(#fff, 0.5em); }
+        }
+        @keyframes loadingIoAnimation {
+          0%            { transform: rotate(0deg); }
+          100%          { transform: rotate(360deg); }
+        }
+
+        @include animation(1.5s, linear, infinite);
+      }
+      h3 { font-size: 1.5em; }
     }
-    .description {
-      position: relative;
-      padding: 8px;
-    }
+    .description { @include spacing(0, 8px); }
+  }
+  .shoutout {
+    @include spacing(8px, 16px);
+    width: 100%;
+    background-color: tpw(0.25);
+    border-radius: 4px;
+    text-align: center;
+  }
+  .banner, .module, .shoutout {
+    border: bd(2px, tpw(0.25));
+    border-radius: 4px;
   }
 }

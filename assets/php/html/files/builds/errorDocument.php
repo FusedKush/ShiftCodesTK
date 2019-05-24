@@ -30,11 +30,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Important Metadata -->
+    <!-- Styles -->
     <meta charset="utf-8">
-    <title><?php echo $errorTitle . ' - ShiftCodesTK'?></title>
-    <meta name="icon" type="image/x-icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
       body {
         background-color: #0f1e2d;
@@ -43,8 +40,12 @@
         opacity: 0;
       }
     </style>
-    <link rel="stylesheet" href="/assets/styles/css/min/global.min.css?v=1">
+    <link rel="stylesheet" href="/assets/styles/css/min/shared/global.min.css?v=1">
     <link rel="stylesheet" href="/assets/styles/css/min/errordocs/errorDocument.min.css?v=1">
+    <!-- Important Metadata -->
+    <title><?php echo $errorTitle . ' - ShiftCodesTK'?></title>
+    <meta name="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body data-theme="main">
     <main class="no-header content-wrapper">

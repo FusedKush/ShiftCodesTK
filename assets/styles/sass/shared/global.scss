@@ -1,0 +1,539 @@
+/*********************************
+  Global (Shared) Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Global Declarations ***/
+// Default Styles
+*, ::before, ::after {
+  position: relative;
+  @include multiProp(0, spacing);
+  box-sizing: border-box;
+  transition: opacity $trd, transform $trd;
+}
+html, body {
+  @include multiProp(100%, sizing);
+}
+body {
+  color: $df-color;
+  background-color: $site-color-main;
+  font-family: $df-font;
+  line-height: $df-line-height;
+  opacity: 1;
+}
+a {
+  text-decoration: none;
+
+  &.tr-underline {
+    @include mouseState(noHover) { text-decoration: none; }
+    @include mouseState(hover)   { text-decoration: underline; }
+    @include mouseState(click)   { opacity: 0.75; }
+  }
+  &.tr-appear {
+    @include mouseState(noHover) { opacity: 0.75; }
+    @include mouseState(hover)   { opacity: 1; }
+    @include mouseState(click)   { text-decoration: underline; }
+  }
+  &:not(.themed) { color: inherit; }
+  // Warning! .colored will be deprecated in the future. Use .themed instead.
+  &.themed {
+    color: #0ff;
+
+    @extend a.tr-underline;
+  }
+}
+p:not(:first-child) { margin-top: $df-elm-spacing; }
+button {
+  background: transparent;
+  border: none;
+  @include multiProp(inherit, color, font-family);
+}
+button, a {
+  &:hover:not([disabled]) {
+    cursor: pointer;
+  }
+  &[disabled] {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+}
+ul.styled { list-style: disc inside; }
+ol.styled { list-style: decimal inside; }
+ul, ol {
+  &.styled {
+    $margins: $df-elm-spacing;
+
+    margin-left: $margins;
+
+    &:not(:first-child) { margin-top: $margins; }
+    &:not(:last-child)  { margin-bottom: $margins; }
+
+    li { padding: 2px 0; }
+  }
+  &:not(.styled) { list-style: none; }
+}
+code { padding: 3px 6px; }
+pre {
+  @include spacing($df-elm-spacing 0, 8px);
+
+  code {
+    background-color: transparent;
+    padding: 0;
+  }
+}
+pre, code {
+  font-family: inherit;
+  border-radius: 4px;
+  background-color: tpw(0.25);
+}
+template, .webp-support { display: none; }
+// Reusable Classes
+header.main {
+  @include ready;
+
+  width: 100%;
+  border-bottom: 4px solid;
+  @include theme(bc);
+  @include bgImg;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    @include pull(b, l);
+    width: 100%;
+    box-shadow: 0 0 1em 0.5em tpb(0.75);
+    content: "";
+  }
+
+  .content-container {
+    @include multiProp(100%, sizing);
+    padding-top: 64px;
+    background-color: tpb(0.6);
+  }
+
+  .content-wrapper {
+    @include flexbox(e, s);
+    @include multiProp(100%, sizing);
+    padding: 32px 16px;
+  }
+
+  .content {
+    @media screen and (max-width: 474px) {
+      &.short {
+        font-size: 1em;
+      }
+      &.long {
+        font-size: 0.75em;
+      }
+    }
+    @media screen and (min-width: 475px) and (max-width: 699px) {
+      &.short {
+        font-size: 1.25em;
+      }
+      &.long {
+        font-size: 1em;
+      }
+    }
+    @media screen and (min-width: 700px) {
+      &.short {
+        font-size: 1.5em;
+      }
+      &.long {
+        font-size: 1.25em;
+      }
+    }
+
+    text-shadow: 1px 1px 4px tpb(0.8);
+    max-width: 85%;
+  }
+
+  .title {
+    font-size: 2em;
+    line-height: 1.1;
+  }
+  .description {
+    font-size: 1.1em;
+    opacity: 0.75;
+    padding-top: 4px;
+  }
+}
+main {
+  opacity: 1;
+
+  &.content-wrapper { padding: 32px 16px; }
+  &.no-header { padding-top: 80px; }
+}
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.fa, .fas, .fab, .fal, .far {
+  &.box-icon { @include boxIcon; }  
+}
+
+/*** Custom Elements ***/
+// Bubbles
+.spacer { padding: 6px 0; }
+@mixin bubbleStates ($opacity, $scale) {
+  opacity: $opacity;
+  transform: scale($scale);
+}
+
+.bubble-parent {
+  @include flexbox;
+
+  &:not(:hover):not(:focus) .bubble { @include bubbleStates(0, 0); }
+  &:hover, &:focus {
+    .bubble                         { @include bubbleStates(0.3, 1); }
+  }
+  &:active .bubble                  { @include bubbleStates(0.5, 1); }
+
+  .bubble {
+    position: absolute;
+    border-radius: 50%;
+    @include multiProp(80%, sizing);
+
+    &-light { background-color: $bbl-light; }
+    &-dark  { background-color: $bbl-dark; }
+  }
+}
+// External Link Icons
+.external-link-icon {
+  @keyframes externalLinkIconEnter {
+    0%, 50%, 100% { transform: scale(1); }
+    25%           { transform: scale(0.8); }
+    75%           { transform: scale(1.2); }
+  }
+  @keyframes externalLinkIconLeave {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+  }
+  @keyframes externalLinkIconClick {
+    0%   { opacity: 1; }
+    100% { opacity: 0.75; }
+  }
+
+  @include flexbox($type: inline);
+
+  &:not(:hover):not(:focus) {
+    .external {
+      opacity: 0;
+    }
+    .icon {
+      opacity: 1;
+      animation-name: externalLinkIconLeave;
+    }
+  }
+  &:hover, &:focus {
+    .external {
+      opacity: 1;
+      animation-name: externalLinkIconEnter;
+    }
+    .icon {
+      opacity: 0;
+    }
+  }
+  &:active {
+    .external {
+      animation-name: externalLinkIconClick;
+    }
+  }
+  .external, .icon {
+    position: absolute;
+     animation: 0.25s linear forwards;
+  }
+}
+// Dropdown Panel
+.dropdown-panel {
+  $margins: 8px;
+
+  border-radius: 4px;
+  padding: 2px;
+  overflow: hidden;
+
+  &::before {
+    @include fill(true, $site-color-lighter);
+    @include multiProp(100%, sizing);
+    border: bd(2px, tpw(0.25));
+    border-radius: inherit;
+  }
+  &:not(:first-child) { margin-top: $margins; }
+  &:not(:last-child) { margin-bottom: $margins; }
+
+  @mixin panelRoot {
+    @at-root .dropdown-panel { @content; }
+  }
+
+  .overlay-hashtarget {
+    @keyframes dropdownPanelHashTargetVisible {
+      0%, 50%, 100% { opacity: 0.25; }
+      25%, 75%      { opacity: 1; }
+    }
+    @keyframes dropdownPanelHashTargetSeen {
+      0%   { opacity: 0.75; }
+      100% { opacity: 0; }
+    }
+
+    @include fill(true);
+    border: bd(2px, #fff);
+    border-radius: inherit;
+    opacity: 0;
+
+    @include panelRoot {
+      &[data-hashtarget="visible"] .overlay-hashtarget { animation: dropdownPanelHashTargetVisible 2.5s linear infinite; }
+      &[data-hashtarget="seen"] .overlay-hashtarget { animation: dropdownPanelHashTargetSeen 0.75s linear; }
+    }
+  }
+  .header {
+    font-size: inherit;
+    width: 100%;
+
+    &::before { @include fill(true, #fff); }
+
+    @include mouseState(noHover) {
+      &::before { opacity: 0; }
+    }
+    @include mouseState(hover) {
+      &::before { opacity: 0.1; }
+    }
+    @include mouseState(click) {
+      &::before { opacity: 0.2; }
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 8px;
+      width: 100%;
+    }
+    .title {
+      @include flexbox($hAlign: s);
+      align-self: center;
+      text-align: start;
+      grid-column: 1;
+      font-size: 1.15em;
+
+      .icon {
+        @include flexbox;
+        padding: 8px;
+        font-size: 1.25em;
+      }
+      .string {
+        @include flexbox(none, s, $direction: c);
+        padding: 8px;
+      }
+        .primary { font-size: 1em; }
+        .secondary {
+          font-size: 0.8em;
+          opacity: 0.5;
+        }
+    }
+    .indicator {
+      @include flexbox;
+      padding: 8px;
+      grid-column: 2;
+      font-size: 1.25em;
+      line-height: 1;
+      align-self: flex-start;
+
+      @include panelRoot {
+        &[data-expanded="true"] .header .indicator .fas { transform: rotate(90deg); }
+      }
+    }
+    .title, .indicator { grid-row: 1; }
+    .full-width { grid-column: 1 / span 2; }
+    .fas { @include boxIcon; }
+  }
+  .body {
+    background-color: rgba(0, 0, 0, 0.2);
+
+    &.content-container { padding: 16px; }
+
+    @include panelRoot {
+      &[data-expanded="false"] .body { display: none; }
+      &[data-expanded="true"] .body  { display: block; }
+    }
+  }
+  .header, .body { overflow: hidden; }
+}
+.dropdown-panel-group { margin: 24px 0; }
+// Dropdown Menus
+.dropdown-menu-container {
+  @include ready;
+  @include fill;
+}
+.dropdown-menu-target { z-index: zOrder(aboveNormal); }
+.dropdown-menu {
+  position: absolute;
+  font-size: 1rem;
+  z-index: zOrder(higher);
+
+  @mixin menuRoot {
+    @at-root .dropdown-menu { @content; }
+  }
+
+  &[hidden]                { display: none; }
+  &:not([hidden])          { display: grid; }
+  &[data-expanded="false"] { opacity: 0; }
+  &[data-expanded="true"]  { opacity: 1; }
+
+  .arrow {
+    position: absolute;
+    @include multiProp(0, sizing);
+    border: bd(0.5em, transparent);
+    border-bottom-color: #fff;
+
+    @mixin pos($translation, $rotation) {
+      transform: translate($translation) rotate($rotation);
+    }
+
+    // Positioning
+    & {
+      $posList: (
+        bottom: (0 -0.5em, 0deg),
+        top: (0 0.5em, 180deg),
+        right: (-0.5em 0, 270deg),
+        left: (0.5em 0, 90deg)
+        );
+
+      @include menuRoot {
+        @each $posN, $posL in $posList {
+          &[data-pos="#{$posN}"] .arrow {
+            transform: translate(nth($posL, 1)) rotate(nth($posL, 2));
+
+            @if $posN == bottom or $posN == top      { justify-self: center; }
+            @else if $posN == right or $posN == left { align-self: center; }
+          }
+        }
+      }
+    }
+  }
+  .panel {
+    position: absolute;
+    @include colors(#000, #fff);
+    border-radius: 4px;
+    box-shadow: shadow(tpb(0.5));
+
+    // Positioning
+    & {
+      $posList: (
+        bottom: 0 0.5em,
+        top: 0 -0.5em,
+        right: 0.5em 0,
+        left: -0.5em 0
+        );
+      @mixin declarations ($alignments, $property, $min) {
+        $pos: unquote('');
+        $neg: unquote('');
+
+        @each $alignN, $alignV in $alignments {
+          $selector: '[data-align="#{$alignN}"]';
+          $pos: #{$pos}#{'&'}#{$selector}#{' .panel, '};
+          $neg: #{$neg}#{':not('}#{$selector}#{')'};
+
+          &#{unquote($selector)} .panel { #{$property}: $alignV; }
+        }
+        #{unquote($pos)}        { min-#{$min}: calc(50% + 1em); }
+        &#{unquote($neg)} .panel { #{$property}: center; }
+      }
+
+      @include menuRoot {
+        @each $posN, $posV in $posList {
+          &[data-pos="#{$posN}"] .panel { transform: translate($posV); }
+        }
+        &[data-pos="top"], &[data-pos="bottom"] {
+          $alignmentList: (
+            left: flex-start,
+            right: flex-end
+            );
+
+          @include declarations($alignmentList, justify-self, width);
+        }
+        &[data-pos="left"], &[data-pos="right"] {
+          $alignmentList: (
+            top: flex-start,
+            bottom: flex-end
+            );
+
+          @include declarations($alignmentList, align-self, height);
+        }
+      }
+    }
+    .title {
+      opacity: 0.4;
+      font-size: 1.2em;
+      cursor: default;
+    }
+    .choice-list.scrollable {
+      max-height: 12.5em;
+      overflow-x: hidden;
+      overflow-y: scroll;
+    }
+    .choice {
+      display: block;
+      font-size: 1.1em;
+      cursor: pointer;
+
+      &::before { @include fill(true); }
+
+      &[data-pressed="false"], &:not([data-pressed]) {
+        color: #000;
+
+        &::before { background-color: $site-color-lighter; }
+
+        @include mouseState(noHover) {
+          opacity: 0.8;
+
+          &::before { opacity: 0; }
+        }
+        @include mouseState(hover) {
+          opacity: 1;
+
+          &::before { opacity: 0.25; }
+        }
+        @include mouseState(click) {
+          &::before { opacity: 0.5; }
+        }
+      }
+      &[data-pressed="true"] {
+        color: #fff;
+
+        &::before { @include theme(bg); }
+
+        @include mouseState(noHover) {
+          &::before { opacity: 1; }
+        }
+        @include mouseState(hover) {
+          &::before { opacity: 0.75; }
+        }
+        @include mouseState(click) {
+          opacity: 0.75;
+        }
+      }
+    }
+    .title, .choice {
+      $basePadding: 6px;
+
+      text-align: left;
+      width: 100%;
+      white-space: nowrap;
+      padding: $basePadding ($basePadding * 4) $basePadding ($basePadding * 2);
+    }
+  }
+  .arrow, .panel {
+    $posList: (
+      bottom: top,
+      top: bottom,
+      right: left,
+      left: right
+      );
+
+    @each $posN, $posD in $posList {
+      @include menuRoot {
+        &[data-pos="#{$posN}"] .arrow, &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
+      }
+    }
+  }
+}

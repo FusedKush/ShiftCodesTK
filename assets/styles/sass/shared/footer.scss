@@ -1,0 +1,120 @@
+/*********************************
+  Footer Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Style Declarations ***/
+.primary-footer {
+  @include ready;
+  @include theme(bg);
+
+  .breadcrumbs {
+    display: flex;
+    background-color: tpb(0.2);
+
+    .content-wrapper {
+      @include flexbox($vAlign: none, $wrap: true);
+      padding: 12px;
+    }
+    .separator { opacity: 0.5; }
+    .separator, b.crumb { cursor: default; }
+    .separator, .crumb {
+      @include spacing(4px, 4px 8px);
+      line-height: 1;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.5));
+      border-radius: 4px;
+    }
+  }
+  .primary.content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    grid-template-rows: repeat(2, auto);
+    align-items: center;
+    padding: 24px;
+  }
+  .social {
+    justify-self: start;
+    font-size: 1.75em;
+    padding: 8px;
+    cursor: default;
+
+    a {
+      @include multiProp(1.1em, sizing);
+
+      &:not(:last-child) { margin-right: 6px; }
+    }
+  }
+  .info {
+    flex-direction: column;
+    justify-self: center;
+    grid-row: 1;
+    font-size: 1.1em;
+    padding: 4px 0;
+    text-align: center;
+
+    .credit {
+      @include mouseState(hover) {
+        .fa-code  { animation-name: creditAnimation1; }
+        .fa-heart { animation-name: creditAnimation2; }
+      }
+
+      .fas {
+        @keyframes creditAnimation1 {
+          20%, 50%, 80% { transform: rotate(0deg); }
+          35%           { transform: rotate(-15deg); }
+          65%           { transform: rotate(15deg); }
+        }
+        @keyframes creditAnimation2 {
+          0%, 60%, 100% { transform: scale(1); }
+          25%           { transform: scale(0.95); }
+          40%           { transform: scale(1.05); }
+          75%           { transform: scale(1.1); }
+        }
+
+        @include animation(1.5s, $count: infinite);
+      }
+    }
+    .version { font-size: 0.9em; }
+    .credit, .version { padding: 4px 8px; }
+  }
+  .return {
+    justify-self: end;
+    font-size: 1.5em;
+    padding: 8px;
+
+    .fas {
+      padding: 6px;
+      border: bd(2px);
+      border-radius: 50%;
+    }
+  }
+  .social, .info, .return { @include flexbox; }
+  .social a, .credit, .version, .return {
+    @include mouseState(noHover) { opacity: 0.75; }
+    @include mouseState(hover)   { opacity: 1; }
+  }
+  .credit, .version, .return {
+    @include mouseState(click) { transform: scale(0.85); }
+  }
+  .devtools-message {
+    @include flexbox;
+    padding: 8px;
+    @include colors(tpw(0.5), tpb(0.4));
+  }
+
+  @media screen and (max-width: 539px) {
+    .social, .return  { grid-row: 2; }
+    .social           { grid-column: 1 / span 2; }
+    .info             { grid-column: 1 / span 3; }
+    .return           { grid-column: 2 / span 3; }
+  }
+  @media screen and (min-width: 540px) {
+    .social, .return  { grid-row: 1; }
+    .social           { grid-column: 1; }
+    .info             { grid-column: 2; }
+    .return           { grid-column: 3; }
+  }
+}

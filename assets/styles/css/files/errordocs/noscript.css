@@ -16,83 +16,76 @@
   noscript {
     font-size: 1em; } }
 /*** Style Declarations ***/
+body {
+  overflow: hidden; }
+
 noscript {
-  opacity: 1;
-  transition: opacity 0.2s ease-out;
   position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
+  border-radius: inherit;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
-  background-image: url(/assets/img/banners/errorDocs/noScript.jpg);
   background-position: center;
   background-size: cover;
+  background-image: url(/assets/img/banners/errorDocs/noScript.jpg);
   text-align: center;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-  padding: 16px; }
-  noscript * {
-    opacity: 1;
-    transition: opacity 0.2s ease-out; }
-  noscript:before {
+  padding: 16px;
+  z-index: 102; }
+  noscript, noscript * {
+    opacity: 1; }
+  noscript::before {
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
     bottom: 0;
+    right: 0;
+    border-radius: inherit;
     content: "";
     background-color: #000;
     opacity: 0.75; }
-  noscript * {
-    position: relative; }
   noscript .logo {
     height: 7.5em;
     width: 7.5em; }
   noscript .title {
     font-size: 2.5em;
-    font-weight: 600;
     padding-top: 12px; }
   noscript .description {
     font-size: 1.25em;
     margin: 16px 0 20px; }
     noscript .description div:last-child {
       padding-top: 8px; }
-    noscript .description a {
-      color: #f00;
-      padding: 0.25em; }
-      noscript .description a:not(:hover):not(:focus) {
-        text-decoration: none; }
-      noscript .description a:hover, noscript .description a:focus {
-        text-decoration: underline; }
-      noscript .description a:active {
-        opacity: 0.75; }
+    noscript .description a:not(:hover):not(:focus) {
+      text-decoration: none; }
+    noscript .description a:hover, noscript .description a:focus {
+      text-decoration: underline; }
+    noscript .description a:active {
+      opacity: 0.75; }
   noscript .refresh {
-    position: relative;
     font-size: 1.25em;
     padding: 12px 24px;
     color: inherit;
     background-color: #f00;
-    text-decoration: none;
     line-height: 1;
-    border-radius: 4px;
-    transition: transform 0.2s ease-out; }
+    border-radius: 4px; }
     noscript .refresh:before {
       position: absolute;
       top: 0;
       left: 0;
-      right: 0;
       bottom: 0;
+      right: 0;
+      border-radius: inherit;
       content: "";
-      background-color: #000;
-      transition: opacity 0.2s ease-out; }
-    noscript .refresh:not(:hover):not(:focus):before {
+      background-color: #000; }
+    noscript .refresh:not(:hover):not(:focus)::before {
       opacity: 0; }
-    noscript .refresh:hover:before, noscript .refresh:focus:before {
+    noscript .refresh:hover::before, noscript .refresh:focus::before {
       opacity: 0.25; }
     noscript .refresh:active {
-      transform: scale(0.9); }
-    noscript .refresh span {
-      position: relative; }
+      -webkit-transform: scale(0.9);
+              transform: scale(0.9); }

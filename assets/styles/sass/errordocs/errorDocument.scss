@@ -15,76 +15,59 @@
 
 /*** Style Declarations ***/
 body {
-  background-image: url(/assets/img/banners/errorDocs/errorDocument.jpg);
-  background-position: center;
-  background-size: cover;
+  @include bgImg("/assets/img/banners/errorDocs/errorDocument.jpg");
 
   .content-wrapper {
     @include ready;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    @include flexbox($direction: c);
     height: 100%;
     padding: 16px;
     text-shadow: dropShadow(tpb(0.5));
+  }
 
-    &:before {
-      @include pseudo-fit;
-      background-color: #000;
-      opacity: 0.75;
-    }
+  &::before {
+    @include fill(true);
+    background-color: #000;
+    opacity: 0.75;
+  }
 
-    * { position: relative; }
-    .logo {
-      height: 7.5em;
-      width: 7.5em;
+  .logo { @include multiProp(7.5em, height, width); }
+  .info {
+    line-height: 1;
+    padding: 12px 0 16px;
+    text-align: center;
+  }
+    .title {
+      font-size: 2.5em;
+      font-weight: bold;
     }
-    .info {
-      line-height: 1;
-      padding: 12px 0 16px;
-      text-align: center;
-
-      .title {
-        font-size: 2.5em;
-        font-weight: bold;
-      }
-      .currentURL {
-        display: inline-block;
-        font-size: 1.5em;
-        opacity: 0.5;
-        padding-top: 4px;
-      }
-      p.description {
-        font-size: 1.25em;
-        padding: 24px 0 8px;
-      }
+    .currentURL {
+      display: inline-block;
+      font-size: 1.5em;
+      opacity: 0.5;
+      padding-top: 4px;
     }
-    .return {
-      position: relative;
+    p.description {
       font-size: 1.25em;
-      padding: 12px 16px;
-      color: inherit;
-      background-color: $theme-main;
-      text-decoration: none;
-      line-height: 1;
-      border-radius: 4px;
-      transition: transform $trd;
-
-      &:before {
-        @include pseudo-fit;
-        background-color: #000;
-        transition: opacity $trd;
-      }
-
-      &:not(:hover):not(:focus):before { opacity: 0; }
-      &:hover, &:focus {
-        &:before                       { opacity: 0.25; }
-      }
-      &:active                         { transform: scale(0.9); }
-
-      span { position: relative; }
+      padding: 24px 0 8px;
     }
+  .return {
+    font-size: 1.25em;
+    padding: 12px 16px;
+    @include colors(inherit, $theme-main);
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 4px;
+
+    &::before { @include fill(true, #000); }
+
+    @include mouseState(noHover) {
+      &::before                { opacity: 0; }
+    }
+    @include mouseState(hover) {
+      &::before                { opacity: 0.25; }
+    }
+    @include mouseState(click) { transform: scale(0.9); }
   }
 }

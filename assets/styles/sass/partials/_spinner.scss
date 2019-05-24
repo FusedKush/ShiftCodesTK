@@ -1,0 +1,51 @@
+/*********************************
+  Spinner Styles
+*********************************/
+
+.spinner {
+  @keyframes animateSpinner1 {
+    0%   { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+  @keyframes animateSpinner2 {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(19px); }
+  }
+  @keyframes animateSpinner3 {
+    0%   { transform: scale(1); }
+    100% { transform: scale(0); }
+  }
+
+  display: inline-block;
+  @include multiProp(64px, sizing);
+
+  .dot {
+    position: absolute;
+    top: 27px;
+    @include multiProp(11px, sizing);
+    border-radius: 50%;
+    background-color: #fff;
+    @include animation(0.6s, ease, infinite);
+
+    $children: 1, 2, 3, 4;
+    $childPos: (
+      1: 6px,
+      2: 6px,
+      3: 26px,
+      4: 45px
+      );
+    $childAnm: (
+      1: 1,
+      2: 2,
+      3: 2,
+      4: 3
+      );
+
+    @each $child in $children {
+      &.dot#{$child} {
+        left: map-get($childPos, $child);
+        animation-name: #{'animateSpinner' + map-get($childAnm, $child)};
+      }
+    }
+  }
+}

@@ -18,87 +18,55 @@
 }
 
 /*** Style Declarations ***/
+body { overflow: hidden; }
 noscript {
   @include ready;
 
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  background-image: url(/assets/img/banners/errorDocs/noScript.jpg);
-  background-position: center;
-  background-size: cover;
+  @include fill;
+  @include flexbox($direction: c);
+  @include bgImg("/assets/img/banners/errorDocs/noScript.jpg");
   text-align: center;
   text-shadow: dropShadow(tpb(0.5));
   padding: 16px;
+  z-index: zOrder(popup);
 
-  &:before {
-    @include pseudo-fit;
-    background-color: #000;
+  &::before {
+    @include fill(true, #000);
     opacity: 0.75;
   }
 
-  * { position: relative; }
-  .logo {
-    height: 7.5em;
-    width: 7.5em;
-  }
+  .logo { @include multiProp(7.5em, height, width); }
   .title {
     font-size: 2.5em;
-    font-weight: 600;
     padding-top: 12px;
   }
   .description {
     font-size: 1.25em;
     margin: 16px 0 20px;
 
-    div:last-child {
-      padding-top: 8px;
-    }
+    div:last-child { padding-top: 8px; }
 
     a {
-      color: $theme-main;
-      padding: 0.25em;
-
-      &:not(:hover):not(:focus) {
-        text-decoration: none;
-      }
-      &:hover, &:focus {
-        text-decoration: underline;
-      }
-      &:active {
-        opacity: 0.75;
-      }
+      @include mouseState(noHover) { text-decoration: none; }
+      @include mouseState(hover)   { text-decoration: underline; }
+      @include mouseState(click)   { opacity: 0.75; }
     }
   }
   .refresh {
-    position: relative;
     font-size: 1.25em;
     padding: 12px 24px;
-    color: inherit;
-    background-color: $theme-main;
-    text-decoration: none;
+    @include colors(inherit, $theme-main);
     line-height: 1;
     border-radius: 4px;
-    transition: transform $trd;
 
-    &:before {
-      @include pseudo-fit;
-      background-color: #000;
-      transition: opacity $trd;
+    &:before { @include fill(true, #000); }
+
+    @include mouseState(noHover) {
+      &::before                  { opacity: 0; }
     }
-
-    &:not(:hover):not(:focus):before  { opacity: 0; }
-    &:hover, &:focus {
-      &:before                        { opacity: 0.25; }
+    @include mouseState(hover)   {
+      &::before                  { opacity: 0.25; }
     }
-    &:active                          { transform: scale(0.9); }
-
-    span { position: relative; }
+    @include mouseState(click)   { transform: scale(0.9); }
   }
 }

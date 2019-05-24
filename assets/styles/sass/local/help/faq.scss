@@ -1,0 +1,58 @@
+/*********************************
+  Credits Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../../partials/_globals";
+
+/*** Style Declarations ***/
+main { @include ready; }
+h2 { font-size: 1.5em; }
+.toc {
+  border-radius: 4px;
+
+  &::before {
+    background-color: tpw(0.25);
+    border-color: tpw(0.25);
+  }
+
+  .title { font-size: 1.5em; }
+  .section:not(:first-child) { margin-top: 12px; }
+  h3 a {
+    @include mouseState(noHover) { text-decoration: none; }
+    @include mouseState(hover)   { text-decoration: underline; }
+    @include mouseState(click)   { opacity: 0.75; }
+  }
+  li a {
+    @include mouseState(noHover) { opacity: 0.75; }
+    @include mouseState(hover)   { opacity: 1; }
+    @include mouseState(click)   { text-decoration: underline; }
+  }
+}
+section.group {
+  &:not(:first-child) { margin-top: 32px; }
+
+  header {
+    @keyframes headerHashTargetVisible {
+      0%, 50%, 100% { opacity: 1; }
+      25%, 75%      { opacity: 0.25; }
+    }
+    @keyframes headerHashTargetSeen {
+      0%   { opacity: 0.25; }
+      100% { opacity: 1; }
+    }
+
+    margin-bottom: 16px;
+    padding: 8px;
+    background-color: tpw(0.25);
+    border: bd(2px, tpw(0.25));
+
+    @at-root section.group {
+      &[data-hashtarget="visible"] h2 { animation: headerHashTargetVisible 2.5s linear infinite; }
+      &[data-hashtarget="seen"] h2 { animation: headerHashTargetSeen 0.75s linear; }
+    }
+  }
+}
+
+// Support Footer
+@import "../../partials/_support-footer";

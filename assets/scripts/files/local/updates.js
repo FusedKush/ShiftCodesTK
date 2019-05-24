@@ -2,95 +2,6 @@
   Updates Page Scripts
 *********************************/
 
-// *** Functions ***
-// Toggles Changelog Panels
-function togglePanel (event) {
-  let toggle = event.currentTarget;
-  let panel = toggle.parentNode.parentNode;
-  let title = panel.getElementsByClassName('header')[0].getElementsByClassName('title')[0].getElementsByClassName('version')[0];
-  let state = panel.getAttribute('data-expanded') == 'true';
-  let labels = {
-    true: 'Collapse Changelog',
-    false: 'Expand Changelog'
-  };
-
-  panel.setAttribute('data-expanded', !state);
-  panel.setAttribute('aria-expanded', !state);
-  updateLabel(toggle, labels[!state]);
-}
-// Toggle Sort Options Dropdown
-function toggleJumpDropdown(focusToggle) {
-  let jump = document.getElementById('updates_header_jump');
-  let dropdown = document.getElementById('updates_header_jump_dropdown');
-  let options = dropdown.getElementsByTagName('a');
-  let state = dropdown.getAttribute('data-expanded') == 'true';
-
-  function toggleState () {
-    dropdown.setAttribute('data-expanded', !state);
-    dropdown.setAttribute('aria-expanded', !state);
-  }
-
-  jump.setAttribute('data-pressed', !state);
-  jump.setAttribute('data-pressed', !state);
-
-  if (state === false) {
-    vishidden(dropdown, false);
-    window.addEventListener('click', checkJumpDropdownClick);
-    window.addEventListener('keydown', checkJumpDropdownKey);
-
-    setTimeout(function () {
-      toggleState();
-
-      options[0].focus();
-    }, 50);
-  }
-  else {
-    toggleState();
-    window.removeEventListener('click', checkJumpDropdownClick);
-    window.removeEventListener('keydown', checkJumpDropdownKey);
-
-    setTimeout(function () {
-      vishidden(dropdown, true);
-
-      if (focusToggle !== true) { document.activeElement.blur(); }
-      else                      { jump.focus(); }
-    }, 250);
-  }
-}
-// Check Dropdown Clicks
-function checkJumpDropdownClick (event) {
-  let dropdown = document.getElementById('updates_header_jump_dropdown').getElementsByClassName('panel')[0];
-  let targets = [event, event.target.parentNode, event.target.parentNode.parentNode, event.target.parentNode.parentNode.parentNode];
-  let matched = false;
-
-  for (i = 0; i < targets.length; i++) {
-    if (targets[i] == dropdown) {
-      matched = true;
-      break;
-    }
-  }
-
-  if (matched === false) { toggleJumpDropdown(); }
-}
-// Check Dropdown KeyPresses
-function checkJumpDropdownKey (event) {
-  let target = event.target;
-  let options = document.getElementById('updates_header_jump_dropdown').getElementsByTagName('a');
-  let firstOption = options[0];
-  let lastOption = options[options.length - 1];
-
-  if (event.shiftKey === true && event.key == 'Tab' && target == firstOption || event.shiftKey === false && event.key == 'Tab' && target == lastOption) {
-    event.preventDefault();
-
-    if (target == firstOption)     { lastOption.focus(); }
-    else if (target == lastOption) { firstOption.focus(); }
-  }
-  else if (event.key == 'Escape') {
-    event.preventDefault();
-    toggleJumpDropdown(true);
-  }
-}
-
 // *** Immediate Functions ***
 // Handles Changelogs' Construction
 (function () {
@@ -106,17 +17,17 @@ function checkJumpDropdownKey (event) {
         panel.template = document.getElementById('panel_template');
         panel.base = panel.template.content.children[0].cloneNode(true);
         panel.header = panel.base.getElementsByClassName('header')[0];
-          panel.icon = panel.header.getElementsByClassName('icon')[0];
+          panel.icon = panel.header.getElementsByClassName('icon')[0].getElementsByClassName('fas')[0];
           panel.version = panel.header.getElementsByClassName('version')[0];
           panel.date = panel.header.getElementsByClassName('info')[0].getElementsByClassName('date')[0];
           panel.type = panel.header.getElementsByClassName('info')[0].getElementsByClassName('type')[0];
-          panel.toggle = panel.header.getElementsByClassName('toggle')[0];
         panel.body = panel.base.getElementsByClassName('body')[0];
+          panel.fullLink = panel.body.getElementsByClassName('full-changelog-link')[0].getElementsByTagName('a')[0];
       })();
+    let ver = updateObject.version;
 
     // Handle Panel Properties
     (function () {
-      let ver = updateObject.version;
       // Panel ID
       panel.base.id = ('version_') + ver;
       // Panel animation timing
@@ -149,7 +60,10 @@ function checkJumpDropdownKey (event) {
     })();
     // Handle Body Properties
     (function () {
-      panel.body.innerHTML = (function () {
+      let updateNotes = document.createElement('div');
+
+      updateNotes.className = 'update-notes';
+      updateNotes.innerHTML = (function () {
         let notes = updateObject.notes;
 
         function updateChanges (match) { return match.replace(/-\s{1}/g, '<li>') + '</li>'; }
@@ -157,7 +71,7 @@ function checkJumpDropdownKey (event) {
         // Replace Markdown with HTML Markup
         // Format Sections
         notes = notes.replace(/(#{3}\s{1})(?=\w)/g, '</ul><h3>');
-        notes = notes.replace(/\s{1}#{3}/g, '</h3><ul>');
+        notes = notes.replace(/\s{1}#{3}/g, '</h3><ul class="styled">');
         // Format Lists
         notes = notes.replace(/-.*/g, updateChanges);
         // Format Bolded Content
@@ -175,10 +89,14 @@ function checkJumpDropdownKey (event) {
 
         return notes;
       })();
+
+      panel.body.insertBefore(updateNotes, panel.body.childNodes[0]);
+      panel.fullLink.href = ('https://github.com/FusedKush/ShiftCodesTK/releases/tag/v') + ver;
+      updateLabel(panel.fullLink, ('Complete Release Notes for Version ') + ver + (' (External Link)'));
     })();
     // Handle Panel Event Listeners
     (function () {
-      panel.toggle.addEventListener('click', togglePanel);
+      dropdownPanelSetup(panel.base);
     })();
     // Add panel to page
     (function () {
@@ -197,7 +115,8 @@ function checkJumpDropdownKey (event) {
           return start + parsed.slice(1);
         })();
         let current = document.getElementById('updates_header_current');
-        let dropdown = document.getElementById('updates_header_jump_dropdown').getElementsByClassName('panel')[0];
+        let dropdown = document.getElementById('updates_header_jump_dropdown');
+        let choiceList = dropdown.getElementsByClassName('choice-list')[0];
 
         // Update Latest Update field
         if (count.total == 1) {
@@ -220,16 +139,19 @@ function checkJumpDropdownKey (event) {
               e.span = document.createElement('span');
             })();
 
+          e.li.setAttribute('role', 'menuitem');
+          e.a.className = 'choice internal';
           e.a.href = ('#') + id;
-          e.a.setAttribute('data-internalLink', true);
           e.a.setAttribute('data-value', title);
           e.span.innerHTML = title;
           updateLabel(e.a, ('Jump to ') + title + (' Changelog'))
 
           e.a.appendChild(e.span);
           e.li.appendChild(e.a);
-          dropdown.appendChild(e.li);
-          dropdown.lastChild.addEventListener('click', toggleJumpDropdown);
+          choiceList.appendChild(e.li);
+          choiceList.lastChild.addEventListener('click', function () {
+            toggleDropdownMenu(dropdown, true);
+          });
         })();
       })();
       if (count.retrieved == count.total) {
@@ -265,4 +187,3 @@ function checkJumpDropdownKey (event) {
 })();
 
 // *** Event Listeners ***
-document.getElementById('updates_header_jump').addEventListener('click', toggleJumpDropdown);

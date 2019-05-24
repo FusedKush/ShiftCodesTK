@@ -1,0 +1,45 @@
+/*********************************
+  About Us Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Style Declarations ***/
+main { @include ready; }
+.banner {
+  @include flexbox($direction: c);
+  margin-bottom: 32px;
+  font-size: 1.75em;
+  text-align: center;
+
+  img {
+    @include multiProp(3.5em, sizing);
+    margin-bottom: 8px;
+  }
+  .title { font-size: 1.5em; }
+  .tagline {
+    font-size: 1em;
+    opacity: 0.75;
+  }
+}
+.wrapper { @include flexbox(none, none, $direction: c); }
+.section {
+  display: flex;
+  flex: 1;
+  margin-bottom: 16px;
+  background-color: $site-color-lighter;
+  border-radius: 4px;
+
+  .icon {
+    @include flexbox($type: inline);
+    font-size: 1.5em;
+    padding: 24px;
+    background-color: tpb(0.25);
+  }
+  p {
+    @include flexbox($hAlign: none);
+    margin: 0;
+    padding: 12px;
+  }
+}

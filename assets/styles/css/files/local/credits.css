@@ -8,80 +8,18 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
-/*** Media Queries ***/
-@media screen and (max-width: 379px) {
-  .credits .banner .description {
-    font-size: 0.9em; }
-
-  .credits .module {
-    font-size: 0.9em; } }
-@media screen and (min-width: 380px) {
-  .credits .banner .description {
-    font-size: 1em; }
-
-  .credits .module {
-    font-size: 1em; } }
-@media screen and (max-width: 419px) {
-  .credits .banner .header .flag strong {
-    width: 100%; } }
-@media screen and (min-width: 420px) {
-  .credits .banner .header .flag strong {
-    padding-left: 6px; } }
-/*** Animations ***/
-@keyframes bannerAnimation1 {
-  20%, 50%, 80% {
-    transform: rotate(0deg); }
-  35% {
-    transform: rotate(-15deg); }
-  65% {
-    transform: rotate(15deg); } }
-@keyframes bannerAnimation2 {
-  0%, 60%, 100% {
-    transform: scale(1); }
-  25% {
-    transform: scale(0.95); }
-  40% {
-    transform: scale(1.05); }
-  75% {
-    transform: scale(1.1); } }
-@keyframes fontAwesomeAnimation {
-  0%, 100% {
-    text-shadow: none; }
-  35% {
-    text-shadow: 0 0 0.5em #fff; } }
-@keyframes loadingIoAnimation {
-  0% {
-    transform: rotate(0deg); }
-  100% {
-    transform: rotate(360deg); } }
 /*** Style Declarations ***/
 .credits {
-  opacity: 1;
-  transition: opacity 0.2s ease-out;
   display: flex;
   flex-wrap: wrap;
+  padding: 16px 8px;
   overflow: hidden; }
-  .credits * {
-    opacity: 1;
-    transition: opacity 0.2s ease-out; }
-  .credits .banner .header .flag .fas, .credits .banner .header .flag .fab, .credits .module .header .icon .fas, .credits .module .header .icon .fab {
-    animation-duration: 1.5s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite; }
+  .credits, .credits * {
+    opacity: 1; }
   .credits .banner {
     width: 100%;
     margin: 8px;
-    background-color: #f00;
-    border: 2px solid rgba(0, 0, 0, 0.5);
-    border-radius: 4px; }
-    .credits .banner:not(:hover) .description p {
-      opacity: 0.85; }
-    .credits .banner:hover .header .flag .fa-code {
-      animation-name: bannerAnimation1; }
-    .credits .banner:hover .header .flag .fa-heart {
-      animation-name: bannerAnimation2; }
-    .credits .banner:hover .description p {
-      opacity: 1; }
+    background-color: #f00; }
     .credits .banner .header {
       display: flex;
       align-items: center;
@@ -99,6 +37,71 @@
         border: 2px solid rgba(0, 0, 0, 0.25);
         border-radius: 4px;
         cursor: default; }
+        @media screen and (max-width: 419px) {
+          .credits .banner .header .flag strong {
+            width: 100%; } }
+        @media screen and (min-width: 420px) {
+          .credits .banner .header .flag strong {
+            padding-left: 6px; } }
+        .credits .banner:hover .fa-code {
+          -webkit-animation-name: bannerAnimation1;
+                  animation-name: bannerAnimation1; }
+        .credits .banner:hover .fa-heart {
+          -webkit-animation-name: bannerAnimation2;
+                  animation-name: bannerAnimation2; }
+        .credits .banner .header .flag .fas {
+          -webkit-animation-duration: 1.5s;
+                  animation-duration: 1.5s;
+          -webkit-animation-timing-function: linear;
+                  animation-timing-function: linear;
+          -webkit-animation-iteration-count: infinite;
+                  animation-iteration-count: infinite; }
+@-webkit-keyframes bannerAnimation1 {
+  20%, 50%, 80% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  35% {
+    -webkit-transform: rotate(-15deg);
+            transform: rotate(-15deg); }
+  65% {
+    -webkit-transform: rotate(15deg);
+            transform: rotate(15deg); } }
+@keyframes bannerAnimation1 {
+  20%, 50%, 80% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  35% {
+    -webkit-transform: rotate(-15deg);
+            transform: rotate(-15deg); }
+  65% {
+    -webkit-transform: rotate(15deg);
+            transform: rotate(15deg); } }
+@-webkit-keyframes bannerAnimation2 {
+  0%, 60%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  25% {
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95); }
+  40% {
+    -webkit-transform: scale(1.05);
+            transform: scale(1.05); }
+  75% {
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1); } }
+@keyframes bannerAnimation2 {
+  0%, 60%, 100% {
+    -webkit-transform: scale(1);
+            transform: scale(1); }
+  25% {
+    -webkit-transform: scale(0.95);
+            transform: scale(0.95); }
+  40% {
+    -webkit-transform: scale(1.05);
+            transform: scale(1.05); }
+  75% {
+    -webkit-transform: scale(1.1);
+            transform: scale(1.1); } }
         .credits .banner .header .flag .fa-code {
           padding-right: 6px; }
         .credits .banner .header .flag .fa-heart {
@@ -107,67 +110,119 @@
       padding: 12px;
       text-align: center;
       background-color: rgba(0, 0, 0, 0.25); }
+      @media screen and (max-width: 379px) {
+        .credits .banner .description {
+          font-size: 0.9em; } }
+      @media screen and (min-width: 380px) {
+        .credits .banner .description {
+          font-size: 1em; } }
       .credits .banner .description p {
-        color: inherit;
-        transition: opacity 0.2s ease-out; }
+        color: inherit; }
+        .credits .banner:not(:hover) p {
+          opacity: 0.85; }
+        .credits .banner:hover p {
+          opacity: 1; }
   .credits .module {
-    position: relative;
     flex: 1;
-    padding: 16px;
     margin: 8px;
-    color: inherit;
-    background-color: #1d3f60;
-    border: 2px solid #091320;
-    border-radius: 4px;
-    text-decoration: none;
-    transition: transform 0.2s ease-out; }
-    .credits .module:before, .credits .module .header .icon:before {
+    padding: 8px;
+    background-color: #1d3f60; }
+    .credits .module::before {
       position: absolute;
       top: 0;
       left: 0;
-      right: 0;
       bottom: 0;
+      right: 0;
+      border-radius: inherit;
       content: "";
-      background-color: #000;
-      transition: opacity 0.2s ease-out; }
-    .credits .module:not(:hover):not(:focus):before {
+      background-color: #000; }
+    .credits .module:not(:hover):not(:focus)::before {
       opacity: 0.2; }
-    .credits .module:not(:hover):not(:focus) .header .icon:before {
+    .credits .module:hover::before, .credits .module:focus::before {
       opacity: 0; }
-    .credits .module:hover:before, .credits .module:focus:before {
-      opacity: 0; }
-    .credits .module:hover .header .icon:before, .credits .module:focus .header .icon:before {
-      opacity: 0.2; }
-    .credits .module:hover .header .icon .fa-font-awesome-flag, .credits .module:focus .header .icon .fa-font-awesome-flag {
-      animation-name: fontAwesomeAnimation; }
-    .credits .module:hover .header .icon .fa-spinner, .credits .module:focus .header .icon .fa-spinner {
-      animation-name: loadingIoAnimation; }
     .credits .module:active {
-      transform: scale(0.9); }
+      -webkit-transform: scale(0.9);
+              transform: scale(0.9); }
     .credits .module .header {
-      position: relative;
       display: flex;
       align-items: center;
       justify-content: flex-start;
       padding: 8px; }
-      .credits .module .header .icon {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.75em;
-        height: 1.75em;
-        width: 1.75em;
-        padding: 8px;
-        margin-right: 16px;
-        background-color: #1d3f60;
-        border: 1.5px solid #091320;
-        border-radius: 4px;
-        overflow: hidden; }
-        .credits .module .header .icon .fas, .credits .module .header .icon .fab {
-          position: relative; }
-      .credits .module .header .info h3 {
+    .credits .module .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75em;
+      height: 1.75em;
+      width: 1.75em;
+      padding: 8px;
+      margin-right: 16px;
+      background-color: #1d3f60;
+      border: 1.5px solid #091320;
+      border-radius: 4px;
+      overflow: hidden; }
+      .credits .module .icon::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        border-radius: inherit;
+        content: "";
+        background-color: #000; }
+      .credits .module:not(:hover):not(:focus) .icon::before {
+        opacity: 0; }
+      .credits .module:hover .icon::before, .credits .module:focus .icon::before {
+        opacity: 0.2; }
+      .credits .module:hover .icon .fa-font-awesome-flag, .credits .module:focus .icon .fa-font-awesome-flag {
+        -webkit-animation-name: fontAwesomeAnimation;
+                animation-name: fontAwesomeAnimation; }
+      .credits .module:hover .icon .fa-spinner, .credits .module:focus .icon .fa-spinner {
+        -webkit-animation-name: loadingIoAnimation;
+                animation-name: loadingIoAnimation; }
+      .credits .module .icon .fas, .credits .module .icon .fab {
+        -webkit-animation-duration: 1.5s;
+                animation-duration: 1.5s;
+        -webkit-animation-timing-function: linear;
+                animation-timing-function: linear;
+        -webkit-animation-iteration-count: infinite;
+                animation-iteration-count: infinite; }
+@-webkit-keyframes fontAwesomeAnimation {
+  0%, 100% {
+    text-shadow: none; }
+  35% {
+    text-shadow: 0 0 0.5em #fff; } }
+@keyframes fontAwesomeAnimation {
+  0%, 100% {
+    text-shadow: none; }
+  35% {
+    text-shadow: 0 0 0.5em #fff; } }
+@-webkit-keyframes loadingIoAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+@keyframes loadingIoAnimation {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg); } }
+      .credits .module .icon h3 {
         font-size: 1.5em; }
     .credits .module .description {
-      position: relative;
+      margin: 0;
       padding: 8px; }
+  .credits .shoutout {
+    margin: 8px;
+    padding: 16px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    text-align: center; }
+  .credits .banner, .credits .module, .credits .shoutout {
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 4px; }

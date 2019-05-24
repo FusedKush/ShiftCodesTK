@@ -1,4 +1,4 @@
 <!-- Navbar -->
-<?php include_once("files/navbar.php"); ?>
+<?php include_once("files/beforeContent/navbar.php"); ?>
 <!-- Sidebar -->
-<?php include_once("files/sidebar.php"); ?>
+<?php include_once("files/beforeContent/sidebar.php"); ?>

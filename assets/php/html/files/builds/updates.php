@@ -1,10 +1,17 @@
+<?php include_once($_SERVER['DOCUMENT_ROOT'] . '/assets/php/html/min/imports/importPath.php'); ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--// Page-Specific Metadata \\-->
     <meta charset="utf-8">
+    <!--// Styles \\-->
+    <!-- Shared Styles -->
+    <?php include_once('global/sharedStyles.php'); ?>
+    <!-- Local Styles -->
+    <link href="/assets/styles/css/min/local/updates.min.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
+    <!--// Page-Specific Metadata \\-->
     <!-- Page Title -->
     <title>Updates - ShiftCodesTK</title>
+    <meta name="title" content="Updates - ShiftCodesTK">
     <meta property="og:title" content="Updates - ShiftCodesTK">
     <meta property="twitter:title" content="Updates - ShiftCodesTK">
     <!-- Page Description -->
@@ -14,75 +21,78 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/updates">
     <meta property="og:url" content="https://shiftcodes.tk/updates">
+    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Updates", "url": "/updates"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!-- Local Dependencies -->
-    <meta class="loader-localFile" content="updates.min.css">
-    <meta class="loader-localFile" content="updates.min.js">
-    <!--// Head Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/head.php'); ?>
+    <!--// Shared Head Markup \\-->
+    <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
     <!--// Before-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/beforeContent.php'); ?>
+    <?php include_once('global/beforeContent.php'); ?>
+    <!-- Main Header -->
+    <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
-    <header class="main" data-webp='{"path": "/assets/img/banners/updates/", "name": "updates", "alt": ".jpg", "type": "bg"}'>
-      <div class="content-container">
-        <div class="content-wrapper">
-          <div class="content short">
-            <h1 class="title">Updates</h1>
-            <div class="description">Recent changes and updates to ShiftCodesTK</div>
-          </div>
-        </div>
-      </div>
-    </header>
     <header class="updates-header" id="updates_header">
       <div class="content-wrapper">
         <div class="section current" hidden aria-hidden="true" data-hidden="true">
-          <span><span>Current Version:</span><a id="updates_header_current" data-internalLink="true"><strong></strong></a></span>
+          <span><span class="title">Current Version:</span>&nbsp;<a class="currentver tr-underline interal" id="updates_header_current"><strong></strong></a></span>
         </div>
         <div class="section jump">
           <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
-            <span>Jump to <span class="fas fa-caret-down"></span></span>
+            <span>Jump to&nbsp;<span class="fas fa-caret-down"></span></span>
           </button>
-          <div class="dropdown" id="updates_header_jump_dropdown" data-expanded="false" aria-expanded="false" hidden aria-hidden="true" data-hidden="true">
-            <span class="arrow"></span>
-            <ul class="panel" role="menu">
-              <span class="description">Jump to:</span>
-            </ul>
+          <div class="dropdown-menu no-refocus" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom" data-align="right">
+            <div class="panel">
+              <div class="title">Jump to:</div>
+              <ul class="choice-list scrollable"></ul>
+            </div>
           </div>
         </div>
       </div>
     </header>
     <main class="content-wrapper">
       <template id="panel_template">
-        <section class="panel" data-expanded="false" aria-expanded="false">
-          <div class="hashTargetOverlay"></div>
-          <div class="header">
-            <span class="icon fas"></span>
-            <div class="title">
-              <h2 class="version"></h2>
-              <div class="info">
-                <span class="date"></span>
-                <span class="separator">&bull;</span>
-                <span class="type"></span>
+        <section class="dropdown-panel changelog">
+          <button class="header" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
+            <div class="wrapper">
+              <div class="title">
+                <div class="icon">
+                  <span class="fas"></span>
+                </div>
+                <div class="string">
+                  <h2 class="primary version"></h2>
+                  <div class="secondary info">
+                    <span class="date"></span>
+                    <span class="separator">&bull;</span>
+                    <span class="type"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="indicator">
+                <span class="fas fa-chevron-right"></span>
               </div>
             </div>
-            <button class="toggle bubble-parent" title="Expand Changelog" aria-label="Expand Changelog">
-              <span class="fas fa-chevron-circle-down"></span>
-              <span class="bubble bubble-light"></span>
-            </button>
-          </div>
-          <div class="body">
+          </button>
+          <div class="body content-container">
+            <div class="full-changelog-link">
+              This is a simplified list of changes related to ShiftCodesTK's service. For the complete list of changes, view the full release on&nbsp;
+              <a class="themed" rel="external noopener" target="_blank"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span>GitHub</a>
+            </div>
           </div>
         </section>
       </template>
     </main>
     <!--// After-Content Imports \\-->
-    <?php include_once('./assets/php/html/min/imports/global/afterContent.php'); ?>
+    <?php include_once('global/afterContent.php'); ?>
+    <!--// Scripts \\-->
+    <!-- Shared Scripts -->
+    <?php include_once('global/sharedScripts.php'); ?>
+    <!-- Local Scripts -->
+    <script async src="/assets/scripts/min/local/updates.min.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>
