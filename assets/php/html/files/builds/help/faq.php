@@ -156,6 +156,23 @@
             <div class="wrapper">
               <div class="title">
                 <div class="string">
+                  <h3 class="primary">Why is ShiftCodesTK not updated as soon as SHiFT Codes are posted?</h3>
+                </div>
+              </div>
+              <div class="indicator">
+                <span class="fas fa-chevron-right"></span>
+              </div>
+            </div>
+          </button>
+          <div class="body content-container">
+            <p>At the time of writing, ShiftCodesTK does not have access to the necessary features of the Twitter & Facebook APIs to retrieve the necessary posts and automatically parse them, as well as lacking the ability to then update our own personal pages once this information has been obtained.</p>
+          </div>
+        </div>
+        <div class="dropdown-panel">
+          <button class="header">
+            <div class="wrapper">
+              <div class="title">
+                <div class="string">
                   <h3 class="primary">Do you have any information on future titles, expansions, or events related to Borderlands?</h3>
                 </div>
               </div>
