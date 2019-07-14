@@ -1,4 +1,4 @@
-<div class="alert-popup-list" id="alert_popup_feed" data-popup-count="0"></div>
+<div class="alert-popup-list" id="alert_popup_feed"></div>
 <template id="alert_popup_template">
   <div class="alert-popup" id="alert_popup" role="alert" hidden aria-hidden="true" data-expanded="false" aria-expanded="false">
     <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100%">
