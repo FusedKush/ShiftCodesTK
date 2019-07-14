@@ -561,6 +561,18 @@ function execGlobalScripts () {
         let crumbTemplate = document.getElementById('breadcrumb_crumb_template');
 
         if (breadcrumbs !== null) {
+          // Root Page
+          (function () {
+            let crumb = crumbTemplate.content.children[0].cloneNode(true);
+            let icon = document.createElement('span');
+
+            crumb.href = '/';
+            crumb.innerHTML = '';
+            icon.className = 'fas fa-home box-icon';
+            updateLabel(crumb, 'Home');
+            crumb.appendChild(icon);
+            container.appendChild(crumb);
+          })();
 
           for (i = 0; i < breadcrumbs.length; i++) {
             let current = breadcrumbs[i];
