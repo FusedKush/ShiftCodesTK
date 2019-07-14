@@ -319,6 +319,7 @@ function setupDropdownMenu (dropdown) {
         updateDropdownMenuPos(dropdown);
         dropdown.setAttribute('data-expanded', false);
         dropdown.setAttribute('aria-expanded', false);
+        vishidden(dropdown, true);
 
         arrow.className = 'arrow';
 
