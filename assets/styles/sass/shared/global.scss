@@ -508,8 +508,8 @@ main {
     @at-root .dropdown-menu { @content; }
   }
 
-  &[hidden]                { display: none; }
-  &:not([hidden])          { display: grid; }
+  &[hidden], &:not(.configured) { display: none; }
+  &:not([hidden])               { display: grid; }
   &[data-expanded="false"] { opacity: 0; }
   &[data-expanded="true"]  { opacity: 1; }
 

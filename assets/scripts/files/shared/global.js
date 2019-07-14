@@ -316,6 +316,7 @@ function setupDropdownMenu (dropdown) {
         let arrow = document.createElement('div');
         let choices = dropdown.getElementsByClassName('choice');
 
+        addClass(dropdown, 'configured');
         dropdown.id = props.id;
         updateDropdownMenuPos(dropdown);
         dropdown.setAttribute('data-expanded', false);

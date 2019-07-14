@@ -631,7 +631,7 @@ main {
   position: absolute;
   font-size: 1rem;
   z-index: 1; }
-  .dropdown-menu[hidden] {
+  .dropdown-menu[hidden], .dropdown-menu:not(.configured) {
     display: none; }
   .dropdown-menu:not([hidden]) {
     display: grid; }
