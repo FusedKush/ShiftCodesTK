@@ -1,1 +1,78 @@
+/******************************************
+  FontAwesome Icon & Styles Configuration
+*******************************************/
+
+// Icon Configuration
+$faIcons: (
+  arrow-alt-circle-up        : f35b,
+  arrow-circle-up            : f0aa,
+  asterisk                   : f069,
+  award                      : f559,
+  bars                       : f0c9,
+  broadcast-tower            : f519,
+  bug                        : f188,
+  caret-down                 : f0d7,
+  check                      : f00c,
+  chevron-circle-down        : f13a,
+  chevron-right              : f054,
+  clipboard                  : f328,
+  code                       : f121,
+  cogs                       : f085,
+  exclamation-triangle       : f071,
+  external-link-square-alt   : f360,
+  facebook-messenger         : f39f,
+  facebook-square            : f082,
+  file-alt                   : f15c,
+  filter                     : f0b0,
+  font-awesome-flag          : f425,
+  gamepad                    : f11b,
+  heart-broken               : f7a9,
+  heart                      : f004,
   home                       : f015,
+  image                      : f03e,
+  key                        : f084,
+  laptop-code                : f5fc,
+  list-alt                   : f022,
+  question                   : f128,
+  sort-amount-down           : f160,
+  sort-amount-up             : f161,
+  spinner                    : f110,
+  star                       : f005,
+  times                      : f00d,
+  toolbox                    : f552,
+  tools                      : f7d9,
+  twitter-square             : f081,
+  twitter                    : f099,
+  users                      : f0c0,
+  user-slash                 : f506
+  );
+// Styling Configuration
+@mixin faStyles ($style) {
+  @if $style == fab {
+    font-family: "Font Awesome 5 Brands";
+  }
+  @else if $style == far {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 400;
+  }
+  @else {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+  }
+}
+@mixin sharedFaStyles {
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+// Allows FA icons to be used without their classes when required
+@mixin faIcon ($name, $styles: fas) {
+  @if $styles != none {
+    @include faStyles($styles);
+    @include sharedFaStyles;
+  }
+
+  content: #{"\"\\"}#{map-get($faIcons, $name) + "\""};
+}
