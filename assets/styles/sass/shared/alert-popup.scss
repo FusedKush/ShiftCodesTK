@@ -6,14 +6,17 @@
 @import "../partials/_globals";
 
 /*** Style Declarations ***/
+$listPadding: 16px;
+
 .alert-popup-list {
   position: fixed;
   @include pull(b, r);
   @include flexbox($hAlign: e, $direction: c);
-  padding: 8px;
+  padding: $listPadding;
   z-index: zOrder(popup);
 }
 .alert-popup {
+  $baseline: 320px;
   $padding: 8px;
 
   @mixin alertPopupAnimationProps ($opacity, $translation) {
@@ -37,8 +40,8 @@
   border: bd(1.5px, tpw(0.25));
   border-radius: 8px;
   box-shadow: shadow(tpb(0.5));
-  min-width: calc(25vw - #{$padding * 2});
-  max-width: calc(50vw - #{$padding * 2});
+  min-width: calc(#{$baseline} - #{$listPadding * 2});
+  max-width: calc(#{$baseline * 2} - #{$listPadding * 2});
   overflow: hidden;
   @include animation(0.25s, linear, $fill: forwards);
   @include alertPopupAnimationProps(0, 100%);
@@ -93,14 +96,13 @@
     }
   }
   .content-container {
-    @include flexbox($hAlign: none, $wrap: true);
+    @include flexbox($hAlign: none);
     font-size: 0.85em;
   }
   .content {
     display: inline-flex;
     flex: 1;
     padding: $padding;
-    // min-width: 75%;
   }
     .icon {
       @include flexbox($hAlign: none);

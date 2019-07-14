@@ -17,7 +17,7 @@
   justify-content: center;
   align-items: flex-end;
   flex-direction: column;
-  padding: 8px;
+  padding: 16px;
   z-index: 102; }
 
 .alert-popup {
@@ -25,8 +25,8 @@
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
-  min-width: calc(25vw - 16px);
-  max-width: calc(50vw - 16px);
+  min-width: calc(320px - 32px);
+  max-width: calc(640px - 32px);
   overflow: hidden;
   -webkit-animation-duration: 0.25s;
           animation-duration: 0.25s;
@@ -125,7 +125,6 @@
   .alert-popup .content-container {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
     font-size: 0.85em; }
   .alert-popup .content {
     display: inline-flex;
