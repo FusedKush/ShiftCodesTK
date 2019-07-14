@@ -40,7 +40,7 @@ function addSidebarBadges () {
   }
 };
 // Toggle the Sidebar
-function toggleSB (outsideClickTrue) {
+function toggleSB () {
   let sb = document.getElementById('sidebar');
   let btn = {
     'nav': document.getElementById('navbar_sb'),
@@ -58,7 +58,7 @@ function toggleSB (outsideClickTrue) {
     btn.nav.setAttribute('data-pressed', !state);
     btn.nav.setAttribute('aria-pressed', !state);
 
-    if (state === true && outsideClickTrue !== true) {
+    if (state === true) {
       btn.nav.focus();
     }
     else if (state === false) {
@@ -68,67 +68,20 @@ function toggleSB (outsideClickTrue) {
 
   if (state === true) {
     updateState();
-    window.removeEventListener('click', sidebarEventListenerCheckClick);
-    window.removeEventListener('keydown', sidebarEventListenerCheckKey);
+    focusLockedElement = null;
     setTimeout(updateVis, 300);
   }
   else {
     updateVis();
-    window.addEventListener('click', sidebarEventListenerCheckClick);
-    window.addEventListener('keydown', sidebarEventListenerCheckKey);
+    focusLockedElement = {
+      element: getClass(sb, 'panel'),
+      callback: toggleSB
+    };
     setTimeout(updateState, 50);
   }
 }
-// Check for clicks outside of the Sidebar
-function sidebarCheckClick (event) {
-  let base = document.getElementById('sidebar');
-  let state = base.getAttribute('data-expanded') == 'true';
-
-  if (state === true) {
-    let target = event.target.parentNode;
-    let matches = [ document.getElementsByTagName('body')[0] ];
-
-    for (i = 0; i < matches.length; i++) {
-      if (target == matches[i]) {
-        toggleSB(true);
-        break;
-      }
-    }
-  }
-}
-// Check for keyboard presses while Sidebar is open
-function sidebarCheckKeys (event) {
-  let active = document.activeElement;
-  let e = {};
-    (function () {
-      e.toggle = document.getElementById('sidebar_toggle');
-      e.links = document.getElementById('sidebar').getElementsByTagName('a');
-      e.last = e.links[e.links.length - 1];
-    })();
-
-  if (event.shiftKey === false && event.key == 'Tab' && active == e.last || event.shiftKey === true && event.key == 'Tab' && active == e.toggle) {
-    event.preventDefault();
-
-    if (event.shiftKey === false && event.key == 'Tab' && active == e.last) {
-      e.toggle.focus();
-    }
-    else if (event.shiftKey === true && event.key == 'Tab' && active == e.toggle) {
-      e.last.focus();
-    }
-  }
-}
-
-// *** Event Listener Functions ***
-function sidebarEventListenerCheckClick (event) {
-  sidebarCheckClick(event);
-}
-function sidebarEventListenerCheckKey (event) {
-  sidebarCheckKeys(event);
-}
-
-// *** Immediate Functions ***
-// Add required markup to sidebar entries
-(function () {
+// Updates the markup of the sidebar
+function sidebarMarkup () {
   let sidebar = document.getElementById('sidebar');
   let li = sidebar.getElementsByTagName('li');
   let links = sidebar.getElementsByTagName('a');
@@ -145,7 +98,11 @@ function sidebarEventListenerCheckKey (event) {
   for (i = 0; i < links.length; i++) {
     links[i].classList.add('no-focus-scroll');
   }
-})();
+}
+
+// *** Immediate Functions ***
+// Add required markup to sidebar entries
+sidebarMarkup();
 // Check for Current Page and update Sidebar Links
 (function () {
   let loc = window.location.pathname;
@@ -171,5 +128,3 @@ function sidebarEventListenerCheckKey (event) {
 // *** Event Listeners ***
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);
 document.getElementById('sidebar_toggle').addEventListener('click', toggleSB);
-window.addEventListener('click', sidebarEventListenerCheckClick);
-window.addEventListener('keydown', sidebarEventListenerCheckKey);

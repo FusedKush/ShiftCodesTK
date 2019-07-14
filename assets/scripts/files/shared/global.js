@@ -3,6 +3,7 @@
 *********************************/
 
 // *** Variables ***
+var globalScriptLoaded = true;
 var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
@@ -10,6 +11,7 @@ var defaultDropdownPanelLabels = {
   false: 'Expand Panel',
   true: 'Collapse Panel'
 };
+var focusLockedElement = null;
 
 // *** Functions ***
 // Updates Disabled State of elements
@@ -427,6 +429,49 @@ function setupDropdownMenu (dropdown) {
       console.error('Dropdown Menu "' + props.id + '" is missing the following required properties: "' + missingProps.join('", "') + '". Dropdown Menu Creation Failed.');
     }
   })();
+}
+//
+function handleFocusLock (event) {
+  let type = event.type;
+
+  if (focusLockedElement !== null) {
+    let target = event.target;
+    let matches = [
+      focusLockedElement.element,
+      document.getElementById('alert_popup_feed')
+    ];
+
+    if (type == 'click') {
+      do {
+        for (let i = 0; i < matches.length; i++) {
+          if (target == matches[i]) {
+            return;
+          }
+        }
+
+        target = target.parentNode;
+      }
+      while (target);
+
+      focusLockedElement.callback();
+    }
+    else if (type == 'keydown') {
+      let fs = getElements(focusLockedElement.element, 'focusables');
+      let first = fs[0];
+      let last = fs[fs.length - 1];
+
+      if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
+        event.preventDefault();
+
+        if (target == first)     { last.focus(); }
+        else if (target == last) { first.focus(); }
+      }
+      else if (event.key == 'Escape') {
+        event.preventDefault();
+        focusLockedElement.callback();
+      }
+    }
+  }
 }
 
 // *** Event Listener Reference Functions ***
