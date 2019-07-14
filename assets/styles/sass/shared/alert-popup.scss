@@ -1,0 +1,127 @@
+/*********************************
+  Alert Popup Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Style Declarations ***/
+.alert-popup-list {
+  position: fixed;
+  @include pull(b, lr);
+  @include flexbox($direction: c);
+  padding: 8px;
+  z-index: zOrder(popup);
+}
+.alert-popup {
+  $padding: 8px;
+
+  @mixin alertPopupAnimationProps ($opacity, $translation) {
+    opacity: $opacity;
+    transform: translateY($translation);
+  }
+  @mixin alertPopupAnimation ($start, $end) {
+    #{$start} { @include alertPopupAnimationProps(0, 100%); }
+    #{$end}   { @include alertPopupAnimationProps(1, 0); }
+  }
+
+  @keyframes alertPopupIn {
+    @include alertPopupAnimation(0%, 100%);
+  }
+  @keyframes alertPopupOut {
+    @include alertPopupAnimation(100%, 0%);
+  }
+
+  @include theme(bg);
+  border: bd(1.5px, tpw(0.25));
+  border-radius: 8px;
+  box-shadow: shadow(tpb(0.5));
+  width: 100%;
+  max-width: 720px;
+  overflow: hidden;
+  @include animation(0.25s, linear, $fill: forwards);
+  @include alertPopupAnimationProps(0, 100%);
+  transition: none;
+
+  &:not(:first-child) {
+    margin-top: 8px;
+  }
+  &[data-expanded="true"]  {
+    animation-name: alertPopupIn;
+  }
+  &[data-expanded="false"] {
+    animation-name: alertPopupOut;
+  }
+  &[hidden] {
+    position: absolute;
+  }
+  &::before {
+    @include fill(true, tpb(0.25));
+  }
+
+  .progress-bar {
+    position: absolute;
+    background-color: transparent;
+    height: 100%;
+
+    .progress {
+      @keyframes alertPopupProgress {
+        from { transform: translateX(-100%); }
+        to   { transform: translateX(0); }
+      }
+
+      @include animation($timing: linear, $fill: forwards);
+      background-color: tpb(0.25);
+
+      @at-root .alert-popup {
+        &[data-expiring="true"] .progress-bar .progress {
+          animation-name: alertPopupProgress;
+        }
+        // Animation Durations
+        & {
+          $durations: (
+            short: 2.5,
+            medium: 5,
+            long: 7.5
+            );
+
+          @each $name, $dur in $durations {
+            &[data-duration="#{$name}"] .progress-bar .progress {
+              animation-duration: #{$dur + "s"};
+            }
+          }
+        }
+      }
+    }
+  }
+  .content-container {
+    @include flexbox($hAlign: none, $wrap: true);
+    font-size: 0.85em;
+  }
+  .content {
+    display: inline-flex;
+    flex: 1;
+    padding: $padding;
+    min-width: 75%;
+  }
+    .icon {
+      @include flexbox($hAlign: none);
+      margin-right: $padding;
+      padding: $padding / 2;
+      display: flex;
+      font-size: 1.5em;
+    }
+    .title {
+      font-size: 1.15em;
+    }
+    .description {
+      color: tpw(0.75);
+      margin-top: 0;
+    }
+  .actions {
+    @include flexbox(none, e);
+    align-self: flex-end;
+    padding: 0 $padding $padding 0;
+    margin-left: auto;
+  }
+}
