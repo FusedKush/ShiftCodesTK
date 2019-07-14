@@ -29,7 +29,7 @@ h2 { font-size: 1.5em; }
     @include mouseState(click)   { text-decoration: underline; }
   }
 }
-section.group {
+.faq-group {
   &:not(:first-child) { margin-top: 32px; }
 
   header {

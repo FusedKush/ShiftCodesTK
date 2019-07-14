@@ -57,9 +57,9 @@
         <div class="body content-container" id="table_of_contents">
         </div>
       </header>
-      <section class="group">
+      <section class="faq-group">
         <header>
-          <h2>SHiFT</h2>
+          <h2 class="title">SHiFT</h2>
         </header>
         <div class="dropdown-panel">
           <button class="header">
@@ -113,9 +113,9 @@
           </div>
         </div>
       </section>
-      <section class="group">
+      <section class="faq-group">
         <header>
-          <h2>ShiftCodesTK</h2>
+          <h2 class="title">ShiftCodesTK</h2>
         </header>
         <div class="dropdown-panel">
           <button class="header">
@@ -186,9 +186,9 @@
           </div>
         </div>
       </section>
-      <section class="group">
+      <section class="faq-group">
         <header>
-          <h2>SHiFT Codes</h2>
+          <h2 class="title">SHiFT Codes</h2>
         </header>
         <div class="dropdown-panel">
           <button class="header">
@@ -298,17 +298,23 @@
             <p><em>There are other titles that accept SHiFT Codes, such as Battleborn, but they are not supported on ShiftCodesTK.</em></p>
           </div>
         </div>
+        <div class="dropdown-panel c">
+          <div class="primary">Can I add a SHiFT Code to ShiftCodesTK?</div>
+          <div class="body">
+            <p>At the moment, SHiFT Codes cannot be added to ShiftCodesTK by the community. This feature will likely be implemented in the future.</p>
+          </div>
+        </div>
       </section>
     </main>
     <template id="toc_entry_template">
       <div class="section">
-        <h3><a data-internalLink="true"></a></h3>
+        <h3><a class="internal"></a></h3>
         <ul class="styled">
         </ul>
       </div>
     </template>
     <template id="toc_entry_listitem_template">
-      <li><a data-internalLink="true"></a></li>
+      <li><a class="internal"></a></li>
     </template>
     <!-- Support Footer -->
     <?php include_once('local/support-footer.php'); ?>
