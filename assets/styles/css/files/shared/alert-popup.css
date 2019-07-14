@@ -35,45 +35,36 @@
   -webkit-animation-fill-mode: forwards;
           animation-fill-mode: forwards;
   opacity: 0;
-  -webkit-transform: translateY(100%);
-          transform: translateY(100%);
+  transform: translateY(100%);
   transition: none; }
 @-webkit-keyframes alertPopupIn {
   0% {
     opacity: 0;
-    -webkit-transform: translateY(100%);
-            transform: translateY(100%); }
+    transform: translateY(100%); }
   100% {
     opacity: 1;
-    -webkit-transform: translateY(0);
-            transform: translateY(0); } }
+    transform: translateY(0); } }
 @keyframes alertPopupIn {
   0% {
     opacity: 0;
-    -webkit-transform: translateY(100%);
-            transform: translateY(100%); }
+    transform: translateY(100%); }
   100% {
     opacity: 1;
-    -webkit-transform: translateY(0);
-            transform: translateY(0); } }
+    transform: translateY(0); } }
 @-webkit-keyframes alertPopupOut {
   100% {
     opacity: 0;
-    -webkit-transform: translateY(100%);
-            transform: translateY(100%); }
+    transform: translateY(100%); }
   0% {
     opacity: 1;
-    -webkit-transform: translateY(0);
-            transform: translateY(0); } }
+    transform: translateY(0); } }
 @keyframes alertPopupOut {
   100% {
     opacity: 0;
-    -webkit-transform: translateY(100%);
-            transform: translateY(100%); }
+    transform: translateY(100%); }
   0% {
     opacity: 1;
-    -webkit-transform: translateY(0);
-            transform: translateY(0); } }
+    transform: translateY(0); } }
   body[data-theme="main"] .alert-popup {
     background-color: #f00; }
   body[data-theme="bl1"] .alert-popup {
@@ -113,18 +104,14 @@
       background-color: rgba(0, 0, 0, 0.25); }
 @-webkit-keyframes alertPopupProgress {
   from {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   to {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
 @keyframes alertPopupProgress {
   from {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   to {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
       .alert-popup[data-expiring="true"] .progress-bar .progress {
         -webkit-animation-name: alertPopupProgress;
                 animation-name: alertPopupProgress; }

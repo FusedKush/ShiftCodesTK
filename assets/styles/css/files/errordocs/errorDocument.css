@@ -80,5 +80,4 @@ body {
     body .return:hover::before, body .return:focus::before {
       opacity: 0.25; }
     body .return:active {
-      -webkit-transform: scale(0.9);
-              transform: scale(0.9); }
+      transform: scale(0.9); }

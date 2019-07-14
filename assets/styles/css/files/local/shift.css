@@ -135,8 +135,7 @@
     opacity: 0;
     z-index: -1; }
   .overlay .spinner {
-    -webkit-transform: scale(1.5);
-            transform: scale(1.5); }
+    transform: scale(1.5); }
     .overlay .spinner:not([hidden]) {
       opacity: 1; }
     .overlay .spinner[hidden] {
@@ -249,24 +248,19 @@
     height: 100%;
     border-radius: inherit;
     box-shadow: 0 0 10px;
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%);
+    transform: translateX(-100%);
     -webkit-animation: progressClimb 1.2s 0.4s linear forwards;
             animation: progressClimb 1.2s 0.4s linear forwards; }
 @-webkit-keyframes progressClimb {
   0% {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
 @keyframes progressClimb {
   0% {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
     body[data-theme="main"] .dropdown-panel.shift-code .header .progress {
       color: #f00; }
     body[data-theme="bl1"] .dropdown-panel.shift-code .header .progress {
@@ -315,8 +309,7 @@
       .dropdown-panel.shift-code .body .content input {
         display: block;
         position: absolute;
-        -webkit-transform: translateY(calc(-100% - 8px));
-                transform: translateY(calc(-100% - 8px));
+        transform: translateY(calc(-100% - 8px));
         width: 100%; }
       .dropdown-panel.shift-code .body .content .display {
         padding: 8px; }
@@ -325,24 +318,18 @@
         padding: 8px 32px; }
 @-webkit-keyframes copiedToClipboard {
   0%, 50%, 100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
+    transform: scale(1); }
   25% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8); }
+    transform: scale(0.8); }
   75% {
-    -webkit-transform: scale(1.2);
-            transform: scale(1.2); } }
+    transform: scale(1.2); } }
 @keyframes copiedToClipboard {
   0%, 50%, 100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
+    transform: scale(1); }
   25% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8); }
+    transform: scale(0.8); }
   75% {
-    -webkit-transform: scale(1.2);
-            transform: scale(1.2); } }
+    transform: scale(1.2); } }
         .dropdown-panel.shift-code .body .content .copy::before {
           position: absolute;
           top: 0;
