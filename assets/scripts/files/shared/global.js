@@ -63,7 +63,7 @@ function addFocusScrollListeners (parent) {
 }
 // Update scroll position to push focused element into viewport
 function updateScroll (element) {
-  if (hasClass(element, 'hidden') === false) {
+  if (hasClass(element, 'clipboard-copy') === false && hasClass(element, 'hidden') === false) {
     let scroll = [
       document.documentElement,
       document.body
@@ -371,7 +371,7 @@ function setupDropdownMenu (dropdown) {
     }
   })();
 }
-//
+// Control focus within element
 function handleFocusLock (event) {
   let type = event.type;
 
@@ -413,6 +413,35 @@ function handleFocusLock (event) {
       }
     }
   }
+}
+// Copy the contents of the field to the clipboard
+function copyToClipboard (event) {
+  let button = event.currentTarget;
+  let target = (function () {
+    let treeJumps = parseInt(button.getAttribute('data-copy-target'));
+    let pos = button;
+
+    for (let i = 0; i < treeJumps; i++) {
+      pos = pos.parentNode;
+    }
+
+    return getClass(pos, 'clipboard-copy');
+  })();
+
+  target.select();
+  document.execCommand('copy');
+  button.classList.remove('animated');
+
+  setTimeout(function () {
+    button.classList.add('animated');
+    updateAlertPopup('create', {
+      'duration': 'short',
+      'id': 'clipboard-copy',
+      'icon': 'fas fa-clipboard',
+      'title': 'Copied to Clipboard',
+      'description': 'This may not work in all browsers.'
+    });
+  }, 25);
 }
 
 // *** Event Listener Reference Functions ***

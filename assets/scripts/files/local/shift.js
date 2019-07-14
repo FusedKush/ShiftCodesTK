@@ -168,6 +168,7 @@ function updateFeedSettings(setting, type) {
     })();
   }
 }
+/*
 // Copies the SHiFT Code to Clipboard
 function copyCode (event) {
   event.parentNode.getElementsByClassName('value')[0].select();
@@ -178,6 +179,7 @@ function copyCode (event) {
     event.classList.add('animated');
   }, 1);
 }
+*/
 // Update Panel Animation Timing
 function updatePanelTiming (panel, id) {
   panel.style.animationDelay = ((id - 1) * 0.2) + 's';
@@ -187,7 +189,7 @@ function addPanelListeners(panel) {
   let copy = panel.getElementsByClassName('copy');
 
   for (i = 0; i < copy.length; i++) {
-    copy[i].addEventListener('click', function (e) { copyCode(this); });
+    copy[i].addEventListener('click', copyToClipboard);
   }
 }
 
@@ -443,6 +445,7 @@ function addPanelListeners(panel) {
     dropdownPanelSetup(panel.base);
     // Update Copy Listeners
     addPanelListeners(panel.base);
+
 
     // Add panel to feed
     (function () {

@@ -671,3 +671,28 @@ main {
     }
   }
 }
+// Copy to Clipboard Button
+button.copy {
+  @keyframes copiedToClipboard {
+    0%, 50%, 100% { transform: scale(1); }
+    25%           { transform: scale(0.9); }
+    75%           { transform: scale(1.1); }
+  }
+
+  &.animated {
+    span, div {
+      animation: copiedToClipboard 0.5s linear;
+    }
+}
+// Progress Bar
+.progress-bar {
+  @include sizing(6px, 100%);
+  background-color: tpb(0.5);
+  overflow: hidden;
+
+  .progress {
+    @include multiProp(100%, sizing);
+    background-color: tpw(0.5);
+    transform: translateX(-100%);
+  }
+}
