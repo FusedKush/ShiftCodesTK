@@ -4,13 +4,24 @@
   $title = str_replace(" - ShiftCodesTK", "", $meta['title']);
   $description = $meta['description'];
 ?>
-<header class="main" data-webp='{"path": "/assets/img/banners<?php echo $loc; ?>", "alt": ".jpg", "type": "bg"}'>
-  <div class="content-container">
-    <div class="content-wrapper">
-      <div class="content short">
-        <h1 class="title"><?php echo $title; ?></h1>
-        <div class="description"><?php echo $description; ?></div>
+<header class="main" id="primary_header">
+  <div class="intro" data-webp='{"path": "/assets/img/banners<?php echo $loc; ?>", "alt": ".jpg", "type": "bg"}'>
+    <div class="content-container">
+      <div class="content-wrapper">
+        <div class="content short">
+          <h1 class="title"><?php echo $title; ?></h1>
+          <div class="description"><?php echo $description; ?></div>
+        </div>
       </div>
     </div>
+  </div>
+  <div class="breadcrumbs">
+    <div class="content-wrapper" id="breadcrumb_container"></div>
+    <template id="breadcrumb_separator_template">
+      <b class="separator">/</b>
+    </template>
+    <template id="breadcrumb_crumb_template">
+      <a class="crumb tr-underline"></a>
+    </template>
   </div>
 </header>

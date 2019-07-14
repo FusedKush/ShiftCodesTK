@@ -106,6 +106,8 @@
 .fa-heart::before {
   content: "\f004"; }
 
+.fa-home::before {
+  content: "\f015"; }
 .fa-key::before {
   content: "\f084"; }
 

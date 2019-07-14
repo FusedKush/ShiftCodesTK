@@ -1,11 +1,11 @@
 <style id="startup">
   @media screen and (max-width: 474px) {
-    header.main          { height: calc(30% + 32px); }
-    main:not(.no-header) { min-height: calc(70% - 32px) }
+    header.main .intro   { height: calc(30vh + 32px); }
+    main:not(.no-header) { min-height: calc(70vh - 32px); }
   }
   @media screen and (min-width: 475px) {
-    header.main          { height: calc(30% + 64px); }
-    main:not(.no-header) { min-height: calc(70% - 64px) }
+    header.main .intro   { height: calc(30vh + 64px); }
+    main:not(.no-header) { min-height: calc(70%- 64px); }
   }
   body {
     background-color: #0f1e2d;
