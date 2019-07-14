@@ -196,6 +196,46 @@ function addDropdownPanelListener (panel) {
 function dropdownPanelSetup (panel) {
   let hashTargetOverlay = document.createElement('span');
 
+  // Requires constructor
+  if (hasClass(panel, 'c') === true) {
+    let parent = panel.parentNode;
+    let template = {};
+      (function () {
+        template.base = getTemplate('dropdown_panel_template');
+        template.title = getClass(template.base, 'title');
+          template.icon = getClass(template.title, 'icon');
+          template.primary = getClass(template.title, 'primary');
+          template.secondary = getClass(template.title, 'secondary');
+        template.body = getClass(template.base, 'body');
+      })();
+      let props = [
+        'icon',
+        'primary',
+        'secondary',
+        'body'
+      ]
+
+    if (panel.id != '') {
+      template.base.id = panel.id;
+    }
+
+    for (let i = 0; i < props.length; i++) {
+      let prop = props[i];
+      let val = getClass(panel, prop);
+
+      if (val !== undefined) {
+        template[prop].innerHTML = val.innerHTML;
+      }
+      else {
+        template[prop].parentNode.removeChild(template[prop]);
+      }
+    }
+
+    delClass(panel, 'c');
+    parent.replaceChild(template.base, panel);
+    panel = template.base;
+  }
+
   updateDropdownPanelAttributes(panel, false);
   addDropdownPanelListener(panel);
   hashTargetOverlay.className = 'overlay-hashtarget';

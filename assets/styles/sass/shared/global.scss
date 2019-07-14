@@ -387,6 +387,10 @@ main {
   padding: 2px;
   overflow: hidden;
 
+  // Hide panels requesting a constructor
+  &.c {
+    display: none;
+  }
   &::before {
     @include fill(true, $site-color-lighter);
     @include multiProp(100%, sizing);

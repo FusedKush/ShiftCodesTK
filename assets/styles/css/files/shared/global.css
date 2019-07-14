@@ -478,6 +478,8 @@ main {
   border-radius: 4px;
   padding: 2px;
   overflow: hidden; }
+  .dropdown-panel.c {
+    display: none; }
   .dropdown-panel::before {
     position: absolute;
     top: 0;
