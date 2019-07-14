@@ -37,7 +37,7 @@ function updateAlertPopup(type, fillObject, id) {
   if (type == 'create') {
     let uniqueID = fillObject.id;
 
-    if (alertPopupsActive <= 2 && alertPopups[uniqueID] === undefined) {
+    if (alertPopupsActive <= 2 && alertPopups[uniqueID] === undefined && loadEventFired === true) {
       let id = (alertPopupsActive + 1);
       let icon = getClass(popup, 'icon').getElementsByTagName('span')[0];
       let title = getClass(popup, 'title');

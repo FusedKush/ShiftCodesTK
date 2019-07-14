@@ -3,6 +3,7 @@
 *********************************/
 
 // *** Variables ***
+var loadEventFired = false;
 var globalScriptLoaded = true;
 var globalScrollTimer;
 var globalScrollUpdates = 0;
@@ -681,11 +682,28 @@ function execGlobalScripts () {
 }
 execGlobalScripts();
 
-// Remove startup styles
 window.addEventListener('load', function () {
   setTimeout(function () {
-    let styles = document.getElementById('startup');
+    // Remove startup styles
+    (function () {
+      let styles = document.getElementById('startup');
 
-    styles.parentNode.removeChild(styles);
+      styles.parentNode.removeChild(styles);
+    })();
+    // Check for queued popups
+    (function () {
+      let keys = Object.keys(alertPopupQueue);
+
+      loadEventFired = true;
+
+      if (keys.length > 0) {
+        for (let i = 0; i < keys.length && i < 3; i++) {
+          let key = keys[i];
+
+          updateAlertPopup('create', alertPopupQueue[key]);
+          delete alertPopupQueue[key];
+        }
+      }
+    })();
   }, 2500);
 });
