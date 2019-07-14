@@ -80,6 +80,9 @@
 .fa-clipboard::before {
   content: "\f328"; }
 
+.fa-cloud::before {
+  content: "\f0c2"; }
+
 .fa-code::before {
   content: "\f121"; }
 

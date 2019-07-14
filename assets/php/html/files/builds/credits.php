@@ -80,6 +80,18 @@
           </div>
           <p class="description" id="module_loading_io_description">Loading.io provided the cool, lightweight loading icons that are used on the site.</p>
         </a>
+        <a class="module" id="module_cloudflare" href="https://www.cloudflare.com/" rel="external noopener" target="_blank" aria-labelledby="module_cloudflare_name" aria-describedby="module_cloudflare_description">
+          <div class="header">
+            <span class="icon">
+              <span class="fas fa-cloud" title="Cloud" aria-label="Cloud"></span>
+            </span>
+            <span class="info">
+              <h3>Cloudflare</h3>
+              <span>cloudflare.com</span>
+            </span>
+          </div>
+          <p class="description" id="module_loading_io_description">Cloudflare provides many benefits that greatly improve the speed, reliability, and security of ShiftCodesTK.</p>
+        </a>
         <div class="shoutout">All images, logos, and trademarks are the rightful property of their respective owners.</div>
       </section>
     </main>
