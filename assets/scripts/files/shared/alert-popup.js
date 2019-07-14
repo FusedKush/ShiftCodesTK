@@ -29,6 +29,7 @@ function updateAlertPopup(type, fillObject, id) {
   let alertPopupsActive = Object.keys(alertPopups).length;
 
   function updateState (newState) {
+    vishidden(popup, !newState);
     popup.setAttribute('data-expanded', newState);
     popup.setAttribute('aria-expanded', newState);
   }
@@ -95,21 +96,13 @@ function updateAlertPopup(type, fillObject, id) {
       })();
       // Add to feed
       (function () {
-        feed.appendChild(popup);
-
+        updateState(true);
+        feed.insertAdjacentElement('afterbegin', popup);
         setTimeout(function() {
-          updateState(true);
-
-          setTimeout(function () {
-            vishidden(popup, false);
-          }, 125);
-
-          setTimeout(function() {
-            if (popup.getAttribute('data-duration') != 'inf') {
-              setAlertPopupTimeout(id);
-            }
-          }, 125);
-        }, 50);
+          if (popup.getAttribute('data-duration') != 'inf') {
+            setAlertPopupTimeout(id);
+          }
+        }, 250);
       })();
     }
     else {

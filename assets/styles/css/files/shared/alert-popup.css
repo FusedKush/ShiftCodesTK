@@ -12,21 +12,21 @@
 .alert-popup-list {
   position: fixed;
   bottom: 0;
-  left: 0;
   right: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   flex-direction: column;
   padding: 8px;
   z-index: 102; }
 
 .alert-popup {
+  display: block;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
   box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
-  width: 100%;
-  max-width: 720px;
+  min-width: calc(25vw - 16px);
+  max-width: calc(50vw - 16px);
   overflow: hidden;
   -webkit-animation-duration: 0.25s;
           animation-duration: 0.25s;
@@ -81,8 +81,6 @@
   .alert-popup[data-expanded="false"] {
     -webkit-animation-name: alertPopupOut;
             animation-name: alertPopupOut; }
-  .alert-popup[hidden] {
-    position: absolute; }
   .alert-popup::before {
     position: absolute;
     top: 0;
@@ -132,8 +130,7 @@
   .alert-popup .content {
     display: inline-flex;
     flex: 1;
-    padding: 8px;
-    min-width: 75%; }
+    padding: 8px; }
   .alert-popup .icon {
     display: flex;
     align-items: center;
@@ -150,5 +147,5 @@
     display: flex;
     justify-content: flex-end;
     align-self: flex-end;
-    padding: 0 8px 8px 0;
+    padding: 8px;
     margin-left: auto; }

@@ -8,8 +8,8 @@
 /*** Style Declarations ***/
 .alert-popup-list {
   position: fixed;
-  @include pull(b, lr);
-  @include flexbox($direction: c);
+  @include pull(b, r);
+  @include flexbox($hAlign: e, $direction: c);
   padding: 8px;
   z-index: zOrder(popup);
 }
@@ -33,11 +33,12 @@
   }
 
   @include theme(bg);
+  display: block;
   border: bd(1.5px, tpw(0.25));
   border-radius: 8px;
   box-shadow: shadow(tpb(0.5));
-  width: 100%;
-  max-width: 720px;
+  min-width: calc(25vw - #{$padding * 2});
+  max-width: calc(50vw - #{$padding * 2});
   overflow: hidden;
   @include animation(0.25s, linear, $fill: forwards);
   @include alertPopupAnimationProps(0, 100%);
@@ -51,9 +52,6 @@
   }
   &[data-expanded="false"] {
     animation-name: alertPopupOut;
-  }
-  &[hidden] {
-    position: absolute;
   }
   &::before {
     @include fill(true, tpb(0.25));
@@ -102,7 +100,7 @@
     display: inline-flex;
     flex: 1;
     padding: $padding;
-    min-width: 75%;
+    // min-width: 75%;
   }
     .icon {
       @include flexbox($hAlign: none);
@@ -121,7 +119,7 @@
   .actions {
     @include flexbox(none, e);
     align-self: flex-end;
-    padding: 0 $padding $padding 0;
+    padding: $padding;
     margin-left: auto;
   }
 }
