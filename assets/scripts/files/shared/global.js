@@ -637,3 +637,11 @@ addFocusScrollListeners(document);
     if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
   }
 })();
+// Remove startup styles
+window.addEventListener('load', function () {
+  setTimeout(function () {
+    let styles = document.getElementById('startup');
+
+    styles.parentNode.removeChild(styles);
+  }, 2500);
+});
