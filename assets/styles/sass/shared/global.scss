@@ -7,11 +7,26 @@
 
 /*** Global Declarations ***/
 // Default Styles
+// CSS Reset
 *, ::before, ::after {
   position: relative;
   @include multiProp(0, spacing);
   box-sizing: border-box;
   transition: opacity $trd, transform $trd;
+}
+// Startup styles
+body {
+  background-color: #0f1e2d;
+
+  &.popup-open {
+    overflow: hidden;
+  }
+}
+body * {
+  // opacity: 0;
+}
+main.no-header {
+  min-height: 100%;
 }
 html, body {
   @include multiProp(100%, sizing);
@@ -50,27 +65,72 @@ button {
   border: none;
   @include multiProp(inherit, color, font-family);
 }
+button.styled, a.button {
+  @include flexbox;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 1em;
+  line-height: 1;
+
+  @include pshared {
+    @include fill(true);
+  }
+  &::before {
+    background-color: #fff;
+    opacity: 0.15;
+  }
+  &::after {
+    border: bd(1.5px, #fff);
+    border-radius: inherit;
+  }
+  &:not(:last-child) {
+    margin-right: 8px;
+  }
+  @include mouseState(noHover) {
+    &::before { opacity: 0.15; }
+    &::after  { opacity: 0.5; }
+
+    span      { opacity: 0.85; }
+  }
+  @include mouseState(hover) {
+    &::before { opacity: 0.25; }
+    &::after  { opacity: 0.75; }
+
+    span      { opacity: 1; }
+  }
+  @include mouseState(click) {
+    &::before { opacity: 0.5; }
+  }
+}
 button, a {
   &:hover:not([disabled]) {
     cursor: pointer;
   }
+}
+button, a, input, select, textarea {
   &[disabled] {
     opacity: .5;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 }
 ul.styled { list-style: disc inside; }
 ol.styled { list-style: decimal inside; }
 ul, ol {
+  $margins: $df-elm-spacing;
+
   &.styled {
-    $margins: $df-elm-spacing;
-
-    margin-left: $margins;
-
     &:not(:first-child) { margin-top: $margins; }
     &:not(:last-child)  { margin-bottom: $margins; }
 
     li { padding: 2px 0; }
+    ul { list-style: disc inside; }
+    ol { list-style: decimal inside; }
+    ul, ol {
+      margin-top: 2px;
+    }
+    &, ul, ol {
+      margin-left: $margins;
+    }
   }
   &:not(.styled) { list-style: none; }
 }
