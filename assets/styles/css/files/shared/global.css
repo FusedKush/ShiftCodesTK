@@ -808,7 +808,7 @@ main {
   75% {
     -webkit-transform: scale(1.1);
             transform: scale(1.1); } }
-button.copy.animated {
+button.copy.animated span, button.copy.animated div {
   -webkit-animation: copiedToClipboard 0.5s linear;
           animation: copiedToClipboard 0.5s linear; }
 

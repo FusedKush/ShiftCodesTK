@@ -112,7 +112,7 @@ function getDate (format = 'y-m-d', separator = '-') {
 function randomNum (min, max) {
   return Math.round(Math.random() * (max - min) + min);
 }
-// Class-manipulation shorthands
+// DOM shorthands
 function modifyClass (element, className, modification) {
   if (element !== null && element !== undefined) {
     if (modification == 'contains') {

@@ -126,9 +126,9 @@
       <div class="section pc">
         <strong class="title"></strong>
         <div class="content code">
-          <input class="value" hidden aria-hidden="true" readonly tabindex="-1">
+          <input class="value clipboard-copy" hidden aria-hidden="true" readonly tabindex="-1">
           <div class="display"></div>
-          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
+          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" data-copy-target="1">
             <span class="fas fa-clipboard"></span>
           </button>
         </div>
@@ -136,9 +136,9 @@
       <div class="section xbox">
         <strong class="title"></strong>
         <div class="content code">
-          <input class="value" hidden aria-hidden="true" readonly tabindex="-1">
+          <input class="value clipboard-copy" hidden aria-hidden="true" readonly tabindex="-1">
           <div class="display"></div>
-          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
+          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" data-copy-target="1">
             <span class="fas fa-clipboard"></span>
           </button>
         </div>
@@ -146,9 +146,9 @@
       <div class="section ps">
         <strong class="title"></strong>
         <div class="content code">
-          <input class="value" hidden aria-hidden="true" readonly tabindex="-1">
+          <input class="value clipboard-copy" hidden aria-hidden="true" readonly tabindex="-1">
           <div class="display"></div>
-          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard">
+          <button class="copy" title="Copy to Clipboard" aria-label="Copy to Clipboard" data-copy-target="1">
             <span class="fas fa-clipboard"></span>
           </button>
         </div>
