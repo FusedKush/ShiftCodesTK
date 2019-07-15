@@ -49,7 +49,8 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
     aboveNormal: 2,
     navbar: 100,
     sidebar: 101,
-    popup: 102
+    popup: 102,
+    banner: 103
     );
 
   @return map-get($stackingOrder, $type);

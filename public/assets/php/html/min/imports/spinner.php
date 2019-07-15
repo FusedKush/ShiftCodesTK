@@ -1,1 +1,0 @@
-<div aria-label="Loading Icon"class=spinner title="Loading Icon"><span class="dot one"></span><span class="dot two"></span><span class="dot three"></span><span class="dot four"></span></div>

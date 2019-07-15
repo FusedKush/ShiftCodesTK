@@ -48,5 +48,5 @@ var helpCenterArticles = [
     container.appendChild(link.root);
   }
 
-  template.remove();
+  template.parentNode.removeChild(template);
 })();

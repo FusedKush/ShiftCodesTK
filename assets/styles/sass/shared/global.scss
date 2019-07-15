@@ -2,16 +2,31 @@
   Global (Shared) Styles
 *********************************/
 
-/*** Imports ***/
 @import "../partials/_globals";
+@import "../partials/_spinner";
 
 /*** Global Declarations ***/
 // Default Styles
+// CSS Reset
 *, ::before, ::after {
   position: relative;
   @include multiProp(0, spacing);
   box-sizing: border-box;
   transition: opacity $trd, transform $trd;
+}
+// Startup styles
+body {
+  background-color: #0f1e2d;
+
+  &.popup-open {
+    overflow: hidden;
+  }
+}
+body * {
+  // opacity: 0;
+}
+main.no-header {
+  min-height: 100%;
 }
 html, body {
   @include multiProp(100%, sizing);
@@ -50,27 +65,72 @@ button {
   border: none;
   @include multiProp(inherit, color, font-family);
 }
+button.styled, a.button {
+  @include flexbox;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 1em;
+  line-height: 1;
+
+  @include pshared {
+    @include fill(true);
+  }
+  &::before {
+    background-color: #fff;
+    opacity: 0.15;
+  }
+  &::after {
+    border: bd(1.5px, #fff);
+    border-radius: inherit;
+  }
+  &:not(:last-child) {
+    margin-right: 8px;
+  }
+  @include mouseState(noHover) {
+    &::before { opacity: 0.15; }
+    &::after  { opacity: 0.5; }
+
+    span      { opacity: 0.85; }
+  }
+  @include mouseState(hover) {
+    &::before { opacity: 0.25; }
+    &::after  { opacity: 0.75; }
+
+    span      { opacity: 1; }
+  }
+  @include mouseState(click) {
+    &::before { opacity: 0.5; }
+  }
+}
 button, a {
   &:hover:not([disabled]) {
     cursor: pointer;
   }
+}
+button, a, input, select, textarea {
   &[disabled] {
     opacity: .5;
-    cursor: not-allowed;
+    cursor: not-allowed !important;
   }
 }
 ul.styled { list-style: disc inside; }
 ol.styled { list-style: decimal inside; }
 ul, ol {
+  $margins: $df-elm-spacing;
+
   &.styled {
-    $margins: $df-elm-spacing;
-
-    margin-left: $margins;
-
     &:not(:first-child) { margin-top: $margins; }
     &:not(:last-child)  { margin-bottom: $margins; }
 
     li { padding: 2px 0; }
+    ul { list-style: disc inside; }
+    ol { list-style: decimal inside; }
+    ul, ol {
+      margin-top: 2px;
+    }
+    &, ul, ol {
+      margin-left: $margins;
+    }
   }
   &:not(.styled) { list-style: none; }
 }
@@ -90,87 +150,161 @@ pre, code {
 }
 template, .webp-support { display: none; }
 // Reusable Classes
+// ------------------------
+// Header
+@media screen and (max-width: 474px) {
+  header.main .intro   { height: calc(30vh + 32px); }
+  main:not(.no-header) { min-height: calc(70vh - 32px); }
+}
+@media screen and (min-width: 475px) {
+  header.main .intro   { height: calc(30vh + 64px); }
+  main:not(.no-header) { min-height: calc(70%- 64px); }
+}
 header.main {
   @include ready;
 
   width: 100%;
-  border-bottom: 4px solid;
-  @include theme(bc);
-  @include bgImg;
   overflow: hidden;
 
-  &::after {
-    position: absolute;
-    @include pull(b, l);
-    width: 100%;
-    box-shadow: 0 0 1em 0.5em tpb(0.75);
-    content: "";
-  }
+  .intro {
+    border-bottom: 4px solid;
+    // height: calc(100% - 37px - 1rem);
+    @include theme(bc);
+    @include bgImg;
+    overflow: hidden;
 
-  .content-container {
-    @include multiProp(100%, sizing);
-    padding-top: 64px;
-    background-color: tpb(0.6);
-  }
-
-  .content-wrapper {
-    @include flexbox(e, s);
-    @include multiProp(100%, sizing);
-    padding: 32px 16px;
-  }
-
-  .content {
-    @media screen and (max-width: 474px) {
-      &.short {
-        font-size: 1em;
-      }
-      &.long {
-        font-size: 0.75em;
-      }
-    }
-    @media screen and (min-width: 475px) and (max-width: 699px) {
-      &.short {
-        font-size: 1.25em;
-      }
-      &.long {
-        font-size: 1em;
-      }
-    }
-    @media screen and (min-width: 700px) {
-      &.short {
-        font-size: 1.5em;
-      }
-      &.long {
-        font-size: 1.25em;
-      }
+    &::after {
+      position: absolute;
+      @include pull(b, l);
+      width: 100%;
+      box-shadow: 0 0 1em 0.5em tpb(0.75);
+      content: "";
     }
 
-    text-shadow: 1px 1px 4px tpb(0.8);
-    max-width: 85%;
-  }
+    .content-container {
+      @include multiProp(100%, sizing);
+      padding-top: 64px;
+      background-color: tpb(0.6);
+    }
+    .content-wrapper {
+      @include flexbox(e, s);
+      @include multiProp(100%, sizing);
+      padding: 32px 16px;
+      text-align: start;
+    }
+    .content {
+      @media screen and (max-width: 474px) {
+        &.short {
+          font-size: 1em;
+        }
+        &.long {
+          font-size: 0.75em;
+        }
+      }
+      @media screen and (min-width: 475px) and (max-width: 699px) {
+        &.short {
+          font-size: 1.25em;
+        }
+        &.long {
+          font-size: 1em;
+        }
+      }
+      @media screen and (min-width: 700px) {
+        &.short {
+          font-size: 1.5em;
+        }
+        &.long {
+          font-size: 1.25em;
+        }
+      }
 
-  .title {
-    font-size: 2em;
-    line-height: 1.1;
+      text-shadow: 1px 1px 4px tpb(0.8);
+      max-width: 85%;
+    }
+    .title {
+      font-size: 2em;
+      line-height: 1.1;
+    }
+    .description {
+      font-size: 1.1em;
+      opacity: 0.75;
+      padding-top: 4px;
+    }
   }
-  .description {
-    font-size: 1.1em;
-    opacity: 0.75;
-    padding-top: 4px;
+  .breadcrumbs {
+    display: flex;
+    // background-color: tpw(0.1);
+    @include theme(bg);
+    border-bottom: bd(2px, tpw(0.5));
+
+    &::before {
+      @include fill(true, tpb(0.5));
+    }
+
+    .content-wrapper {
+      @include flexbox($hAlign: s, $wrap: true);
+      width: 100%;
+      padding: 8px 12px;
+    }
+    .separator { opacity: 0.5; }
+    .separator, b.crumb { cursor: default; }
+    .separator, .crumb {
+      @include spacing(4px, 4px 8px);
+      line-height: 1;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.5));
+      border-radius: 4px;
+    }
   }
 }
 main {
   opacity: 1;
 
   &.content-wrapper { padding: 32px 16px; }
-  &.no-header { padding-top: 80px; }
+  &.no-header {
+    min-height: 100%;
+    padding-top: 80px;
+  }
 }
 .content-wrapper {
   max-width: 1200px;
   margin: 0 auto;
 }
 .fa, .fas, .fab, .fal, .far {
-  &.box-icon { @include boxIcon; }  
+  &.box-icon { @include boxIcon; }
+}
+.highlight {
+  width: 100%;
+  @include spacing(0, 12px);
+  @include colors(tpw(0.75), tpw(0.1));
+  box-shadow: inset shadow(tpb(0.25), 10px);
+  border: bd(1.5px);
+  border-color: inherit;
+  border-radius: 4px;
+
+  &::before {
+    @include fill(true, tpb(0.3));
+  }
+
+  pre {
+    @include multiProp(0, spacing);
+    background-color: transparent;
+    white-space: normal;
+    overflow: hidden;
+    word-wrap: break-word;
+  }
+  mark, code {
+    color: inherit;
+    background-color: transparent;
+
+    &.statement { color: #f0f; }
+    &.state     { color: #ff8c00; }
+    &.key       { color: #ffcd00; }
+    &.value     { color: #7cfc00; }
+    &.statement, &.state {
+      text-shadow: 0 0 tpw(0.5);
+    }
+  }
 }
 
 /*** Custom Elements ***/
@@ -253,6 +387,10 @@ main {
   padding: 2px;
   overflow: hidden;
 
+  // Hide panels requesting a constructor
+  &.c {
+    display: none;
+  }
   &::before {
     @include fill(true, $site-color-lighter);
     @include multiProp(100%, sizing);
@@ -374,8 +512,8 @@ main {
     @at-root .dropdown-menu { @content; }
   }
 
-  &[hidden]                { display: none; }
-  &:not([hidden])          { display: grid; }
+  &[hidden], &:not(.configured) { display: none; }
+  &:not([hidden])               { display: grid; }
   &[data-expanded="false"] { opacity: 0; }
   &[data-expanded="true"]  { opacity: 1; }
 
@@ -535,5 +673,31 @@ main {
         &[data-pos="#{$posN}"] .arrow, &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
       }
     }
+  }
+}
+// Copy to Clipboard Button
+button.copy {
+  @keyframes copiedToClipboard {
+    0%, 50%, 100% { transform: scale(1); }
+    25%           { transform: scale(0.9); }
+    75%           { transform: scale(1.1); }
+  }
+
+  &.animated {
+    span, div {
+      animation: copiedToClipboard 0.5s linear;
+    }
+  }
+}
+// Progress Bar
+.progress-bar {
+  @include sizing(6px, 100%);
+  background-color: tpb(0.5);
+  overflow: hidden;
+
+  .progress {
+    @include multiProp(100%, sizing);
+    background-color: tpw(0.5);
+    transform: translateX(-100%);
   }
 }

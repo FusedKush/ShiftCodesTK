@@ -3,6 +3,8 @@
 *********************************/
 
 // *** Variables ***
+var loadEventFired = false;
+var globalScriptLoaded = true;
 var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
@@ -10,37 +12,9 @@ var defaultDropdownPanelLabels = {
   false: 'Expand Panel',
   true: 'Collapse Panel'
 };
+var focusLockedElement = null;
 
 // *** Functions ***
-// Updates Disabled State of elements
-function disenable (element, state, optTx) {
-  let tabIndexes = {
-    true: '-1',
-    false: '0'
-  };
-
-  element.disabled = state
-  element.setAttribute('aria-disabled', state);
-
-  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
-}
-// Updates Hidden State of Elements
-function vishidden (element, state, optTx) {
-  let tabIndexes = {
-    true: '-1',
-    false: '0'
-  };
-
-  element.hidden = state;
-  element.setAttribute('aria-hidden', state);
-
-  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
-}
-// Update ELement Labels
-function updateLabel(element, label) {
-  element.title = label;
-  element.setAttribute('aria-label', label);
-}
 // Called when Webp Support is determined
 function webpSupportUpdate (support) {
   let e = document.getElementsByTagName('*');
@@ -72,116 +46,86 @@ function webpSupportUpdate (support) {
     }
   }
 }
-// Handles AJAX Requests
-function newAjaxRequest (type, file, callback, parameters, requestHeader) {
-  let request = (function () {
-    if (window.XMLHttpRequest) {
-      return new XMLHttpRequest();
-    }
-    else if (window.ActiveXObject) {
-      return new ActiveXObject('Microsoft.XMLHttp');
-    }
-  })();
-
-  function handleResponse () {
-    function processResponse () {
-      if (request.readyState === XMLHttpRequest.DONE) {
-        if (request.status === 200) {
-          callback(request.responseText);
-        }
-        else {
-          consoleLog(('Ajax "') + type + ('"Request Failed. Status Code: ') + request.status + ('. Requested File: ') + file, 'error');
-        }
-      }
-    }
-
-    if (typeof devTools == 'object' && devTools.preventAjaxErrorCatching === true) {
-      processResponse();
-    }
-    else {
-      try {
-        processResponse();
-      }
-      catch(e) {
-        console.error(('Caught Exception in Ajax ') + type + (' Request: ') + e + ('. Requested File: ') + file);
-      }
-    }
-  }
-
-  request.onreadystatechange = handleResponse;
-  request.open(type, file, true);
-
-  if (requestHeader == 'form') {
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  }
-
-  if (typeof parameters == 'undefined') {
-    request.send();
-  }
-  else {
-    request.send(parameters);
-  }
-}
-// Handles Date Requests
-function getDate (format = 'y-m-d', separator = '-') {
-  let date = {};
-    (function () {
-      date.base =  new Date();
-      date.year =  date.base.getFullYear();
-      date.month = ('0' + (date.base.getMonth() + 1)).slice(-2);
-      date.day =   ('0' + date.base.getDate()).slice(-2);
-    })();
-  let formats = {
-    'y': 'year',
-    'm': 'month',
-    'd': 'day'
-  };
-
-  return date[formats[format.slice(0, 1)]] + separator +
-         date[formats[format.slice(2, 3)]] + separator +
-         date[formats[format.slice(4, 5)]];
-}
 // Scroll elements into view when they receive focus
 function addFocusScrollListeners (parent) {
-  let e = parent.getElementsByTagName('*');
+  let elms = parent.getElementsByTagName('*');
 
-  for (i = 0; i < e.length; i++) {
-    if (e[i].tagName == 'BUTTON' || e[i].tagName == 'A') {
-      if (e[i].className.indexOf('no-focus-scroll') == -1) {
-        e[i].addEventListener('focusin', function (event) { updateScroll(this); });
+  for (i = 0; i < elms.length; i++) {
+    let e = elms[i];
+
+    if (e.tagName == 'BUTTON' || e.tagName == 'A' || e.tagName == 'INPUT' || e.tagName == 'SELECT' || e.tagName == 'TEXTAREA') {
+      if (e.classList.contains('no-focus-scroll') === false) {
+        e.addEventListener('focusin', function (e) {
+          updateScroll(this);
+        });
       }
     }
   }
 }
 // Update scroll position to push focused element into viewport
 function updateScroll (element) {
-  let scroll = [
-    document.documentElement,
-    document.body
-  ];
-  let props = {
-    'min': 64,
-    'max': scroll[1].getBoundingClientRect().height,
-    'padding': 16
-  };
-  let pos = {};
-    (function () {
-      pos.base = element.getBoundingClientRect();
-      pos.top = pos.base.top - props.padding;
-      pos.bottom = pos.base.bottom + props.padding;
-    })();
-  let matches = {
-    'top': pos.top < props.min,
-    'bottom': pos.bottom > props.max
-  };
+  if (hasClass(element, 'clipboard-copy') === false && hasClass(element, 'hidden') === false) {
+    let scroll = [
+      document.documentElement,
+      document.body
+    ];
+    let extraMin = (function () {
+      let val = element.getAttribute('data-scrollPaddingTop');
 
-  if (matches.top) {
-    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
+      if (val != null) { return val; }
+      else             { return 0; }
+    })();
+    let extraMax = (function () {
+      let val = element.getAttribute('data-scrollPaddingBottom');
+
+      if (val != null) { return val; }
+      else             { return 0; }
+    })();
+    let props = {
+      'min': 64 + extraMin,
+      'max': scroll[1].getBoundingClientRect().height - extraMax,
+      'padding': 16
+    };
+    let pos = {};
+      (function () {
+        pos.base = (function () {
+          let type = element.tagName.toLowerCase();
+          let result;
+
+          if (type != 'input' && type != 'select' && type != 'textarea') {
+            result = element;
+          }
+          else {
+            let tree = element;
+
+            while (true) {
+              if (tree.classList.contains('input-container') === true) {
+                result = tree;
+                break;
+              }
+              else {
+                tree = tree.parentNode;
+              }
+            }
+          }
+          return result.getBoundingClientRect();
+        })();
+        pos.top = pos.base.top - props.padding;
+        pos.bottom = pos.base.bottom + props.padding;
+      })();
+    let matches = {
+      'top': pos.top < props.min,
+      'bottom': pos.bottom > props.max
+    };
+
+    if (matches.top === true) {
+      for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop -= (props.min - pos.top); }
+    }
+    else if (matches.bottom === true) {
+      for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
+    }
+    if (matches.top === true || matches.bottom === true) { globalScrollUpdates = 0; }
   }
-  else if (matches.bottom) {
-    for (x = 0; x < scroll.length; x++) { scroll[x].scrollTop += (pos.bottom - props.max); }
-  }
-  if (matches.top || matches.bottom) { globalScrollUpdates = 0; }
 }
 // Update visibility of hash-targeted elements
 function hashUpdate () {
@@ -251,6 +195,46 @@ function addDropdownPanelListener (panel) {
 // Set up Dropdown Panel
 function dropdownPanelSetup (panel) {
   let hashTargetOverlay = document.createElement('span');
+
+  // Requires constructor
+  if (hasClass(panel, 'c') === true) {
+    let parent = panel.parentNode;
+    let template = {};
+      (function () {
+        template.base = getTemplate('dropdown_panel_template');
+        template.title = getClass(template.base, 'title');
+          template.icon = getClass(template.title, 'icon');
+          template.primary = getClass(template.title, 'primary');
+          template.secondary = getClass(template.title, 'secondary');
+        template.body = getClass(template.base, 'body');
+      })();
+      let props = [
+        'icon',
+        'primary',
+        'secondary',
+        'body'
+      ]
+
+    if (panel.id != '') {
+      template.base.id = panel.id;
+    }
+
+    for (let i = 0; i < props.length; i++) {
+      let prop = props[i];
+      let val = getClass(panel, prop);
+
+      if (val !== undefined) {
+        template[prop].innerHTML = val.innerHTML;
+      }
+      else {
+        template[prop].parentNode.removeChild(template[prop]);
+      }
+    }
+
+    delClass(panel, 'c');
+    parent.replaceChild(template.base, panel);
+    panel = template.base;
+  }
 
   updateDropdownPanelAttributes(panel, false);
   addDropdownPanelListener(panel);
@@ -372,10 +356,12 @@ function setupDropdownMenu (dropdown) {
         let arrow = document.createElement('div');
         let choices = dropdown.getElementsByClassName('choice');
 
+        addClass(dropdown, 'configured');
         dropdown.id = props.id;
         updateDropdownMenuPos(dropdown);
         dropdown.setAttribute('data-expanded', false);
         dropdown.setAttribute('aria-expanded', false);
+        vishidden(dropdown, true);
 
         arrow.className = 'arrow';
 
@@ -427,6 +413,78 @@ function setupDropdownMenu (dropdown) {
       console.error('Dropdown Menu "' + props.id + '" is missing the following required properties: "' + missingProps.join('", "') + '". Dropdown Menu Creation Failed.');
     }
   })();
+}
+// Control focus within element
+function handleFocusLock (event) {
+  let type = event.type;
+
+  if (focusLockedElement !== null) {
+    let target = event.target;
+    let matches = [
+      focusLockedElement.element,
+      document.getElementById('alert_popup_feed')
+    ];
+
+    if (type == 'click') {
+      do {
+        for (let i = 0; i < matches.length; i++) {
+          if (target == matches[i]) {
+            return;
+          }
+        }
+
+        target = target.parentNode;
+      }
+      while (target);
+
+      focusLockedElement.callback();
+    }
+    else if (type == 'keydown') {
+      let fs = getElements(focusLockedElement.element, 'focusables');
+      let first = fs[0];
+      let last = fs[fs.length - 1];
+
+      if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
+        event.preventDefault();
+
+        if (target == first)     { last.focus(); }
+        else if (target == last) { first.focus(); }
+      }
+      else if (event.key == 'Escape') {
+        event.preventDefault();
+        focusLockedElement.callback();
+      }
+    }
+  }
+}
+// Copy the contents of the field to the clipboard
+function copyToClipboard (event) {
+  let button = event.currentTarget;
+  let target = (function () {
+    let treeJumps = parseInt(button.getAttribute('data-copy-target'));
+    let pos = button;
+
+    for (let i = 0; i < treeJumps; i++) {
+      pos = pos.parentNode;
+    }
+
+    return getClass(pos, 'clipboard-copy');
+  })();
+
+  target.select();
+  document.execCommand('copy');
+  button.classList.remove('animated');
+
+  setTimeout(function () {
+    button.classList.add('animated');
+    updateAlertPopup('create', {
+      'duration': 'short',
+      'id': 'clipboard-copy',
+      'icon': 'fas fa-clipboard',
+      'title': 'Copied to Clipboard',
+      'description': 'This may not work in all browsers.'
+    });
+  }, 25);
 }
 
 // *** Event Listener Reference Functions ***
@@ -496,99 +554,197 @@ function checkDropdownMenuKey (event) {
   }
 }
 
-// *** Immediate Functions ***
-// Determine Webp Support in the browser
-(function () {
-  let img = document.createElement('img');
-
-  img.classList.add('webp-support');
-  img.onload = function () { webpSupportUpdate(true); };
-  img.onerror = function () { webpSupportUpdate(false); };
-  img.src = '/assets/img/webp_support.webp';
-
-  document.body.appendChild(img);
-})();
-// Check for hash-targeted elements
-hashUpdate();
-// Automatic Dropdown Panel Functions
-(function () {
-  let panels = document.getElementsByClassName('dropdown-panel');
-
-  for(let i = 0; i < panels.length; i++) {
-    dropdownPanelSetup(panels[i]);
-  }
-})();
-// Setup present Dropdown Menus
-(function () {
-  let dropdowns = document.getElementsByClassName('dropdown-menu');
-
-  for (i = 0; i < dropdowns.length; i++) {
-    setupDropdownMenu(dropdowns[i]);
-  }
-})();
-// Get SHiFT Badge count and update variable
-(function () {
-  newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
-    shiftBadgeCount = JSON.parse(request).response.alerts;
-  });
-})();
-// Check for DevTools support
-(function () {
-  let params = window.location.search;
-  let key = {};
+// *** Immediate Functions & Event Listeners *** //
+// Checking for Dependencies
+function execGlobalScripts () {
+  if (typeof globalFunctionsReady == 'boolean') {
+    // *** Immediate Functions ***
+    // Determine Webp Support in the browser
     (function () {
-      key.base = new Date();
-      key.primary = key.base.getMonth();
-      key.secondary = key.base.getDate();
-      key.tertiary = key.base.getFullYear();
-      key.unique = 1106;
-      key.full = key.primary + key.secondary + key.tertiary + key.unique;
+      let img = document.createElement('img');
+
+      img.classList.add('webp-support');
+      img.onload = function () { webpSupportUpdate(true); };
+      img.onerror = function () { webpSupportUpdate(false); };
+      img.src = '/assets/img/webp_support.webp';
+
+      document.body.appendChild(img);
+    })();
+    // Check for hash-targeted elements
+    hashUpdate();
+    // Automatic Dropdown Panel Functions
+    (function () {
+      let panels = document.getElementsByClassName('dropdown-panel');
+
+      for(let i = 0; i < panels.length; i++) {
+        dropdownPanelSetup(panels[i]);
+      }
+    })();
+    // Setup present Dropdown Menus
+    (function () {
+      let dropdowns = document.getElementsByClassName('dropdown-menu');
+
+      for (i = 0; i < dropdowns.length; i++) {
+        setupDropdownMenu(dropdowns[i]);
+      }
+    })();
+    // Update Breadcrumbs
+    (function () {
+      let header = document.getElementById('primary_header');
+
+      if (header !== null) {
+        let breadcrumbs = (function () {
+          let meta = document.getElementById('breadcrumbs');
+
+          if (meta !== null) { return JSON.parse(meta.content); }
+          else               { return null; }
+        })();
+        let container = document.getElementById('breadcrumb_container');
+        let separatorTemplate = document.getElementById('breadcrumb_separator_template');
+        let crumbTemplate = document.getElementById('breadcrumb_crumb_template');
+
+        if (breadcrumbs !== null) {
+          // Root Page
+          (function () {
+            let crumb = crumbTemplate.content.children[0].cloneNode(true);
+            let icon = document.createElement('span');
+
+            crumb.href = '/';
+            crumb.innerHTML = '';
+            icon.className = 'fas fa-home box-icon';
+            updateLabel(crumb, 'Home');
+            crumb.appendChild(icon);
+            container.appendChild(crumb);
+          })();
+
+          for (i = 0; i < breadcrumbs.length; i++) {
+            let current = breadcrumbs[i];
+            let separator = separatorTemplate.content.children[0].cloneNode(true);
+            let crumb;
+
+            if ((i + 1) != breadcrumbs.length) {
+              crumb = crumbTemplate.content.children[0].cloneNode(true);
+
+              crumb.href = current.url;
+              updateLabel(crumb, current.name);
+              crumb.innerHTML = current.name;
+            }
+            else {
+              crumb = document.createElement('b');
+
+              crumb.className = 'crumb';
+              crumb.innerHTML = current.name;
+            }
+
+            container.appendChild(separator);
+            container.appendChild(crumb);
+          }
+        }
+        else {
+          container.remove();
+        }
+
+        separatorTemplate.remove();
+        crumbTemplate.remove();
+      }
+    })();
+    // Get SHiFT Badge count and update variable
+    (function () {
+      newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
+        shiftBadgeCount = JSON.parse(request).response.alerts;
+      });
+    })();
+    // Check for DevTools support
+    (function () {
+      let params = window.location.search;
+      let key = {};
+        (function () {
+          key.base = new Date();
+          key.primary = key.base.getMonth();
+          key.secondary = key.base.getDate();
+          key.tertiary = key.base.getFullYear();
+          key.unique = 1106;
+          key.full = key.primary + key.secondary + key.tertiary + key.unique;
+        })();
+
+      if (params.indexOf('dev=' + key.full) != -1) {
+        let tools = document.createElement('script');
+
+        tools.async = true;
+        tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
+        document.body.appendChild(tools);
+      }
     })();
 
-  if (params.indexOf('dev=' + key.full) != -1) {
-    let tools = document.createElement('script');
+    // *** Event Listeners ***
+    // Intercept Hash Update
+    window.addEventListener('hashchange', function (e) {
+      event.preventDefault();
+      hashUpdate();
+    });
+    // Prevent Anchor-Jumping behind navbar
+    window.addEventListener('scroll', function () {
+      if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
 
-    tools.async = true;
-    tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
-    document.body.appendChild(tools);
-  }
-})();
+      globalScrollUpdates++;
 
-// *** Event Listeners ***
-// Intercept Hash Update
-window.addEventListener('hashchange', function (e) {
-  event.preventDefault();
-  hashUpdate();
-});
-// Prevent Anchor-Jumping behind navbar
-window.addEventListener('scroll', function () {
-  if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
+      globalScrollTimer = setTimeout(function () {
+        if (globalScrollUpdates == 1) {
+          let e = document.getElementsByTagName('*');
 
-  globalScrollUpdates++;
+          for (i = 0; i < e.length; i++) {
+            let pos = e[i].getBoundingClientRect().top;
 
-  globalScrollTimer = setTimeout(function () {
-    if (globalScrollUpdates == 1) {
-      let e = document.getElementsByTagName('*');
+            if (pos >= 0 && pos <= 1) { hashUpdate(); }
+          }
+        }
+
+        globalScrollUpdates = 0;
+      }, 150);
+    });
+    // Clear Scroll event count on page load
+    window.addEventListener('load', globalListenerLoadClearScroll);
+    // Add Focus Scroll Listener to all present elements
+    addFocusScrollListeners(document);
+    // Intercept all hashed anchors
+    (function () {
+      let e = document.getElementsByTagName('a');
 
       for (i = 0; i < e.length; i++) {
-        let pos = e[i].getBoundingClientRect().top;
-
-        if (pos >= 0 && pos <= 1) { hashUpdate(); }
+        if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
       }
-    }
-
-    globalScrollUpdates = 0;
-  }, 150);
-});
-// Clear Scroll event count on page load
-window.addEventListener('load', globalListenerLoadClearScroll);
-// Add Focus Scroll Listener to all present elements
-addFocusScrollListeners(document);
-// Intercept all hashed anchors
-(function () {
-  let e = document.getElementsByTagName('a');
-
-  for (i = 0; i < e.length; i++) {
-    if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
+    })();
+    window.addEventListener('click', handleFocusLock);
+    window.addEventListener('keydown', handleFocusLock);
   }
-})();
+  else {
+    setTimeout(execGlobalScripts, 250);
+  }
+}
+execGlobalScripts();
+
+window.addEventListener('load', function () {
+  setTimeout(function () {
+    // Remove startup styles
+    (function () {
+      let styles = document.getElementById('startup');
+
+      styles.parentNode.removeChild(styles);
+    })();
+    // Check for queued popups
+    (function () {
+      let keys = Object.keys(alertPopupQueue);
+
+      loadEventFired = true;
+
+      if (keys.length > 0) {
+        for (let i = 0; i < keys.length && i < 3; i++) {
+          let key = keys[i];
+
+          updateAlertPopup('create', alertPopupQueue[key]);
+          delete alertPopupQueue[key];
+        }
+      }
+    })();
+  }, 2500);
+});

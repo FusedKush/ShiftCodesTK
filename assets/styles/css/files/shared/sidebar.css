@@ -48,11 +48,9 @@ Sidebar Styles
     max-width: 19em;
     overflow: auto; }
     .sidebar[data-expanded="false"] .panel {
-      -webkit-transform: translateX(calc(-100% - 0.5em));
-              transform: translateX(calc(-100% - 0.5em)); }
+      transform: translateX(calc(-100% - 0.5em)); }
     .sidebar[data-expanded="true"] .panel {
-      -webkit-transform: translateX(0);
-              transform: translateX(0); }
+      transform: translateX(0); }
   .sidebar .header {
     display: flex;
     align-items: center;

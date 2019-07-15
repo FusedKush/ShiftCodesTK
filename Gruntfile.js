@@ -87,7 +87,7 @@ module.exports = function(grunt) {
         removeComments: true,
         removeEmptyAttributes: true,
         removeOptionalTags: true,
-        removeRedundantAttributes: true,
+        // removeRedundantAttributes: true,
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
         removeTagWhitespace: true,
@@ -160,24 +160,6 @@ module.exports = function(grunt) {
       html: {
         files: ["assets/php/html/files/**/*.php"],
         tasks: ["processHTML"]
-      },
-      copy: {
-        files: ["**/*",
-                "!.*",
-                ".htaccess",
-                "!.*/**/*",
-                "!Gruntfile.js",
-                "!package-lock.json",
-                "!package.json",
-                "!README.md",
-                "!node_modules/**/*",
-                "!public/**/*",
-                "!assets/php/html/files/**/*",
-                "!assets/php/html/min/builds/**/*",
-                "!assets/scripts/files/**/*",
-                "!assets/styles/css/files/**/*",
-                "!assets/styles/sass/**/*"],
-        tasks: ["publicCopy"]
       },
       config: {
         files: ["Gruntfile.js"],

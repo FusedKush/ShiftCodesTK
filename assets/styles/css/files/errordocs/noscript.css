@@ -87,5 +87,4 @@ noscript {
     noscript .refresh:hover::before, noscript .refresh:focus::before {
       opacity: 0.25; }
     noscript .refresh:active {
-      -webkit-transform: scale(0.9);
-              transform: scale(0.9); }
+      transform: scale(0.9); }

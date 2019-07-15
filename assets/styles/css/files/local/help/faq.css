@@ -37,9 +37,9 @@ h2 {
   .toc li a:active {
     text-decoration: underline; }
 
-section.group:not(:first-child) {
+.faq-group:not(:first-child) {
   margin-top: 32px; }
-section.group header {
+.faq-group header {
   margin-bottom: 16px;
   padding: 8px;
   background-color: rgba(255, 255, 255, 0.25);

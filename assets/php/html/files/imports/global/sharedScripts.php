@@ -8,6 +8,7 @@
 
   // Stylesheets to Load
   $load = array(
+    'functions',
     'shared-scripts'
   );
 

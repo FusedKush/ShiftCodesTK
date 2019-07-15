@@ -88,9 +88,12 @@
     }
   }
   .module {
+    $margins: 8px;
+
     flex: 1;
-    @include spacing(8px, 8px);
+    @include spacing($margins, 8px);
     background-color: $site-color-lighter;
+    min-width: calc(50% - #{$margins * 2});
 
     &::before { @include fill(true, #000); }
 
@@ -129,6 +132,7 @@
             &::before             { opacity: 0.2; }
             .fa-font-awesome-flag { animation-name: fontAwesomeAnimation; }
             .fa-spinner           { animation-name: loadingIoAnimation; }
+            .fa-cloud             { animation-name: cloudflareAnimation; }
           }
         }
       }
@@ -141,6 +145,11 @@
         @keyframes loadingIoAnimation {
           0%            { transform: rotate(0deg); }
           100%          { transform: rotate(360deg); }
+        }
+        @keyframes cloudflareAnimation {
+          0%, 50%, 100% { transform: scale(1); }
+          25%           { transform: scale(0.9); }
+          75%           { transform: scale(1.1); }
         }
 
         @include animation(1.5s, linear, infinite);

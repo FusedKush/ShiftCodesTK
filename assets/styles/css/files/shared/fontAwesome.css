@@ -1,6 +1,10 @@
-/*********************************
-  FontAwesome Styles
-*********************************/
+/******************************************
+  FontAwesome Font & Class Configuration
+*******************************************/
+/*** SASS Config ***/
+/******************************************
+  FontAwesome Icon & Styles Configuration
+*******************************************/
 /*** Font Face Properties ***/
 @font-face {
   font-family: "Font Awesome 5 Brands";
@@ -46,6 +50,9 @@
 .fa-arrow-circle-up::before {
   content: "\f0aa"; }
 
+.fa-asterisk::before {
+  content: "\f069"; }
+
 .fa-award::before {
   content: "\f559"; }
 
@@ -61,6 +68,9 @@
 .fa-caret-down::before {
   content: "\f0d7"; }
 
+.fa-check::before {
+  content: "\f00c"; }
+
 .fa-chevron-circle-down::before {
   content: "\f13a"; }
 
@@ -69,6 +79,9 @@
 
 .fa-clipboard::before {
   content: "\f328"; }
+
+.fa-cloud::before {
+  content: "\f0c2"; }
 
 .fa-code::before {
   content: "\f121"; }
@@ -105,6 +118,12 @@
 
 .fa-heart::before {
   content: "\f004"; }
+
+.fa-home::before {
+  content: "\f015"; }
+
+.fa-image::before {
+  content: "\f03e"; }
 
 .fa-key::before {
   content: "\f084"; }
@@ -147,3 +166,6 @@
 
 .fa-users::before {
   content: "\f0c0"; }
+
+.fa-user-slash::before {
+  content: "\f506"; }

@@ -1,13 +1,5 @@
 <footer class="primary-footer" id="footer">
-  <div class="breadcrumbs">
-    <div class="content-wrapper" id="breadcrumb_container"></div>
-    <template id="breadcrumb_separator_template">
-      <b class="separator">/</b>
-    </template>
-    <template id="breadcrumb_crumb_template">
-      <a class="crumb tr-underline"></a>
-    </template>
-  </div>
+
   <div class="primary content-wrapper">
     <div class="social">
       <a class="external-link-icon facebook" href="https://www.facebook.com/ShiftCodesTK" rel="external noopener" target="_blank" title="ShiftCodesTK on Facebook (External Link)" aria-label="ShiftCodesTK on Facebook (External Link)"><span class="external fas fa-external-link-square-alt"></span><span class="icon fab fa-facebook-square"></span></a>

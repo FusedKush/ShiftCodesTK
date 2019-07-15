@@ -4,7 +4,6 @@
 
 /*** Imports ***/
 @import "../partials/_globals";
-@import "../partials/_spinner";
 
 /*** Style Declarations ***/
 .shift-header, .feed { @include ready; }
@@ -288,17 +287,13 @@
       }
       .display { padding: $padding; }
       .copy {
-        @keyframes copiedToClipboard {
-          0%, 50%, 100% { transform: scale(1); }
-          25%           { transform: scale(0.8); }
-          75%           { transform: scale(1.2); }
-        }
-
+        position: absolute;
+        @include pull(tb, r);
         font-size: 1.1em;
-        padding: $padding 32px;
+        padding: #{$padding} #{$padding * 4};
+        background-color: scale-color($site-color-lighter, $lightness: -35%);
 
         &::before { @include fill(true, #fff); }
-        &.animated .fas { animation: copiedToClipboard 0.5s linear; }
 
         @at-root .dropdown-panel .section .content {
           @include mouseState(noHover) {

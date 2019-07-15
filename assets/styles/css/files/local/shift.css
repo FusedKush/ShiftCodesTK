@@ -8,85 +8,6 @@
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
-/*********************************
-  Spinner Styles
-*********************************/
-.spinner {
-  display: inline-block;
-  height: 64px;
-  width: 64px; }
-@-webkit-keyframes animateSpinner1 {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0); }
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); } }
-@keyframes animateSpinner1 {
-  0% {
-    -webkit-transform: scale(0);
-            transform: scale(0); }
-  100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); } }
-@-webkit-keyframes animateSpinner2 {
-  0% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); }
-  100% {
-    -webkit-transform: translateX(19px);
-            transform: translateX(19px); } }
-@keyframes animateSpinner2 {
-  0% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); }
-  100% {
-    -webkit-transform: translateX(19px);
-            transform: translateX(19px); } }
-@-webkit-keyframes animateSpinner3 {
-  0% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
-  100% {
-    -webkit-transform: scale(0);
-            transform: scale(0); } }
-@keyframes animateSpinner3 {
-  0% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
-  100% {
-    -webkit-transform: scale(0);
-            transform: scale(0); } }
-  .spinner .dot {
-    position: absolute;
-    top: 27px;
-    height: 11px;
-    width: 11px;
-    border-radius: 50%;
-    background-color: #fff;
-    -webkit-animation-duration: 0.6s;
-            animation-duration: 0.6s;
-    -webkit-animation-timing-function: ease;
-            animation-timing-function: ease;
-    -webkit-animation-iteration-count: infinite;
-            animation-iteration-count: infinite; }
-    .spinner .dot.dot1 {
-      left: 6px;
-      -webkit-animation-name: animateSpinner1;
-              animation-name: animateSpinner1; }
-    .spinner .dot.dot2 {
-      left: 6px;
-      -webkit-animation-name: animateSpinner2;
-              animation-name: animateSpinner2; }
-    .spinner .dot.dot3 {
-      left: 26px;
-      -webkit-animation-name: animateSpinner2;
-              animation-name: animateSpinner2; }
-    .spinner .dot.dot4 {
-      left: 45px;
-      -webkit-animation-name: animateSpinner3;
-              animation-name: animateSpinner3; }
-
 /*** Style Declarations ***/
 .shift-header, .shift-header *, .feed, .feed * {
   opacity: 1; }
@@ -214,8 +135,7 @@
     opacity: 0;
     z-index: -1; }
   .overlay .spinner {
-    -webkit-transform: scale(1.5);
-            transform: scale(1.5); }
+    transform: scale(1.5); }
     .overlay .spinner:not([hidden]) {
       opacity: 1; }
     .overlay .spinner[hidden] {
@@ -328,24 +248,19 @@
     height: 100%;
     border-radius: inherit;
     box-shadow: 0 0 10px;
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%);
+    transform: translateX(-100%);
     -webkit-animation: progressClimb 1.2s 0.4s linear forwards;
             animation: progressClimb 1.2s 0.4s linear forwards; }
 @-webkit-keyframes progressClimb {
   0% {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
 @keyframes progressClimb {
   0% {
-    -webkit-transform: translateX(-100%);
-            transform: translateX(-100%); }
+    transform: translateX(-100%); }
   100% {
-    -webkit-transform: translateX(0);
-            transform: translateX(0); } }
+    transform: translateX(0); } }
     body[data-theme="main"] .dropdown-panel.shift-code .header .progress {
       color: #f00; }
     body[data-theme="bl1"] .dropdown-panel.shift-code .header .progress {
@@ -394,34 +309,18 @@
       .dropdown-panel.shift-code .body .content input {
         display: block;
         position: absolute;
-        -webkit-transform: translateY(calc(-100% - 8px));
-                transform: translateY(calc(-100% - 8px));
+        transform: translateY(calc(-100% - 8px));
         width: 100%; }
       .dropdown-panel.shift-code .body .content .display {
         padding: 8px; }
       .dropdown-panel.shift-code .body .content .copy {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
         font-size: 1.1em;
-        padding: 8px 32px; }
-@-webkit-keyframes copiedToClipboard {
-  0%, 50%, 100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
-  25% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8); }
-  75% {
-    -webkit-transform: scale(1.2);
-            transform: scale(1.2); } }
-@keyframes copiedToClipboard {
-  0%, 50%, 100% {
-    -webkit-transform: scale(1);
-            transform: scale(1); }
-  25% {
-    -webkit-transform: scale(0.8);
-            transform: scale(0.8); }
-  75% {
-    -webkit-transform: scale(1.2);
-            transform: scale(1.2); } }
+        padding: 8px 32px;
+        background-color: #13293e; }
         .dropdown-panel.shift-code .body .content .copy::before {
           position: absolute;
           top: 0;
@@ -431,9 +330,6 @@
           border-radius: inherit;
           content: "";
           background-color: #fff; }
-        .dropdown-panel.shift-code .body .content .copy.animated .fas {
-          -webkit-animation: copiedToClipboard 0.5s linear;
-                  animation: copiedToClipboard 0.5s linear; }
         .dropdown-panel .section .content:not(:hover):not(:focus) .copy:not(:focus) {
           opacity: 0; }
         .dropdown-panel .section .content:hover .copy, .dropdown-panel .section .content:focus .copy {
