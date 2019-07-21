@@ -109,11 +109,10 @@
         .credits .banner:hover p {
           opacity: 1; }
   .credits .module {
-    flex: 1;
+    flex: 1 1 calc(50% - 16px);
     margin: 8px;
     padding: 8px;
-    background-color: #1d3f60;
-    min-width: calc(50% - 16px); }
+    background-color: #1d3f60; }
     .credits .module::before {
       position: absolute;
       top: 0;
