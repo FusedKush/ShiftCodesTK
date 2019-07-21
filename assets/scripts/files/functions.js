@@ -171,6 +171,11 @@ function getElements(parent, elements) {
           match();
         }
       }
+      else if (elements == 'clickables') {
+        if (type == 'a' || type == 'button') {
+          match();
+        }
+      }
       else if (elements == 'inputs') {
         if (type == 'input' || type == 'select' || type == 'textarea') {
           match();
