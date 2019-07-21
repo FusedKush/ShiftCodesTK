@@ -137,6 +137,12 @@ button.styled, a.button {
   border-radius: 4px;
   font-size: 1em;
   line-height: 1; }
+  button.styled:not(:focus):not(:hover):not([disabled])::before, a.button:not(:focus):not(:hover):not([disabled])::before, button.styled[disabled]::before, a.button[disabled]::before {
+    opacity: 0.15; }
+  button.styled:not(:focus):not(:hover):not([disabled])::after, a.button:not(:focus):not(:hover):not([disabled])::after, button.styled[disabled]::after, a.button[disabled]::after {
+    opacity: 0.5; }
+  button.styled:not([disabled]):not(:hover):not(:focus) span, a.button:not([disabled]):not(:hover):not(:focus) span, button.styled[disabled] span, a.button[disabled] span {
+    opacity: 0.85; }
   button.styled::before, button.styled::after, a.button::before, a.button::after {
     position: absolute;
     top: 0;
@@ -153,26 +159,20 @@ button.styled, a.button {
     border-radius: inherit; }
   button.styled:not(:last-child), a.button:not(:last-child) {
     margin-right: 8px; }
-  button.styled:not(:hover):not(:focus)::before, a.button:not(:hover):not(:focus)::before {
-    opacity: 0.15; }
-  button.styled:not(:hover):not(:focus)::after, a.button:not(:hover):not(:focus)::after {
-    opacity: 0.5; }
-  button.styled:not(:hover):not(:focus) span, a.button:not(:hover):not(:focus) span {
-    opacity: 0.85; }
-  button.styled:hover::before, button.styled:focus::before, a.button:hover::before, a.button:focus::before {
+  button.styled:not([disabled]):hover::before, button.styled:not([disabled]):focus::before, a.button:not([disabled]):hover::before, a.button:not([disabled]):focus::before {
     opacity: 0.25; }
-  button.styled:hover::after, button.styled:focus::after, a.button:hover::after, a.button:focus::after {
+  button.styled:not([disabled]):hover::after, button.styled:not([disabled]):focus::after, a.button:not([disabled]):hover::after, a.button:not([disabled]):focus::after {
     opacity: 0.75; }
-  button.styled:hover span, button.styled:focus span, a.button:hover span, a.button:focus span {
+  button.styled:not([disabled]):hover span, button.styled:not([disabled]):focus span, a.button:not([disabled]):hover span, a.button:not([disabled]):focus span {
     opacity: 1; }
-  button.styled:active::before, a.button:active::before {
+  button.styled:not([disabled]):active::before, a.button:not([disabled]):active::before {
     opacity: 0.5; }
 
 button:hover:not([disabled]), a:hover:not([disabled]) {
   cursor: pointer; }
 
 button[disabled], a[disabled], input[disabled], select[disabled], textarea[disabled] {
-  opacity: .5;
+  opacity: .5 !important;
   cursor: not-allowed !important; }
 
 ul.styled {
