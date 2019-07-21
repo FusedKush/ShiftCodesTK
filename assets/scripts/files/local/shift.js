@@ -480,7 +480,7 @@ function addPanelListeners(panel) {
     function executeWhenReady() {
       if (typeof newAjaxRequest == 'function' && typeof getDate == 'function') {
         // Fetch SHiFT Codes
-        newAjaxRequest('GET', ('assets/php/scripts/shift/retrieveCodes.php?gameID=') + shiftData.id, function (response) {
+        newAjaxRequest('GET', ('/assets/php/scripts/shift/retrieveCodes.php?gameID=') + shiftData.id, function (response) {
           let retrievedCodes = JSON.parse(response).response;
               count.retrieved = retrievedCodes.length;
 
@@ -500,7 +500,11 @@ function addPanelListeners(panel) {
           }
         });
       }
-      else { setTimeout(function () { executeWhenReady(); }, 100); }
+      else {
+        setTimeout(function () {
+          executeWhenReady();
+        }, 100);
+      }
     }
 
     executeWhenReady();

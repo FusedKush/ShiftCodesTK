@@ -269,6 +269,8 @@
       color: #ff4500; }
     body[data-theme="tps"] .dropdown-panel.shift-code .header .progress {
       color: #1e90ff; }
+    body[data-theme="bl3"] .dropdown-panel.shift-code .header .progress {
+      color: #ffa900; }
     body[data-theme="main"] .dropdown-panel.shift-code .header .progress {
       background-color: #f00; }
     body[data-theme="bl1"] .dropdown-panel.shift-code .header .progress {
@@ -277,6 +279,8 @@
       background-color: #ff4500; }
     body[data-theme="tps"] .dropdown-panel.shift-code .header .progress {
       background-color: #1e90ff; }
+    body[data-theme="bl3"] .dropdown-panel.shift-code .header .progress {
+      background-color: #ffa900; }
   .dropdown-panel.shift-code .body {
     grid-template-columns: repeat(2, 1fr);
     padding: 8px; }

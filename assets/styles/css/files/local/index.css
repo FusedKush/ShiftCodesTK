@@ -39,7 +39,7 @@ section {
   section.tps {
     border-color: #1e90ff; }
   section.bl3 {
-    border-color: #ffb600; }
+    border-color: #ffa900; }
   section.main {
     padding-top: 64px;
     text-align: center;
@@ -53,7 +53,7 @@ section {
     body[data-theme="tps"] section.main {
       border-color: #1e90ff; }
     body[data-theme="bl3"] section.main {
-      border-color: #ffb600; }
+      border-color: #ffa900; }
     section.main .content-wrapper {
       display: flex;
       justify-content: center;
@@ -147,7 +147,7 @@ section {
           section.main .action .string .selected.tps::before {
             color: #1e90ff; }
           section.main .action .string .selected.bl3::before {
-            color: #ffb600; }
+            color: #ffa900; }
       section.main .action .link-container {
         display: flex;
         flex-wrap: wrap;
@@ -156,7 +156,7 @@ section {
         section.main .action .link-container .button {
           flex: 1;
           margin: 4px;
-          min-width: 4em; }
+          min-width: 6.5em; }
   section.secondary {
     min-height: calc(75vh + 2px - 64px); }
     section.secondary:nth-of-type(odd) .content-wrapper {
@@ -180,7 +180,7 @@ section {
       section.secondary.tps .intro {
         border-color: #1e90ff; }
       section.secondary.bl3 .intro {
-        border-color: #ffb600; }
+        border-color: #ffa900; }
     section.secondary .quote {
       color: rgba(255, 255, 255, 0.75); }
       section.secondary .quote::before, section.secondary .quote::after {
@@ -230,7 +230,7 @@ section {
     section a.button.tps::before {
       background-color: #1e90ff; }
     section a.button.bl3::before {
-      background-color: #ffb600; }
+      background-color: #ffa900; }
     section a.button:not(:focus):not(:hover):not([disabled])::before, section a.button[disabled]::before {
       opacity: 0; }
     section a.button:not(:focus):not(:hover):not([disabled])::after, section a.button[disabled]::after {
