@@ -100,6 +100,7 @@ Sidebar Styles
       grid-template-columns: 64px 1fr;
       padding: 16px 32px 16px 0;
       line-height: $df-line-height;
+      text-shadow: dropShadow(tpb(0.25));
 
       &::before { @include fill(true, #000); }
 
@@ -139,11 +140,11 @@ Sidebar Styles
         &::before { @include theme(bg); }
 
         .badges .badge {
-          color: #000;
-
+          // color: #fff;
+          
           &::before {
-            background-color: #fff;
-            border-color: #000;
+            background-color: tpb(0.25);
+            border: bd(1.5px);
           }
         }
 
@@ -171,6 +172,8 @@ Sidebar Styles
       .badge {
         padding: 5px 10px;
         line-height: 1;
+        border-radius: 20px;
+        box-shadow: dropShadow(tpb(0.25));
 
         &::after { border: bd(1px); }
         &::before, &::after { @include fill(true); }
