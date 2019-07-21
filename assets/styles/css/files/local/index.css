@@ -157,40 +157,39 @@ section {
           flex: 1;
           margin: 4px;
           min-width: 6.5em; }
-  section.secondary {
+  section:not(.main) {
     min-height: calc(75vh + 2px - 64px); }
-    section.secondary:nth-of-type(odd) .content-wrapper {
-      align-items: flex-end;
-      text-align: end; }
-    section.secondary .content-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      flex-direction: column; }
-    section.secondary .intro {
-      font-size: 1.25em;
-      padding-bottom: 8px;
-      margin-bottom: 12px;
-      border-bottom: 3px solid;
-      max-width: 25em; }
-      section.secondary.bl1 .intro {
-        border-color: #dc143c; }
-      section.secondary.bl2 .intro {
-        border-color: #ff4500; }
-      section.secondary.tps .intro {
-        border-color: #1e90ff; }
-      section.secondary.bl3 .intro {
-        border-color: #ffa900; }
-    section.secondary .quote {
-      color: rgba(255, 255, 255, 0.75); }
-      section.secondary .quote::before, section.secondary .quote::after {
-        opacity: 0.75;
-        content: '"'; }
-    section.secondary .button {
-      font-size: 1.5em; }
+  section.secondary:nth-of-type(odd) .content-wrapper {
+    align-items: flex-end;
+    text-align: end; }
+  section.secondary .content-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column; }
+  section.secondary .intro {
+    font-size: 1.25em;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 3px solid;
+    max-width: 25em; }
+    section.secondary.bl1 .intro {
+      border-color: #dc143c; }
+    section.secondary.bl2 .intro {
+      border-color: #ff4500; }
+    section.secondary.tps .intro {
+      border-color: #1e90ff; }
+    section.secondary.bl3 .intro {
+      border-color: #ffa900; }
+  section.secondary .quote {
+    color: rgba(255, 255, 255, 0.75); }
+    section.secondary .quote::before, section.secondary .quote::after {
+      opacity: 0.75;
+      content: '"'; }
+  section.secondary .button {
+    font-size: 1.5em; }
   section.faq {
     border-color: #f00;
-    min-height: calc(50vh + 2px);
     padding-top: 32px; }
     section.faq .content-wrapper {
       display: flex;
