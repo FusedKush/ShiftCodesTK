@@ -673,6 +673,14 @@ function execGlobalScripts () {
         shiftBadgeCount = JSON.parse(request).response.alerts;
       });
     })();
+    // Add inner span to buttons and links
+    (function () {
+      let clickables = getElements(document, 'clickables');
+
+      for (let i = 0; i < clickables.length; i++) {
+        fixClickableContent(clickables[i]);
+      }
+    })();
     // Check for DevTools support
     (function () {
       let params = window.location.search;
@@ -692,14 +700,6 @@ function execGlobalScripts () {
         tools.async = true;
         tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
         document.body.appendChild(tools);
-      }
-    })();
-    // Add inner span to buttons and links
-    (function () {
-      let clickables = getElements(document, 'clickables');
-
-      for (let i = 0; i < clickables.length; i++) {
-        fixClickableContent(clickables[i]);
       }
     })();
 
