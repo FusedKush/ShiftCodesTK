@@ -145,29 +145,29 @@ Sidebar Styles
           background-color: #0057ff; }
         .sidebar li a:not([data-selected="true"]) .badges .badge.exp::before, .sidebar li a[data-selected="false"] .badges .badge.exp::before {
           background-color: #ff8c00; }
-      .sidebar li a:not([data-selected="true"]):not(:hover):not(:focus), .sidebar li a[data-selected="false"]:not(:hover):not(:focus) {
+      .sidebar li a:not([data-selected="true"]):not([disabled]):not(:hover):not(:focus), .sidebar li a[data-selected="false"]:not([disabled]):not(:hover):not(:focus), .sidebar li a[disabled]:not([data-selected="true"]), .sidebar li a[data-selected="false"][disabled] {
         opacity: 0.75; }
-        .sidebar li a:not([data-selected="true"]):not(:hover):not(:focus)::before, .sidebar li a[data-selected="false"]:not(:hover):not(:focus)::before {
+        .sidebar li a:not(:focus):not(:hover):not([disabled]):not([data-selected="true"])::before, .sidebar li a[data-selected="false"]:not(:focus):not(:hover):not([disabled])::before, .sidebar li a[disabled]:not([data-selected="true"])::before, .sidebar li a[data-selected="false"][disabled]::before {
           opacity: 0; }
-        .sidebar li a:not([data-selected="true"]):not(:hover):not(:focus) .badges .badge::before, .sidebar li a[data-selected="false"]:not(:hover):not(:focus) .badges .badge::before {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):not(:hover):not(:focus) .badges .badge::before, .sidebar li a[data-selected="false"]:not([disabled]):not(:hover):not(:focus) .badges .badge::before, .sidebar li a[disabled]:not([data-selected="true"]) .badges .badge::before, .sidebar li a[data-selected="false"][disabled] .badges .badge::before {
           opacity: 0; }
-        .sidebar li a:not([data-selected="true"]):not(:hover):not(:focus) .badges .badge::after, .sidebar li a[data-selected="false"]:not(:hover):not(:focus) .badges .badge::after {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):not(:hover):not(:focus) .badges .badge::after, .sidebar li a[data-selected="false"]:not([disabled]):not(:hover):not(:focus) .badges .badge::after, .sidebar li a[disabled]:not([data-selected="true"]) .badges .badge::after, .sidebar li a[data-selected="false"][disabled] .badges .badge::after {
           opacity: 1; }
-      .sidebar li a:not([data-selected="true"]):hover, .sidebar li a:not([data-selected="true"]):focus, .sidebar li a[data-selected="false"]:hover, .sidebar li a[data-selected="false"]:focus {
+      .sidebar li a:not([data-selected="true"]):not([disabled]):hover, .sidebar li a:not([data-selected="true"]):not([disabled]):focus, .sidebar li a[data-selected="false"]:not([disabled]):hover, .sidebar li a[data-selected="false"]:not([disabled]):focus {
         opacity: 1; }
-        .sidebar li a:not([data-selected="true"]):hover::before, .sidebar li a:not([data-selected="true"]):focus::before, .sidebar li a[data-selected="false"]:hover::before, .sidebar li a[data-selected="false"]:focus::before {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):hover::before, .sidebar li a:not([data-selected="true"]):not([disabled]):focus::before, .sidebar li a[data-selected="false"]:not([disabled]):hover::before, .sidebar li a[data-selected="false"]:not([disabled]):focus::before {
           opacity: 0.2; }
-        .sidebar li a:not([data-selected="true"]):hover .badges .badge::before, .sidebar li a:not([data-selected="true"]):focus .badges .badge::before, .sidebar li a[data-selected="false"]:hover .badges .badge::before, .sidebar li a[data-selected="false"]:focus .badges .badge::before {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):hover .badges .badge::before, .sidebar li a:not([data-selected="true"]):not([disabled]):focus .badges .badge::before, .sidebar li a[data-selected="false"]:not([disabled]):hover .badges .badge::before, .sidebar li a[data-selected="false"]:not([disabled]):focus .badges .badge::before {
           opacity: 1; }
-        .sidebar li a:not([data-selected="true"]):hover .badges .badge::after, .sidebar li a:not([data-selected="true"]):focus .badges .badge::after, .sidebar li a[data-selected="false"]:hover .badges .badge::after, .sidebar li a[data-selected="false"]:focus .badges .badge::after {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):hover .badges .badge::after, .sidebar li a:not([data-selected="true"]):not([disabled]):focus .badges .badge::after, .sidebar li a[data-selected="false"]:not([disabled]):hover .badges .badge::after, .sidebar li a[data-selected="false"]:not([disabled]):focus .badges .badge::after {
           opacity: 0; }
-      .sidebar li a:not([data-selected="true"]):active, .sidebar li a[data-selected="false"]:active {
+      .sidebar li a:not([data-selected="true"]):not([disabled]):active, .sidebar li a[data-selected="false"]:not([disabled]):active {
         opacity: 1; }
-        .sidebar li a:not([data-selected="true"]):active::before, .sidebar li a[data-selected="false"]:active::before {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):active::before, .sidebar li a[data-selected="false"]:not([disabled]):active::before {
           opacity: 0.4; }
-        .sidebar li a:not([data-selected="true"]):active .badges .badge::before, .sidebar li a[data-selected="false"]:active .badges .badge::before {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):active .badges .badge::before, .sidebar li a[data-selected="false"]:not([disabled]):active .badges .badge::before {
           opacity: 1; }
-        .sidebar li a:not([data-selected="true"]):active .badges .badge::after, .sidebar li a[data-selected="false"]:active .badges .badge::after {
+        .sidebar li a:not([data-selected="true"]):not([disabled]):active .badges .badge::after, .sidebar li a[data-selected="false"]:not([disabled]):active .badges .badge::after {
           opacity: 0; }
       .sidebar li a[data-selected="true"] {
         opacity: 1; }
