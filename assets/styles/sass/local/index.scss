@@ -132,9 +132,10 @@ section {
       }
     }
   }
-  &.secondary {
+  &:not(.main) {
     min-height: calc(75vh + #{$sBorderWidth} - 64px);
-
+  }
+  &.secondary {
     &:nth-of-type(odd) .content-wrapper {
       align-items: flex-end;
       text-align: end;
@@ -175,7 +176,6 @@ section {
   }
   &.faq {
     border-color: $theme-main;
-    min-height: calc(50vh + #{$sBorderWidth});
     padding-top: 32px;
 
     .content-wrapper {
@@ -196,6 +196,7 @@ section {
       text-shadow: none;
     }
   }
+
 
   .content-wrapper {
     @include multiProp(100%, sizing);
