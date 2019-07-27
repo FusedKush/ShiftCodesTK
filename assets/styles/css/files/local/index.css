@@ -18,8 +18,9 @@ section {
   background-position: center;
   background-size: cover;
   flex: 1;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.75); }
-  section::before {
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); }
+  section:not(.faq)::before {
     position: absolute;
     top: 0;
     left: 0;
@@ -85,32 +86,28 @@ section {
         color: rgba(255, 255, 255, 0.75); }
         section.main .action .string .selected {
           color: #fff;
-          margin-bottom: 3px;
-          -webkit-animation-duration: 0.75s;
-                  animation-duration: 0.75s;
-          -webkit-animation-timing-function: ease-out;
-                  animation-timing-function: ease-out; }
+          margin-bottom: 3px; }
 @-webkit-keyframes chosenText {
-  0%, 100% {
-    text-shadow: none; }
+  0% {
+    opacity: 1; }
   50% {
-    text-shadow: 0 0 5px currentcolor; } }
+    opacity: 0.5; } }
 @keyframes chosenText {
-  0%, 100% {
-    text-shadow: none; }
+  0% {
+    opacity: 1; }
   50% {
-    text-shadow: 0 0 5px currentcolor; } }
+    opacity: 0.5; } }
 @-webkit-keyframes chosenBorder {
   0% {
     opacity: 0;
-    transform: translateY(10%); }
+    transform: translateY(25%); }
   50%, 100% {
     opacity: 1;
     transform: translateY(0); } }
 @keyframes chosenBorder {
   0% {
     opacity: 0;
-    transform: translateY(10%); }
+    transform: translateY(25%); }
   50%, 100% {
     opacity: 1;
     transform: translateY(0); } }
@@ -126,8 +123,8 @@ section {
             border-bottom: 3px solid;
             opacity: 0; }
           section.main .action .string .selected, section.main .action .string .selected::before {
-            -webkit-animation-duration: 0.5s;
-                    animation-duration: 0.5s;
+            -webkit-animation-duration: 0.75s;
+                    animation-duration: 0.75s;
             -webkit-animation-timing-function: ease-out;
                     animation-timing-function: ease-out;
             -webkit-animation-fill-mode: forwards;
@@ -138,8 +135,6 @@ section {
             section.main .action .string .selected.chosen::before {
               -webkit-animation-name: chosenBorder;
                       animation-name: chosenBorder; }
-          section.main .action .string .selected:not(.chosen)::before {
-            border-color: transparent; }
           section.main .action .string .selected.bl1::before {
             color: #dc143c; }
           section.main .action .string .selected.bl2::before {
@@ -210,9 +205,11 @@ section {
     width: 100%; }
     @media screen and (max-width: 499px) {
       section .content-wrapper {
+        font-size: 0.85em;
         padding: 32px 16px; } }
     @media screen and (min-width: 500px) {
       section .content-wrapper {
+        font-size: 1em;
         padding: 32px; } }
   section a.button {
     background-color: rgba(255, 255, 255, 0.15);
