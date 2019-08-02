@@ -25,11 +25,6 @@ module.exports = function(grunt) {
     },
     postcss: {
       prefix: {
-        options: {
-          processors: [
-            require('autoprefixer')({browsers: 'defaults'})
-          ]
-        },
         files: [{
           expand: true,
           cwd: "assets/styles/css/files",
