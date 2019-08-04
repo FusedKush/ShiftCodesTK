@@ -2,13 +2,7 @@
 .*
 .*/**/*
 node_modules/
-public/
 **/dbConfig.php
-
-# Ignore Processed / Minified Files
-min/
-assets/scripts/parsed/
-assets/styles/css/
 
 # Allow
 !.htaccess

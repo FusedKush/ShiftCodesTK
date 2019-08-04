@@ -1,0 +1,139 @@
+/*********************************
+  Credits Page Styles
+*********************************/
+/*** Imports ***/
+/*********************************
+  Global Sass Declarations
+*********************************/
+/*** Variables ***/
+/*** Functions ***/
+/*** Mixins ***/
+/*** Style Declarations ***/
+main, main * {
+  opacity: 1; }
+
+h2 {
+  font-size: 1.5em; }
+
+.toc {
+  border-radius: 4px; }
+  .toc::before {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.25); }
+  .toc .title {
+    font-size: 1.5em; }
+  .toc .section:not(:first-child) {
+    margin-top: 12px; }
+  .toc h3 a:not(:hover):not(:focus) {
+    text-decoration: none; }
+  .toc h3 a:hover, .toc h3 a:focus {
+    text-decoration: underline; }
+  .toc h3 a:active {
+    opacity: 0.75; }
+  .toc li a:not(:hover):not(:focus) {
+    opacity: 0.75; }
+  .toc li a:hover, .toc li a:focus {
+    opacity: 1; }
+  .toc li a:active {
+    text-decoration: underline; }
+
+.faq-group:not(:first-child) {
+  margin-top: 32px; }
+
+.faq-group header {
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.25); }
+
+@keyframes headerHashTargetVisible {
+  0%, 50%, 100% {
+    opacity: 1; }
+  25%, 75% {
+    opacity: 0.25; } }
+
+@keyframes headerHashTargetSeen {
+  0% {
+    opacity: 0.25; }
+  100% {
+    opacity: 1; } }
+  section.group[data-hashtarget="visible"] h2 {
+    animation: headerHashTargetVisible 2.5s linear infinite; }
+  section.group[data-hashtarget="seen"] h2 {
+    animation: headerHashTargetSeen 0.75s linear; }
+
+/*********************************
+  Support Footer Styles
+*********************************/
+.support-footer {
+  background-color: #224365; }
+  .support-footer, .support-footer * {
+    opacity: 1; }
+  .support-footer .header {
+    font-size: 1.5em;
+    padding: 16px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.25); }
+  .support-footer .body .content-wrapper {
+    display: flex;
+    flex-wrap: wrap; }
+  .support-footer .body .panel {
+    padding: 8px;
+    flex: 1; }
+    .support-footer .body .panel .title {
+      font-size: 1.25em;
+      margin: 8px;
+      text-align: center;
+      line-height: 1; }
+    .support-footer .body .panel .button-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .support-footer .body .panel .button-wrapper a {
+        position: relative;
+        display: flex;
+        align-items: center;
+        font-size: 1em;
+        margin: 8px;
+        padding: 8px;
+        line-height: 1;
+        border-radius: 4px;
+        overflow: hidden; }
+        .support-footer .body .panel .button-wrapper a::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          border-radius: inherit;
+          content: "";
+          background-color: #fff; }
+        .support-footer .body .panel .button-wrapper a:not(:hover):not(:focus)::before {
+          opacity: 0.2; }
+        .support-footer .body .panel .button-wrapper a:hover::before, .support-footer .body .panel .button-wrapper a:focus::before {
+          opacity: 0.4; }
+        .support-footer .body .panel .button-wrapper a:active {
+          opacity: 0.75; }
+        .support-footer .body .panel .button-wrapper a * {
+          position: relative; }
+        .support-footer .body .panel .button-wrapper a .icon {
+          font-size: 1.5em;
+          padding-right: 8px; }
+        .support-footer .body .panel .button-wrapper a .label {
+          display: flex;
+          justify-content: center;
+          align-items: flex-start;
+          flex-direction: column;
+          line-height: normal;
+          font-size: 0.75em; }
+  .support-footer .body .separator {
+    background-color: rgba(15, 29, 44, 0.35); }
+    @media screen and (max-width: 649px) {
+      .support-footer .body .separator {
+        height: 2px;
+        width: 100%;
+        margin: 0 8px; } }
+    @media screen and (min-width: 650px) {
+      .support-footer .body .separator {
+        width: 3px;
+        margin: 8px 0; } }
