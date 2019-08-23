@@ -4,11 +4,12 @@
 
 /*** Variables ***/
 // Primary Site Theme
-$site-color-main:        #0f1d2c;              // Main Color
-$site-color-light:       #152c42;              // Light Accent
-$site-color-lighter:     #1d3f60;              // Lighter Accent
-$site-color-dark:        #091320;              // Dark Accent
-$site-color-darker:      #060c12;              // Darker Accent
+$site-color-main:        #0f1d2c; // Main Color
+// Accents
+$site-color-light:       adjust-color($site-color-main, $lightness: 10%);
+$site-color-lighter:     adjust-color($site-color-main, $lightness: 15%);
+$site-color-dark:        adjust-color($site-color-main, $lightness: -5%);
+$site-color-darker:      adjust-color($site-color-main, $lightness: -10%);
 
 // Secondary Site Themes
 $theme-main:             #f00;                 // Main Theme Color
