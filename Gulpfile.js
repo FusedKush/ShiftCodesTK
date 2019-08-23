@@ -11,6 +11,9 @@ var monitoredFiles = [
   '!./*node_modules/**',
   '!./*public/**'
 ];
+var allDirs = {
+
+}
 // Watcher Event Logger
 function watchLog (cb) {
   gulp.watch(monitoredFiles)
@@ -87,16 +90,9 @@ async function configured (task) {
   console.log(`Task "${task}" Configured.`);
   return Promise.resolve();
 }
-function watcher (dir, task) {
-  var options = {
-    ignoreInitial: false
-  };
-
-  return gulp.watch(dir, options, task);
-}
 
 // CSS
-function setupCSS (cb) {
+(function () {
   var runSass, runPostcss, runConcat;
   var dirs = {};
     (function () {
@@ -108,8 +104,8 @@ function setupCSS (cb) {
       dirs.sassGlob = `${dirs.sass}**/*.scss`;
       dirs.fileGlob = `${dirs.cssFiles}**/*.css`;
       dirs.minGlob = `${dirs.cssMin}**/*.min.css`;
+      allDirs.css = dirs;
     })();
-
   // SASS
   (function () {
     var sass = require('gulp-sass');
@@ -153,7 +149,7 @@ function setupCSS (cb) {
     var sharedName = 'shared-styles.min.css';
 
     runConcat = function () {
-      return gulp.src([`${dirs.cssMin}shared/global.min.css`, dirs.minGlob])
+      return gulp.src([`${dirs.cssMin}shared/global.min.css`, `${dirs.cssMin}shared/**/*.min.css`])
         .pipe(newer(`${dirs.cssMin}/${sharedName}`))
         .pipe(concat(sharedName))
         .pipe(gulp.dest(dirs.cssMin));
@@ -166,15 +162,10 @@ function setupCSS (cb) {
   }
 
   exports.css = gulp.series(runSass, runPostcss, runConcat, finished);
-  // Monitor CSS
-  watcher(dirs.sassGlob, exports.css);
-  // Sync
-  keepInSync(dirs.sassGlob, [dirs.cssFiles, dirs.cssMin], 'delete');
   configured('CSS');
-  cb();
-}
+})();
 // Javscript
-function setupJS (cb) {
+(function () {
   var runBabel, runUglifier, runConcat;
   var dirs = {};
     (function () {
@@ -185,6 +176,8 @@ function setupJS (cb) {
       dirs.fileGlob = `${dirs.files}**/*.js`;
       dirs.parsedGlob = `${dirs.parsed}**/*.js`;
       dirs.minGlob = `${dirs.min}**/*.min.js`;
+      allDirs.js = dirs;
+
     })();
 
   // Babel
@@ -229,15 +222,10 @@ function setupJS (cb) {
   }
 
   exports.js = gulp.series(runBabel, runUglifier, runConcat, finished);
-  // Monitor JS
-  watcher(dirs.fileGlob, exports.js);
-  // Sync contents
-  keepInSync(dirs.fileGlob, [dirs.parsed, dirs.min], 'delete');
   configured('JS');
-  cb();
-}
+})();
 // HTML
-function setupHTML (cb) {
+(function () {
   var runMinifier, runSync;
   var dirs = {};
     (function () {
@@ -246,6 +234,7 @@ function setupHTML (cb) {
       dirs.min = `${dirs.html}/min/`;
       dirs.fileGlob = `${dirs.files}**/*.php`;
       dirs.minGlob = `${dirs.min}**/*.php`;
+      allDirs.html = dirs;
     })();
 
   // Minifier
@@ -296,15 +285,10 @@ function setupHTML (cb) {
   }
 
   exports.html = gulp.series(runMinifier, runSync, finished);
-  // Monitor JS
-  watcher(dirs.fileGlob, exports.html);
-  // Sync contents
-  keepInSync(dirs.fileGlob, dirs.min, 'delete');
   configured('HTML');
-  cb();
-}
+})();
 // Configure browserSync
-function setupBrowserSync (cb) {
+function startBrowsersync (cb) {
   var ports = {
     web: 35729,
     ui: 35730
@@ -316,12 +300,7 @@ function setupBrowserSync (cb) {
     ui: {
       port: ports.ui
     },
-    // Server
-    server: {
-      baseDir: "./",
-      index: "index.php"
-    },
-    /* proxy: "localhost:2600", */
+    proxy: "localhost:2600",
     // Watch
     files: [
       './assets/**/min/**/*',
@@ -329,19 +308,36 @@ function setupBrowserSync (cb) {
     ],
     // Preferences
     open: false,
-    logLevel: "silent"
+    logLevel: "silent",
+    notifify: false
   });
   console.log(`|*| BrowserSync initialized on Ports ${ports.web} (Web) and ${ports.ui} (UI)`);
   cb();
 }
-
+function defaultWatchers (cb) {
+  let dirs = {};
+  // Monitor CSS
+  dirs = allDirs.css;
+  gulp.watch(dirs.sassGlob, exports.css);
+  keepInSync(dirs.sassGlob, [dirs.cssFiles, dirs.cssMin], 'delete');
+  // Monitor JS
+  dirs = allDirs.js;
+  gulp.watch(dirs.fileGlob, exports.js);
+  keepInSync(dirs.fileGlob, [dirs.parsed, dirs.min], 'delete');
+  // Monitor JS
+  dirs = allDirs.html;
+  gulp.watch(dirs.fileGlob, exports.html);
+  keepInSync(dirs.fileGlob, dirs.min, 'delete');
+  console.log('Default Watchers Registered.');
+  cb();
+}
 function startup () {
   function startupFinished (cb) {
     console.log('Gulp - Initialized Defaults');
     cb();
   }
 
-  return gulp.series(gulp.parallel(setupCSS, setupJS, setupHTML, setupBrowserSync, watchLog), startupFinished);
+  return gulp.series(gulp.parallel(startBrowsersync, defaultWatchers, watchLog), startupFinished);
 }
 function copyToPublic (cb) {
   let glob = [
@@ -362,5 +358,6 @@ function copyToPublic (cb) {
   cb();
 }
 
-exports.default = startup();
+exports.startup = startup();
 exports.public = copyToPublic;
+exports.default = exports.startup;
