@@ -743,6 +743,24 @@ function execGlobalScripts () {
     })();
     window.addEventListener('click', handleFocusLock);
     window.addEventListener('keydown', handleFocusLock);
+    // Update Dropdown Menu Pos
+    (function () {
+      let container = document.getElementById('dropdown_menu_container');
+
+      if (container !== null) {
+        let dropdowns = getClasses(container, 'dropdown-menu');
+        
+        window.addEventListener('resize', function (e) {
+          for (let i = 0; i < dropdowns.length; i++) {
+            let dd = dropdowns[i];
+
+            if (dd.getAttribute('data-expanded')) {
+              updateDropdownMenuPos(dd);
+            }
+          }
+        });
+      }
+    })();
   }
   else {
     setTimeout(execGlobalScripts, 250);
