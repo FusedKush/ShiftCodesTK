@@ -90,9 +90,10 @@
   .module {
     $margins: 8px;
 
-    flex: 1 1 calc(50% - #{$margins * 2});;
+    flex: 1;
     @include spacing($margins, 8px);
     background-color: $site-color-lighter;
+    min-width: calc(50% - #{$margins * 2});
 
     &::before { @include fill(true, #000); }
 
