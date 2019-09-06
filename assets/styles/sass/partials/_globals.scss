@@ -15,13 +15,11 @@ $theme-main:             #f00;                 // Main Theme Color
 $theme-bl1:              #dc143c;              // BL1: GOTY Theme Color
 $theme-bl2:              #ff4500;              // Borderlands 2 Theme Color
 $theme-tps:              #1e90ff;              // Borderlands: TPS Theme Color
-$theme-bl3:              #ffa900;              // Borderlands 3 Theme Color
 $themeColors: (                                // Theme Color Definition List
                          main: $theme-main,
                          bl1: $theme-bl1,
                          bl2: $theme-bl2,
-                         tps: $theme-tps,
-                         bl3: $theme-bl3
+                         tps: $theme-tps
               );
 
 // Misc. Site Properties
@@ -86,9 +84,7 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 /*** Mixins ***/
 // Content Styles Loaded
 @mixin ready {
-  &, * {
-    opacity: 1;
-  }
+  &, * { opacity: 1; }
 }
 // Layout //
 // Flexbox

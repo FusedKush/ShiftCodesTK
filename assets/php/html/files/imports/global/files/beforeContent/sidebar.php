@@ -28,12 +28,6 @@
           <span class="name">Borderlands: TPS</span>
         </a>
       </li>
-      <li>
-        <a href="#/bl3" data-use-badges="bl3" disabled aria-disabled="true" tabindex="-1">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands 3</span>
-        </a>
-      </li>
       <div class="separator"></div>
       <li>
         <a href="/about-us">

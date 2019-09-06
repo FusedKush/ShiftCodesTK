@@ -19,8 +19,6 @@ body[data-theme="bl2"] .primary-footer {
   background-color: #ff4500; }
 body[data-theme="tps"] .primary-footer {
   background-color: #1e90ff; }
-body[data-theme="bl3"] .primary-footer {
-  background-color: #ffa900; }
 .primary-footer .primary.content-wrapper {
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;

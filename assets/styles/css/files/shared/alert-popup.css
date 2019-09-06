@@ -73,8 +73,6 @@
     background-color: #ff4500; }
   body[data-theme="tps"] .alert-popup {
     background-color: #1e90ff; }
-  body[data-theme="bl3"] .alert-popup {
-    background-color: #ffa900; }
   .alert-popup:not(:first-child) {
     margin-top: 8px; }
   .alert-popup[data-expanded="true"] {

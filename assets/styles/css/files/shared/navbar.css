@@ -44,8 +44,6 @@
       background-color: #ff4500; }
     body[data-theme="tps"] .navbar::before {
       background-color: #1e90ff; }
-    body[data-theme="bl3"] .navbar::before {
-      background-color: #ffa900; }
   .navbar .content-wrapper {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
