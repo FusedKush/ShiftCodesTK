@@ -93,11 +93,8 @@ function sidebarMarkup () {
     li[i].setAttribute('role', 'menuitem');
     link.classList.add('link');
     link.id = id;
+    link.setAttribute('aria-labelledby', id + ('_name'));
     link.getElementsByClassName('name')[0].id = id + ('_name');
-
-    if (link.getAttribute('aria-label') === null) {
-      link.setAttribute('aria-labelledby', id + ('_name'));
-    }
   }
   for (i = 0; i < links.length; i++) {
     links[i].classList.add('no-focus-scroll');

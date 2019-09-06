@@ -126,32 +126,22 @@ Sidebar Styles
           &.exp::before { background-color: $badge-exp; }
         }
 
-        @at-root %idleLink {
+        @include mouseState(noHover) {
           @include linkStyles(0.75, 0, 0, 1);
         }
-
-        &:not([disabled]) {
-          @include mouseState(noHover) {
-            @extend %idleLink;
-          }
-          @include mouseState(hover) {
-            @include linkStyles(1, 0.2, 1, 0);
-          }
-          @include mouseState(click) {
-            @include linkStyles(1, 0.4, 1, 0);
-          }
+        @include mouseState(hover) {
+          @include linkStyles(1, 0.2, 1, 0);
         }
-        &[disabled] {
-          @extend %idleLink;
+        @include mouseState(click) {
+          @include linkStyles(1, 0.4, 1, 0);
         }
-
       }
       &[data-selected="true"] {
         &::before { @include theme(bg); }
 
         .badges .badge {
           // color: #fff;
-
+          
           &::before {
             background-color: tpb(0.25);
             border: bd(1.5px);

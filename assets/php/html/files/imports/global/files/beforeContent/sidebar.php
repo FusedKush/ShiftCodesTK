@@ -29,7 +29,7 @@
         </a>
       </li>
       <li>
-        <a href="#/bl3" data-use-badges="bl3" disabled aria-disabled="true" tabindex="-1" title="Coming soon! Available September 13th, 2019" aria-label="Coming soon! Available September 13th, 2019">
+        <a href="#/bl3" data-use-badges="bl3" disabled aria-disabled="true" tabindex="-1">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 3</span>
         </a>
