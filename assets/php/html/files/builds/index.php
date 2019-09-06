@@ -77,7 +77,7 @@
           </div>
         </div>
       </section>
-      <section class="faq">
+      <section class="faq" data-webp='{"path": "/assets/img/banners/help/faq", "alt": ".jpg", "type": "bg"}'>
         <div class="content-wrapper">
           <h2 class="title">Frequently Asked Questions</h2>
           <div class="questions">

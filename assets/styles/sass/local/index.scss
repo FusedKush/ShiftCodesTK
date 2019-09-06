@@ -15,9 +15,8 @@ section {
   @include bgImg;
   flex: 1;
   text-shadow: dropShadow(tpb(0.75));
-  box-shadow: shadow(tpb(0.5), 10px);
 
-  &:not(.faq)::before {
+  &::before {
     @include fill(true, tpb(0.6));
   }
   &:not(:first-of-type) {
@@ -79,16 +78,17 @@ section {
           }
 
           @keyframes chosenText {
-            0%  { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { text-shadow: none; }
+            50%      { text-shadow: shadow($radius: 5px); }
           }
           @keyframes chosenBorder {
-            0%        { @include borderAnimation(0, 25%); }
+            0%        { @include borderAnimation(0, 10%); }
             50%, 100% { @include borderAnimation(1, 0); }
           }
 
           color: #fff;
           margin-bottom: $selectedBorderSize;
+          @include animation(0.75s, ease-out);
 
           &::before {
             @include fill(true);
@@ -97,7 +97,7 @@ section {
             opacity: 0;
           }
           &, &::before {
-            @include animation(0.75s, ease-out, $fill: forwards);
+            @include animation(0.5s, ease-out, $fill: forwards);
           }
           &.chosen {
             animation-name: chosenText;
@@ -105,6 +105,9 @@ section {
             &::before {
               animation-name: chosenBorder;
             }
+          }
+          &:not(.chosen)::before {
+            border-color: transparent;
           }
 
           @each $themeN, $themeV in $themeColors {
@@ -198,14 +201,8 @@ section {
   .content-wrapper {
     @include multiProp(100%, sizing);
 
-    @media screen and (max-width: 499px) {
-      font-size: 0.85em;
-      padding: 32px 16px;
-    }
-    @media screen and (min-width: 500px) {
-      font-size: 1em;
-      padding: 32px;
-    }
+    @media screen and (max-width: 499px) { padding: 32px 16px; }
+    @media screen and (min-width: 500px) { padding: 32px; }
   }
   a.button {
     background-color: tpw(0.15);
