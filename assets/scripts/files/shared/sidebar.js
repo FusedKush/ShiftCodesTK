@@ -88,10 +88,9 @@ function sidebarMarkup () {
 
   for (i = 0; i < li.length; i++) {
     let link = li[i].getElementsByTagName('a')[0];
-    let id = ('sidebar_link_') + (i + 1);
+    let id = ('sidebar_link_') + i;
 
     li[i].setAttribute('role', 'menuitem');
-    link.classList.add('link');
     link.id = id;
     link.setAttribute('aria-labelledby', id + ('_name'));
     link.getElementsByClassName('name')[0].id = id + ('_name');
@@ -106,8 +105,7 @@ function sidebarMarkup () {
 sidebarMarkup();
 // Check for Current Page and update Sidebar Links
 (function () {
-  let regex = new RegExp('\\/$', 'g');
-  let loc = window.location.pathname.replace(regex, '');
+  let loc = window.location.pathname;
   let links = document.getElementById('sidebar').getElementsByClassName('link');
 
   for (i = 0; i < links.length; i++) {
@@ -116,7 +114,7 @@ sidebarMarkup();
       links[i].setAttribute('aria-selected', state);
     }
 
-    if (links[i].getAttribute('href').replace(regex, '') == loc) {
+    if (links[i].pathname == loc) {
       updateLink(true);
     }
     else {
