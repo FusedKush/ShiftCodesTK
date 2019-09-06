@@ -249,8 +249,8 @@
     border-radius: inherit;
     box-shadow: 0 0 10px;
     transform: translateX(-100%);
-    -webkit-animation: progressClimb 1.2s 0.4s ease-out forwards;
-            animation: progressClimb 1.2s 0.4s ease-out forwards; }
+    -webkit-animation: progressClimb 1.2s 0.4s linear forwards;
+            animation: progressClimb 1.2s 0.4s linear forwards; }
 @-webkit-keyframes progressClimb {
   0% {
     transform: translateX(-100%); }

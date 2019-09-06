@@ -243,7 +243,7 @@
       border-radius: inherit;
       box-shadow: 0 0 10px;
       transform: translateX(-100%);
-      animation: progressClimb 1.2s 0.4s ease-out forwards;
+      animation: progressClimb 1.2s 0.4s linear forwards;
     }
   }
   .body {
