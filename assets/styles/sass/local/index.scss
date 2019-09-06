@@ -260,17 +260,6 @@ section {
       $yPos: 2.25em;
       $rotation: 135deg;
 
-      @mixin flagAnim ($opacity, $shadow: tpb(0.5)) {
-        opacity: $opacity;
-        box-shadow: 0 0 10px $shadow;
-      }
-
-      @keyframes flagFadeIn {
-        0% { @include flagAnim(0); }
-        50% { @include flagAnim(0.5, tpw(0.5)); }
-        100% { @include flagAnim(1); }
-      }
-
       @include flexbox(s, c);
       @include sizing(3em, 6em);
       @include spacing(0 4px, 0.5em);
@@ -278,8 +267,6 @@ section {
       border: bd(1.5px, tpb(0.25));
       box-shadow: shadow(tpb(0.5), 10px);
       text-shadow: dropShadow(tpb(0.25));
-      animation: flagFadeIn 0.5s linear forwards;
-      opacity: 0;
 
       &:first-child {
         transform: rotate($rotation) translate($xPos, $yPos);
