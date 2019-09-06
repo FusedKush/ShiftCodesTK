@@ -27,7 +27,7 @@
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
     <!-- Google Metadata (Landing Page Only) -->
-    <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s">
+    <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s" />
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
@@ -35,119 +35,26 @@
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
-    <main class="no-header">
-      <section class="main" data-webp='{"path": "/assets/img/banners/landing", "alt": ".jpg", "type": "bg"}'>
-        <div class="content-wrapper">
-          <div class="brand">
-            <img class="logo" src="/assets/img/logo.svg" width="3.5em" alt="ShiftCodesTK Logo">
-            <h1 class="name">ShiftCodesTK</h1>
-            <div class="tagline">Less time Scrolling, More time Gaming</div>
-          </div>
-          <div class="action">
-            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl1">Borderlands: GOTY</span></h2>
-            <div class="link-container">
-              <a
-                class="button bl1"
-                href="/bl1"
-                data-string="Borderlands: GOTY"
-                data-long-string="Borderlands: Game of the Year Edition"
-                data-quote="If you wanna get to the Vault first, you're gonna need to eliminate the competition.">GOTY</a>
-              <a
-                class="button bl2"
-                href="/bl2"
-                data-string="Borderlands 2"
-                data-quote="What are you waiting for? Handsome Jack isn't going to defeat himself!">BL2</a>
-              <a
-                class="button tps"
-                href="/tps"
-                data-string="Borderlands: TPS"
-                data-long-string="Borderlands: The Pre-Sequel"
-                data-quote="Come to the moon, hunt a vault, be a hero.">TPS</a>
-              <a
-                class="button bl3"
-                href="#/bl3"
-                data-string="Borderlands 3"
-                data-quote="Coming Soon! Available September 13th, 2019"
-                title="Coming Soon! Available September 13th, 2019"
-                aria-label="Coming Soon! Available September 13th, 2019"
-                disabled
-                aria-disabled="true"
-                tabindex="-1">BL3</a>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section class="faq" data-webp='{"path": "/assets/img/banners/help/faq", "alt": ".jpg", "type": "bg"}'>
-        <div class="content-wrapper">
-          <h2 class="title">Frequently Asked Questions</h2>
-          <div class="questions">
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What is SHiFT?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
-                <p>SHiFT is a service created by Gearbox to reward their players with in-game loot and special events.</p>
-              </div>
-            </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What are SHiFT Codes?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
-                <p>SHiFT Codes are 25-character keys that grant in-game rewards.</p>
-              </div>
-            </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">How often are SHiFT Codes released?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
-                <p>SHiFT Codes are typically released every Friday around 10AM PST.</p>
-              </div>
-            </div>
-          </div>
-          <div class="link">For the full list of Frequently Asked Questions, visit our&nbsp;<a class="themed" href="/help/faq">FAQ page</a></div>
+    <main class="no-header banner" id="banner" data-webp='{"path": "/assets/img/banners/landing", "alt": ".jpg", "type": "bg"}'>
+      <section class="content-container content-wrapper">
+        <header class="title">
+          <img class="logo" src="/assets/img/logo.svg" alt="ShiftCodesTK Logo">
+          <h1 class="name">ShiftCodesTK</h1>
+          <div class="tagline">Less time Scrolling, More time Gaming</div>
+        </header>
+        <div class="button-group">
+          <a class="bl1" id="banner_btn_bl1" href="/bl1" title="SHiFT Codes for Borderlands: Game of the Year Edition" aria-label="SHiFT Codes for Borderlands: Game of the Year Edition">
+            <span>Borderlands: GOTY</span>
+          </a>
+          <a class="bl2" id="banner_btn_bl2" href="/bl2" title="SHiFT Codes for Borderlands 2" aria-label="SHiFT Codes for Borderlands 2">
+            <span>Borderlands 2</span>
+          </a>
+          <a class="tps" id="banner_btn_tps" href="/tps" title="SHiFT Codes for Borderlands: The Pre-Sequel" aria-label="SHiFT Codes for Borderlands: The Pre-Sequel">
+            <span>Borderlands: TPS</span>
+          </a>
         </div>
       </section>
     </main>
-    <template id="secondary_section_template">
-      <section class="secondary" data-webp='{"path": "/assets/img/banners/", "alt": ".jpg", "type": "bg"}'>
-        <div class="content-wrapper">
-          <div class="intro">
-            <h2 class="title"></h2>
-            <i class="quote"></i>
-          </div>
-          <a class="button"></a>
-        </div>
-      </section>
-    </template>
     <template id="flag_template">
       <div class="flags">
         <div class="flag new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!">

@@ -16,8 +16,10 @@ var focusLockedElement = null;
 
 // *** Functions ***
 // Called when Webp Support is determined
-function webpSupportUpdate (support, parent = document) {
-  let e = parent.getElementsByTagName('*');
+function webpSupportUpdate (support) {
+  let e = document.getElementsByTagName('*');
+
+  document.getElementsByClassName('webp-support')[0].remove();
 
   for (i = 0; i < e.length; i++) {
     let webp = e[i].getAttribute('data-webp');
@@ -484,21 +486,6 @@ function copyToClipboard (event) {
     });
   }, 25);
 }
-function fixClickableContent (e) {
-  let children = e.childNodes;
-
-  for (let i = 0; i < children.length; i++) {
-    let child = children[i];
-
-    if (child.nodeName == '#text') {
-      let span = document.createElement('span');
-
-      span.innerHTML = child.textContent;
-
-      e.replaceChild(span, child);
-    }
-  }
-}
 
 // *** Event Listener Reference Functions ***
 function globalListenerLoadClearScroll () {
@@ -577,14 +564,8 @@ function execGlobalScripts () {
       let img = document.createElement('img');
 
       img.classList.add('webp-support');
-      img.onload = function () {
-        webpSupportUpdate(true);
-        document.getElementsByClassName('webp-support')[0].remove();
-      };
-      img.onerror = function () {
-        webpSupportUpdate(false);
-        document.getElementsByClassName('webp-support')[0].remove();
-      };
+      img.onload = function () { webpSupportUpdate(true); };
+      img.onerror = function () { webpSupportUpdate(false); };
       img.src = '/assets/img/webp_support.webp';
 
       document.body.appendChild(img);
@@ -692,14 +673,6 @@ function execGlobalScripts () {
         tools.async = true;
         tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
         document.body.appendChild(tools);
-      }
-    })();
-    // Add inner span to buttons and links
-    (function () {
-      let clickables = getElements(document, 'clickables');
-
-      for (let i = 0; i < clickables.length; i++) {
-        fixClickableContent(clickables[i]);
       }
     })();
 

@@ -66,13 +66,6 @@ button {
   @include multiProp(inherit, color, font-family);
 }
 button.styled, a.button {
-  @at-root %idle {
-    &::before { opacity: 0.15; }
-    &::after  { opacity: 0.5; }
-
-    span      { opacity: 0.85; }
-  }
-
   @include flexbox;
   padding: 8px;
   border-radius: 4px;
@@ -93,22 +86,20 @@ button.styled, a.button {
   &:not(:last-child) {
     margin-right: 8px;
   }
-  &:not([disabled]) {
-    @include mouseState(noHover) {
-      @extend %idle;
-    }
-    @include mouseState(hover) {
-      &::before { opacity: 0.25; }
-      &::after  { opacity: 0.75; }
+  @include mouseState(noHover) {
+    &::before { opacity: 0.15; }
+    &::after  { opacity: 0.5; }
 
-      span      { opacity: 1; }
-    }
-    @include mouseState(click) {
-      &::before { opacity: 0.5; }
-    }
+    span      { opacity: 0.85; }
   }
-  &[disabled] {
-    @extend %idle;
+  @include mouseState(hover) {
+    &::before { opacity: 0.25; }
+    &::after  { opacity: 0.75; }
+
+    span      { opacity: 1; }
+  }
+  @include mouseState(click) {
+    &::before { opacity: 0.5; }
   }
 }
 button, a {
@@ -118,7 +109,7 @@ button, a {
 }
 button, a, input, select, textarea {
   &[disabled] {
-    opacity: .5 !important;
+    opacity: .5;
     cursor: not-allowed !important;
   }
 }
