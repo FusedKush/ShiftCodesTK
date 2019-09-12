@@ -65,14 +65,9 @@
                 data-quote="Come to the moon, hunt a vault, be a hero.">TPS</a>
               <a
                 class="button bl3"
-                href="#/bl3"
+                href="/bl3"
                 data-string="Borderlands 3"
-                data-quote="Coming Soon! Available September 13th, 2019"
-                title="Coming Soon! Available September 13th, 2019"
-                aria-label="Coming Soon! Available September 13th, 2019"
-                disabled
-                aria-disabled="true"
-                tabindex="-1">BL3</a>
+                data-quote="Lets make some mayhem.">BL3</a>
             </div>
           </div>
         </div>
