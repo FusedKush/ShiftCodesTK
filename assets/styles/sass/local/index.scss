@@ -33,7 +33,7 @@ section {
   &.main {
     padding-top: 64px;
     text-align: center;
-    min-height: calc(100vh + #{$sBorderWidth});
+    @include multiProp(calc(100vh + #{$sBorderWidth}), height, min-height);
     @include theme(bc);
 
     .content-wrapper {
@@ -130,7 +130,7 @@ section {
     }
   }
   &:not(.main) {
-    min-height: calc(75vh + #{$sBorderWidth} - 64px);
+    @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
   }
   &.secondary {
     &:nth-of-type(odd) .content-wrapper {
