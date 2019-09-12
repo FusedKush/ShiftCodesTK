@@ -1,6 +1,6 @@
 <?php
 //----Server Version Number---------//
-  $serverVersion = '1.3.1';
+  $serverVersion = '1.4.0';
 //----------------------------------//
   $svQueryString = '?v=' . $serverVersion;
 ?>
