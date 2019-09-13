@@ -14,11 +14,13 @@ class GameIDs {
   public $game1 = 'bl2';
   public $game2 = 'tps';
   public $game3 = 'bl1';
+  public $game4 = 'bl3';
 }
 class GameCounters {
   public $bl1 = 0;
   public $bl2 = 0;
   public $tps = 0;
+  public $bl3 = 0;
 }
 class AlertCount {
   public $new;

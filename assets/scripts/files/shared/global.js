@@ -16,10 +16,8 @@ var focusLockedElement = null;
 
 // *** Functions ***
 // Called when Webp Support is determined
-function webpSupportUpdate (support) {
-  let e = document.getElementsByTagName('*');
-
-  document.getElementsByClassName('webp-support')[0].remove();
+function webpSupportUpdate (support, parent = document) {
+  let e = parent.getElementsByTagName('*');
 
   for (i = 0; i < e.length; i++) {
     let webp = e[i].getAttribute('data-webp');
@@ -486,6 +484,21 @@ function copyToClipboard (event) {
     });
   }, 25);
 }
+function fixClickableContent (e) {
+  let children = e.childNodes;
+
+  for (let i = 0; i < children.length; i++) {
+    let child = children[i];
+
+    if (child.nodeName == '#text') {
+      let span = document.createElement('span');
+
+      span.innerHTML = child.textContent;
+
+      e.replaceChild(span, child);
+    }
+  }
+}
 
 // *** Event Listener Reference Functions ***
 function globalListenerLoadClearScroll () {
@@ -564,8 +577,14 @@ function execGlobalScripts () {
       let img = document.createElement('img');
 
       img.classList.add('webp-support');
-      img.onload = function () { webpSupportUpdate(true); };
-      img.onerror = function () { webpSupportUpdate(false); };
+      img.onload = function () {
+        webpSupportUpdate(true);
+        document.getElementsByClassName('webp-support')[0].remove();
+      };
+      img.onerror = function () {
+        webpSupportUpdate(false);
+        document.getElementsByClassName('webp-support')[0].remove();
+      };
       img.src = '/assets/img/webp_support.webp';
 
       document.body.appendChild(img);
@@ -654,6 +673,14 @@ function execGlobalScripts () {
         shiftBadgeCount = JSON.parse(request).response.alerts;
       });
     })();
+    // Add inner span to buttons and links
+    (function () {
+      let clickables = getElements(document, 'clickables');
+
+      for (let i = 0; i < clickables.length; i++) {
+        fixClickableContent(clickables[i]);
+      }
+    })();
     // Check for DevTools support
     (function () {
       let params = window.location.search;
@@ -716,6 +743,24 @@ function execGlobalScripts () {
     })();
     window.addEventListener('click', handleFocusLock);
     window.addEventListener('keydown', handleFocusLock);
+    // Update Dropdown Menu Pos
+    (function () {
+      let container = document.getElementById('dropdown_menu_container');
+
+      if (container !== null) {
+        let dropdowns = getClasses(container, 'dropdown-menu');
+        
+        window.addEventListener('resize', function (e) {
+          for (let i = 0; i < dropdowns.length; i++) {
+            let dd = dropdowns[i];
+
+            if (dd.getAttribute('data-expanded')) {
+              updateDropdownMenuPos(dd);
+            }
+          }
+        });
+      }
+    })();
   }
   else {
     setTimeout(execGlobalScripts, 250);

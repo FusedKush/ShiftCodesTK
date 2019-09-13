@@ -1,26 +1,50 @@
 {
   "name": "shiftcodestk",
-  "version": "1.0.0",
+  "version": "1.4.0",
   "description": "ShiftCodesTK Website",
-  "repository": "https://github.com/FusedKush/ShiftCodesTK.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FusedKush/ShiftCodesTK.git"
+  },
   "license": "ISC",
   "devDependencies": {
-    "grunt": "^1.0.4",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^3.0.0",
-    "grunt-contrib-htmlmin": "^3.1.0",
-    "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-uglify-es": "^3.3.0",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-newer": "^1.3.0",
-    "grunt-postcss": "^0.9.0"
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-preset-minify": "^0.5.0",
+    "browser-sync": "^2.26.7",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0-beta.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-newer": "^1.4.0",
+    "gulp-postcss": "^8.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "node-sass": "^4.12.0"
   },
-  "main": "Gruntfile.js",
+  "main": "Gulpfile.js",
   "author": "ShiftCodesTK",
   "dependencies": {
     "autoprefixer": "^9.6.1",
     "cssnano": "^4.1.10",
+    "gulp-uglify": "^3.0.2",
     "lodash": "^4.17.14"
+  },
+  "bugs": {
+    "url": "https://github.com/FusedKush/ShiftCodesTK/issues"
+  },
+  "homepage": "https://github.com/FusedKush/ShiftCodesTK#readme",
+  "keywords": [
+    "ShiftCodesTK",
+    "SHiFT",
+    "Codes"
+  ],
+  "browserslist": [
+    "defaults"
+  ],
+  "babel": {
+    "presets": [
+      ["@babel/preset-env", { "modules": false }]
+    ]
   }
 }

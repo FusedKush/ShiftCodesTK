@@ -4,22 +4,25 @@
 
 /*** Variables ***/
 // Primary Site Theme
-$site-color-main:        #0f1d2c;              // Main Color
-$site-color-light:       #152c42;              // Light Accent
-$site-color-lighter:     #1d3f60;              // Lighter Accent
-$site-color-dark:        #091320;              // Dark Accent
-$site-color-darker:      #060c12;              // Darker Accent
+$site-color-main:        #0f1d2c; // Main Color
+// Accents
+$site-color-light:       adjust-color($site-color-main, $lightness: 10%);
+$site-color-lighter:     adjust-color($site-color-main, $lightness: 15%);
+$site-color-dark:        adjust-color($site-color-main, $lightness: -5%);
+$site-color-darker:      adjust-color($site-color-main, $lightness: -10%);
 
 // Secondary Site Themes
 $theme-main:             #f00;                 // Main Theme Color
 $theme-bl1:              #dc143c;              // BL1: GOTY Theme Color
 $theme-bl2:              #ff4500;              // Borderlands 2 Theme Color
 $theme-tps:              #1e90ff;              // Borderlands: TPS Theme Color
+$theme-bl3:              #ffa900;              // Borderlands 3 Theme Color
 $themeColors: (                                // Theme Color Definition List
                          main: $theme-main,
                          bl1: $theme-bl1,
                          bl2: $theme-bl2,
-                         tps: $theme-tps
+                         tps: $theme-tps,
+                         bl3: $theme-bl3
               );
 
 // Misc. Site Properties
@@ -84,7 +87,9 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 /*** Mixins ***/
 // Content Styles Loaded
 @mixin ready {
-  &, * { opacity: 1; }
+  &, * {
+    opacity: 1;
+  }
 }
 // Layout //
 // Flexbox

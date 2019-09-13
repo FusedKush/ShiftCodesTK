@@ -1,153 +1,302 @@
 /*********************************
   Index Page Styles
 *********************************/
-
-/*** Imports ***/
 @import "../partials/_globals";
 
-/*** Style Declarations ***/
-.banner {
-  @media screen and (max-width: 399px) {
-    font-size: 1.5em;
-  }
-  @media screen and (min-width: 400px) and (max-width: 499px) {
-    font-size: 1.75em;
-  }
-  @media screen and (min-width: 500px) {
-    font-size: 2em;
-  }
-
+main.no-header {
   @include ready;
-  @include multiProp(100%, sizing);
+
+  @include flexbox(none, none, $direction: c);
+  padding-top: 0;
+}
+section {
+  $sBorderWidth: 2px;
+
   @include bgImg;
+  flex: 1;
+  text-shadow: dropShadow(tpb(0.75));
+  box-shadow: shadow(tpb(0.5), 10px);
 
-  &::before { @include fill(true, tpb(0.6)); }
-
-  .content-container {
-    @include flexbox($direction: c);
-    @include multiProp(100%, sizing);
-    padding: 16px;
+  &:not(.faq)::before {
+    @include fill(true, tpb(0.6));
   }
-  .title {
-    @include flexbox(none, c, $direction: c);
-    margin-bottom: 8px;
+  &:not(:first-of-type) {
+    border-top: bd(#{$sBorderWidth});
+  }
+
+  @each $themeN, $themeV in $themeColors {
+    &.#{$themeN} {
+      border-color: #{$themeV};
+    }
+  }
+
+  &.main {
+    padding-top: 64px;
     text-align: center;
-    text-shadow: dropShadow(tpb(0.6));
+    @include multiProp(calc(100vh + #{$sBorderWidth}), height, min-height);
+    @include theme(bc);
 
-    .logo {
-      @include multiProp(3.5em, sizing);
-      margin-bottom: 8px;
-      border-radius: 50%;
-      box-shadow: shadow(tpb(0.6));
+    .content-wrapper {
+      @include flexbox($direction: c);
     }
-    .name { font-size: 1.5em; }
-    .tagline {
-      opacity: .8;
-      font-size: 1em;
-    }
-  }
-  .button-group {
-    display: grid;
-    padding-top: 8px;
-    min-width: 90%;
+    .brand {
+      @include flexbox($vAlign: none, $direction: c);
+      font-size: 2em;
+      margin-bottom: 16px;
 
-    @media screen and (max-width: 399px) {
-      grid-template-columns: 1fr;
-      grid-template-rows:    repeat(3, 1fr);
-    }
-    @media screen and (min-width: 400px) and (max-width: 674px) {
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows:    repeat(2, 1fr);
-
-      a.bl1 {
-        grid-row: 1;
-        grid-column: 1 / span 2;
+      .logo {
+        width: 3.5em;
+        box-shadow: 2px 2px 4px tpb(0.75);
+        border-radius: 50%;
       }
-      a.bl2 {
-        grid-row: 2;
-        grid-column: 1;
+      .name {
+        font-size: 1.25em;
       }
-      a.tps {
-        grid-row: 2;
-        grid-column: 2;
+      .tagline {
+        font-size: 0.9em;
+        opacity: 0.75;
       }
     }
-    @media screen and (min-width: 675px) {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .action {
+      $actionPadding: 12px;
 
-    a {
-      @include flexbox;
-      flex: 1;
-      line-height: 1;
-      text-align: center;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.75));
       border-radius: 4px;
-      font-size: 0.9em;
-      @include spacing(0.25em, 0.6em);
-      overflow: hidden;
+      padding: $actionPadding;
+      min-width: 42%;
 
-      @include pshared {
-        @include fill(true);
-        border: bd(2px);
-        border-radius: 4px;
-      }
+      .string {
+        font-weight: 400;
+        color: tpw(0.75);
 
-      // Individual Theming
-      & {
-        @each $colorN, $colorV in $themeColors {
-          @if $colorN != main {
-            &.#{$colorN}::before {
-              @include multiProp($colorV, background-color, border-color);
+        .selected {
+          $selectedBorderSize: 3px;
+
+          @mixin borderAnimation ($opacity, $translate) {
+            opacity: $opacity;
+            transform: translateY($translate);
+          }
+
+          @keyframes chosenText {
+            0%  { opacity: 1; }
+            50% { opacity: 0.5; }
+          }
+          @keyframes chosenBorder {
+            0%        { @include borderAnimation(0, 25%); }
+            50%, 100% { @include borderAnimation(1, 0); }
+          }
+
+          color: #fff;
+          margin-bottom: $selectedBorderSize;
+
+          &::before {
+            @include fill(true);
+            bottom: -#{$selectedBorderSize};
+            border-bottom: bd($selectedBorderSize);
+            opacity: 0;
+          }
+          &, &::before {
+            @include animation(0.75s, ease-out, $fill: forwards);
+          }
+          &.chosen {
+            animation-name: chosenText;
+
+            &::before {
+              animation-name: chosenBorder;
+            }
+          }
+
+          @each $themeN, $themeV in $themeColors {
+            @if ($themeN != main) {
+              &.#{$themeN}::before { color: #{$themeV}; }
             }
           }
         }
       }
+      .link-container {
+        $buttonMargins: 4px;
 
-      @include mouseState(noHover) {
-        &::before { opacity: 0; }
-        &::after  { opacity: 1; }
-      }
-      @include mouseState(hover) {
-        &::before { opacity: 1; }
-        &::after  { opacity: 0; }
-      }
-      @include mouseState(click) {
-        opacity: 0.75;
-      }
+        @include flexbox(none, none, $wrap: true);
+        margin-top: calc(-#{$buttonMargins} + #{$actionPadding});
+        font-size: 1.25em;
 
-      .flags {
-        @include flexbox(none, sb);
-        position: absolute;
-        @include pull(t, lr);
-        z-index: zOrder(higher);
-
-        .flag {
-          $xPos: 1.25em;
-          $yPos: 2.25em;
-          $rotation: 135deg;
-
-          @include flexbox(s, c);
-          @include sizing(3em, 6em);
-          @include spacing(0 4px, 0.5em);
-          font-size: 0.5em;
-          border: bd(1.5px, tpb(0.25));
-          box-shadow: shadow(tpb(0.5), 10px);
-          text-shadow: dropShadow(tpb(0.25));
-
-          &:first-child {
-            transform: rotate($rotation) translate($xPos, $yPos);
-
-            .fas { transform: rotate(-$rotation); }
-          }
-          &:not(:first-child) {
-            transform: rotate(-$rotation) translate(-$xPos, $yPos);
-
-            .fas { transform: rotate($rotation); }
-          }
-          &.new { background-color: $badge-new; }
-          &.exp { background-color: $badge-exp; }
+        .button {
+          flex: 1;
+          margin: $buttonMargins;
+          min-width: 6.5em;
         }
       }
+    }
+  }
+  &:not(.main) {
+    @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
+  }
+  &.secondary {
+    &:nth-of-type(odd) .content-wrapper {
+      align-items: flex-end;
+      text-align: end;
+    }
+
+    .content-wrapper {
+      @include flexbox($hAlign: s, $direction: c);
+    }
+    .intro {
+      font-size: 1.25em;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      border-bottom: bd(3px);
+      max-width: 25em;
+
+      // Separator theme
+      @at-root section.secondary {
+        @each $themeN, $themeV in $themeColors {
+          @if ($themeN != main) {
+            &.#{$themeN} .intro {
+              border-color: #{$themeV};
+            }
+          }
+        }
+      }
+    }
+    .quote {
+      color: tpw(0.75);
+
+      @include pshared {
+        opacity: 0.75;
+        content: '"';
+      }
+    }
+    .button {
+      font-size: 1.5em;
+    }
+  }
+  &.faq {
+    border-color: $theme-main;
+    padding-top: 32px;
+
+    .content-wrapper {
+      @include flexbox(none, none, $direction: c);
+    }
+    h2.title {
+      margin-bottom: 16px;
+    }
+    .link {
+      padding: 8px;
+      margin-top: 16px;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.75));
+      border-radius: 4px;
+      text-align: center;
+    }
+    .dropdown-panel {
+      text-shadow: none;
+    }
+  }
+
+
+  .content-wrapper {
+    @include multiProp(100%, sizing);
+
+    @media screen and (max-width: 499px) {
+      font-size: 0.85em;
+      padding: 32px 16px;
+    }
+    @media screen and (min-width: 500px) {
+      font-size: 1em;
+      padding: 32px;
+    }
+  }
+  a.button {
+    background-color: tpw(0.15);
+    overflow: hidden;
+    padding: 10px 32px;
+
+    &::before {
+      border: none;
+    }
+    &::after {
+      border: bd(1.5px, tpw(0.5));
+    }
+
+    @each $themeN, $themeV in $themeColors {
+      @if ($themeN != main) {
+        &.#{$themeN}::before {
+          background-color: #{$themeV};
+        }
+      }
+    }
+
+    // Mouse States
+    & {
+      @mixin linkPs ($before, $after) {
+        &::before { opacity: $before; }
+        &::after  { opacity: $after; }
+      }
+      @at-root %idleState {
+        @include linkPs(0, 1);
+      }
+
+      &:not([disabled]) {
+        @include mouseState(noHover) {
+          @extend %idleState;
+        }
+        @include mouseState(hover) {
+          @include linkPs(1, 0);
+        }
+        @include mouseState(click) {
+          opacity: 0.75;
+        }
+      }
+      &[disabled] {
+        @extend %idleState;
+      }
+    }
+  }
+  .flags {
+    @include flexbox(none, sb);
+    position: absolute;
+    @include pull(t, lr);
+    z-index: zOrder(higher);
+
+    .flag {
+      $xPos: 1.25em;
+      $yPos: 2.25em;
+      $rotation: 135deg;
+
+      @mixin flagAnim ($opacity, $shadow: tpb(0.5)) {
+        opacity: $opacity;
+        box-shadow: 0 0 10px $shadow;
+      }
+
+      @keyframes flagFadeIn {
+        0% { @include flagAnim(0); }
+        50% { @include flagAnim(0.5, tpw(0.5)); }
+        100% { @include flagAnim(1); }
+      }
+
+      @include flexbox(s, c);
+      @include sizing(3em, 6em);
+      @include spacing(0 4px, 0.5em);
+      font-size: 0.5em;
+      border: bd(1.5px, tpb(0.25));
+      box-shadow: shadow(tpb(0.5), 10px);
+      text-shadow: dropShadow(tpb(0.25));
+      animation: flagFadeIn 0.5s linear forwards;
+      opacity: 0;
+
+      &:first-child {
+        transform: rotate($rotation) translate($xPos, $yPos);
+
+        .fas { transform: rotate(-$rotation); }
+      }
+      &:not(:first-child) {
+        transform: rotate(-$rotation) translate(-$xPos, $yPos);
+
+        .fas { transform: rotate($rotation); }
+      }
+      &.new { background-color: $badge-new; }
+      &.exp { background-color: $badge-exp; }
     }
   }
 }

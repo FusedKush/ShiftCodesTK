@@ -100,6 +100,7 @@ Sidebar Styles
       grid-template-columns: 64px 1fr;
       padding: 16px 32px 16px 0;
       line-height: $df-line-height;
+      text-shadow: dropShadow(tpb(0.25));
 
       &::before { @include fill(true, #000); }
 
@@ -125,25 +126,35 @@ Sidebar Styles
           &.exp::before { background-color: $badge-exp; }
         }
 
-        @include mouseState(noHover) {
+        @at-root %idleLink {
           @include linkStyles(0.75, 0, 0, 1);
         }
-        @include mouseState(hover) {
-          @include linkStyles(1, 0.2, 1, 0);
+
+        &:not([disabled]) {
+          @include mouseState(noHover) {
+            @extend %idleLink;
+          }
+          @include mouseState(hover) {
+            @include linkStyles(1, 0.2, 1, 0);
+          }
+          @include mouseState(click) {
+            @include linkStyles(1, 0.4, 1, 0);
+          }
         }
-        @include mouseState(click) {
-          @include linkStyles(1, 0.4, 1, 0);
+        &[disabled] {
+          @extend %idleLink;
         }
+
       }
       &[data-selected="true"] {
         &::before { @include theme(bg); }
 
         .badges .badge {
-          color: #000;
+          // color: #fff;
 
           &::before {
-            background-color: #fff;
-            border-color: #000;
+            background-color: tpb(0.25);
+            border: bd(1.5px);
           }
         }
 
@@ -171,6 +182,8 @@ Sidebar Styles
       .badge {
         padding: 5px 10px;
         line-height: 1;
+        border-radius: 20px;
+        box-shadow: dropShadow(tpb(0.25));
 
         &::after { border: bd(1px); }
         &::before, &::after { @include fill(true); }

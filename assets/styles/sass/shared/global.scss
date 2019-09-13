@@ -66,6 +66,13 @@ button {
   @include multiProp(inherit, color, font-family);
 }
 button.styled, a.button {
+  @at-root %idle {
+    &::before { opacity: 0.15; }
+    &::after  { opacity: 0.5; }
+
+    span      { opacity: 0.85; }
+  }
+
   @include flexbox;
   padding: 8px;
   border-radius: 4px;
@@ -86,20 +93,22 @@ button.styled, a.button {
   &:not(:last-child) {
     margin-right: 8px;
   }
-  @include mouseState(noHover) {
-    &::before { opacity: 0.15; }
-    &::after  { opacity: 0.5; }
+  &:not([disabled]) {
+    @include mouseState(noHover) {
+      @extend %idle;
+    }
+    @include mouseState(hover) {
+      &::before { opacity: 0.25; }
+      &::after  { opacity: 0.75; }
 
-    span      { opacity: 0.85; }
+      span      { opacity: 1; }
+    }
+    @include mouseState(click) {
+      &::before { opacity: 0.5; }
+    }
   }
-  @include mouseState(hover) {
-    &::before { opacity: 0.25; }
-    &::after  { opacity: 0.75; }
-
-    span      { opacity: 1; }
-  }
-  @include mouseState(click) {
-    &::before { opacity: 0.5; }
+  &[disabled] {
+    @extend %idle;
   }
 }
 button, a {
@@ -109,7 +118,7 @@ button, a {
 }
 button, a, input, select, textarea {
   &[disabled] {
-    opacity: .5;
+    opacity: .5 !important;
     cursor: not-allowed !important;
   }
 }
@@ -504,6 +513,8 @@ main {
 }
 .dropdown-menu-target { z-index: zOrder(aboveNormal); }
 .dropdown-menu {
+  $borderWidth: 1.5px;
+
   position: absolute;
   font-size: 1rem;
   z-index: zOrder(higher);
@@ -512,8 +523,8 @@ main {
     @at-root .dropdown-menu { @content; }
   }
 
-  &[hidden], &:not(.configured) { display: none; }
-  &:not([hidden])               { display: grid; }
+  &[hidden], &:not([hidden]):not(.configured) { display: none; }
+  &:not([hidden])                             { display: grid; }
   &[data-expanded="false"] { opacity: 0; }
   &[data-expanded="true"]  { opacity: 1; }
 
@@ -550,7 +561,8 @@ main {
   }
   .panel {
     position: absolute;
-    @include colors(#000, #fff);
+    @include colors(#fff, $site-color-lighter);
+    border: bd($borderWidth, #fff);
     border-radius: 4px;
     box-shadow: shadow(tpb(0.5));
 
@@ -600,7 +612,7 @@ main {
       }
     }
     .title {
-      opacity: 0.4;
+      opacity: 0.5;
       font-size: 1.2em;
       cursor: default;
     }
@@ -617,9 +629,11 @@ main {
       &::before { @include fill(true); }
 
       &[data-pressed="false"], &:not([data-pressed]) {
-        color: #000;
+        color: inherit;
 
-        &::before { background-color: $site-color-lighter; }
+        &::before {
+          background-color: tpw(0.75);
+        }
 
         @include mouseState(noHover) {
           opacity: 0.8;
@@ -637,14 +651,17 @@ main {
       }
       &[data-pressed="true"] {
         color: #fff;
+        @include theme(bg);
 
-        &::before { @include theme(bg); }
+        &::before {
+          background-color: #fff;
+        }
 
         @include mouseState(noHover) {
-          &::before { opacity: 1; }
+          &::before { opacity: 0; }
         }
         @include mouseState(hover) {
-          &::before { opacity: 0.75; }
+          &::before { opacity: 0.25; }
         }
         @include mouseState(click) {
           opacity: 0.75;
@@ -652,15 +669,17 @@ main {
       }
     }
     .title, .choice {
-      $basePadding: 6px;
+      $basePadding: 8px;
 
       text-align: left;
       width: 100%;
       white-space: nowrap;
       padding: $basePadding ($basePadding * 4) $basePadding ($basePadding * 2);
+      min-width: 7.5em;
     }
   }
-  .arrow, .panel {
+  // Positioning
+  & {
     $posList: (
       bottom: top,
       top: bottom,
@@ -670,7 +689,8 @@ main {
 
     @each $posN, $posD in $posList {
       @include menuRoot {
-        &[data-pos="#{$posN}"] .arrow, &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
+        &[data-pos="#{$posN}"] .arrow { #{$posD}: calc(100% + 4px + #{$borderWidth}); }
+        &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
       }
     }
   }

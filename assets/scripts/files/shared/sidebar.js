@@ -88,12 +88,16 @@ function sidebarMarkup () {
 
   for (i = 0; i < li.length; i++) {
     let link = li[i].getElementsByTagName('a')[0];
-    let id = ('sidebar_link_') + i;
+    let id = ('sidebar_link_') + (i + 1);
 
     li[i].setAttribute('role', 'menuitem');
+    link.classList.add('link');
     link.id = id;
-    link.setAttribute('aria-labelledby', id + ('_name'));
     link.getElementsByClassName('name')[0].id = id + ('_name');
+
+    if (link.getAttribute('aria-label') === null) {
+      link.setAttribute('aria-labelledby', id + ('_name'));
+    }
   }
   for (i = 0; i < links.length; i++) {
     links[i].classList.add('no-focus-scroll');
@@ -105,7 +109,8 @@ function sidebarMarkup () {
 sidebarMarkup();
 // Check for Current Page and update Sidebar Links
 (function () {
-  let loc = window.location.pathname;
+  let regex = new RegExp('\\/$', 'g');
+  let loc = window.location.pathname.replace(regex, '');
   let links = document.getElementById('sidebar').getElementsByClassName('link');
 
   for (i = 0; i < links.length; i++) {
@@ -114,7 +119,7 @@ sidebarMarkup();
       links[i].setAttribute('aria-selected', state);
     }
 
-    if (links[i].pathname == loc) {
+    if (links[i].getAttribute('href').replace(regex, '') == loc) {
       updateLink(true);
     }
     else {
