@@ -206,15 +206,15 @@ function execLocalScripts () {
         main.insertBefore(panel.base, faq);
       }
 
-      function tryWebpSupport () {
-        if (typeof webpSupportUpdate != 'undefined') {
-          webpSupportUpdate(main);
+      function tryWebpParse () {
+        if (typeof parseWebpImages != 'undefined') {
+          parseWebpImages(main);
         }
         else {
-          setTimeout(tryWebpSupport, 250);
+          setTimeout(tryWebpParse, 250);
         }
       }
-      tryWebpSupport();
+      tryWebpParse();
     })();
     // Link event listeners
     (function () {

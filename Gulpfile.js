@@ -351,7 +351,8 @@ function copyToPublic (cb) {
     './.htaccess',
     '!./node_modules/**',
     '!./public/**',
-    '!./assets/php/html/files/**'
+    '!./assets/php/html/files/**',
+    '!./assets/php/html/min/builds/**'
   ]
 
   sync(glob, `./public/`, 'sync', 'change', 'src');

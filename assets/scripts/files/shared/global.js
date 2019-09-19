@@ -15,34 +15,50 @@ var defaultDropdownPanelLabels = {
 var focusLockedElement = null;
 
 // *** Functions ***
-// Called when Webp Support is determined
-function webpSupportUpdate (support, parent = document) {
-  let e = parent.getElementsByTagName('*');
+// Parse Webp images and update as required
+function parseWebpImages (parent) {
+  let attr = document.body.getAttribute('data-webp-support');
 
-  for (i = 0; i < e.length; i++) {
-    let webp = e[i].getAttribute('data-webp');
+  if (attr !== null) {
+    let support = attr == 'true';
+    let e = parent.getElementsByTagName('*');
 
-    if (webp !== null) {
-      webp = JSON.parse(webp);
-      webp.fullPath = webp.path + ('/') + webp.path.replace(/\/.+\//g, '');
+    for (i = 0; i < e.length; i++) {
+      let eAttr = e[i].getAttribute('data-webp');
+      let webp;
 
-      if (support === true) {
-        webp.fullPath += '.webp';
+      if (eAttr !== null) {
+        webp = JSON.parse(eAttr);
+        webp.fullPath = webp.path + ('/') + webp.path.replace(/\/.+\//g, '');
+
+        if (support === true) {
+          webp.fullPath += '.webp';
+        }
+        else if (support === false) {
+          webp.fullPath += webp.alt;
+        }
+        if (webp.type == 'bg') {
+          e[i].style.backgroundImage = ('url(') + webp.fullPath + (')');
+        }
+        else if (webp.type == 'img') {
+          e[i].src = webp.fullPath;
+        }
+
+        e[i].removeAttribute('data-webp');
       }
-      else if (support === false) {
-        webp.fullPath += webp.alt;
-      }
-
-      if (webp.type == 'bg') {
-        e[i].style.backgroundImage = ('url(') + webp.fullPath + (')');
-      }
-      else if (webp.type == 'img') {
-        e[i].src = webp.fullPath;
-      }
-
-      e[i].removeAttribute('data-webp');
     }
   }
+  else {
+    setTimeout(function () {
+      parseWebpImages(parent);
+    }, 250);
+  }
+}
+// Called when Webp Support is determined
+function webpSupportUpdate (state) {
+  document.body.setAttribute('data-webp-support', state);
+  parseWebpImages(document);
+  document.getElementsByClassName('webp-support')[0].remove();
 }
 // Scroll elements into view when they receive focus
 function addFocusScrollListeners (parent) {
@@ -577,14 +593,8 @@ function execGlobalScripts () {
       let img = document.createElement('img');
 
       img.classList.add('webp-support');
-      img.onload = function () {
-        webpSupportUpdate(true);
-        document.getElementsByClassName('webp-support')[0].remove();
-      };
-      img.onerror = function () {
-        webpSupportUpdate(false);
-        document.getElementsByClassName('webp-support')[0].remove();
-      };
+      img.onload = function ()  { webpSupportUpdate(true); };
+      img.onerror = function () { webpSupportUpdate(false); };
       img.src = '/assets/img/webp_support.webp';
 
       document.body.appendChild(img);
@@ -749,7 +759,7 @@ function execGlobalScripts () {
 
       if (container !== null) {
         let dropdowns = getClasses(container, 'dropdown-menu');
-        
+
         window.addEventListener('resize', function (e) {
           for (let i = 0; i < dropdowns.length; i++) {
             let dd = dropdowns[i];

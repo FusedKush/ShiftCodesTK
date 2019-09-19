@@ -44,8 +44,13 @@
             <div class="tagline">Less time Scrolling, More time Gaming</div>
           </div>
           <div class="action">
-            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl1">Borderlands: GOTY</span></h2>
+            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl3">Borderlands 3</span></h2>
             <div class="link-container">
+              <a
+                class="button bl3"
+                href="/bl3"
+                data-string="Borderlands 3"
+                data-quote="Lets make some mayhem.">BL3</a>
               <a
                 class="button bl1"
                 href="/bl1"
@@ -63,11 +68,6 @@
                 data-string="Borderlands: TPS"
                 data-long-string="Borderlands: The Pre-Sequel"
                 data-quote="Come to the moon, hunt a vault, be a hero.">TPS</a>
-              <a
-                class="button bl3"
-                href="/bl3"
-                data-string="Borderlands 3"
-                data-quote="Lets make some mayhem.">BL3</a>
             </div>
           </div>
         </div>
