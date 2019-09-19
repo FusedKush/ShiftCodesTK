@@ -44,7 +44,7 @@
             <div class="tagline">Less time Scrolling, More time Gaming</div>
           </div>
           <div class="action">
-            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl1">Borderlands: GOTY</span></h2>
+            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl3">Borderlands 3</span></h2>
             <div class="link-container">
               <a
                 class="button bl3"
