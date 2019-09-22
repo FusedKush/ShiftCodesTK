@@ -279,3 +279,8 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @include flexbox;
   @include multiProp(1em, sizing);
 }
+// Progress Bar Shadow
+@mixin progressBarShadow($radius: 0.25em, $color: currentcolor) {
+  box-shadow: 0 0 $radius $color;
+  transform: translateX(-#{$radius});
+}

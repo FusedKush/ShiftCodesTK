@@ -3,6 +3,7 @@
 *********************************/
 //*** Load State ***//
 var globalFunctionsReady = true;
+var pbIntervals = {}; // Holds information about Progress Bar Intervals
 
 //*** Functions ***//
 // Updates Disabled State of elements
@@ -358,3 +359,84 @@ function tryJSONParse (string = null, behavior = 'silent') {
   }
 }
 
+// Update a Progress Bar
+function updateProgressBar (progressBar = null, value = 100, options = {}) {
+  let defaultOptions = {
+    interval: false,
+    intervalDelay: 1000,
+    intervalIncrement: 10
+  };
+
+  if (progressBar !== null && progressBar.getAttribute('role') == 'progressbar') {
+    let bar = getClass(progressBar, 'progress');
+    let opt = Object.assign(defaultOptions, options);
+    let now = tryParseInt(progressBar.getAttribute('aria-valuenow'));
+    let id = progressBar.id;
+
+    if (value !== 0) {
+      // Update Progress Bar
+      function change (newVal = value) {
+        progressBar.setAttribute('aria-valuenow', newVal);
+        bar.style.transform = `translateX(${newVal}%)`;
+      }
+
+      if (!pbIntervals[id]) {
+        pbIntervals[id] = {};
+      }
+      else {
+        clearInterval(pbIntervals[id].interval);
+      }
+
+      // Immediate Change
+      if (opt.interval === false) {
+        change();
+      }
+      // Interval Change
+      else {
+        if (opt.start !== null && now < opt.start) {
+          change(opt.start);
+        }
+        else {
+          change(now + opt.intervalIncrement);
+        }
+        // Check for ID
+        if (progressBar.id == '') {
+          id = `progressbar_${randomNum(100, 1000)}`;
+          progressBar.id = id;
+        }
+
+        pbIntervals[id] = {};
+        pbIntervals[id].end = value;
+        pbIntervals[id].increment = opt.intervalIncrement;
+        pbIntervals[id].interval = setInterval(function () {
+          let id = progressBar.id;
+          let now = tryParseInt(progressBar.getAttribute('aria-valuenow'), 'throw');
+          let nextVal = now + pbIntervals[id].increment;
+          let end = pbIntervals[id].end;
+
+          if (nextVal <= end) {
+            updateProgressBar(progressBar, nextVal);
+          }
+          else {
+            updateProgressBar(progressBar, end);
+            clearInterval(pbIntervals[id].interval);
+            pbIntervals[id] = {};
+          }
+        }, opt.intervalDelay);
+      }
+    }
+    // Reset Progress Bar
+    else {
+      bar.style.removeProperty('transform');
+    }
+  }
+  else {
+    let error = new Error;
+      (function () {
+        error.name = 'updateProgressBar Error';
+        error.message = `A valid progress bar was not passed.\n\rProgress Bar: ${progressBar}`;
+      })();
+
+    throw error;
+  }
+}

@@ -20,5 +20,8 @@
         </li>
       </div>
     </ul>
+    <div class="loader progress-bar" id="loader_pb" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100">
+      <div class="progress"></div>
+    </div>
   </nav>
 </header>
