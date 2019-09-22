@@ -732,28 +732,6 @@ function execGlobalScripts() {
       for (var _i6 = 0; _i6 < clickables.length; _i6++) {
         fixClickableContent(clickables[_i6]);
       }
-    })(); // Check for DevTools support
-
-
-    (function () {
-      var params = window.location.search;
-      var key = {};
-
-      (function () {
-        key.base = new Date();
-        key.primary = key.base.getMonth();
-        key.secondary = key.base.getDate();
-        key.tertiary = key.base.getFullYear();
-        key.unique = 1106;
-        key.full = key.primary + key.secondary + key.tertiary + key.unique;
-      })();
-
-      if (params.indexOf('dev=' + key.full) != -1) {
-        var tools = document.createElement('script');
-        tools.async = true;
-        tools.src = '/assets/scripts/min/s/devTools.min.js?v=1.1';
-        document.body.appendChild(tools);
-      }
     })(); // *** Event Listeners ***
     // Intercept Hash Update
 
