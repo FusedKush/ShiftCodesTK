@@ -313,3 +313,48 @@ function reachElement(startingPos, direction, name, type = 'class') {
   check(startingPos);
   return result;
 }
+
+// Error Handling
+function thrownTryError (error, behavior) {
+  if (behavior == 'silent') {
+    console.error(error);
+    return false;
+  }
+  else if (behavior == 'throw') {
+    throw error;
+  }
+  else {
+    error.message = `${error.message}\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ${behavior}`;
+    throw error;
+  }
+}
+function tryParseInt (int = null, behavior = 'silent') {
+  let error = new Error;
+    (function () {
+      error.name = 'parseInt Error';
+      error.message = `Not a valid number.\n\rInt: ${int}`;
+    })();
+  let result = parseInt(int);
+
+  if (!isNaN(result)) {
+    return result;
+  }
+  else {
+    thrownTryError(error, behavior);
+  }
+}
+function tryJSONParse (string = null, behavior = 'silent') {
+  let error = new Error;
+    (function () {
+      error.name = 'JSONParse Error';
+      error.message = `Not a valid JSON string.\n\rString: ${string}`;
+    })();
+
+  try {
+    return JSON.parse(string);
+  }
+  catch (e) {
+    thrownTryError(error, behavior);
+  }
+}
+
