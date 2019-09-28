@@ -174,7 +174,7 @@ function addToast (toast, settings) {
     if (settings.duration != 'infinite') {
       toastTimeout(toast, 'set');
     }
-  }, 300);
+  }, 200);
 }
 function removeToast (toast) {
   let list = document.getElementById('toast_list');
