@@ -1,12 +1,7 @@
-/*********************************
-  Global Functions Script
-*********************************/
 //*** Load State ***//
 var globalFunctionsReady = true;
-var pbIntervals = {}; // Holds information about Progress Bar Intervals
 
-//*** Functions ***//
-// Updates Disabled State of elements
+// Toggle element states
 function disenable (element, state, optTx) {
   let tabIndexes = {
     true: '-1',
@@ -20,7 +15,6 @@ function disenable (element, state, optTx) {
   else                { element.removeAttribute('disabled'); }
   if (optTx === true) { element.tabIndex = tabIndexes[state]; }
 }
-// Updates Hidden State of Elements
 function vishidden (element, state, optTx) {
   let tabIndexes = {
     true: '-1',
@@ -120,11 +114,24 @@ function modifyClass (element, className, modification) {
       return element.classList[modification](className);
     }
     else {
-      element.classList[modification](className);
+      let classes = (function () {
+        let str = className;
+        let regex = new RegExp(' ', 'g');
+
+        str = str.replace(regex, '", "');
+        str = `["${str}"]`;
+        return tryJSONParse(str);
+      })();
+
+      element.classList[modification](...classes);
+      return true;
     }
   }
   else {
-    throw (modification + ('Class called on an undefined element with a className of "') + className + ('"'));
+    let error = new Error;
+      error.name = `${modification}Class Error`;
+      error.message = 'Passed element is undefined.';
+    throw error;
   }
 }
 function hasClass (element, className) {
@@ -135,6 +142,12 @@ function addClass (element, className) {
 }
 function delClass (element, className) {
   return modifyClass(element, className, 'remove');
+}
+function toggleClass (element, className) {
+  let state = hasClass(element, className);
+
+  if (state) { delClass(element, className); }
+  else       { addClass(element, className); }
 }
 function getClass (element, className) {
   return element.getElementsByClassName(className)[0];
@@ -148,7 +161,6 @@ function getTags (element, tagName) {
 function getTag (element, tagName) {
   return getTags(element, tagName)[0];
 }
-
 function hasAttr(element, attr) {
   return (element.getAttribute(attr) !== null);
 }
@@ -358,7 +370,6 @@ function tryJSONParse (string = null, behavior = 'silent') {
     thrownTryError(error, behavior);
   }
 }
-
 // Update a Progress Bar
 function updateProgressBar (progressBar = null, value = 100, options = {}) {
   let defaultOptions = {
