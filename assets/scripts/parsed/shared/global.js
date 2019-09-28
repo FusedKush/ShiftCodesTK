@@ -516,12 +516,19 @@ function copyToClipboard(event) {
   button.classList.remove('animated');
   setTimeout(function () {
     button.classList.add('animated');
-    updateAlertPopup('create', {
-      'duration': 'short',
-      'id': 'clipboard-copy',
-      'icon': 'fas fa-clipboard',
-      'title': 'Copied to Clipboard',
-      'description': 'This may not work in all browsers.'
+    newToast({
+      settings: {
+        duration: 'short',
+        id: 'clipboard-copy'
+      },
+      content: {
+        icon: 'fas fa-clipboard',
+        title: 'Copied to Clipboard',
+        body: 'This may not work in all browsers'
+      },
+      close: {
+        use: false
+      }
     });
   }, 25);
 }
@@ -804,25 +811,12 @@ function execGlobalScripts() {
 
 execGlobalScripts();
 window.addEventListener('load', function () {
+  loadEventFired = true;
   setTimeout(function () {
     // Remove startup styles
     (function () {
       var styles = document.getElementById('startup');
       styles.parentNode.removeChild(styles);
-    })(); // Check for queued popups
-
-
-    (function () {
-      var keys = Object.keys(alertPopupQueue);
-      loadEventFired = true;
-
-      if (keys.length > 0) {
-        for (var _i8 = 0; _i8 < keys.length && _i8 < 3; _i8++) {
-          var key = keys[_i8];
-          updateAlertPopup('create', alertPopupQueue[key]);
-          delete alertPopupQueue[key];
-        }
-      }
     })();
   }, 2500);
 });

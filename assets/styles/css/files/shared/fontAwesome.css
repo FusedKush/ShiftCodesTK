@@ -68,6 +68,9 @@
 .fa-bug::before {
   content: "\f188"; }
 
+.fa-bullhorn::before {
+  content: "\f0a1"; }
+
 .fa-caret-down::before {
   content: "\f0d7"; }
 
