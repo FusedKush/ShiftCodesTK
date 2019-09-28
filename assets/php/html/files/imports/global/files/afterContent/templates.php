@@ -18,3 +18,24 @@
     <div class="body content-container"></div>
   </div>
 </template>
+<!-- Toasts -->
+<template id="toast_template">
+  <div class="toast" id="toast" role="alert" hidden aria-hidden="true">
+    <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100%" aria-hidden="true">
+      <div class="progress"></div>
+    </div>
+    <div class="content-container">
+      <div class="content">
+        <div class="icon" aria-hidden="true">
+          <span></span>
+        </div>
+        <div class="message">
+          <div class="title"></div>
+          <p class="body"></p>
+        </div>
+      </div>
+      <div class="actions">
+      </div>
+    </div>
+  </div>
+</template>

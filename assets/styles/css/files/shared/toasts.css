@@ -1,15 +1,10 @@
 /*********************************
-  Alert Popup Styles
-*********************************/
-/*** Imports ***/
-/*********************************
   Global Sass Declarations
 *********************************/
 /*** Variables ***/
 /*** Functions ***/
 /*** Mixins ***/
-/*** Style Declarations ***/
-.alert-popup-list {
+.toast-list {
   position: fixed;
   bottom: 0;
   right: 0;
@@ -20,7 +15,7 @@
   padding: 16px;
   z-index: 102; }
 
-.alert-popup {
+.toast {
   display: block;
   border: 1.5px solid rgba(255, 255, 255, 0.25);
   border-radius: 8px;
@@ -50,23 +45,24 @@
   0% {
     opacity: 1;
     transform: translateY(0); } }
-  body[data-theme="main"] .alert-popup {
+  body[data-theme="main"] .toast {
     background-color: #f00; }
-  body[data-theme="bl1"] .alert-popup {
+  body[data-theme="bl1"] .toast {
     background-color: #dc143c; }
-  body[data-theme="bl2"] .alert-popup {
+  body[data-theme="bl2"] .toast {
     background-color: #ff4500; }
-  body[data-theme="tps"] .alert-popup {
+  body[data-theme="tps"] .toast {
     background-color: #1e90ff; }
-  body[data-theme="bl3"] .alert-popup {
+  body[data-theme="bl3"] .toast {
     background-color: #ffa900; }
-  .alert-popup:not(:first-child) {
+  .toast:not(:first-child) {
     margin-top: 8px; }
-  .alert-popup[data-expanded="true"] {
+  .toast:not([hidden]) {
     animation-name: alertPopupIn; }
-  .alert-popup[data-expanded="false"] {
+  .toast[hidden] {
+    display: block;
     animation-name: alertPopupOut; }
-  .alert-popup::before {
+  .toast::before {
     position: absolute;
     top: 0;
     left: 0;
@@ -75,49 +71,44 @@
     border-radius: inherit;
     content: "";
     background-color: rgba(0, 0, 0, 0.25); }
-  .alert-popup .progress-bar {
+  .toast .progress-bar {
     position: absolute;
     background-color: transparent;
     height: 100%; }
-    .alert-popup .progress-bar .progress {
+    .toast .progress-bar .progress {
       animation-timing-function: linear;
       animation-fill-mode: forwards;
-      background-color: rgba(0, 0, 0, 0.25); }
+      background-color: rgba(255, 255, 255, 0.25);
+      border-radius: 0; }
 
 @keyframes alertPopupProgress {
   from {
-    transform: translateX(-100%); }
+    transform: translateX(0); }
   to {
-    transform: translateX(0); } }
-      .alert-popup[data-expiring="true"] .progress-bar .progress {
+    transform: translateX(100%); } }
+      .toast.expiring .progress-bar .progress {
         animation-name: alertPopupProgress; }
-      .alert-popup[data-duration="short"] .progress-bar .progress {
-        animation-duration: 2.5s; }
-      .alert-popup[data-duration="medium"] .progress-bar .progress {
-        animation-duration: 5s; }
-      .alert-popup[data-duration="long"] .progress-bar .progress {
-        animation-duration: 7.5s; }
-  .alert-popup .content-container {
+  .toast .content-container {
     display: flex;
     align-items: center;
     font-size: 0.85em; }
-  .alert-popup .content {
+  .toast .content {
     display: inline-flex;
     flex: 1;
     padding: 8px; }
-  .alert-popup .icon {
+  .toast .icon {
     display: flex;
     align-items: center;
     margin-right: 8px;
     padding: 4px;
     display: flex;
     font-size: 1.5em; }
-  .alert-popup .title {
+  .toast .title {
     font-size: 1.15em; }
-  .alert-popup .description {
+  .toast .body {
     color: rgba(255, 255, 255, 0.75);
     margin-top: 0; }
-  .alert-popup .actions {
+  .toast .actions {
     display: flex;
     justify-content: flex-end;
     align-self: flex-end;
