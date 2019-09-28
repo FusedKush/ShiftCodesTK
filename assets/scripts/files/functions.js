@@ -326,7 +326,153 @@ function reachElement(startingPos, direction, name, type = 'class') {
   check(startingPos);
   return result;
 }
+// Merge two or more objects
+function mergeObj (objects) {
+  let length = arguments.length; // objects.length;
+  let result = {};
 
+  function parseVal(base, key, val) {
+    if (val !== null && val !== undefined && val.constructor.name == 'Object') {
+      let subKeys = Object.keys(val);
+
+      for (let y = 0; y < subKeys.length; y++) {
+        let subKey = subKeys[y];
+        let subVal = val[subKey];
+
+        if (base[key] === undefined) {
+          base[key] = {};
+        }
+
+        parseVal(base[key], subKey, subVal);
+      }
+    }
+    else {
+      base[key] = val;
+    }
+  }
+
+  for (let i = 0; i < length; i++) {
+    let arg = arguments[i];
+    let keys = Object.keys(arg);
+
+    for (let x = 0; x < keys.length; x++) {
+      let key = keys[x];
+      let val = arg[key];
+
+      parseVal(result, key, val);
+    }
+  }
+
+  return result;
+}
+// Get all results of a Regular Expression (matchAll Polyfill)
+function regexMatchAll(exp, string) {
+  let result = [];
+  let regex = (function () {
+    if (exp.global === true) { return exp; }
+    else                     { return new RegExp(exp, 'g'); }
+  })();
+
+  while ((matches = regex.exec(string)) !== null) {
+    result.push(matches);
+  }
+
+  return result;
+}
+// Manage Cookies
+function getCookie(cookie = 'all') {
+  function wrap(array) {
+    let obj = {};
+    let keys = ['string', 'name', 'value'];
+
+    for (let x = 0; x < keys.length; x++) {
+      obj[keys[x]] = array[x];
+    }
+
+    return obj;
+  }
+  function get(match) {
+    let result = regexMatchAll('(' + match + ')=([^;]+)(?:;|$)', document.cookie);
+
+    if (result.length == 1) {
+      return wrap(result[0]);
+    }
+    else if (result.length > 1) {
+      let array = [];
+
+      for (let i = 0; i < result.length; i++) {
+        array.push(wrap(result[i]));
+      }
+
+      return array;
+    }
+    else {
+      return false;
+    }
+  }
+
+  if (cookie == 'all') { return get('[^\\s=]+'); }
+  else                 { return get(cookie); }
+}
+function setCookie(setProps) {
+  let dfProps = {
+    'name': '',
+    'value': '',
+    'path': '/',
+    'domain': false,
+    'max-age': 7890000,
+    'expires': false,
+    'secure': false,
+    'samesite': 'lax'
+  }
+  let props = mergeObj([dfProps, setProps]);
+  let keys = Object.keys(props);
+  let str = '';
+
+  // Cookie Name + Value
+  (function () {
+    // Name
+    if (props.name != '') {
+      str += props.name + '=';
+    }
+    else {
+      throw new Error('Could not update cookie: Property "name" is required but was not specified.\r\n\r\n' + JSON.stringify(setProps));
+    }
+    // Value
+    str += val = encodeURIComponent(props.value);
+  })();
+  // Cookie Properties
+  (function () {
+    for (let i = 2; i < keys.length; i++) {
+      let prop = keys[i];
+      let val = props[prop];
+      let strVal = '';
+
+      if (val !== false) {
+        if (typeof val != 'boolean') {
+          strVal = '=' + val;
+        }
+
+        str += '; ' + prop + strVal;
+      }
+    }
+  })();
+
+  document.cookie = str;
+  return str;
+}
+function deleteCookie(cookie, type = 'immediately') {
+  function del (val) {
+    setCookie({
+      'name': cookie,
+      'max-age': val,
+      'expires': val
+    });
+  }
+
+  if (type == 'immediately') { del(0); }
+  else                       { del(false); }
+}
 // Error Handling
 function thrownTryError (error, behavior) {
   if (behavior == 'silent') {
