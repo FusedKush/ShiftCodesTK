@@ -686,8 +686,11 @@ function execGlobalScripts () {
     })();
     // Get SHiFT Badge count and update variable
     (function () {
-      newAjaxRequest('GET', '/assets/php/scripts/shift/getAlerts.php', function (request) {
-        shiftBadgeCount = JSON.parse(request).response.alerts;
+      newAjaxRequest({
+        file: '/assets/php/scripts/shift/getAlerts.php',
+        callback: function (request) {
+          shiftBadgeCount = JSON.parse(request).response.alerts;
+        }
       });
     })();
     // Add inner span to buttons and links

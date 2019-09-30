@@ -480,23 +480,26 @@ function addPanelListeners(panel) {
     function executeWhenReady() {
       if (typeof newAjaxRequest == 'function' && typeof getDate == 'function') {
         // Fetch SHiFT Codes
-        newAjaxRequest('GET', ('/assets/php/scripts/shift/retrieveCodes.php?gameID=') + shiftData.id, function (response) {
-          let retrievedCodes = JSON.parse(response).response;
-              count.retrieved = retrievedCodes.length;
+        newAjaxRequest({
+          file: `/assets/php/scripts/shift/retrieveCodes.php?gameID=${shiftData.id}`,
+          callback: function (response) {
+            let retrievedCodes = JSON.parse(response).response;
+                count.retrieved = retrievedCodes.length;
 
-          // Start processing
-          if (count.retrieved > 0) {
-            for (let i = 0; i < count.retrieved; i++) {
-              // Construct the panel for the SHiFT Code
-              constructPanel(retrievedCodes[i]);
+            // Start processing
+            if (count.retrieved > 0) {
+              for (let i = 0; i < count.retrieved; i++) {
+                // Construct the panel for the SHiFT Code
+                constructPanel(retrievedCodes[i]);
+              }
             }
-          }
-          // Show error message
-          else {
-            let overlay = document.getElementById('shift_overlay');
+            // Show error message
+            else {
+              let overlay = document.getElementById('shift_overlay');
 
-            vishidden(overlay.getElementsByClassName('spinner')[0], true);
-            vishidden(overlay.getElementsByClassName('error')[0], false);
+              vishidden(overlay.getElementsByClassName('spinner')[0], true);
+              vishidden(overlay.getElementsByClassName('error')[0], false);
+            }
           }
         });
       }

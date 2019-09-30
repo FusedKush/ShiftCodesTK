@@ -168,14 +168,17 @@
     function waitForDep() {
       if (typeof newAjaxRequest == 'function') {
         // Fetch changelogs
-        newAjaxRequest('GET', 'assets/php/scripts/getChangelogs.php', function (response) {
-          let changelogs = JSON.parse(response).response;
-              count.retrieved = changelogs.length;
+        newAjaxRequest({
+          file: 'assets/php/scripts/getChangelogs.php',
+          callback: function (response) {
+            let changelogs = JSON.parse(response).response;
+                count.retrieved = changelogs.length;
 
-          // Process changelogs
-          for (let i = 0; i < count.retrieved; i++) {
-            // Construct the panel
-            constructPanel(changelogs[i]);
+            // Process changelogs
+            for (let i = 0; i < count.retrieved; i++) {
+              // Construct the panel
+              constructPanel(changelogs[i]);
+            }
           }
         });
       }

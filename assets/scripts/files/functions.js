@@ -35,7 +35,7 @@ function updateLabel(element, label) {
   element.setAttribute('aria-label', label);
 }
 // Handles AJAX Requests
-function newAjaxRequest (type, file, callback, parameters, requestHeader) {
+function newAjaxRequest (properties) {
   let request = (function () {
     if (window.XMLHttpRequest) {
       return new XMLHttpRequest();
@@ -44,44 +44,53 @@ function newAjaxRequest (type, file, callback, parameters, requestHeader) {
       return new ActiveXObject('Microsoft.XMLHttp');
     }
   })();
+  let defaultProps = {
+    type: 'GET',
+    file: null,
+    callback: function (response) {
+      return response;
+    },
+    params: 'none',
+    requestHeader: 'default'
+  };
+  let props = mergeObj(defaultProps, properties);
 
-  function handleResponse () {
-    function processResponse () {
-      if (request.readyState === XMLHttpRequest.DONE) {
-        if (request.status === 200) {
-          callback(request.responseText);
-        }
-        else {
-          console.error(('Ajax "') + type + ('" Request Failed. Status Code: ') + request.status + ('. Requested File: ') + file, 'error');
-        }
-      }
-    }
+  function ajaxError (e) {
+    let error = new Error;
+        error.name = 'newAjaxRequest Error';
+        error.message = `An error occurred with Ajax Request "${props.type}: ${props.file}".\n\rError: ${e}`;
 
-    if (typeof devTools == 'object' && devTools.suppressAjaxErrorCatching === true) {
-      processResponse();
-    }
-    else {
+    throw error;
+  }
+
+  if (props.file !== null) {
+    // Handle Response
+    request.onreadystatechange = function () {
       try {
-        processResponse();
+        if (request.readyState === XMLHttpRequest.DONE) {
+          if (request.status === 200) {
+            props.callback(request.responseText);
+          }
+          else {
+            throw `Status Code ${request.status} returned.`;
+          }
+        }
       }
-      catch(e) {
-        console.error(('Caught Exception in Ajax ') + type + (' Request: ') + e + ('. Requested File: ') + file);
+      catch (e) {
+        ajaxError(e);
       }
     }
-  }
 
-  request.onreadystatechange = handleResponse;
-  request.open(type, file, true);
+    request.open(props.type, props.file, true);
 
-  if (requestHeader == 'form') {
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  }
-
-  if (typeof parameters == 'undefined') {
-    request.send();
+    if (props.requestHeader == 'form') {
+      request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    }
+    if (props.params == 'none') { request.send(); }
+    else                        { request.send(props.params); }
   }
   else {
-    request.send(parameters);
+    ajaxError(`File path was not specified.\n\rProperties: ${JSON.stringify(props)}`);
   }
 }
 // Handles Date Requests
