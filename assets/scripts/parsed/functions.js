@@ -1,3 +1,5 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
@@ -5,8 +7,6 @@ function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread n
 function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 //*** Load State ***//
 var globalFunctionsReady = true; // Toggle element states
@@ -56,7 +56,7 @@ function updateLabel(element, label) {
 } // Handles AJAX Requests
 
 
-function newAjaxRequest(type, file, callback, parameters, requestHeader) {
+function newAjaxRequest(properties) {
   var request = function () {
     if (window.XMLHttpRequest) {
       return new XMLHttpRequest();
@@ -65,39 +65,53 @@ function newAjaxRequest(type, file, callback, parameters, requestHeader) {
     }
   }();
 
-  function handleResponse() {
-    function processResponse() {
-      if (request.readyState === XMLHttpRequest.DONE) {
-        if (request.status === 200) {
-          callback(request.responseText);
-        } else {
-          console.error('Ajax "' + type + '" Request Failed. Status Code: ' + request.status + '. Requested File: ' + file, 'error');
-        }
-      }
-    }
+  var defaultProps = {
+    type: 'GET',
+    file: null,
+    callback: function callback(response) {
+      return response;
+    },
+    params: 'none',
+    requestHeader: 'default'
+  };
+  var props = mergeObj(defaultProps, properties);
 
-    if ((typeof devTools === "undefined" ? "undefined" : _typeof(devTools)) == 'object' && devTools.suppressAjaxErrorCatching === true) {
-      processResponse();
-    } else {
+  function ajaxError(e) {
+    var error = new Error();
+    error.name = 'newAjaxRequest Error';
+    error.message = "An error occurred with Ajax Request \"".concat(props.type, ": ").concat(props.file, "\".\n\rError: ").concat(e);
+    throw error;
+  }
+
+  if (props.file !== null) {
+    // Handle Response
+    request.onreadystatechange = function () {
       try {
-        processResponse();
+        if (request.readyState === XMLHttpRequest.DONE) {
+          if (request.status === 200) {
+            props.callback(request.responseText);
+          } else {
+            throw "Status Code ".concat(request.status, " returned.");
+          }
+        }
       } catch (e) {
-        console.error('Caught Exception in Ajax ' + type + ' Request: ' + e + '. Requested File: ' + file);
+        ajaxError(e);
       }
+    };
+
+    request.open(props.type, props.file, true);
+
+    if (props.requestHeader == 'form') {
+      request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     }
-  }
 
-  request.onreadystatechange = handleResponse;
-  request.open(type, file, true);
-
-  if (requestHeader == 'form') {
-    request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-  }
-
-  if (typeof parameters == 'undefined') {
-    request.send();
+    if (props.params == 'none') {
+      request.send();
+    } else {
+      request.send(props.params);
+    }
   } else {
-    request.send(parameters);
+    ajaxError("File path was not specified.\n\rProperties: ".concat(JSON.stringify(props)));
   }
 } // Handles Date Requests
 

@@ -178,13 +178,16 @@
     function waitForDep() {
       if (typeof newAjaxRequest == 'function') {
         // Fetch changelogs
-        newAjaxRequest('GET', 'assets/php/scripts/getChangelogs.php', function (response) {
-          var changelogs = JSON.parse(response).response;
-          count.retrieved = changelogs.length; // Process changelogs
+        newAjaxRequest({
+          file: 'assets/php/scripts/getChangelogs.php',
+          callback: function callback(response) {
+            var changelogs = JSON.parse(response).response;
+            count.retrieved = changelogs.length; // Process changelogs
 
-          for (var i = 0; i < count.retrieved; i++) {
-            // Construct the panel
-            constructPanel(changelogs[i]);
+            for (var i = 0; i < count.retrieved; i++) {
+              // Construct the panel
+              constructPanel(changelogs[i]);
+            }
           }
         });
       } else {
