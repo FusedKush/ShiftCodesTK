@@ -39,3 +39,23 @@
     </div>
   </div>
 </template>
+<!-- Pager -->
+<template id="pager_template">
+  <div class="pager configured">
+    <div class="content-wrapper">
+      <button class="styled previous" title="Previous Page" aria-label="Previous Page">
+        <span class="fas fa-chevron-left box-icon"></span>
+      </button>
+      <div class="jumps">
+        <div class="content-container">
+          <button class="styled jump" title="Jump to Page 1" aria-label="Jump to Page 1">
+          <strong class="box-icon">1</strong>
+          </button>
+        </div>
+      </div>
+      <button class="styled next" title="Next Page" aria-label="Next Page">
+        <span class="fas fa-chevron-right box-icon"></span>
+      </button>
+    </div>
+  </div>
+</template>
