@@ -359,14 +359,14 @@ function mergeObj (objects) {
   let result = {};
 
   function parseVal(base, key, val) {
-    if (val !== null && val !== undefined && val.constructor.name == 'Object') {
+    if (val && val.constructor.name == 'Object') {
       let subKeys = Object.keys(val);
 
       for (let y = 0; y < subKeys.length; y++) {
         let subKey = subKeys[y];
         let subVal = val[subKey];
 
-        if (base[key] === undefined) {
+        if (!base[key]) {
           base[key] = {};
         }
 
