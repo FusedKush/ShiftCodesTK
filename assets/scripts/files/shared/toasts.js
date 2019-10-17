@@ -41,20 +41,44 @@ function newToast (properties) {
       use: false,
       type: 'link',
       link: '#',
+      action: false,
+      close: false,
       name: 'Action',
       label: 'The Action button'
     },
     close: {
       use: true,
       type: 'button',
-      name: 'Close',
-      label: 'Close the toast'
+      link: '#',
+      action: false,
+      close: true,
+      name: 'Dismiss',
+      label: 'Dismiss and close the toast'
     }
   }
-  let templates = {};
+  let templates = {
+    exception: {
+      settings: {
+        id: 'exception',
+        duration: 'infinite'
+      },
+      content: {
+        title: 'An error has occurred'
+      },
+      action: {
+        use: true,
+        type: 'link',
+        link: ' ',
+        name: 'Refresh',
+        label: 'Refresh the page and try again'
+      }
+    }
+  };
   let templateProps = (function () {
-    if (properties.template && properties.template !== 'none' && properties.templates[template] !== undefined) {
-      return templates[template];
+    let t = properties.settings.template;
+
+    if (t && t !== 'none' && templates[t] !== undefined) {
+      return templates[t];
     }
     else {
       return {};
@@ -63,7 +87,7 @@ function newToast (properties) {
   let props = mergeObj(defaultProps, templateProps, properties);
   let toast = getTemplate('toast_template');
   let settings = {
-    id: props.settings.id,
+    id: `toast_${props.settings.id}`,
     duration: (function () {
       let d = props.settings.duration;
       let vals = {
@@ -107,6 +131,15 @@ function newToast (properties) {
     if (actionProps.type == 'link') {
       btn.href = actionProps.link;
     }
+    if (actionProps.action) {
+      btn.addEventListener('click', actionProps.action);
+    }
+    if (actionProps.close) {
+      btn.setAttribute('aria-controls', settings.id);
+      btn.addEventListener('click', function () {
+        removeToast(toast);
+      });
+    }
     e.actions.appendChild(btn);
     return btn;
   }
@@ -123,17 +156,8 @@ function newToast (properties) {
   e.body.id = ids.body;
   toast.setAttribute('aria-describedby', ids.body);
   // Actions
-  if (props.action.use) {
-    addAction('action', props.action);
-  }
-  if (props.close.use) {
-    let close = addAction('close', props.close);
-
-    close.setAttribute('aria-controls', settings.id);
-    close.addEventListener('click', function () {
-      removeToast(toast);
-    });
-  }
+  if (props.action.use) { addAction('action', props.action); }
+  if (props.close.use)  { addAction('close', props.close); }
   // Timeout listeners
   if (settings.duration != 'infinite') {
     toast.addEventListener('mouseover', toastEvent);
