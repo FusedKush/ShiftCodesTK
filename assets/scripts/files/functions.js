@@ -112,13 +112,15 @@ function newAjaxRequest (properties) {
   }
 }
 // Handles Date Requests
-function getDate (format = 'y-m-d', separator = '-') {
-  let date = {};
+function getDate (format = 'y-m-d', separator = '-', date = 'now') {
+  let d = {};
     (function () {
-      date.base =  new Date();
-      date.year =  date.base.getFullYear();
-      date.month = ('0' + (date.base.getMonth() + 1)).slice(-2);
-      date.day =   ('0' + date.base.getDate()).slice(-2);
+      if (date == 'now') { d.base = new Date(); }
+      else               { d.base = new Date(date); }
+
+      d.year  = d.base.getFullYear();
+      d.month = ('0' + (d.base.getMonth() + 1)).slice(-2);
+      d.day   = ('0' + d.base.getDate()).slice(-2);
     })();
   let formats = {
     'y': 'year',
@@ -126,9 +128,9 @@ function getDate (format = 'y-m-d', separator = '-') {
     'd': 'day'
   };
 
-  return date[formats[format.slice(0, 1)]] + separator +
-         date[formats[format.slice(2, 3)]] + separator +
-         date[formats[format.slice(4, 5)]];
+  return d[formats[format.slice(0, 1)]] + separator +
+         d[formats[format.slice(2, 3)]] + separator +
+         d[formats[format.slice(4, 5)]];
 }
 // Generates a random number between two values
 function randomNum (min, max) {
