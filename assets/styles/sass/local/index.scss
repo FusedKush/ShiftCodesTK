@@ -35,6 +35,7 @@ section {
     text-align: center;
     @include multiProp(calc(100vh + #{$sBorderWidth}), height, min-height);
     @include theme(bc);
+    @include flexbox;
 
     .content-wrapper {
       @include flexbox($direction: c);
@@ -89,6 +90,7 @@ section {
 
           color: #fff;
           margin-bottom: $selectedBorderSize;
+          white-space: pre;
 
           &::before {
             @include fill(true);
@@ -130,7 +132,7 @@ section {
     }
   }
   &:not(.main) {
-    @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
+    // @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
   }
   &.secondary {
     &:nth-of-type(odd) .content-wrapper {
@@ -140,6 +142,7 @@ section {
 
     .content-wrapper {
       @include flexbox($hAlign: s, $direction: c);
+      @include multiProp(64px, padding-top, padding-bottom);
     }
     .intro {
       font-size: 1.25em;
@@ -173,7 +176,7 @@ section {
   }
   &.faq {
     border-color: $theme-main;
-    padding-top: 32px;
+    @include multiProp(32px, padding-top, padding-bottom);
 
     .content-wrapper {
       @include flexbox(none, none, $direction: c);
@@ -194,23 +197,23 @@ section {
     }
   }
 
-
   .content-wrapper {
     @include multiProp(100%, sizing);
 
     @media screen and (max-width: 499px) {
       font-size: 0.85em;
-      padding: 32px 16px;
+      @include multiProp(16px, padding-left, padding-right);
     }
     @media screen and (min-width: 500px) {
       font-size: 1em;
-      padding: 32px;
+      @include multiProp(32px, padding-left, padding-right);
     }
   }
   a.button {
     background-color: tpw(0.15);
     overflow: hidden;
-    padding: 10px 32px;
+    font-size: 1.15em;
+    padding: 16px 32px;
 
     &::before {
       border: none;
@@ -264,14 +267,14 @@ section {
       $yPos: 2.25em;
       $rotation: 135deg;
 
-      @mixin flagAnim ($opacity, $shadow: tpb(0.5)) {
+      @mixin flagAnim ($opacity, $shadow: tpb(0.25)) {
         opacity: $opacity;
         box-shadow: 0 0 10px $shadow;
       }
 
       @keyframes flagFadeIn {
         0% { @include flagAnim(0); }
-        50% { @include flagAnim(0.5, tpw(0.5)); }
+        50% { @include flagAnim(0.5, tpw(0.25)); }
         100% { @include flagAnim(1); }
       }
 
@@ -280,7 +283,6 @@ section {
       @include spacing(0 4px, 0.5em);
       font-size: 0.5em;
       border: bd(1.5px, tpb(0.25));
-      box-shadow: shadow(tpb(0.5), 10px);
       text-shadow: dropShadow(tpb(0.25));
       animation: flagFadeIn 0.5s linear forwards;
       opacity: 0;
