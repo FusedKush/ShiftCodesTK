@@ -53,7 +53,8 @@ function newAjaxRequest (properties) {
       return response;
     },
     params: 'none',
-    requestHeader: 'default'
+    requestHeader: 'default',
+    catchErrors: true
   };
   let props = mergeObj(defaultProps, properties);
 
@@ -66,24 +67,39 @@ function newAjaxRequest (properties) {
   }
 
   if (props.file !== null) {
+    let file = (function () {
+      let regex = new RegExp('\\s+', 'g');
+
+      return props.file.replace(regex, '');
+    })();
+
     // Handle Response
     request.onreadystatechange = function () {
-      try {
+      function handleResponse() {
         if (request.readyState === XMLHttpRequest.DONE) {
           if (request.status === 200) {
             props.callback(request.responseText);
           }
-          else {
+          else if (props.catchErrors) {
             throw `Status Code ${request.status} returned.`;
           }
         }
       }
-      catch (e) {
-        ajaxError(e);
+
+      if (props.catchErrors) {
+        try {
+          handleResponse();
+        }
+        catch (e) {
+          ajaxError(e);
+        }
+      }
+      else {
+        handleResponse();
       }
     }
 
-    request.open(props.type, props.file, true);
+    request.open(props.type, file, true);
 
     if (props.requestHeader == 'form') {
       request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -493,6 +509,9 @@ function thrownTryError (error, behavior) {
   else if (behavior == 'throw') {
     throw error;
   }
+  else if (behavior == 'ignore') {
+    return false;
+  }
   else {
     error.message = `${error.message}\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ${behavior}`;
     throw error;
@@ -510,7 +529,7 @@ function tryParseInt (int = null, behavior = 'silent') {
     return result;
   }
   else {
-    thrownTryError(error, behavior);
+    return thrownTryError(error, behavior);
   }
 }
 function tryJSONParse (string = null, behavior = 'silent') {
@@ -524,9 +543,74 @@ function tryJSONParse (string = null, behavior = 'silent') {
     return JSON.parse(string);
   }
   catch (e) {
-    thrownTryError(error, behavior);
+    return thrownTryError(error, behavior);
   }
 }
+function tryToRun(settings, currentAttempt = 1) {
+  let sets = (function () {
+    if (currentAttempt) {
+      let defaultSettings = {
+        function: function () {
+          return true;
+        },
+        attempts: 10,
+        delay: 250,
+        behavior: 'silent',
+        logCatch: false,
+        customError: false
+      };
+
+      return mergeObj(defaultSettings, settings);
+    }
+    else {
+      return settings;
+    }
+  })();
+
+  function failed() {
+    if (currentAttempt <= sets.attempts || !sets.attempts) {
+      setTimeout(function () {
+        tryToRun(settings, currentAttempt + 1);
+      }, sets.delay);
+    }
+    else {
+      let error = new Error;
+          error.name = 'tryToRun Error';
+
+      if (sets.customError !== false) {
+        error.message = sets.customError;
+      }
+      else {
+        error.message = `Max Tries Exceeded.\r\n\r\nSettings: ${JSON.stringify(sets)}`;
+      }
+      if (sets.logCatch) {
+        error.message += `\r\n\r\nCaught Error: ${e}`;
+      }
+
+      if (sets.behavior == 'throw') {
+        throw error;
+      }
+      else if (sets.behavior == 'silent') {
+        console.error(error);
+        return false;
+      }
+      else if (sets.behavior == 'ignore') {
+        return false;
+      }
+    }
+  }
+
+  try {
+    let result = sets.function();
+
+    if (!result) {
+      failed();
+    }
+  }
+  catch (e) {
+    failed();
+  }
+};
 // Update a Progress Bar
 function updateProgressBar (progressBar = null, value = 100, options = {}) {
   let defaultOptions = {
