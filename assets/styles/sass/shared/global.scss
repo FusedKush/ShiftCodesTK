@@ -628,7 +628,7 @@ main {
 
       &::before { @include fill(true); }
 
-      &[data-pressed="false"], &:not([data-pressed]) {
+      &[aria-pressed="false"], &:not([aria-pressed]) {
         color: inherit;
 
         &::before {
@@ -649,7 +649,7 @@ main {
           &::before { opacity: 0.5; }
         }
       }
-      &[data-pressed="true"] {
+      &[aria-pressed="true"] {
         color: #fff;
         @include theme(bg);
 
