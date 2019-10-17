@@ -1,6 +1,8 @@
 //*** Load State ***//
 var globalFunctionsReady = true;
 
+var pbIntervals = {};
+
 // Toggle element states
 function disenable (element, state, optTx) {
   let tabIndexes = {
@@ -530,26 +532,31 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
   let defaultOptions = {
     interval: false,
     intervalDelay: 1000,
-    intervalIncrement: 10
+    intervalIncrement: 5,
+    start: null,
+    resetOnZero: false
   };
 
   if (progressBar !== null && progressBar.getAttribute('role') == 'progressbar') {
     let bar = getClass(progressBar, 'progress');
-    let opt = Object.assign(defaultOptions, options);
-    let now = tryParseInt(progressBar.getAttribute('aria-valuenow'));
+    let opt = mergeObj(defaultOptions, options);
     let id = progressBar.id;
 
-    if (value !== 0) {
+    if (!opt.resetOnZero || value > 0) {
       // Update Progress Bar
       function change (newVal = value) {
+        progressBar.setAttribute('data-progress', newVal);
         progressBar.setAttribute('aria-valuenow', newVal);
-        bar.style.transform = `translateX(${newVal}%)`;
+
+        if (!opt.useWidth) {
+          bar.style.transform = `translateX(${newVal}%)`;
+        }
+        else {
+          bar.style.width = `${newVal}%`;
+        }
       }
 
-      if (!pbIntervals[id]) {
-        pbIntervals[id] = {};
-      }
-      else {
+      if (pbIntervals[id]) {
         clearInterval(pbIntervals[id].interval);
       }
 
@@ -559,6 +566,8 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
       }
       // Interval Change
       else {
+        let now = tryParseInt(progressBar.getAttribute('data-progress'), 'ignore');
+
         if (opt.start !== null && now < opt.start) {
           change(opt.start);
         }
@@ -576,23 +585,24 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
         pbIntervals[id].increment = opt.intervalIncrement;
         pbIntervals[id].interval = setInterval(function () {
           let id = progressBar.id;
-          let now = tryParseInt(progressBar.getAttribute('aria-valuenow'), 'throw');
+          let now = tryParseInt(progressBar.getAttribute('data-progress'), 'throw');
           let nextVal = now + pbIntervals[id].increment;
           let end = pbIntervals[id].end;
 
           if (nextVal <= end) {
-            updateProgressBar(progressBar, nextVal);
+            change(nextVal);
           }
           else {
-            updateProgressBar(progressBar, end);
+            change(end);
             clearInterval(pbIntervals[id].interval);
-            pbIntervals[id] = {};
+            delete pbIntervals[id];
           }
         }, opt.intervalDelay);
       }
     }
     // Reset Progress Bar
     else {
+      progressBar.setAttribute('data-progress', 0);
       bar.style.removeProperty('transform');
     }
   }

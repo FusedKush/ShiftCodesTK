@@ -23,40 +23,48 @@ function updNav () {
   }
 };
 // Update Loader Progress Bar
-function lpbUpdate (progress, interval = false) {
+function lpbUpdate (progress, interval = false, additionalOptions = {}) {
   let settings = {
-    fadeDuration: 300,
-    barDuration: 400,
+    duration: 400,
     buffer: 100
   };
+      settings.total = settings.duration + settings.buffer;
+  let options = mergeObj(additionalOptions, { interval: interval, resetOnZero: true });
   let pb = document.getElementById('loader_pb');
+  let now = tryParseInt(pb.getAttribute('data-progress'), 'ignore');
 
-  function update () {
-    if (interval === false) {
-      updateProgressBar(pb, progress);
+  function run() {
+    function update (progressVal = progress) {
+      updateProgressBar(pb, progressVal, options);
+    }
+
+    // Reset for start
+    if (!hasClass(pb, 'is-loading')) {
+      addClass(pb, 'is-loading');
+      update();
     }
     else {
-      updateProgressBar(pb, progress, { interval: true });
+      update();
+    }
+    // Reset when complete
+    if (progress == 100) {
+      setTimeout(function () {
+        delClass(pb, 'is-loading');
+
+        setTimeout(function () {
+          update(0);
+        }, settings.total);
+      }, settings.total);
     }
   }
 
-  // Reset for start
-  if (!hasClass(pb, 'is-loading')) {
-    addClass(pb, 'is-loading');
-    update();
-  }
-  else {
-    update();
-  }
-  // Reset when complete
-  if (progress == 100) {
-    setTimeout(function () {
-      delClass(pb, 'is-loading');
-
-      setTimeout(function () {
-        updateProgressBar(pb, 0);
-      }, (settings.fadeDuration + settings.buffer));
-    }, (settings.barDuration + settings.buffer));
+  if (progress > now || now == 0) {
+    if (now != 0) {
+      setTimeout(run, settings.buffer);
+    }
+    else {
+      run();
+    }
   }
 }
 

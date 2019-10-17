@@ -96,24 +96,21 @@
   }
   // Loader Progress Bar
   .loader.progress-bar {
-    $trDuration: 0.4s;
+    $dur: 0.4s;
 
+    position: absolute;
     height: 3px;
     background-color: transparent;
     opacity: 0;
-    transition: opacity $trDuration linear;
+    transition: opacity $dur linear;
 
     &.is-loading {
       opacity: 1;
       transition: none;
-
-      .progress {
-        transition: transform 0.4s ease-out;
-      }
     }
 
     .progress {
-      @include progressBarShadow;
+      @include progressBarShadow(10px);
       transition: none;
 
       @at-root {
@@ -125,10 +122,8 @@
           &[data-at-top="false"] #{$sel} { @include multiProp(#fff, colors); }
         }
         // Animations
-        .loader.progress-bar {
-          &.is-loading .progress {
-            transition: transform $trDuration ease-out;
-          }
+        .loader.progress-bar.is-loading .progress {
+          transition: transform $dur ease;
         }
       }
     }

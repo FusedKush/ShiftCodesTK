@@ -1,5 +1,8 @@
 <header class="navbar-container">
   <nav class="navbar" id="navbar" aria-label="Navigation Bar" data-at-top="true">
+    <div class="loader progress-bar" id="loader_pb" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100">
+      <div class="progress"></div>
+    </div>
     <ul class="content-wrapper" role="menubar">
       <div class="left">
         <li role="menuitem">
@@ -20,8 +23,5 @@
         </li>
       </div>
     </ul>
-    <div class="loader progress-bar" id="loader_pb" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100">
-      <div class="progress"></div>
-    </div>
   </nav>
 </header>
