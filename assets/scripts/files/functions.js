@@ -240,13 +240,16 @@ function getElements(parent, elements) {
 
   return matches;
 }
-// Retrieve a copy of a template
+// Copy elements
+function copyElm(element, deepClone = true) {
+  return element.cloneNode(deepClone);
+}
 function getTemplate(templateID, deepClone = true) {
   let e = document.getElementById(templateID);
 
   if (e !== null && e !== undefined) {
     if (e.tagName == 'TEMPLATE') {
-      return e.content.children[0].cloneNode(deepClone);
+      return copyElm(e.content.children[0].cloneNode(deepClone));
     }
     else {
       return e.children[0].cloneNode(deepClone);
