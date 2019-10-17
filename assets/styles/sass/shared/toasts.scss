@@ -78,13 +78,14 @@ $listPadding: 16px;
     }
   }
   .content-container {
-    @include flexbox($hAlign: none);
+    @include flexbox($hAlign: none, $wrap: true);
     font-size: 0.85em;
   }
   .content {
     display: inline-flex;
     flex: 1;
     padding: $padding;
+    min-width: 65%;
   }
     .icon {
       @include flexbox($hAlign: none);
