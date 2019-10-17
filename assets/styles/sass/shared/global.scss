@@ -279,7 +279,7 @@ main {
   max-width: 1200px;
   margin: 0 auto;
 }
-.fa, .fas, .fab, .fal, .far {
+div, span, a, button, strong, b, em, i {
   &.box-icon { @include boxIcon; }
 }
 .highlight {
