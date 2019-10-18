@@ -91,11 +91,13 @@
   .toast .content-container {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     font-size: 0.85em; }
   .toast .content {
     display: inline-flex;
     flex: 1;
-    padding: 8px; }
+    padding: 8px;
+    min-width: 65%; }
   .toast .icon {
     display: flex;
     align-items: center;

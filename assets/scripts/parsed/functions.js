@@ -9,7 +9,8 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
 //*** Load State ***//
-var globalFunctionsReady = true; // Toggle element states
+var globalFunctionsReady = true;
+var pbIntervals = {}; // Toggle element states
 
 function disenable(element, state, optTx) {
   var tabIndexes = {
@@ -72,7 +73,8 @@ function newAjaxRequest(properties) {
       return response;
     },
     params: 'none',
-    requestHeader: 'default'
+    requestHeader: 'default',
+    catchErrors: true
   };
   var props = mergeObj(defaultProps, properties);
 
@@ -84,22 +86,35 @@ function newAjaxRequest(properties) {
   }
 
   if (props.file !== null) {
-    // Handle Response
+    var file = function () {
+      var regex = new RegExp('\\s+', 'g');
+      return props.file.replace(regex, '');
+    }(); // Handle Response
+
+
     request.onreadystatechange = function () {
-      try {
+      function handleResponse() {
         if (request.readyState === XMLHttpRequest.DONE) {
           if (request.status === 200) {
             props.callback(request.responseText);
-          } else {
+          } else if (props.catchErrors) {
             throw "Status Code ".concat(request.status, " returned.");
           }
         }
-      } catch (e) {
-        ajaxError(e);
+      }
+
+      if (props.catchErrors) {
+        try {
+          handleResponse();
+        } catch (e) {
+          ajaxError(e);
+        }
+      } else {
+        handleResponse();
       }
     };
 
-    request.open(props.type, props.file, true);
+    request.open(props.type, file, true);
 
     if (props.requestHeader == 'form') {
       request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -119,13 +134,19 @@ function newAjaxRequest(properties) {
 function getDate() {
   var format = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'y-m-d';
   var separator = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '-';
-  var date = {};
+  var date = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 'now';
+  var d = {};
 
   (function () {
-    date.base = new Date();
-    date.year = date.base.getFullYear();
-    date.month = ('0' + (date.base.getMonth() + 1)).slice(-2);
-    date.day = ('0' + date.base.getDate()).slice(-2);
+    if (date == 'now') {
+      d.base = new Date();
+    } else {
+      d.base = new Date(date);
+    }
+
+    d.year = d.base.getFullYear();
+    d.month = ('0' + (d.base.getMonth() + 1)).slice(-2);
+    d.day = ('0' + d.base.getDate()).slice(-2);
   })();
 
   var formats = {
@@ -133,7 +154,7 @@ function getDate() {
     'm': 'month',
     'd': 'day'
   };
-  return date[formats[format.slice(0, 1)]] + separator + date[formats[format.slice(2, 3)]] + separator + date[formats[format.slice(4, 5)]];
+  return d[formats[format.slice(0, 1)]] + separator + d[formats[format.slice(2, 3)]] + separator + d[formats[format.slice(4, 5)]];
 } // Generates a random number between two values
 
 
@@ -259,8 +280,13 @@ function getElements(parent, elements) {
   }
 
   return matches;
-} // Retrieve a copy of a template
+} // Copy elements
 
+
+function copyElm(element) {
+  var deepClone = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  return element.cloneNode(deepClone);
+}
 
 function getTemplate(templateID) {
   var deepClone = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
@@ -268,7 +294,7 @@ function getTemplate(templateID) {
 
   if (e !== null && e !== undefined) {
     if (e.tagName == 'TEMPLATE') {
-      return e.content.children[0].cloneNode(deepClone);
+      return copyElm(e.content.children[0].cloneNode(deepClone));
     } else {
       return e.children[0].cloneNode(deepClone);
     }
@@ -374,14 +400,14 @@ function mergeObj(objects) {
   var result = {};
 
   function parseVal(base, key, val) {
-    if (val !== null && val !== undefined && val.constructor.name == 'Object') {
+    if (val && val.constructor.name == 'Object') {
       var subKeys = Object.keys(val);
 
       for (var y = 0; y < subKeys.length; y++) {
         var subKey = subKeys[y];
         var subVal = val[subKey];
 
-        if (base[key] === undefined) {
+        if (!base[key]) {
           base[key] = {};
         }
 
@@ -538,6 +564,8 @@ function thrownTryError(error, behavior) {
     return false;
   } else if (behavior == 'throw') {
     throw error;
+  } else if (behavior == 'ignore') {
+    return false;
   } else {
     error.message = "".concat(error.message, "\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ").concat(behavior);
     throw error;
@@ -560,7 +588,7 @@ function tryParseInt() {
   if (!isNaN(result)) {
     return result;
   } else {
-    thrownTryError(error, behavior);
+    return thrownTryError(error, behavior);
   }
 }
 
@@ -577,10 +605,73 @@ function tryJSONParse() {
   try {
     return JSON.parse(string);
   } catch (e) {
-    thrownTryError(error, behavior);
+    return thrownTryError(error, behavior);
   }
-} // Update a Progress Bar
+}
 
+function tryToRun(settings) {
+  var currentAttempt = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+
+  var sets = function () {
+    if (currentAttempt) {
+      var defaultSettings = {
+        "function": function _function() {
+          return true;
+        },
+        attempts: 10,
+        delay: 250,
+        behavior: 'silent',
+        logCatch: false,
+        customError: false
+      };
+      return mergeObj(defaultSettings, settings);
+    } else {
+      return settings;
+    }
+  }();
+
+  function failed() {
+    if (currentAttempt <= sets.attempts || !sets.attempts) {
+      setTimeout(function () {
+        tryToRun(settings, currentAttempt + 1);
+      }, sets.delay);
+    } else {
+      var error = new Error();
+      error.name = 'tryToRun Error';
+
+      if (sets.customError !== false) {
+        error.message = sets.customError;
+      } else {
+        error.message = "Max Tries Exceeded.\r\n\r\nSettings: ".concat(JSON.stringify(sets));
+      }
+
+      if (sets.logCatch) {
+        error.message += "\r\n\r\nCaught Error: ".concat(e);
+      }
+
+      if (sets.behavior == 'throw') {
+        throw error;
+      } else if (sets.behavior == 'silent') {
+        console.error(error);
+        return false;
+      } else if (sets.behavior == 'ignore') {
+        return false;
+      }
+    }
+  }
+
+  try {
+    var result = sets["function"]();
+
+    if (!result) {
+      failed();
+    }
+  } catch (e) {
+    failed();
+  }
+}
+
+; // Update a Progress Bar
 
 function updateProgressBar() {
   var progressBar = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
@@ -589,26 +680,31 @@ function updateProgressBar() {
   var defaultOptions = {
     interval: false,
     intervalDelay: 1000,
-    intervalIncrement: 10
+    intervalIncrement: 5,
+    start: null,
+    resetOnZero: false
   };
 
   if (progressBar !== null && progressBar.getAttribute('role') == 'progressbar') {
     var bar = getClass(progressBar, 'progress');
-    var opt = Object.assign(defaultOptions, options);
-    var now = tryParseInt(progressBar.getAttribute('aria-valuenow'));
+    var opt = mergeObj(defaultOptions, options);
     var id = progressBar.id;
 
-    if (value !== 0) {
+    if (!opt.resetOnZero || value > 0) {
       // Update Progress Bar
       var change = function change() {
         var newVal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : value;
+        progressBar.setAttribute('data-progress', newVal);
         progressBar.setAttribute('aria-valuenow', newVal);
-        bar.style.transform = "translateX(".concat(newVal, "%)");
+
+        if (!opt.useWidth) {
+          bar.style.transform = "translateX(".concat(newVal, "%)");
+        } else {
+          bar.style.width = "".concat(newVal, "%");
+        }
       };
 
-      if (!pbIntervals[id]) {
-        pbIntervals[id] = {};
-      } else {
+      if (pbIntervals[id]) {
         clearInterval(pbIntervals[id].interval);
       } // Immediate Change
 
@@ -617,6 +713,8 @@ function updateProgressBar() {
         change();
       } // Interval Change
       else {
+          var now = tryParseInt(progressBar.getAttribute('data-progress'), 'ignore');
+
           if (opt.start !== null && now < opt.start) {
             change(opt.start);
           } else {
@@ -634,21 +732,22 @@ function updateProgressBar() {
           pbIntervals[id].increment = opt.intervalIncrement;
           pbIntervals[id].interval = setInterval(function () {
             var id = progressBar.id;
-            var now = tryParseInt(progressBar.getAttribute('aria-valuenow'), 'throw');
+            var now = tryParseInt(progressBar.getAttribute('data-progress'), 'throw');
             var nextVal = now + pbIntervals[id].increment;
             var end = pbIntervals[id].end;
 
             if (nextVal <= end) {
-              updateProgressBar(progressBar, nextVal);
+              change(nextVal);
             } else {
-              updateProgressBar(progressBar, end);
+              change(end);
               clearInterval(pbIntervals[id].interval);
-              pbIntervals[id] = {};
+              delete pbIntervals[id];
             }
           }, opt.intervalDelay);
         }
     } // Reset Progress Bar
     else {
+        progressBar.setAttribute('data-progress', 0);
         bar.style.removeProperty('transform');
       }
   } else {

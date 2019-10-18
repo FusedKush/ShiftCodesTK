@@ -11,8 +11,41 @@ var defaultDropdownPanelLabels = {
   "false": 'Expand Panel',
   "true": 'Collapse Panel'
 };
-var focusLockedElement = null; // *** Functions ***
+var focusLockedElement = null;
+var shiftStats = false;
+var hashRequests = {};
+var shiftNames = {
+  "long": {
+    1: 'Borderlands 2',
+    2: 'Borderlands: The Pre-Sequel',
+    3: 'Borderlands: GOTY',
+    4: 'Borderlands 3'
+  },
+  "short": {
+    1: 'BL2',
+    2: 'TPS',
+    3: 'BL1',
+    4: 'BL3'
+  }
+};
+var shiftUpdates = {
+  creation_time: '',
+  update_time: '',
+  interval: {
+    id: 0,
+    frequency: 60000
+  }
+};
+
+shiftUpdates.interval.set = function () {
+  shiftUpdates.interval.id = setInterval(checkShiftUpdate, shiftUpdates.interval.frequency);
+};
+
+shiftUpdates.interval.clear = function () {
+  clearInterval(shiftUpdates.interval.id);
+}; // *** Functions ***
 // Parse Webp images and update as required
+
 
 function parseWebpImages(parent) {
   var attr = document.body.getAttribute('data-webp-support');
@@ -201,6 +234,20 @@ function hashUpdate() {
       updateScroll(target);
     }
   }
+} // Check hash for request
+
+
+function checkHash() {
+  var hash = window.location.hash;
+  var keys = Object.keys(hashRequests);
+
+  for (var _i = 0; _i < keys.length; _i++) {
+    var key = keys[_i];
+
+    if (hash.search("#".concat(key)) == 0) {
+      hashRequests[key]();
+    }
+  }
 } // Update Dropdown Panel Attributes
 
 
@@ -255,8 +302,8 @@ function dropdownPanelSetup(panel) {
       template.base.id = panel.id;
     }
 
-    for (var _i = 0; _i < props.length; _i++) {
-      var prop = props[_i];
+    for (var _i2 = 0; _i2 < props.length; _i2++) {
+      var prop = props[_i2];
       var val = getClass(panel, prop);
 
       if (val !== undefined) {
@@ -309,6 +356,7 @@ function retrieveDropdownMenuProps(dropdown) {
   }();
 
   props.pos = dropdown.getAttribute('data-pos');
+  props.options = getClasses(dropdown, 'choice');
   return props;
 } // Update Dropown Menu Positioning
 
@@ -438,6 +486,41 @@ function setupDropdownMenu(dropdown) {
         props.toggler.addEventListener('click', function (e) {
           toggleDropdownMenu(document.getElementById(props.id));
         });
+      })(); // Configure Options
+
+
+      (function () {
+        var p = props.options;
+
+        var _loop = function _loop(_i3) {
+          var o = p[_i3];
+
+          if (hasClass(dropdown, 'o-press')) {
+            o.addEventListener('click', function (e) {
+              setTimeout(function () {
+                for (var _x = 0; _x < p.length; _x++) {
+                  var po = p[_x];
+
+                  if (po.getAttribute('aria-pressed') == 'true') {
+                    po.setAttribute('aria-pressed', false);
+                  }
+                }
+
+                o.setAttribute('aria-pressed', true);
+              }, 500);
+            });
+          }
+
+          if (hasClass(dropdown, 'o-toggle')) {
+            o.addEventListener('click', function (e) {
+              toggleDropdownMenu(dropdown);
+            });
+          }
+        };
+
+        for (var _i3 = 0; _i3 < p.length; _i3++) {
+          _loop(_i3);
+        }
       })(); // Create Dropdown Menu Container if not initalized
 
 
@@ -465,8 +548,8 @@ function handleFocusLock(event) {
 
     if (type == 'click') {
       do {
-        for (var _i2 = 0; _i2 < matches.length; _i2++) {
-          if (target == matches[_i2]) {
+        for (var _i4 = 0; _i4 < matches.length; _i4++) {
+          if (target == matches[_i4]) {
             return;
           }
         }
@@ -504,7 +587,7 @@ function copyToClipboard(event) {
     var treeJumps = parseInt(button.getAttribute('data-copy-target'));
     var pos = button;
 
-    for (var _i3 = 0; _i3 < treeJumps; _i3++) {
+    for (var _i5 = 0; _i5 < treeJumps; _i5++) {
       pos = pos.parentNode;
     }
 
@@ -531,13 +614,14 @@ function copyToClipboard(event) {
       }
     });
   }, 25);
-}
+} // Buttons
+
 
 function fixClickableContent(e) {
   var children = e.childNodes;
 
-  for (var _i4 = 0; _i4 < children.length; _i4++) {
-    var child = children[_i4];
+  for (var _i6 = 0; _i6 < children.length; _i6++) {
+    var child = children[_i6];
 
     if (child.nodeName == '#text') {
       var span = document.createElement('span');
@@ -545,6 +629,132 @@ function fixClickableContent(e) {
       e.replaceChild(span, child);
     }
   }
+}
+
+function btnPressToggle(button) {
+  button.addEventListener('click', function (e) {
+    var t = e.currentTarget;
+
+    var state = function () {
+      var attr = t.getAttribute('aria-pressed');
+
+      if (attr) {
+        return attr == 'true';
+      } else {
+        return false;
+      }
+    }();
+
+    setTimeout(function () {
+      t.setAttribute('aria-pressed', !state);
+    }, 500);
+  });
+} // Update checks
+
+
+function checkShiftUpdate() {
+  var firstRun = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  newAjaxRequest({
+    file: '/assets/php/scripts/shift/checkForUpdates',
+    callback: function callback(serverResponse) {
+      var times = ['creation', 'update'];
+      var response = tryJSONParse(serverResponse);
+
+      if (response) {
+        response = response.payload;
+
+        var _loop2 = function _loop2() {
+          var time = _times[_i7];
+          var t = "".concat(time, "_time"); // creation_time
+
+          var r = response[t].timestamp; // Server Timestamp
+
+          var l = shiftUpdates[t]; // Last Timestamp
+
+          var g = response[t].game_id; // Game ID
+
+          var name = shiftNames["long"][g];
+
+          var _short = shiftNames["short"][g].toLowerCase();
+
+          var url = "/".concat(_short) == window.location.pathname;
+
+          if (r != l && !firstRun) {
+            if (time == 'creation' || url) {
+              shiftUpdates.interval.clear();
+              newToast({
+                settings: {
+                  id: 'shift_update_notice',
+                  duration: 'infinite'
+                },
+                content: {
+                  icon: 'fas fa-key',
+                  title: function () {
+                    if (time == 'creation') {
+                      return "New SHiFT Code for ".concat(name, "!");
+                    } else {
+                      return "SHiFT Code update for ".concat(name, "!");
+                    }
+                  }(),
+                  body: function () {
+                    var str = '';
+
+                    if (time == 'creation') {
+                      str += "A new SHiFT Code has just been added to ShiftCodesTK! ";
+
+                      if (url) {
+                        str += 'Reload the page to access the new code.';
+                      } else {
+                        str += 'Do you want to go there now?';
+                      }
+                    } else {
+                      str += "A SHiFT Code has just been updated. Reload the page for changes to take effect.";
+                    }
+
+                    return str;
+                  }()
+                },
+                action: {
+                  use: true,
+                  type: 'link',
+                  link: function () {
+                    if (url) {
+                      return ' ';
+                    } else {
+                      return "/".concat(_short);
+                      ;
+                    }
+                  }(),
+                  name: function () {
+                    if (url) {
+                      return 'Reload';
+                    } else {
+                      return 'View code';
+                    }
+                  }(),
+                  label: function () {
+                    if (url) {
+                      return 'Reload the current page.';
+                    } else {
+                      return "Visit the ".concat(name, " SHiFT Code page");
+                    }
+                  }()
+                }
+              });
+            }
+          }
+
+          shiftUpdates[t] = r;
+        };
+
+        for (var _i7 = 0, _times = times; _i7 < _times.length; _i7++) {
+          _loop2();
+        }
+      } else {
+        shiftUpdates.interval.clear();
+      }
+    }
+  });
 } // *** Event Listener Reference Functions ***
 
 
@@ -651,8 +861,8 @@ function execGlobalScripts() {
     (function () {
       var panels = document.getElementsByClassName('dropdown-panel');
 
-      for (var _i5 = 0; _i5 < panels.length; _i5++) {
-        dropdownPanelSetup(panels[_i5]);
+      for (var _i8 = 0; _i8 < panels.length; _i8++) {
+        dropdownPanelSetup(panels[_i8]);
       }
     })(); // Setup present Dropdown Menus
 
@@ -733,21 +943,55 @@ function execGlobalScripts() {
           shiftBadgeCount = JSON.parse(request).response.alerts;
         }
       });
-    })(); // Add inner span to buttons and links
+    })(); // Get SHiFT stats
 
+
+    newAjaxRequest({
+      file: '/assets/php/scripts/shift/getStats.php',
+      callback: function callback(response) {
+        var res = tryJSONParse(response);
+
+        if (res) {
+          shiftStats = res.payload;
+        } else {
+          newToast({
+            settings: {
+              template: 'exception'
+            },
+            content: {
+              body: 'We could not retrieve SHiFT Code statistics due to an error. This may affect the site until refreshed.'
+            }
+          });
+        }
+      }
+    }); // Add inner span to buttons and links
 
     (function () {
       var clickables = getElements(document, 'clickables');
 
-      for (var _i6 = 0; _i6 < clickables.length; _i6++) {
-        fixClickableContent(clickables[_i6]);
+      for (var _i9 = 0; _i9 < clickables.length; _i9++) {
+        fixClickableContent(clickables[_i9]);
+      }
+    })(); // Add Press Toggle Listener to buttons
+
+
+    (function () {
+      var buttons = getTags(document, 'button');
+
+      for (var _i10 = 0; _i10 < buttons.length; _i10++) {
+        var btn = buttons[_i10];
+
+        if (hasClass(btn, 'o-pressed')) {
+          btnPressToggle(btn);
+        }
       }
     })(); // *** Event Listeners ***
-    // Intercept Hash Update
+    // Hash Update
 
 
     window.addEventListener('hashchange', function (e) {
       event.preventDefault();
+      checkHash();
       hashUpdate();
     }); // Prevent Anchor-Jumping behind navbar
 
@@ -797,8 +1041,8 @@ function execGlobalScripts() {
       if (container !== null) {
         var dropdowns = getClasses(container, 'dropdown-menu');
         window.addEventListener('resize', function (e) {
-          for (var _i7 = 0; _i7 < dropdowns.length; _i7++) {
-            var dd = dropdowns[_i7];
+          for (var _i11 = 0; _i11 < dropdowns.length; _i11++) {
+            var dd = dropdowns[_i11];
 
             if (dd.getAttribute('data-expanded')) {
               updateDropdownMenuPos(dd);
@@ -820,6 +1064,12 @@ window.addEventListener('load', function () {
     (function () {
       var styles = document.getElementById('startup');
       styles.parentNode.removeChild(styles);
+    })(); // SHiFT Code update checker
+
+
+    (function () {
+      checkShiftUpdate(true);
+      shiftUpdates.interval.set();
     })();
   }, 2500);
 });

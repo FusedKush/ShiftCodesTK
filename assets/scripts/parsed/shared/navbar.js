@@ -22,39 +22,50 @@ function updNav() {
 
 function lpbUpdate(progress) {
   var interval = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var additionalOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var settings = {
-    fadeDuration: 300,
-    barDuration: 400,
+    duration: 400,
     buffer: 100
   };
+  settings.total = settings.duration + settings.buffer;
+  var options = mergeObj(additionalOptions, {
+    interval: interval,
+    resetOnZero: true
+  });
   var pb = document.getElementById('loader_pb');
+  var now = tryParseInt(pb.getAttribute('data-progress'), 'ignore');
 
-  function update() {
-    if (interval === false) {
-      updateProgressBar(pb, progress);
+  function run() {
+    function update() {
+      var progressVal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : progress;
+      updateProgressBar(pb, progressVal, options);
+    } // Reset for start
+
+
+    if (!hasClass(pb, 'is-loading')) {
+      addClass(pb, 'is-loading');
+      update();
     } else {
-      updateProgressBar(pb, progress, {
-        interval: true
-      });
-    }
-  } // Reset for start
+      update();
+    } // Reset when complete
 
 
-  if (!hasClass(pb, 'is-loading')) {
-    addClass(pb, 'is-loading');
-    update();
-  } else {
-    update();
-  } // Reset when complete
-
-
-  if (progress == 100) {
-    setTimeout(function () {
-      delClass(pb, 'is-loading');
+    if (progress == 100) {
       setTimeout(function () {
-        updateProgressBar(pb, 0);
-      }, settings.fadeDuration + settings.buffer);
-    }, settings.barDuration + settings.buffer);
+        delClass(pb, 'is-loading');
+        setTimeout(function () {
+          update(0);
+        }, settings.total);
+      }, settings.total);
+    }
+  }
+
+  if (progress > now || now == 0) {
+    if (now != 0) {
+      setTimeout(run, settings.buffer);
+    } else {
+      run();
+    }
   }
 } // *** Immediate Functions ***
 // Immediately update the position of the Navbar

@@ -206,15 +206,15 @@ template, .webp-support {
 
 @media screen and (max-width: 474px) {
   header.main .intro {
-    height: calc(30vh + 32px); }
+    height: 30vh; }
   main:not(.no-header) {
-    min-height: calc(70vh - 32px); } }
+    min-height: 70vh; } }
 
 @media screen and (min-width: 475px) {
   header.main .intro {
     height: calc(30vh + 64px); }
   main:not(.no-header) {
-    min-height: calc(70%- 64px); } }
+    min-height: calc(70vh- 64px); } }
 
 header.main {
   width: 100%;
@@ -334,7 +334,7 @@ main {
   max-width: 1200px;
   margin: 0 auto; }
 
-.fa.box-icon, .fas.box-icon, .fab.box-icon, .fal.box-icon, .far.box-icon {
+div.box-icon, span.box-icon, a.box-icon, button.box-icon, strong.box-icon, b.box-icon, em.box-icon, i.box-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -674,39 +674,39 @@ main {
         right: 0;
         border-radius: inherit;
         content: ""; }
-      .dropdown-menu .panel .choice[data-pressed="false"], .dropdown-menu .panel .choice:not([data-pressed]) {
+      .dropdown-menu .panel .choice[aria-pressed="false"], .dropdown-menu .panel .choice:not([aria-pressed]) {
         color: inherit; }
-        .dropdown-menu .panel .choice[data-pressed="false"]::before, .dropdown-menu .panel .choice:not([data-pressed])::before {
+        .dropdown-menu .panel .choice[aria-pressed="false"]::before, .dropdown-menu .panel .choice:not([aria-pressed])::before {
           background-color: rgba(255, 255, 255, 0.75); }
-        .dropdown-menu .panel .choice[data-pressed="false"]:not(:hover):not(:focus), .dropdown-menu .panel .choice:not([data-pressed]):not(:hover):not(:focus) {
+        .dropdown-menu .panel .choice[aria-pressed="false"]:not(:hover):not(:focus), .dropdown-menu .panel .choice:not([aria-pressed]):not(:hover):not(:focus) {
           opacity: 0.8; }
-          .dropdown-menu .panel .choice[data-pressed="false"]:not(:hover):not(:focus)::before, .dropdown-menu .panel .choice:not([data-pressed]):not(:hover):not(:focus)::before {
+          .dropdown-menu .panel .choice[aria-pressed="false"]:not(:hover):not(:focus)::before, .dropdown-menu .panel .choice:not([aria-pressed]):not(:hover):not(:focus)::before {
             opacity: 0; }
-        .dropdown-menu .panel .choice[data-pressed="false"]:hover, .dropdown-menu .panel .choice[data-pressed="false"]:focus, .dropdown-menu .panel .choice:not([data-pressed]):hover, .dropdown-menu .panel .choice:not([data-pressed]):focus {
+        .dropdown-menu .panel .choice[aria-pressed="false"]:hover, .dropdown-menu .panel .choice[aria-pressed="false"]:focus, .dropdown-menu .panel .choice:not([aria-pressed]):hover, .dropdown-menu .panel .choice:not([aria-pressed]):focus {
           opacity: 1; }
-          .dropdown-menu .panel .choice[data-pressed="false"]:hover::before, .dropdown-menu .panel .choice[data-pressed="false"]:focus::before, .dropdown-menu .panel .choice:not([data-pressed]):hover::before, .dropdown-menu .panel .choice:not([data-pressed]):focus::before {
+          .dropdown-menu .panel .choice[aria-pressed="false"]:hover::before, .dropdown-menu .panel .choice[aria-pressed="false"]:focus::before, .dropdown-menu .panel .choice:not([aria-pressed]):hover::before, .dropdown-menu .panel .choice:not([aria-pressed]):focus::before {
             opacity: 0.25; }
-        .dropdown-menu .panel .choice[data-pressed="false"]:active::before, .dropdown-menu .panel .choice:not([data-pressed]):active::before {
+        .dropdown-menu .panel .choice[aria-pressed="false"]:active::before, .dropdown-menu .panel .choice:not([aria-pressed]):active::before {
           opacity: 0.5; }
-      .dropdown-menu .panel .choice[data-pressed="true"] {
+      .dropdown-menu .panel .choice[aria-pressed="true"] {
         color: #fff; }
-        body[data-theme="main"] .dropdown-menu .panel .choice[data-pressed="true"] {
+        body[data-theme="main"] .dropdown-menu .panel .choice[aria-pressed="true"] {
           background-color: #f00; }
-        body[data-theme="bl1"] .dropdown-menu .panel .choice[data-pressed="true"] {
+        body[data-theme="bl1"] .dropdown-menu .panel .choice[aria-pressed="true"] {
           background-color: #dc143c; }
-        body[data-theme="bl2"] .dropdown-menu .panel .choice[data-pressed="true"] {
+        body[data-theme="bl2"] .dropdown-menu .panel .choice[aria-pressed="true"] {
           background-color: #ff4500; }
-        body[data-theme="tps"] .dropdown-menu .panel .choice[data-pressed="true"] {
+        body[data-theme="tps"] .dropdown-menu .panel .choice[aria-pressed="true"] {
           background-color: #1e90ff; }
-        body[data-theme="bl3"] .dropdown-menu .panel .choice[data-pressed="true"] {
+        body[data-theme="bl3"] .dropdown-menu .panel .choice[aria-pressed="true"] {
           background-color: #ffa900; }
-        .dropdown-menu .panel .choice[data-pressed="true"]::before {
+        .dropdown-menu .panel .choice[aria-pressed="true"]::before {
           background-color: #fff; }
-        .dropdown-menu .panel .choice[data-pressed="true"]:not(:hover):not(:focus)::before {
+        .dropdown-menu .panel .choice[aria-pressed="true"]:not(:hover):not(:focus)::before {
           opacity: 0; }
-        .dropdown-menu .panel .choice[data-pressed="true"]:hover::before, .dropdown-menu .panel .choice[data-pressed="true"]:focus::before {
+        .dropdown-menu .panel .choice[aria-pressed="true"]:hover::before, .dropdown-menu .panel .choice[aria-pressed="true"]:focus::before {
           opacity: 0.25; }
-        .dropdown-menu .panel .choice[data-pressed="true"]:active {
+        .dropdown-menu .panel .choice[aria-pressed="true"]:active {
           opacity: 0.75; }
     .dropdown-menu .panel .title, .dropdown-menu .panel .choice {
       text-align: left;

@@ -95,6 +95,7 @@
       height: inherit;
       width: inherit; }
   .navbar .loader.progress-bar {
+    position: absolute;
     height: 3px;
     background-color: transparent;
     opacity: 0;
@@ -102,11 +103,9 @@
     .navbar .loader.progress-bar.is-loading {
       opacity: 1;
       transition: none; }
-      .navbar .loader.progress-bar.is-loading .progress {
-        transition: transform 0.4s ease-out; }
     .navbar .loader.progress-bar .progress {
-      box-shadow: 0 0 0.25em currentcolor;
-      transform: translateX(-0.25em);
+      box-shadow: 0 0 10px currentcolor;
+      transform: translateX(-10px);
       transition: none; }
       body[data-theme="main"] .navbar[data-at-top="true"] .loader.progress-bar .progress {
         color: #f00; }
@@ -132,4 +131,4 @@
         color: #fff;
         background-color: #fff; }
       .loader.progress-bar.is-loading .progress {
-        transition: transform 0.4s ease-out; }
+        transition: transform 0.4s ease; }

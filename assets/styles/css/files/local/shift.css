@@ -55,9 +55,9 @@
       right: 0;
       border-radius: inherit;
       content: ""; }
-    .shift-header .badge.new:not(.inactive)[data-pressed="false"]::after, .shift-header .badge.exp:not(.inactive)[data-pressed="false"]::after {
+    .shift-header .badge.new:not(.inactive)[aria-pressed="false"]::after, .shift-header .badge.exp:not(.inactive)[aria-pressed="false"]::after {
       opacity: 0; }
-    .shift-header .badge.new:not(.inactive)[data-pressed="true"]::after, .shift-header .badge.exp:not(.inactive)[data-pressed="true"]::after {
+    .shift-header .badge.new:not(.inactive)[aria-pressed="true"]::after, .shift-header .badge.exp:not(.inactive)[aria-pressed="true"]::after {
       opacity: 1; }
     .shift-header .badge.new:not(.inactive):not(:hover):not(:focus)::before, .shift-header .badge.exp:not(.inactive):not(:hover):not(:focus)::before {
       opacity: 0; }
@@ -112,9 +112,11 @@
       .shift-header .sort > button[data-pressed="true"]::before {
         opacity: 0.4; }
 
-.feed {
+main.shift-code-list {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 32px 16px 64px; }
+  padding: 16px; }
 
 .overlay {
   display: flex;
@@ -125,9 +127,10 @@
   left: 0;
   bottom: 0;
   right: 0;
-  border-radius: inherit; }
+  border-radius: inherit;
+  background-color: #0f1d2c; }
   .overlay[hidden], .overlay > [hidden] {
-    display: inherit; }
+    display: flex; }
   .overlay:not([hidden]) {
     opacity: 1;
     z-index: 1; }
@@ -160,6 +163,7 @@
 
 .dropdown-panel.shift-code {
   opacity: 0;
+  margin: 8px 0;
   animation: panelFadeIn 0.4s linear forwards; }
 
 @keyframes panelFadeIn {
@@ -169,10 +173,6 @@
     opacity: 1; } }
   .dropdown-panel.shift-code[data-filtered="true"]::before, .dropdown-panel.shift-code[data-filtered="true"] .header {
     opacity: 0.5; }
-  .dropdown-panel.shift-code:not(:first-child) {
-    margin-top: 16px; }
-  .dropdown-panel.shift-code:not(:last-child) {
-    margin-bottom: 16px; }
   .dropdown-panel.shift-code.new::before {
     border-color: #0057ff; }
   .dropdown-panel.shift-code.exp::before {
@@ -239,10 +239,9 @@
     .dropdown-panel.shift-code .header .progress-bar.inactive {
       opacity: 0.5; }
   .dropdown-panel.shift-code .header .progress {
-    position: absolute;
-    height: 100%;
-    border-radius: inherit;
-    box-shadow: 0 0 10px;
+    box-shadow: 0 0 2.5em;
+    width: 0;
+    left: 0;
     transform: translateX(-100%);
     animation: progressClimb 1.2s 0.4s ease-out forwards; }
 
@@ -362,3 +361,6 @@
       @media screen and (min-width: 500px) {
         .dropdown-panel.shift-code .body .background {
           font-size: 22em; } }
+
+.pager {
+  margin-top: auto; }

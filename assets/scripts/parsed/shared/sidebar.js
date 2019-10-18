@@ -1,55 +1,6 @@
-/*********************************
-  Sidebar Scripts
-*********************************/
-// *** Variables ***
-var addSidebarBadgesRetry; // *** Functions ***
-// Update Badges
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function addSidebarBadges() {
-  if (typeof shiftBadgeCount != 'undefined') {
-    (function () {
-      var links = document.getElementById('sidebar').getElementsByTagName('a');
-      var template = document.getElementById('sidebar_template_badges').content.children;
-      clearInterval(addSidebarBadgesRetry);
-
-      for (i = 0; i < links.length; i++) {
-        var badgeID = links[i].getAttribute('data-use-badges');
-
-        if (badgeID !== null) {
-          if (shiftBadgeCount["new"][badgeID] > 0 || shiftBadgeCount.expiring[badgeID] > 0) {
-            (function () {
-              var link = links[i];
-              var badges = {};
-
-              (function () {
-                badges.base = template[0].cloneNode(true);
-                badges["new"] = template[1].cloneNode(true);
-                badges.exp = template[2].cloneNode(true);
-              })();
-
-              var badgeBase = void 0;
-              link.appendChild(badges.base);
-              badgeBase = link.getElementsByClassName('badges')[0];
-
-              if (shiftBadgeCount["new"][badgeID] > 0) {
-                badgeBase.appendChild(badges["new"]);
-              }
-
-              if (shiftBadgeCount.expiring[badgeID] > 0) {
-                badgeBase.appendChild(badges.exp);
-              }
-            })();
-          }
-        }
-      }
-
-      document.getElementById('sidebar_template_badges').remove();
-    })();
-  }
-}
-
-; // Toggle the Sidebar
-
+// Toggle the Sidebar
 function toggleSB() {
   var sb = document.getElementById('sidebar');
   var btn = {
@@ -137,7 +88,63 @@ sidebarMarkup(); // Check for Current Page and update Sidebar Links
 })(); // Update sidebar badges
 
 
-addSidebarBadgesRetry = setInterval(addSidebarBadges, 250); // *** Event Listeners ***
+(function () {
+  tryToRun({
+    attempts: false,
+    delay: 500,
+    "function": function _function() {
+      if (shiftStats) {
+        var _ret = function () {
+          var links = document.getElementById('sidebar').getElementsByTagName('a');
+          var template = document.getElementById('sidebar_template_badges').content.children;
+
+          for (i = 0; i < links.length; i++) {
+            var badgeID = links[i].getAttribute('data-use-badges');
+            var n = shiftStats["new"][badgeID];
+            var e = shiftStats.expiring[badgeID];
+
+            if (badgeID) {
+              if (n > 0 || e > 0) {
+                (function () {
+                  var link = links[i];
+                  var badges = {};
+
+                  (function () {
+                    badges.base = template[0].cloneNode(true);
+                    badges["new"] = template[1].cloneNode(true);
+                    badges.exp = template[2].cloneNode(true);
+                  })();
+
+                  var badgeBase = void 0;
+                  link.appendChild(badges.base);
+                  badgeBase = link.getElementsByClassName('badges')[0];
+
+                  if (n > 0) {
+                    badgeBase.appendChild(badges["new"]);
+                  }
+
+                  if (e > 0) {
+                    badgeBase.appendChild(badges.exp);
+                  }
+                })();
+              }
+            }
+          }
+
+          document.getElementById('sidebar_template_badges').remove();
+          return {
+            v: true
+          };
+        }();
+
+        if (_typeof(_ret) === "object") return _ret.v;
+      } else {
+        return false;
+      }
+    }
+  });
+})(); // *** Event Listeners ***
+
 
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);
 document.getElementById('sidebar_toggle').addEventListener('click', toggleSB);

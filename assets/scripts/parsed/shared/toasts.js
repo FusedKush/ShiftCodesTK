@@ -40,21 +40,45 @@ function newToast(properties) {
       use: false,
       type: 'link',
       link: '#',
+      action: false,
+      close: false,
       name: 'Action',
       label: 'The Action button'
     },
     close: {
       use: true,
       type: 'button',
-      name: 'Close',
-      label: 'Close the toast'
+      link: '#',
+      action: false,
+      close: true,
+      name: 'Dismiss',
+      label: 'Dismiss and close the toast'
     }
   };
-  var templates = {};
+  var templates = {
+    exception: {
+      settings: {
+        id: 'exception',
+        duration: 'infinite'
+      },
+      content: {
+        title: 'An error has occurred'
+      },
+      action: {
+        use: true,
+        type: 'link',
+        link: ' ',
+        name: 'Refresh',
+        label: 'Refresh the page and try again'
+      }
+    }
+  };
 
   var templateProps = function () {
-    if (properties.template && properties.template !== 'none' && properties.templates[template] !== undefined) {
-      return templates[template];
+    var t = properties.settings.template;
+
+    if (t && t !== 'none' && templates[t] !== undefined) {
+      return templates[t];
     } else {
       return {};
     }
@@ -63,7 +87,7 @@ function newToast(properties) {
   var props = mergeObj(defaultProps, templateProps, properties);
   var toast = getTemplate('toast_template');
   var settings = {
-    id: props.settings.id,
+    id: "toast_".concat(props.settings.id),
     duration: function () {
       var d = props.settings.duration;
       var vals = {
@@ -114,6 +138,17 @@ function newToast(properties) {
       btn.href = actionProps.link;
     }
 
+    if (actionProps.action) {
+      btn.addEventListener('click', actionProps.action);
+    }
+
+    if (actionProps.close) {
+      btn.setAttribute('aria-controls', settings.id);
+      btn.addEventListener('click', function () {
+        removeToast(toast);
+      });
+    }
+
     e.actions.appendChild(btn);
     return btn;
   } // Properties
@@ -135,11 +170,7 @@ function newToast(properties) {
   }
 
   if (props.close.use) {
-    var close = addAction('close', props.close);
-    close.setAttribute('aria-controls', settings.id);
-    close.addEventListener('click', function () {
-      removeToast(toast);
-    });
+    addAction('close', props.close);
   } // Timeout listeners
 
 

@@ -1,602 +1,535 @@
-/*********************************
-  SHiFT Page Scripts
-*********************************/
-// *** Variables ***
-var shiftData = {};
+var shiftProps = {};
 
-(function () {
-  shiftData.base = JSON.parse(document.body.getAttribute('data-shiftData'));
-  shiftData.id = shiftData.base.id;
-  shiftData.name = shiftData.base.name;
-})(); // *** Functions ***
-// Update Feed Filter & Sort Settings
+function updateShiftPager() {
+  var id = shiftProps.gameInfo.id;
+  var pager = document.getElementById('shift_code_pager');
+  var limit = shiftProps.limit;
+  var total = getClasses(document.getElementById('shift_code_feed'), 'shift-code').length;
+  var props = {
+    now: shiftProps.offset / limit + 1,
+    max: function () {
+      var count = 0;
+      var filter = shiftProps.filter;
 
+      if (filter.length == 0) {
+        count = shiftStats.total[id];
+      } else {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-function updateFeedSettings(setting, type) {
-  var feed = document.getElementById('shift_code_feed');
-  var cache = document.getElementById('shift_code_cache');
-  var panels = cache.getElementsByClassName('shift-code');
-  codes = [];
-  var panelsAdded = 0;
-  var today = getDate('m-d-y', '/');
-
-  function addPanel(code) {
-    var panel;
-    feed.appendChild(code);
-    panelsAdded++;
-    panel = feed.children[panelsAdded - 1];
-    updatePanelTiming(panel, panelsAdded);
-    addDropdownPanelListener(panel);
-    addPanelListeners(panel);
-  } // Get Codes & Clear Feed
-
-
-  (function () {
-    var feedPanels = feed.getElementsByClassName('shift-code');
-
-    for (i = 0; i < panels.length; i++) {
-      var panel = panels[i];
-      var currentStoredState = panel.getAttribute('data-expanded') == 'true';
-
-      for (x = 0; x < feedPanels.length; x++) {
-        var feedPanel = feedPanels[x];
-        var currentState = feedPanel.getAttribute('data-expanded') == 'true';
-
-        if (feedPanel.id == panel.id && currentState != currentStoredState) {
-          console.warn("Current Stored State: " + currentStoredState + " | Updating to: " + !currentStoredState);
-          updateDropdownPanelAttributes(panel, !currentStoredState);
-        }
-      }
-
-      codes[i] = {};
-      codes[i].panel = panel.cloneNode(true);
-      codes[i].relDate = panel.getElementsByClassName('section rel')[0].getElementsByClassName('content')[0].innerHTML;
-      codes[i].expDate = panel.getElementsByClassName('section exp')[0].getElementsByClassName('content')[0].innerHTML;
-    }
-
-    feed.innerHTML = '';
-  })(); // Filter Settings
-
-
-  if (setting == 'filter') {
-    var currentFilter = feed.getAttribute('data-filter');
-
-    if (type != 'none') {
-      var updateCode = function updateCode(code) {
-        addPanel(code.panel);
-        code.used = true;
-      };
-
-      for (var _i = 0; _i < codes.length; _i++) {
-        if (type == 'new' && codes[_i].relDate == today) {
-          updateCode(codes[_i]);
-        } else if (type == 'exp' && codes[_i].expDate == today) {
-          updateCode(codes[_i]);
-        }
-      }
-    } else {
-      updateFeedSettings('sort', feed.getAttribute('data-sort'));
-    }
-
-    feed.setAttribute('data-filter', type); // Update Filter Buttons
-
-    (function () {
-      var buttons = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
-      var labels = {
-        "true": '(Click to remove filter)',
-        "false": '(Click to filter)'
-      };
-
-      for (i = 0; i < buttons.length; i++) {
-        var state = buttons[i].classList[1] == feed.getAttribute('data-filter');
-        var currentLabel = buttons[i].title;
-        var newLabel = currentLabel.replace(/\(.*\)/g, labels[state]);
-        buttons[i].setAttribute('data-pressed', state);
-        buttons[i].setAttribute('aria-pressed', state);
-        updateLabel(buttons[i], newLabel);
-      }
-    })();
-  } // Sort Settings
-
-
-  if (setting == 'sort') {
-    var sort = function sort(sortType) {
-      codes = codes.sort(function (a, b) {
-        var matches = {
-          'new': {
-            'primary': b,
-            'secondary': a
-          },
-          'old': {
-            'primary': a,
-            'secondary': b
+        try {
+          for (var _iterator = filter[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var f = _step.value;
+            count += shiftStats[f][id];
           }
-        };
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      }
 
-        if (a.relDate != b.relDate) {
-          return matches[sortType].primary.relDate.localeCompare(matches[sortType].secondary.relDate);
-        } else {
-          return matches[sortType].primary.expDate.localeCompare(matches[sortType].secondary.expDate);
+      return Math.ceil(count / limit);
+    }(),
+    offset: limit,
+    onclick: 'shift_header_sort'
+  };
+  var propNames = Object.keys(props);
+
+  for (var _i = 0; _i < propNames.length; _i++) {
+    var prop = propNames[_i];
+    pager.setAttribute("data-".concat(prop), props[prop]);
+  }
+
+  delClass(pager, 'configured');
+  pager = configurePager(pager);
+  var _iteratorNormalCompletion2 = true;
+  var _didIteratorError2 = false;
+  var _iteratorError2 = undefined;
+
+  try {
+    for (var _iterator2 = getTags(pager, 'button')[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+      var button = _step2.value;
+      button.addEventListener('click', function (e) {
+        var val = tryParseInt(this.getAttribute('data-value'));
+
+        if (val != shiftProps.offset) {
+          shiftProps.offset = val;
+          getCodes();
         }
       });
-    };
-
-    if (type == 'default') {
-      var _updateCode = function _updateCode(x) {
-        if (codes[x].used !== true) {
-          addPanel(codes[x].panel);
-          codes[x].used = true;
-        }
-      };
-
-      sort('new'); // Add Expiring Codes
-
-      for (var _i2 = 0; _i2 < codes.length; _i2++) {
-        if (codes[_i2].expDate == today) {
-          _updateCode(_i2);
-        }
-      } // Add New Codes
-
-
-      for (var _i3 = 0; _i3 < codes.length; _i3++) {
-        if (codes[_i3].relDate == today) {
-          _updateCode(_i3);
-        }
-      } // Add Remaining Codes w/ an Expiration Date
-
-
-      for (var _i4 = 0; _i4 < codes.length; _i4++) {
-        if (codes[_i4].expDate != 'N/A') {
-          _updateCode(_i4);
-        }
-      } // Add Remaining Codes w/o an Expiration Date
-
-
-      for (var _i5 = 0; _i5 < codes.length; _i5++) {
-        _updateCode(_i5);
+    }
+  } catch (err) {
+    _didIteratorError2 = true;
+    _iteratorError2 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+        _iterator2["return"]();
+      }
+    } finally {
+      if (_didIteratorError2) {
+        throw _iteratorError2;
       }
     }
-
-    if (type == 'newest') {
-      sort('new');
-
-      for (var _i6 = 0; _i6 < codes.length; _i6++) {
-        addPanel(codes[_i6].panel);
-      }
-    }
-
-    if (type == 'oldest') {
-      sort('old');
-
-      for (var _i7 = 0; _i7 < codes.length; _i7++) {
-        addPanel(codes[_i7].panel);
-      }
-    } // Update Dropdown Menu & Panel Feed Properties
-
-
-    (function () {
-      var options = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('button');
-      feed.setAttribute('data-sort', type);
-      setTimeout(function () {
-        for (i = 0; i < options.length; i++) {
-          var state = options[i].getAttribute('data-value') == type;
-          options[i].setAttribute('data-pressed', state);
-          options[i].setAttribute('aria-pressed', state);
-        }
-      }, 250);
-    })();
   }
 }
-/*
-// Copies the SHiFT Code to Clipboard
-function copyCode (event) {
-  event.parentNode.getElementsByClassName('value')[0].select();
-  document.execCommand('copy');
-  event.classList.remove('animated');
 
-  setTimeout(function () {
-    event.classList.add('animated');
-  }, 1);
-}
-*/
-// Update Panel Animation Timing
-
-
-function updatePanelTiming(panel, id) {
-  panel.style.animationDelay = (id - 1) * 0.2 + 's';
-} // Adds SHiFT Code Panel Event Listeners
-
-
-function addPanelListeners(panel) {
-  var copy = panel.getElementsByClassName('copy');
-
-  for (i = 0; i < copy.length; i++) {
-    copy[i].addEventListener('click', copyToClipboard);
-  }
-} // *** Immediate Functions ***
-// Handles Page Construction
-
-
-(function () {
-  var header = document.getElementById('shift_header');
-  var feed = document.getElementById('shift_code_feed');
+function getCodes() {
   var count = {
-    'retrieved': 0,
-    'total': 0,
-    'new': 0,
-    'exp': 0
-  }; // Update Counters and their respective elements
+    fetched: 0,
+    added: 0
+  }; // Elements
 
-  function updateCounter(name) {
-    count[name]++;
+  var header = document.getElementById('shift_header');
+  var badges = {
+    total: getClass(header, 'badge total'),
+    "new": getClass(header, 'badge new'),
+    exp: getClass(header, 'badge exp')
+  };
+  var list = document.getElementById('shift_code_feed');
 
-    var title = function () {
-      var plural = 's';
-
-      if (count[name] == 1) {
-        plural = '';
+  function errorToast(body) {
+    return newToast({
+      settings: {
+        template: 'exception'
+      },
+      content: {
+        title: 'An error has occurred',
+        body: body
       }
+    });
+  }
 
-      return 'SHiFT Code' + plural;
-    }();
+  function changeOverlay(settings) {
+    var comps = {};
+    comps.overlay = document.getElementById('shift_overlay');
+    comps.spinner = getClass(comps.overlay, 'spinner');
+    comps.error = getClass(comps.overlay, 'error');
+    var keys = Object.keys(settings);
 
-    var elm = document.getElementById('shift_header_count_' + name);
-    var labels = {
-      'total': title + ' Available',
-      'new': 'New ' + title,
-      'exp': 'Expiring ' + title
-    };
-
-    var action = function () {
-      if (name == 'total') {
-        return '';
-      } else {
-        return ' (Click to filter)';
-      }
-    }();
-
-    updateLabel(elm, count[name] + ' ' + labels[name] + action);
-    elm.getElementsByClassName('count')[0].innerHTML = count[name];
-
-    if (count[name] == 1) {
-      disenable(elm, false);
-      elm.classList.remove('inactive');
+    for (var _i2 = 0; _i2 < keys.length; _i2++) {
+      var key = keys[_i2];
+      vishidden(comps[key], settings[key]);
     }
-  } // Construct the SHiFT Code Panel and add it to the feed
+  }
 
+  function toggleControls(isDisabled) {
+    var controls = [badges["new"], badges.exp, document.getElementById('shift_header_sort')];
 
-  function constructPanel(codeObject) {
-    var panel = {};
+    for (var _i3 = 0; _i3 < controls.length; _i3++) {
+      var c = controls[_i3];
+
+      if (!hasClass(c, 'inactive')) {
+        disenable(c, isDisabled);
+      }
+    }
+  }
+
+  function clearList() {
+    var codes = getClasses(list, 'shift-code');
+
+    for (var _i4 = codes.length - 1; _i4 >= 0; _i4--) {
+      list.removeChild(codes[_i4]);
+    }
+  }
+
+  function addCode(code) {
+    var panel = getTemplate('shift_code_template');
+    var e = {};
+    e.header = getClass(panel, 'header');
+    e.labels = getClass(e.header, 'labels');
+    e.body = getClass(panel, 'body');
+
+    function getField(name) {
+      var parent = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : e.body;
+      return getClass(getClass(parent, name), 'content');
+    } // Properties
+
 
     (function () {
-      function returnContent(className) {
-        return panel.body.getElementsByClassName(className)[0].getElementsByClassName('content')[0];
-      }
-
-      function returnCode(codeName) {
-        var result = {};
-
-        (function () {
-          result.title = panel.body.getElementsByClassName(codeName)[0].getElementsByClassName('title')[0];
-          result.base = returnContent(codeName);
-          result.value = result.base.getElementsByClassName('value')[0];
-          result.display = result.base.getElementsByClassName('display')[0];
-          result.copy = result.base.getElementsByClassName('copy')[0];
-        })();
-
-        return result;
-      }
-
-      panel.template = document.getElementById('shift_code_template');
-      panel.base = panel.template.content.children[0].cloneNode(true);
-      panel.header = panel.base.getElementsByClassName('header')[0];
-      panel.title = panel.header.getElementsByClassName('title')[0].getElementsByClassName('string')[0];
-      panel.reward = panel.title.getElementsByClassName('reward')[0];
-      panel.labels = {};
-      panel.labels.description = panel.title.getElementsByClassName('label description')[0];
-      panel.labels["new"] = panel.base.getElementsByClassName('label new')[0];
-      panel.labels.exp = panel.base.getElementsByClassName('label exp')[0];
-      panel.progress = panel.header.getElementsByClassName('progress-bar')[0];
-      panel.progressBar = panel.progress.getElementsByClassName('progress')[0];
-      panel.body = panel.base.getElementsByClassName('body')[0];
-      panel.relDate = returnContent('rel');
-      panel.expDate = returnContent('exp');
-      panel.source = returnContent('src').getElementsByTagName('a')[0];
-      panel.notes = returnContent('notes').getElementsByTagName('ul')[0];
-      panel.codePC = returnCode('pc');
-      panel.codeXbox = returnCode('xbox');
-      panel.codePS = returnCode('ps');
-    })();
-
-    var currentDate = getDate(); // Handle Panel Properties
-
-    (function () {
-      // Panel ID
-      panel.base.id = 'shift_code_' + codeObject.codeID;
-    })(); // Handle Header Properties
+      panel.id = "shift_code_".concat(code.id);
+      panel.style.animationDelay = "".concat(count.added * 0.2, "s");
+    })(); // Details
 
 
     (function () {
       // Reward
       (function () {
-        var reward = codeObject.reward;
-        var description = panel.labels.description; // if (reward.length > 20) { panel.description.classList.add('long'); }
+        var rew = code.reward;
+        var des = getClass(e.labels, 'basic');
+        getClass(e.header, 'reward').innerHTML = rew;
 
-        if (reward != '5 Golden Keys') {
-          panel.reward.innerHTML = reward;
-          updateLabel(description, 'Rare SHiFT Code');
-          description.childNodes[0].innerHTML = 'Rare SHiFT Code';
+        if (rew.search('Golden Key') == -1) {
+          des.childNodes[0].innerHTML = 'Rare SHiFT Code';
+          updateLabel(des, 'Rare SHiFT Code with an uncommon reward');
         }
-      })(); // Handles all dates (Flags, Dates, Progress Bar)
+      })(); // Labels, Dates, Progress Bar
 
 
       (function () {
-        function convertDate(date) {
-          var y = date.substring(0, 4);
-          var md = date.substring(5);
-          return (md + '/' + y).replace(/-/g, '/');
+        function getFDate() {
+          var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'now';
+          return getDate('m-d-y', '/', date);
         }
 
-        var today = getDate('m-d-y', '/');
-        var relDate = convertDate(codeObject.relDate);
+        var expField = getField('exp'); // Dates
 
-        var expDate = function () {
-          var exp = codeObject.expDate;
+        var today = getFDate();
+        var rel = getFDate(code.rel_date);
 
-          if (exp === null) {
-            panel.expDate.classList.add('inactive');
+        var exp = function () {
+          var ex = code.exp_date;
+
+          if (ex === null) {
+            addClass(expField, 'inactive');
             return 'N/A';
           } else {
-            return convertDate(exp);
+            return getFDate(ex);
           }
-        }(); // Flags & Dates
+        }(); // Labels
 
+
+        if (today == rel) {
+          addClass(panel, 'new');
+        } else {
+          e.labels.removeChild(getClass(e.labels, 'new'));
+        }
+
+        if (today == exp) {
+          addClass(panel, 'exp');
+        } else {
+          e.labels.removeChild(getClass(e.labels, 'exp'));
+        } // Date Fields
+
+
+        getField('rel').innerHTML = rel;
+        expField.innerHTML = exp; // Progress Bar
 
         (function () {
-          panel.relDate.innerHTML = relDate;
-          panel.expDate.innerHTML = expDate;
+          var pb = getClass(e.header, 'progress-bar');
 
-          if (today == relDate) {
-            panel.base.classList.add('new');
-          } else {
-            panel.labels["new"].remove();
-          }
-
-          if (today == expDate) {
-            panel.base.classList.add('exp');
-          } else {
-            panel.labels.exp.remove();
-          }
-        })(); // Progress Bar
-
-
-        (function () {
-          function getDifference(start, end) {
+          function getDif(start, end) {
             var date = {
-              'start': new Date(start),
-              'end': new Date(end)
+              start: new Date(start),
+              end: new Date(end)
             };
-            var difference = Math.abs(date.end.getTime() - date.start.getTime());
-            return Math.ceil(difference / (1000 * 3600 * 24));
+            var dif = Math.abs(date.end.getTime() - date.start.getTime());
+            return Math.ceil(dif / (1000 * 3600 * 24));
           }
 
-          function updateProgress(timeLeft, currentWidth) {
-            updateLabel(panel.progress, timeLeft);
-            panel.progress.setAttribute('aria-valuenow', currentWidth);
-            panel.progressBar.style.width = currentWidth + '%';
+          function update(percent, label) {
+            updateProgressBar(pb, percent, {
+              useWidth: true
+            });
+            updateLabel(pb, label);
           }
 
-          if (expDate != 'N/A') {
-            var width = function () {
-              if (relDate != expDate) {
-                var origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
-
-                if (origin.indexOf('.') != -1) {
-                  return origin.match(/\d{1,2}(?=\.)/)[0];
-                } else {
-                  return origin;
-                }
+          if (exp != 'N/A') {
+            var percent = function () {
+              if (rel != exp) {
+                return Math.round(getDif(today, rel) / getDif(exp, rel) * 100);
               } else {
                 return 100;
               }
             }();
 
-            var countdown = function () {
-              var time = getDifference(today, expDate);
+            var label = function () {
+              var days = getDif(today, exp);
 
-              var string = function () {
-                var plural = '';
-
-                if (time != 1) {
-                  plural = 's';
+              var plural = function () {
+                if (days != 1) {
+                  return 's';
+                } else {
+                  return '';
                 }
-
-                return ' Day' + plural + ' Left';
               }();
 
-              return time + string;
+              return "".concat(days, " Day").concat(plural, " Left");
             }();
 
-            updateProgress(countdown, width);
+            update(percent, label);
           } else {
-            var _width = 0;
-            var _countdown = 'No Expiration Date';
-            updateProgress(_countdown, _width);
-            panel.progress.classList.add('inactive');
+            update(0, 'No Expiration Date');
+            addClass(pb, 'inactive');
           }
         })();
       })(); // Source
 
 
       (function () {
-        var source = codeObject.source;
+        var s = code.source;
+        var field = getField('src');
+        var link = getClass(field, 'link');
+        var noLink = getClass(field, 'no-link');
 
-        if (source !== null) {
-          var label = function () {
-            var str = 'Source';
-
-            if (source.indexOf('facebook') != -1) {
-              str += ' (Facebook)';
-            } else if (source.indexOf('twitter') != -1) {
-              str += ' (Twitter)';
-            }
-
-            return str;
-          }();
-
-          panel.source.href = source;
-          panel.source.innerHTML += source;
-          updateLabel(panel.source, label);
+        if (s !== null) {
+          link.href = s;
+          link.innerHTML += s;
+          field.removeChild(noLink);
         } else {
-          var e = document.createElement('span');
-          var parent = panel.source.parentNode;
-          e.innerHTML = 'N/A';
-          updateLabel(e, 'No confirmed source available');
-          parent.appendChild(e);
-          parent.classList.add('inactive');
-          panel.source.remove();
+          addClass(field, 'inactive');
+          field.removeChild(link);
         }
       })(); // Notes
 
 
       (function () {
-        var notes = codeObject.notes; // Notes Attribute
+        var n = code.notes;
 
-        if (notes !== null) {
-          panel.notes.innerHTML = function () {
-            if (notes.indexOf('-') == -1) {
-              return '<li><i>' + notes + '</i></li>';
+        if (n !== null) {
+          getTag(getField('notes'), 'ul').innerHTML = function () {
+            if (n.indexOf('-') == -1) {
+              return "<li><i>".concat(n, "</i></li>");
             } else {
               var updateNotes = function updateNotes(match) {
-                return match.replace(/-\s{1}/g, '<li><i>') + '</i></li>';
+                var mRegex = new RegExp('-\\s{1}', 'g');
+                return "".concat(match.replace(mRegex, '<li><i>'), "</i></li>");
               };
 
-              return notes.replace(/-.*/g, updateNotes);
+              var regex = new RegExp('-.*', 'g');
+              return n.replace(regex, updateNotes);
             }
           }();
         } else {
-          panel.notes.parentNode.parentNode.remove();
+          e.body.removeChild(getClass(e.body, 'notes'));
         }
       })();
-    })(); // Handle Body Properties
+    })(); // Codes
 
 
     (function () {
-      var fields = ['PC', 'Xbox', 'PS'];
+      var platforms = ['pc', 'xbox', 'ps'];
 
-      for (i = 0; i < fields.length; i++) {
-        var code = 'code' + fields[i];
-        var elm = panel[code];
-        var entry = codeObject[code];
-        elm.title.innerHTML = codeObject['platforms' + fields[i]] + ':';
-        elm.display.innerHTML = entry;
-        elm.value.value = entry;
+      for (var _i5 = 0; _i5 < platforms.length; _i5++) {
+        var platform = platforms[_i5];
+        var field = getClass(e.body, platform);
+        var codeVal = code["code_".concat(platform)];
+        getClass(field, 'title').innerHTML = code["platforms_".concat(platform)];
+        getClass(field, 'display').innerHTML = codeVal;
+        getClass(field, 'value').value = codeVal;
       }
-    })(); // Configure Dropdown Panels
+    })(); // Config
 
-
-    dropdownPanelSetup(panel.base); // Update Copy Listeners
-
-    addPanelListeners(panel.base); // Add panel to feed
 
     (function () {
-      var overlay = document.getElementById('shift_overlay');
-      updateCounter('total');
-      updatePanelTiming(panel.base, count.total);
-      feed.appendChild(panel.base);
+      dropdownPanelSetup(panel); // Copy to Clipboard Listeners
 
-      if (codeObject.relDate == currentDate) {
-        updateCounter('new');
-      } else if (codeObject.expDate == currentDate) {
-        updateCounter('exp');
-      }
+      (function () {
+        var copy = getClasses(e.body, 'copy');
 
-      if (count.total == 1) {
-        vishidden(overlay, true);
-      }
-
-      if (count.total == count.retrieved) {
-        addFocusScrollListeners(feed);
-        disenable(document.getElementById('shift_header_sort'), false);
-        overlay.remove();
-        document.getElementById('shift_code_template').remove(); // Copy Panels to Cache
-
-        for (i = 0; i < feed.children.length; i++) {
-          var _panel = feed.children[i].cloneNode(true);
-
-          document.getElementById('shift_code_cache').appendChild(_panel);
+        for (i = 0; i < copy.length; i++) {
+          copy[i].addEventListener('click', copyToClipboard);
         }
-      }
-    })();
-  } // Retrieve SHiFT Codes and add them to the page
+      })();
+    })(); // Add to List
 
 
-  (function () {
-    // Wait for dependencies
-    function executeWhenReady() {
-      if (typeof newAjaxRequest == 'function' && typeof getDate == 'function') {
-        // Fetch SHiFT Codes
-        newAjaxRequest({
-          file: "/assets/php/scripts/shift/retrieveCodes.php?gameID=".concat(shiftData.id),
-          callback: function callback(response) {
-            var retrievedCodes = JSON.parse(response).response;
-            count.retrieved = retrievedCodes.length; // Start processing
+    (function () {
+      count.added++;
 
-            if (count.retrieved > 0) {
-              for (var _i8 = 0; _i8 < count.retrieved; _i8++) {
-                // Construct the panel for the SHiFT Code
-                constructPanel(retrievedCodes[_i8]);
-              }
-            } // Show error message
-            else {
-                var overlay = document.getElementById('shift_overlay');
-                vishidden(overlay.getElementsByClassName('spinner')[0], true);
-                vishidden(overlay.getElementsByClassName('error')[0], false);
-              }
-          }
+      if (count.added == 1) {
+        clearList();
+        changeOverlay({
+          overlay: true,
+          spinner: true,
+          error: true
         });
-      } else {
-        setTimeout(function () {
-          executeWhenReady();
-        }, 100);
       }
+
+      if (count.added == count.fetched) {
+        setTimeout(function () {
+          toggleControls(false);
+        }, 600);
+      }
+
+      list.insertBefore(panel, document.getElementById('shift_code_pager'));
+    })();
+  }
+
+  function fetchCodes(serverResponse) {
+    var response = tryJSONParse(serverResponse);
+
+    if (response && response.statusCode == 0) {
+      var codes = response.payload;
+      count.fetched = response.payload.length;
+
+      if (count.fetched > 0) {
+        for (var _i6 = 0; _i6 < count.fetched; _i6++) {
+          addCode(codes[_i6]);
+        }
+      } else {
+        clearList();
+        changeOverlay({
+          overlay: false,
+          spinner: true,
+          error: false
+        });
+      }
+    } else {
+      clearList();
+      changeOverlay({
+        overlay: false,
+        spinner: true,
+        error: false
+      });
+      errorToast('We could not retrieve any SHiFT Codes due to an error. Please refresh the page and try again.');
     }
 
-    executeWhenReady();
-  })();
-})(); // Filter Button Listeners
+    lpbUpdate(100);
+  } // Fetch SHiFT Codes
 
 
-(function () {
-  var counters = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
+  toggleControls(true);
+  lpbUpdate(90, true, {
+    start: 20
+  });
+  newAjaxRequest({
+    file: "/assets/php/scripts/shift/getCodes\n           ?gameID=".concat(shiftProps.gameInfo.id, "\n           &order=").concat(shiftProps.order, "\n           &filter=").concat(shiftProps.filter.join(', '), "\n           &limit=").concat(shiftProps.limit, "\n           &offset=").concat(shiftProps.offset, "\n           &hash=").concat(shiftProps.hash),
+    callback: fetchCodes
+  });
+} // Initial Functions
 
-  for (i = 0; i < counters.length; i++) {
-    counters[i].addEventListener('click', function (e) {
-      var call = this.classList[1];
 
-      if (call != document.getElementById('shift_code_feed').getAttribute('data-filter')) {
-        updateFeedSettings('filter', call);
-      } else {
-        updateFeedSettings('filter', 'none');
+shiftScriptsInit = setInterval(function () {
+  if (globalFunctionsReady) {
+    clearInterval(shiftScriptsInit);
+    var header = document.getElementById('shift_header');
+    shiftProps = {
+      gameInfo: tryJSONParse(document.body.getAttribute('data-shift')),
+      order: 'default',
+      filter: [],
+      limit: 10,
+      offset: 0,
+      hash: function () {
+        var h = window.location.hash;
+
+        if (h.search('#shift_code_') == 0) {
+          return h.replace('#shift_code_', '');
+        } else {
+          return false;
+        }
+      }()
+    };
+
+    hashRequests['shift_code_'] = function () {
+      shiftProps.hash = window.location.hash.replace('#shift_code_', '');
+      getCodes();
+      hashUpdate();
+      shiftProps.hash = false;
+    }; // Initial code listing
+
+
+    getCodes();
+    shiftProps.hash = false; // Setup badges & pager
+
+    (function () {
+      tryToRun({
+        attempts: false,
+        delay: 500,
+        "function": function _function() {
+          if (shiftStats) {
+            var id = shiftProps.gameInfo.id; // Setup badges
+
+            (function () {
+              var regex = new RegExp('\\d{1,2}');
+              var badges = {
+                total: getClass(header, 'badge total'),
+                "new": getClass(header, 'badge new'),
+                expiring: getClass(header, 'badge exp')
+              };
+              var badgeNames = Object.keys(badges);
+
+              var _loop = function _loop(_i7) {
+                var bn = badgeNames[_i7];
+                var b = badges[bn];
+                var c = shiftStats[bn][id];
+
+                var label = function () {
+                  var str = b.title;
+                  str = str.replace('No', c);
+
+                  if (c == 1) {
+                    str = str.replace('Codes', 'Code');
+                  }
+
+                  if (bn != 'total') {
+                    str += ' (Click to Filter)';
+                  }
+
+                  return str;
+                }();
+
+                if (c > 0) {
+                  getClass(b, 'count').innerHTML = c;
+                  updateLabel(b, label);
+
+                  if (bn != 'total') {
+                    b.addEventListener('click', function (e) {
+                      var attr = this.getAttribute('aria-pressed') == 'true';
+                      var val = this.getAttribute('data-value');
+
+                      if (!attr) {
+                        updateLabel(this, this.title.replace('Filter', 'clear Filter'));
+                        shiftProps.filter.push(val);
+                      } else {
+                        var f = shiftProps.filter;
+                        updateLabel(this, this.title.replace('clear Filter', 'Filter'));
+                        f.splice(f.indexOf(val), 1);
+                      }
+
+                      shiftProps.offset = 0;
+                      getCodes();
+                      updateShiftPager();
+                    });
+                  }
+
+                  ;
+                  disenable(b, false);
+                  delClass(b, 'inactive');
+                }
+              };
+
+              for (var _i7 = 0; _i7 < badgeNames.length; _i7++) {
+                _loop(_i7);
+              }
+            })(); // Setup pager
+
+
+            updateShiftPager();
+            return true;
+          } else {
+            return false;
+          }
+        }
+      });
+    })(); // Sort Listeners
+
+
+    (function () {
+      var dropdown = document.getElementById('shift_header_sort_dropdown');
+      var options = getTags(dropdown, 'button');
+
+      for (var _i8 = 0; _i8 < options.length; _i8++) {
+        options[_i8].addEventListener('click', function (e) {
+          var attr = this.getAttribute('aria-pressed');
+
+          if (!attr || attr == 'false') {
+            shiftProps.order = this.getAttribute('data-value');
+            getCodes();
+          }
+        });
       }
-    });
+    })();
   }
-})(); // Sort Options Dropdown Listeners
-
-
-(function () {
-  var dropdown = document.getElementById('shift_header_sort_dropdown');
-  var choices = dropdown.getElementsByTagName('BUTTON');
-
-  for (i = 0; i < choices.length; i++) {
-    choices[i].addEventListener('click', function (e) {
-      var call = this.getAttribute('data-value');
-
-      if (call != document.getElementById('shift_code_feed').getAttribute('data-sort')) {
-        updateFeedSettings('sort', call);
-      }
-
-      toggleDropdownMenu(dropdown);
-    });
-  }
-})();
+}, 250);
