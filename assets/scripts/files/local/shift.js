@@ -1,543 +1,490 @@
-/*********************************
-  SHiFT Page Scripts
-*********************************/
+var shiftProps = {};
 
-// *** Variables ***
-let shiftData = {};
-  (function () {
-    shiftData.base = JSON.parse(document.body.getAttribute('data-shiftData'));
-    shiftData.id = shiftData.base.id;
-    shiftData.name = shiftData.base.name;
-  })();
+function updateShiftPager () {
+  let id = shiftProps.gameInfo.id;
+  let pager = document.getElementById('shift_code_pager');
+  let limit = shiftProps.limit;
+  let total = getClasses(document.getElementById('shift_code_feed'), 'shift-code').length;
+  let props = {
+    now: (shiftProps.offset / limit) + 1,
+    max: (function () {
+      let count = 0;
+      let filter = shiftProps.filter;
 
-// *** Functions ***
-// Update Feed Filter & Sort Settings
-function updateFeedSettings(setting, type) {
-  let feed = document.getElementById('shift_code_feed');
-  let cache = document.getElementById('shift_code_cache');
-  let panels = cache.getElementsByClassName('shift-code');
-  codes = [];
-  let panelsAdded = 0;
-  let today = getDate('m-d-y', '/');
-
-  function addPanel(code) {
-    let panel;
-
-    feed.appendChild(code);
-    panelsAdded++;
-    panel = feed.children[panelsAdded - 1];
-    updatePanelTiming(panel, (panelsAdded));
-    addDropdownPanelListener(panel)
-    addPanelListeners(panel);
-  }
-
-  // Get Codes & Clear Feed
-  (function () {
-    let feedPanels = feed.getElementsByClassName('shift-code');
-
-    for (i = 0; i < panels.length; i++) {
-      let panel = panels[i]
-      let currentStoredState = panel.getAttribute('data-expanded') == 'true';
-
-      for (x = 0; x < feedPanels.length; x++) {
-        let feedPanel = feedPanels[x];
-        let currentState = feedPanel.getAttribute('data-expanded') == 'true';
-
-        if (feedPanel.id == panel.id && currentState != currentStoredState) {
-          console.warn("Current Stored State: " + currentStoredState + " | Updating to: " + !currentStoredState);
-          updateDropdownPanelAttributes(panel, !currentStoredState);
+      if (filter.length == 0) {
+        count = shiftStats.total[id];
+      }
+      else {
+        for (let f of filter) {
+          count += shiftStats[f][id];
         }
       }
 
-      codes[i] = {};
-      codes[i].panel = panel.cloneNode(true);
-      codes[i].relDate = panel.getElementsByClassName('section rel')[0].getElementsByClassName('content')[0].innerHTML;
-      codes[i].expDate = panel.getElementsByClassName('section exp')[0].getElementsByClassName('content')[0].innerHTML;
-    }
-    feed.innerHTML = '';
-  })();
-
-  // Filter Settings
-  if (setting == 'filter') {
-    let currentFilter = feed.getAttribute('data-filter');
-
-    if (type != 'none') {
-      function updateCode(code) {
-        addPanel(code.panel);
-        code.used = true;
-      }
-
-      for (let i = 0; i < codes.length; i++) {
-        if (type == 'new' && codes[i].relDate == today)      { updateCode(codes[i]); }
-        else if (type == 'exp' && codes[i].expDate == today) { updateCode(codes[i]); }
-      }
-    }
-    else { updateFeedSettings('sort', feed.getAttribute('data-sort')); }
-
-    feed.setAttribute('data-filter', type);
-
-    // Update Filter Buttons
-    (function () {
-      let buttons = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
-      let labels = {
-        true: '(Click to remove filter)',
-        false: '(Click to filter)'
-      };
-
-      for (i = 0; i < buttons.length; i++) {
-        let state = buttons[i].classList[1] == feed.getAttribute('data-filter');
-        let currentLabel = buttons[i].title;
-        let newLabel = currentLabel.replace(/\(.*\)/g, labels[state]);
-
-        buttons[i].setAttribute('data-pressed', state);
-        buttons[i].setAttribute('aria-pressed', state);
-        updateLabel(buttons[i], newLabel);
-      }
-    })();
-  }
-  // Sort Settings
-  if (setting == 'sort') {
-    function sort(sortType) {
-      codes = codes.sort(function(a, b) {
-        let matches = {
-          'new': {
-            'primary': b,
-            'secondary': a
-          },
-          'old': {
-            'primary': a,
-            'secondary': b
-          }
-        };
-
-        if (a.relDate != b.relDate) { return matches[sortType].primary.relDate.localeCompare(matches[sortType].secondary.relDate); }
-        else                        { return matches[sortType].primary.expDate.localeCompare(matches[sortType].secondary.expDate); }
-      });
-    }
-
-    if (type == 'default') {
-      function updateCode (x) {
-        if (codes[x].used !== true) {
-          addPanel(codes[x].panel);
-          codes[x].used = true;
-        }
-      }
-
-      sort ('new');
-
-      // Add Expiring Codes
-      for (let i = 0; i < codes.length; i++) {
-        if (codes[i].expDate == today)       { updateCode(i); }
-      }
-      // Add New Codes
-      for (let i = 0; i < codes.length; i++) {
-        if (codes[i].relDate == today)       { updateCode(i); }
-      }
-      // Add Remaining Codes w/ an Expiration Date
-      for (let i = 0; i < codes.length; i++) {
-        if (codes[i].expDate != 'N/A')       { updateCode(i); }
-      }
-      // Add Remaining Codes w/o an Expiration Date
-      for (let i = 0; i < codes.length; i++) { updateCode(i); }
-    }
-    if (type == 'newest') {
-      sort ('new');
-
-      for (let i = 0; i < codes.length; i++) { addPanel(codes[i].panel); }
-    }
-    if (type == 'oldest') {
-      sort ('old');
-
-      for (let i = 0; i < codes.length; i++) { addPanel(codes[i].panel); }
-    }
-
-    // Update Dropdown Menu & Panel Feed Properties
-    (function () {
-      let options = document.getElementById('shift_header_sort_dropdown').getElementsByTagName('button');
-
-      feed.setAttribute('data-sort', type);
-
-      setTimeout(function () {
-        for (i = 0; i < options.length; i++) {
-          let state = options[i].getAttribute('data-value') == type;
-
-          options[i].setAttribute('data-pressed', state);
-          options[i].setAttribute('aria-pressed', state);
-        }
-      }, 250);
-    })();
-  }
-}
-/*
-// Copies the SHiFT Code to Clipboard
-function copyCode (event) {
-  event.parentNode.getElementsByClassName('value')[0].select();
-  document.execCommand('copy');
-  event.classList.remove('animated');
-
-  setTimeout(function () {
-    event.classList.add('animated');
-  }, 1);
-}
-*/
-// Update Panel Animation Timing
-function updatePanelTiming (panel, id) {
-  panel.style.animationDelay = ((id - 1) * 0.2) + 's';
-}
-// Adds SHiFT Code Panel Event Listeners
-function addPanelListeners(panel) {
-  let copy = panel.getElementsByClassName('copy');
-
-  for (i = 0; i < copy.length; i++) {
-    copy[i].addEventListener('click', copyToClipboard);
-  }
-}
-
-// *** Immediate Functions ***
-// Handles Page Construction
-(function () {
-  let header = document.getElementById('shift_header');
-  let feed = document.getElementById('shift_code_feed');
-  let count = {
-    'retrieved': 0,
-    'total': 0,
-    'new': 0,
-    'exp': 0
+      return Math.ceil(count / limit);
+    })(),
+    offset: limit,
+    onclick: 'shift_header_sort'
   };
+  let propNames = Object.keys(props);
 
-  // Update Counters and their respective elements
-  function updateCounter (name) {
-    count[name]++;
+  for (let i = 0; i < propNames.length; i++) {
+    let prop = propNames[i];
 
-    let title = (function () {
-      let plural = 's';
+    pager.setAttribute(`data-${prop}`, props[prop]);
+  }
 
-      if (count[name] == 1) { plural = ''; }
+  delClass(pager, 'configured');
+  pager = configurePager(pager);
 
-      return ('SHiFT Code') + plural;
-    })();
-    let elm = document.getElementById(('shift_header_count_') + name);
-    let labels = {
-      'total': title + (' Available'),
-      'new': ('New ') + title,
-      'exp': ('Expiring ') + title
-    };
-    let action = (function () {
-      if (name == 'total') { return ''; }
-      else                 { return ' (Click to filter)'; }
-    })();
+  for (let button of getTags(pager, 'button')) {
+    button.addEventListener('click', function (e) {
+      let val = tryParseInt(this.getAttribute('data-value'));
 
-    updateLabel(elm, count[name] + (' ') + labels[name] + action);
-    elm.getElementsByClassName('count')[0].innerHTML = count[name];
+      if (val != shiftProps.offset) {
+        shiftProps.offset = val;
+        getCodes();
+      }
+    });
+  }
+}
+function getCodes () {
+  let count = {
+    fetched: 0,
+    added: 0
+  };
+  // Elements
+  let header = document.getElementById('shift_header');
+  let badges = {
+    total: getClass(header, 'badge total'),
+    new: getClass(header, 'badge new'),
+    exp: getClass(header, 'badge exp')
+  };
+  let list = document.getElementById('shift_code_feed');
 
-    if (count[name] == 1) {
-      disenable(elm, false);
-      elm.classList.remove('inactive');
+  function errorToast (body) {
+    return newToast({
+      settings: {
+        template: 'exception'
+      },
+      content: {
+        title: 'An error has occurred',
+        body: body
+      }
+    });
+  }
+
+  function changeOverlay (settings) {
+    let comps = {};
+        comps.overlay = document.getElementById('shift_overlay');
+        comps.spinner = getClass(comps.overlay, 'spinner');
+        comps.error = getClass(comps.overlay, 'error');
+    let keys = Object.keys(settings);
+
+    for (let i = 0; i < keys.length; i++) {
+      let key = keys[i];
+
+      vishidden(comps[key], settings[key]);
     }
   }
-  // Construct the SHiFT Code Panel and add it to the feed
-  function constructPanel (codeObject) {
-    let panel = {};
-      (function () {
-        function returnContent(className) {
-          return panel.body.getElementsByClassName(className)[0].getElementsByClassName('content')[0];
-        }
-        function returnCode(codeName) {
-          let result = {};
-            (function () {
-              result.title = panel.body.getElementsByClassName(codeName)[0].getElementsByClassName('title')[0];
-              result.base = returnContent(codeName);
-              result.value = result.base.getElementsByClassName('value')[0];
-              result.display = result.base.getElementsByClassName('display')[0];
-              result.copy = result.base.getElementsByClassName('copy')[0];
-            })();
-          return result;
-        }
+  function toggleControls (isDisabled) {
+    let controls = [
+      badges.new,
+      badges.exp,
+      document.getElementById('shift_header_sort')
+    ];
 
-        panel.template = document.getElementById('shift_code_template');
-        panel.base = panel.template.content.children[0].cloneNode(true);
-        panel.header = panel.base.getElementsByClassName('header')[0];
-          panel.title = panel.header.getElementsByClassName('title')[0].getElementsByClassName('string')[0];
-            panel.reward = panel.title.getElementsByClassName('reward')[0];
-            panel.labels = {};
-              panel.labels.description = panel.title.getElementsByClassName('label description')[0];
-              panel.labels.new = panel.base.getElementsByClassName('label new')[0];
-              panel.labels.exp = panel.base.getElementsByClassName('label exp')[0];
-          panel.progress = panel.header.getElementsByClassName('progress-bar')[0];
-            panel.progressBar = panel.progress.getElementsByClassName('progress')[0];
-        panel.body = panel.base.getElementsByClassName('body')[0];
-          panel.relDate = returnContent('rel');
-          panel.expDate = returnContent('exp');
-          panel.source = returnContent('src').getElementsByTagName('a')[0];
-          panel.notes = returnContent('notes').getElementsByTagName('ul')[0];
-          panel.codePC = returnCode('pc');
-          panel.codeXbox = returnCode('xbox');
-          panel.codePS = returnCode('ps');
-      })();
-    let currentDate = getDate();
+    for (let i = 0; i < controls.length; i++) {
+      let c = controls[i];
 
-    // Handle Panel Properties
+      if (!hasClass(c, 'inactive')) {
+        disenable(c, isDisabled);
+      }
+    }
+  }
+
+  function clearList () {
+    let codes = getClasses(list, 'shift-code');
+
+    for (let i = codes.length - 1; i >= 0; i--) {
+      list.removeChild(codes[i]);
+    }
+  }
+  function addCode (code) {
+    let panel = getTemplate('shift_code_template');
+    let e = {};
+        e.header = getClass(panel, 'header');
+        e.labels = getClass(e.header, 'labels');
+        e.body = getClass(panel, 'body');
+
+    function getField(name, parent = e.body) {
+      return getClass(getClass(parent, name), 'content');
+    }
+
+    // Properties
     (function () {
-      // Panel ID
-      panel.base.id = ('shift_code_') + codeObject.codeID;
+      panel.id = `shift_code_${code.id}`;
+      panel.style.animationDelay = `${count.added * 0.2}s`;
     })();
-    // Handle Header Properties
+    // Details
     (function () {
       // Reward
       (function () {
-        let reward = codeObject.reward;
-        let description = panel.labels.description;
+        let rew = code.reward;
+        let des = getClass(e.labels, 'basic');
 
-        // if (reward.length > 20) { panel.description.classList.add('long'); }
-        if (reward != '5 Golden Keys') {
-          panel.reward.innerHTML = reward;
-          updateLabel(description, 'Rare SHiFT Code');
-          description.childNodes[0].innerHTML = 'Rare SHiFT Code';
+        getClass(e.header, 'reward').innerHTML = rew;
+
+        if (rew.search('Golden Key') == -1) {
+          des.childNodes[0].innerHTML = 'Rare SHiFT Code';
+          updateLabel(des, 'Rare SHiFT Code with an uncommon reward');
         }
       })();
-      // Handles all dates (Flags, Dates, Progress Bar)
+      // Labels, Dates, Progress Bar
       (function () {
-        function convertDate (date) {
-          let y = date.substring(0, 4);
-          let md = date.substring(5);
-
-          return (md + ('/') + y).replace(/-/g, '/');
+        function getFDate(date = 'now') {
+          return getDate('m-d-y', '/', date);
         }
 
-        let today   = getDate('m-d-y', '/');
-        let relDate = convertDate(codeObject.relDate);
-        let expDate = (function () {
-          let exp = codeObject.expDate;
+        let expField = getField('exp');
+        // Dates
+        let today = getFDate();
+        let rel = getFDate(code.rel_date);
+        let exp = (function () {
+          let ex = code.exp_date;
 
-          if (exp === null) {
-            panel.expDate.classList.add('inactive');
+          if (ex === null) {
+            addClass(expField, 'inactive');
             return 'N/A';
           }
-          else { return convertDate(exp); }
+          else {
+            return getFDate(ex);
+          }
         })();
 
-        // Flags & Dates
-        (function () {
-          panel.relDate.innerHTML = relDate;
-          panel.expDate.innerHTML = expDate;
-
-          if (today == relDate)  { panel.base.classList.add('new'); }
-          else                   { panel.labels.new.remove(); }
-          if (today == expDate)  { panel.base.classList.add('exp'); }
-          else                   { panel.labels.exp.remove(); }
-        })();
+        // Labels
+        if (today == rel) { addClass(panel, 'new'); }
+        else              { e.labels.removeChild(getClass(e.labels, 'new')); }
+        if (today == exp) { addClass(panel, 'exp'); }
+        else              { e.labels.removeChild(getClass(e.labels, 'exp')); }
+        // Date Fields
+        getField('rel').innerHTML = rel;
+        expField.innerHTML = exp;
         // Progress Bar
         (function () {
-          function getDifference (start, end) {
+          let pb = getClass(e.header, 'progress-bar');
+
+          function getDif (start, end) {
             let date = {
-              'start': new Date(start),
-              'end': new Date(end)
+              start: new Date(start),
+              end: new Date(end)
             };
-            let difference = Math.abs(date.end.getTime() - date.start.getTime());
+            let dif = Math.abs(date.end.getTime() - date.start.getTime());
 
-            return Math.ceil(difference / (1000 * 3600 * 24));
+            return Math.ceil(dif / (1000 * 3600 * 24));
           }
-          function updateProgress(timeLeft, currentWidth) {
-            updateLabel(panel.progress, timeLeft);
-            panel.progress.setAttribute('aria-valuenow', currentWidth);
-            panel.progressBar.style.width = currentWidth + ('%');
+          function update (percent, label) {
+            updateProgressBar(pb, percent, { useWidth: true });
+            updateLabel(pb, label);
           }
 
-          if (expDate != 'N/A') {
-            let width = (function () {
-              if (relDate != expDate) {
-                let origin = (getDifference(today, relDate) / getDifference(expDate, relDate) * 100).toString();
-
-                if (origin.indexOf('.') != -1)  { return origin.match(/\d{1,2}(?=\.)/)[0]; }
-                else                            { return origin; }
+          if (exp != 'N/A') {
+            let percent = (function () {
+              if (rel != exp) {
+                return Math.round((getDif(today, rel) / getDif(exp, rel)) * 100);
               }
-              else { return 100; }
+              else {
+                return 100;
+              }
             })();
-            let countdown = (function () {
-              let time = getDifference(today, expDate);
-              let string = (function () {
-                let plural = '';
+            let label = (function () {
+              let days = getDif(today, exp);
+                let plural = (function () {
+                  if (days != 1) { return 's'; }
+                  else           { return ''; }
+                })();
 
-                if (time != 1) { plural = 's'; }
-
-                return (' Day') + plural + (' Left');
-              })();
-
-              return time + string;
+              return `${days} Day${plural} Left`;
             })();
 
-            updateProgress(countdown, width);
+            update(percent, label)
           }
           else {
-            let width = 0;
-            let countdown = 'No Expiration Date';
-
-            updateProgress(countdown, width);
-            panel.progress.classList.add('inactive');
+            update(0, 'No Expiration Date');
+            addClass(pb, 'inactive');
           }
         })();
       })();
       // Source
       (function () {
-        let source = codeObject.source;
+        let s = code.source;
+        let field = getField('src');
+        let link = getClass(field, 'link');
+        let noLink = getClass(field, 'no-link');
 
-        if (source !== null) {
-          let label = (function () {
-            let str = 'Source';
-
-            if (source.indexOf('facebook') != -1)     { str += ' (Facebook)'; }
-            else if (source.indexOf('twitter') != -1) { str += ' (Twitter)'; }
-
-            return str;
-          })();
-
-          panel.source.href = source;
-          panel.source.innerHTML += source;
-          updateLabel(panel.source, label);
+        if (s !== null) {
+          link.href = s;
+          link.innerHTML += s;
+          field.removeChild(noLink);
         }
         else {
-          let e = document.createElement('span');
-          let parent = panel.source.parentNode;
-
-          e.innerHTML = 'N/A';
-          updateLabel(e, 'No confirmed source available');
-          parent.appendChild(e);
-          parent.classList.add('inactive');
-          panel.source.remove();
+          addClass(field, 'inactive');
+          field.removeChild(link);
         }
       })();
       // Notes
       (function () {
-        let notes = codeObject.notes;
+        let n = code.notes;
 
-        // Notes Attribute
-        if (notes !== null) {
-          panel.notes.innerHTML = (function () {
-            if (notes.indexOf('-') == -1) {
-              return ('<li><i>') + notes + ('</i></li>');
+        if (n !== null) {
+          getTag(getField('notes'), 'ul').innerHTML = (function () {
+            if (n.indexOf('-') == -1) {
+              return (`<li><i>${n}</i></li>`);
             }
             else {
-              function updateNotes (match) { return match.replace(/-\s{1}/g, '<li><i>') + '</i></li>'; }
+              function updateNotes (match) {
+                let mRegex = new RegExp('-\\s{1}', 'g');
 
-              return notes.replace(/-.*/g, updateNotes);
+                return `${match.replace(mRegex, '<li><i>')}</i></li>`;
+              }
+
+              let regex = new RegExp('-.*', 'g');
+
+              return n.replace(regex, updateNotes);
             }
           })();
         }
-        else { panel.notes.parentNode.parentNode.remove(); }
+        else {
+          e.body.removeChild(getClass(e.body, 'notes'));
+        }
       })();
     })();
-    // Handle Body Properties
+    // Codes
     (function () {
-      let fields = ['PC', 'Xbox', 'PS'];
+      let platforms = ['pc', 'xbox', 'ps'];
 
-      for (i = 0; i < fields.length; i++) {
-        let code = ('code') + fields[i];
-        let elm = panel[code];
-        let entry = codeObject[code];
+      for (let i = 0; i < platforms.length; i++) {
+        let platform = platforms[i];
+        let field = getClass(e.body, platform);
+        let codeVal = code[`code_${platform}`];
 
-        elm.title.innerHTML = codeObject[('platforms') + fields[i]] + (':');
-        elm.display.innerHTML = entry;
-        elm.value.value = entry;
+        getClass(field, 'title').innerHTML = code[`platforms_${platform}`];
+        getClass(field, 'display').innerHTML = codeVal;
+        getClass(field, 'value').value = codeVal;
       }
     })();
-
-    // Configure Dropdown Panels
-    dropdownPanelSetup(panel.base);
-    // Update Copy Listeners
-    addPanelListeners(panel.base);
-
-
-    // Add panel to feed
+    // Config
     (function () {
-      let overlay = document.getElementById('shift_overlay');
+      dropdownPanelSetup(panel);
 
-      updateCounter('total');
-      updatePanelTiming(panel.base, count.total);
-      feed.appendChild(panel.base);
+      // Copy to Clipboard Listeners
+      (function () {
+        let copy = getClasses(e.body, 'copy');
 
-      if (codeObject.relDate == currentDate)      { updateCounter('new'); }
-      else if (codeObject.expDate == currentDate) { updateCounter('exp'); }
-      if (count.total == 1) { vishidden(overlay, true); }
-      if (count.total == count.retrieved) {
-        addFocusScrollListeners(feed);
-        disenable(document.getElementById('shift_header_sort'), false);
-        overlay.remove();
-        document.getElementById('shift_code_template').remove();
-
-        // Copy Panels to Cache
-        for (i = 0; i < feed.children.length; i++) {
-          let panel = feed.children[i].cloneNode(true);
-
-          document.getElementById('shift_code_cache').appendChild(panel);
+        for (i = 0; i < copy.length; i++) {
+          copy[i].addEventListener('click', copyToClipboard);
         }
+      })();
+    })();
+    // Add to List
+    (function () {
+      count.added++;
+
+      if (count.added == 1) {
+        clearList();
+        changeOverlay({
+          overlay: true,
+          spinner: true,
+          error: true
+        });
       }
+      if (count.added == count.fetched) {
+        setTimeout(function () {
+          toggleControls(false);
+        }, 600);
+      }
+
+      list.insertBefore(panel, document.getElementById('shift_code_pager'));
     })();
   }
 
-  // Retrieve SHiFT Codes and add them to the page
-  (function () {
-    // Wait for dependencies
-    function executeWhenReady() {
-      if (typeof newAjaxRequest == 'function' && typeof getDate == 'function') {
-        // Fetch SHiFT Codes
-        newAjaxRequest({
-          file: `/assets/php/scripts/shift/retrieveCodes.php?gameID=${shiftData.id}`,
-          callback: function (response) {
-            let retrievedCodes = JSON.parse(response).response;
-                count.retrieved = retrievedCodes.length;
+  function fetchCodes (serverResponse) {
+    let response = tryJSONParse(serverResponse);
 
-            // Start processing
-            if (count.retrieved > 0) {
-              for (let i = 0; i < count.retrieved; i++) {
-                // Construct the panel for the SHiFT Code
-                constructPanel(retrievedCodes[i]);
+    if (response && response.statusCode == 0) {
+      let codes = response.payload;
+          count.fetched = response.payload.length;
+
+      if (count.fetched > 0) {
+        for (let i = 0; i < count.fetched; i++) {
+          addCode(codes[i]);
+        }
+      }
+      else {
+        clearList();
+        changeOverlay({
+          overlay: false,
+          spinner: true,
+          error: false
+        });
+      }
+    }
+    else {
+      clearList();
+      changeOverlay({
+        overlay: false,
+        spinner: true,
+        error: false
+      });
+      errorToast('We could not retrieve any SHiFT Codes due to an error. Please refresh the page and try again.');
+    }
+
+    lpbUpdate(100);
+  }
+
+  // Fetch SHiFT Codes
+  toggleControls(true);
+  lpbUpdate(90, true, { start: 20 });
+  newAjaxRequest({
+    file: `/assets/php/scripts/shift/getCodes
+           ?gameID=${shiftProps.gameInfo.id}
+           &order=${shiftProps.order}
+           &filter=${shiftProps.filter.join(', ')}
+           &limit=${shiftProps.limit}
+           &offset=${shiftProps.offset}
+           &hash=${shiftProps.hash}`,
+    callback: fetchCodes
+  });
+}
+
+// Initial Functions
+shiftScriptsInit = setInterval(function () {
+  if (globalFunctionsReady) {
+    clearInterval(shiftScriptsInit);
+
+    let header = document.getElementById('shift_header');
+
+    shiftProps = {
+      gameInfo: tryJSONParse(document.body.getAttribute('data-shift')),
+      order: 'default',
+      filter: [],
+      limit: 10,
+      offset: 0,
+      hash: (function () {
+        let h = window.location.hash;
+
+        if (h.search('#shift_code_') == 0) {
+          return h.replace('#shift_code_', '');
+        }
+        else {
+          return false;
+        }
+      })()
+    };
+    hashRequests['shift_code_'] = function () {
+      shiftProps.hash = window.location.hash.replace('#shift_code_', '');
+      getCodes();
+      hashUpdate();
+      shiftProps.hash = false;
+    };
+
+    // Initial code listing
+    getCodes();
+    shiftProps.hash = false;
+    // Setup badges & pager
+    (function () {
+      tryToRun({
+        attempts: false,
+        delay: 500,
+        function: function () {
+          if (shiftStats) {
+            let id = shiftProps.gameInfo.id;
+
+            // Setup badges
+            (function () {
+              let regex = new RegExp('\\d{1,2}');
+              let badges = {
+                total: getClass(header, 'badge total'),
+                new: getClass(header, 'badge new'),
+                expiring: getClass(header, 'badge exp')
+              };
+              let badgeNames = Object.keys(badges);
+
+              for (let i = 0; i < badgeNames.length; i++) {
+                let bn = badgeNames[i];
+                let b = badges[bn];
+                let c = shiftStats[bn][id];
+                let label = (function () {
+                  let str = b.title;
+
+                  str = str.replace('No', c);
+
+                  if (c == 1) {
+                    str = str.replace('Codes', 'Code');
+                  }
+                  if (bn != 'total') {
+                    str += ' (Click to Filter)';
+                  }
+
+                  return str;
+                })();
+
+                if (c > 0) {
+                  getClass(b, 'count').innerHTML = c;
+                  updateLabel(b, label);
+
+                  if (bn != 'total') {
+                    b.addEventListener('click', function (e) {
+                      let attr = this.getAttribute('aria-pressed') == 'true';
+                      let val = this.getAttribute('data-value');
+
+                      if (!attr) {
+                        updateLabel(this, this.title.replace('Filter', 'clear Filter'));
+                        shiftProps.filter.push(val);
+                      }
+                      else {
+                        let f = shiftProps.filter;
+
+                        updateLabel(this, this.title.replace('clear Filter', 'Filter'));
+                        f.splice(f.indexOf(val), 1);
+                      }
+
+                      shiftProps.offset = 0;
+                      getCodes();
+                      updateShiftPager();
+                    });
+                  };
+
+                  disenable(b, false);
+                  delClass(b, 'inactive');
+                }
               }
-            }
-            // Show error message
-            else {
-              let overlay = document.getElementById('shift_overlay');
+            })();
+            // Setup pager
+            updateShiftPager();
 
-              vishidden(overlay.getElementsByClassName('spinner')[0], true);
-              vishidden(overlay.getElementsByClassName('error')[0], false);
-            }
+            return true;
+          }
+          else {
+            return false;
+          }
+        }
+      });
+    })();
+    // Sort Listeners
+    (function () {
+      let dropdown = document.getElementById('shift_header_sort_dropdown');
+      let options = getTags(dropdown, 'button');
+
+      for (let i = 0; i < options.length; i++) {
+        options[i].addEventListener('click', function (e) {
+          let attr = this.getAttribute('aria-pressed');
+
+          if (!attr || attr == 'false') {
+            shiftProps.order = this.getAttribute('data-value');
+            getCodes();
           }
         });
       }
-      else {
-        setTimeout(function () {
-          executeWhenReady();
-        }, 100);
-      }
-    }
-
-    executeWhenReady();
-  })();
-})();
-// Filter Button Listeners
-(function () {
-  let counters = document.getElementById('shift_header').getElementsByClassName('counters')[0].getElementsByTagName('button');
-
-  for (i = 0; i < counters.length; i++) {
-    counters[i].addEventListener('click', function (e) {
-      let call = this.classList[1];
-
-      if (call != document.getElementById('shift_code_feed').getAttribute('data-filter')) { updateFeedSettings('filter', call); }
-      else                                                                                { updateFeedSettings('filter', 'none'); }
-    });
+    })();
   }
-})();
-// Sort Options Dropdown Listeners
-(function () {
-  let dropdown = document.getElementById('shift_header_sort_dropdown');
-  let choices = dropdown.getElementsByTagName('BUTTON');
-
-  for (i = 0; i < choices.length; i++) {
-    choices[i].addEventListener('click', function (e) {
-      let call = this.getAttribute('data-value');
-
-      if (call != document.getElementById('shift_code_feed').getAttribute('data-sort')) { updateFeedSettings('sort', call); }
-
-      toggleDropdownMenu(dropdown);
-    });
-  }
-})();
+}, 250);

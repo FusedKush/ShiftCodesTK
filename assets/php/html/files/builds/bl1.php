@@ -31,7 +31,7 @@
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl1" data-shiftData='{"id": "3", "name": "Borderlands: Game of the Year Edition"}'>
+  <body data-theme="bl1" data-shift='{"id": "3", "name": "Borderlands: Game of the Year Edition"}'>
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

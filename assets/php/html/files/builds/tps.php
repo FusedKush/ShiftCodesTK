@@ -31,7 +31,7 @@
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="tps" data-shiftData='{"id": "2", "name": "Borderlands: The Pre-Sequel"}'>
+  <body data-theme="tps" data-shift='{"id": "2", "name": "Borderlands: The Pre-Sequel"}'>
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

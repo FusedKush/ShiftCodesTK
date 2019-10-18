@@ -1,15 +1,15 @@
 <header class="shift-header" id="shift_header">
   <div class="content-wrapper">
-    <div class="section counters">
+    <div class="section badges">
       <div class="badge total inactive" id="shift_header_count_total" title="No SHiFT Codes Available" aria-label="No SHiFT Codes Available">
         <strong class="count">0</strong>
         <span class="fas fa-key"></span>
       </div>
-      <button class="badge new inactive" id="shift_header_count_new" title="No New SHiFT Codes" aria-label="No New SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
+      <button class="badge new inactive o-pressed" id="shift_header_count_new" data-value="new" title="No New SHiFT Codes" aria-label="No New SHiFT Codes" aria-pressed="false" disabled aria-disabled="true">
         <strong class="count">0</strong>
         <span class="fas fa-star"></span>
       </button>
-      <button class="badge exp inactive" id="shift_header_count_exp" title="No Expiring SHiFT Codes" aria-label="No Expiring SHiFT Codes" data-pressed="false" aria-pressed="false" disabled aria-disabled="true">
+      <button class="badge exp inactive o-pressed" id="shift_header_count_exp" data-value="expiring" title="No Expiring SHiFT Codes" aria-label="No Expiring SHiFT Codes" aria-pressed="false" disabled aria-disabled="true">
         <strong class="count">0</strong>
         <span class="fas fa-exclamation-triangle"></span>
       </button>
@@ -18,50 +18,32 @@
       <button id="shift_header_sort" title="Change Sort" aria-label="Change Sort" disabled aria-disabled="true">
         <span class="fas fa-sort-amount-down"></span>
       </button>
-      <div class="dropdown-menu" id="shift_header_sort_dropdown" data-target="shift_header_sort" data-pos="bottom" data-align="right">
+      <div class="dropdown-menu o-press o-toggle" id="shift_header_sort_dropdown" data-target="shift_header_sort" data-pos="bottom" data-align="right">
         <div class="panel">
           <div class="title">Sort by:</div>
           <ul class="choice-list">
             <li><button class="choice" data-value="default" data-pressed="true" aria-pressed="true">Default</button></li>
-            <li><button class="choice" data-value="newest">Newest</button></li>
-            <li><button class="choice" data-value="oldest">Oldest</button></li>
+            <li><button class="choice" data-value="new">Newest</button></li>
+            <li><button class="choice" data-value="old">Oldest</button></li>
           </ul>
         </div>
       </div>
-      <!--
-      <div class="dropdown" id="shift_header_sort_dropdown" data-expanded="false" aria-expanded="false" hidden data-hidden="true">
-        <span class="arrow"></span>
-        <ul class="panel" role="menu">
-          <span class="description">Sort codes by:</span>
-          <li role="menuitem">
-            <button data-value="default" data-pressed="true" aria-pressed="true" disabled aria-disabled="true"><span>Default</span></button>
-          </li>
-          <li role="menuitem">
-            <button data-value="newest" data-pressed="false" aria-pressed="false" disabled aria-disabled="true"><span>Newest</span></button>
-          </li>
-          <li role="menuitem">
-            <button data-value="oldest" data-pressed="false" aria-pressed="false" disabled aria-disabled="true"><span>Oldest</span></button>
-          </li>
-        </ul>
-      </div>
-      -->
     </div>
   </div>
 </header>
-<main class="feed content-wrapper" id="shift_code_feed" data-filter="none" data-sort="default">
+<main class="feed shift-code-list content-wrapper" id="shift_code_feed" data-filter="none" data-sort="default">
   <div class="overlay" id="shift_overlay">
     <!-- Spinner -->
     <?php include("./assets/php/html/min/imports/local/spinner.php"); ?>
     <div class="error" hidden aria-hidden="true">
       <strong>
-        <div>No SHiFT Codes are currently available</div>
+        <div>No SHiFT Codes were found</div>
         <span class="fas fa-heart-broken"></span>
-        <div>Please try again later</div>
       </strong>
     </div>
   </div>
+  <div class="pager no-auto-config" id="shift_code_pager" data-onclick="shift_header_sort"></div>
 </main>
-<div id="shift_code_cache" hidden aria-hidden="true"></div>
 <template id="shift_code_template">
   <div class="dropdown-panel shift-code">
     <button class="header" data-custom-labels='{"false": "Expand SHiFT Code", "true": "Collapse SHiFT Code"}'>
@@ -73,7 +55,7 @@
           <div class="string">
             <h2 class="primary reward">5 Golden Keys</h2>
             <span class="secondary labels">
-              <span class="label description" title="SHiFT Code" aria-label="SHiFT Code">
+              <span class="label description basic" title="Standard SHiFT Code for Golden Keys" aria-label="Standard SHiFT Code for Golden Keys">
                 <span>SHiFT Code</span>
               </span>
               <span class="label new" title="New SHiFT Code" aria-label="New SHiFT Code">
@@ -89,7 +71,7 @@
           <span class="fas fa-chevron-right"></span>
         </div>
         <div class="full-width">
-          <div class="progress-bar" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100">
             <div class="progress"></div>
           </div>
         </div>
@@ -110,9 +92,10 @@
       <div class="section src">
         <strong class="title">Source:</strong>
         <div class="content">
-          <a class="tr-underline" target="_blank" rel="external noopener">
+          <a class="link tr-underline" target="_blank" rel="external noopener" title="SHiFT Code Source" aria-label="SHiFT Code Source">
             <span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span>
           </a>
+          <span class="no-link" title="No confirmed Source available" aria-label="No confirmed Source available">N/A</span>
         </div>
       </div>
       <div class="section notes">

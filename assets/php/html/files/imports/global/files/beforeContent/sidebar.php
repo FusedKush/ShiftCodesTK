@@ -11,25 +11,25 @@
     </div>
     <ul role="menu">
       <li>
-        <a href="/bl3" data-use-badges="bl3">
+        <a href="/bl3" data-use-badges="4">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 3</span>
         </a>
       </li>
       <li>
-        <a href="/bl1" data-use-badges="bl1">
+        <a href="/bl1" data-use-badges="3">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands: GOTY</span>
         </a>
       </li>
       <li>
-        <a href="/bl2" data-use-badges="bl2">
+        <a href="/bl2" data-use-badges="1">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 2</span>
         </a>
       </li>
       <li>
-        <a href="/tps" data-use-badges="tps">
+        <a href="/tps" data-use-badges="2">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands: TPS</span>
         </a>

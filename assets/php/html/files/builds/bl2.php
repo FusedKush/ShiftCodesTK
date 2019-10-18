@@ -31,7 +31,7 @@
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl2" data-shiftData='{"id": "1", "name": "Borderlands 2"}'>
+  <body data-theme="bl2" data-shift='{"id": "1", "name": "Borderlands 2"}'>
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

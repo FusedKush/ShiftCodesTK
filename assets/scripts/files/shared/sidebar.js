@@ -1,44 +1,3 @@
-/*********************************
-  Sidebar Scripts
-*********************************/
-// *** Variables ***
-var addSidebarBadgesRetry;
-
-// *** Functions ***
-// Update Badges
-function addSidebarBadges () {
-  if (typeof shiftBadgeCount != 'undefined') {
-    let links = document.getElementById('sidebar').getElementsByTagName('a');
-    let template = document.getElementById('sidebar_template_badges').content.children;
-
-    clearInterval(addSidebarBadgesRetry);
-
-    for (i = 0; i < links.length; i++) {
-      let badgeID = links[i].getAttribute('data-use-badges');
-
-      if (badgeID !== null) {
-        if (shiftBadgeCount.new[badgeID] > 0 || shiftBadgeCount.expiring[badgeID] > 0) {
-          let link = links[i];
-          let badges = {};
-            (function () {
-              badges.base = template[0].cloneNode(true);
-              badges.new = template[1].cloneNode(true);
-              badges.exp = template[2].cloneNode(true);
-            })();
-          let badgeBase;
-
-          link.appendChild(badges.base);
-          badgeBase = link.getElementsByClassName('badges')[0];
-
-          if (shiftBadgeCount.new[badgeID] > 0)      { badgeBase.appendChild(badges.new); }
-          if (shiftBadgeCount.expiring[badgeID] > 0) { badgeBase.appendChild(badges.exp); }
-        }
-      }
-    }
-
-    document.getElementById('sidebar_template_badges').remove();
-  }
-};
 // Toggle the Sidebar
 function toggleSB () {
   let sb = document.getElementById('sidebar');
@@ -128,7 +87,49 @@ sidebarMarkup();
   }
 })();
 // Update sidebar badges
- addSidebarBadgesRetry = setInterval(addSidebarBadges, 250);
+(function () {
+  tryToRun({
+    attempts: false,
+    delay: 500,
+    function: function () {
+      if (shiftStats) {
+        let links = document.getElementById('sidebar').getElementsByTagName('a');
+        let template = document.getElementById('sidebar_template_badges').content.children;
+
+        for (i = 0; i < links.length; i++) {
+          let badgeID = links[i].getAttribute('data-use-badges');
+          let n = shiftStats.new[badgeID];
+          let e = shiftStats.expiring[badgeID];
+
+          if (badgeID) {
+            if (n > 0 || e > 0) {
+              let link = links[i];
+              let badges = {};
+                (function () {
+                  badges.base = template[0].cloneNode(true);
+                  badges.new = template[1].cloneNode(true);
+                  badges.exp = template[2].cloneNode(true);
+                })();
+              let badgeBase;
+
+              link.appendChild(badges.base);
+              badgeBase = link.getElementsByClassName('badges')[0];
+
+              if (n > 0) { badgeBase.appendChild(badges.new); }
+              if (e > 0) { badgeBase.appendChild(badges.exp); }
+            }
+          }
+        }
+
+        document.getElementById('sidebar_template_badges').remove();
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+  });
+})();
 
 // *** Event Listeners ***
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);
