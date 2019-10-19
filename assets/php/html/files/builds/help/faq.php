@@ -275,25 +275,15 @@
             <p>SHiFT Codes can be redeemed once per account.</p>
           </div>
         </div>
-        <div class="dropdown-panel">
-          <button class="header">
-            <div class="wrapper">
-              <div class="title">
-                <div class="string">
-                  <h3 class="primary">What games support SHiFT Codes?</h3>
-                </div>
-              </div>
-              <div class="indicator">
-                <span class="fas fa-chevron-right"></span>
-              </div>
-            </div>
-          </button>
-          <div class="body content-container">
+        <div class="dropdown-panel c">
+          <div class="primary">What games support SHiFT Codes?</div>
+          <div class="body">
             <p>The following titles support SHiFT Codes:</p>
             <ul class="styled">
+              <li>Borderlands: Game of the Year Edition</li>
               <li>Borderlands 2</li>
               <li>Borderlands: The Pre-Sequel</li>
-              <li>Borderlands: Game of the Year Edition</li>
+              <li>Borderlands 3</li>
             </ul>
             <p><em>There are other titles that accept SHiFT Codes, such as Battleborn, but they are not supported on ShiftCodesTK.</em></p>
           </div>
