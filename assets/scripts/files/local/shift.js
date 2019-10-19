@@ -1,7 +1,7 @@
 var shiftProps = {};
 
 function updateShiftPager () {
-  let id = shiftProps.gameInfo.id;
+  let id = shiftProps.gameID;
   let pager = document.getElementById('shift_code_pager');
   let limit = shiftProps.limit;
   let total = getClasses(document.getElementById('shift_code_feed'), 'shift-code').length;
@@ -346,7 +346,7 @@ function getCodes () {
   lpbUpdate(90, true, { start: 20 });
   newAjaxRequest({
     file: `/assets/php/scripts/shift/getCodes
-           ?gameID=${shiftProps.gameInfo.id}
+           ?gameID=${shiftProps.gameID}
            &order=${shiftProps.order}
            &filter=${shiftProps.filter.join(', ')}
            &limit=${shiftProps.limit}
@@ -364,7 +364,7 @@ shiftScriptsInit = setInterval(function () {
     let header = document.getElementById('shift_header');
 
     shiftProps = {
-      gameInfo: tryJSONParse(document.body.getAttribute('data-shift')),
+      gameID: window.location.pathname.slice(1),
       order: 'default',
       filter: [],
       limit: 10,
@@ -397,7 +397,7 @@ shiftScriptsInit = setInterval(function () {
         delay: 500,
         function: function () {
           if (shiftStats) {
-            let id = shiftProps.gameInfo.id;
+            let id = shiftProps.gameID;
 
             // Setup badges
             (function () {

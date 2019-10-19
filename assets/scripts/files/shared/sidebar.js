@@ -88,47 +88,52 @@ sidebarMarkup();
 })();
 // Update sidebar badges
 (function () {
-  tryToRun({
-    attempts: false,
-    delay: 500,
-    function: function () {
-      if (shiftStats) {
-        let links = document.getElementById('sidebar').getElementsByTagName('a');
-        let template = document.getElementById('sidebar_template_badges').content.children;
+  let t;
 
-        for (i = 0; i < links.length; i++) {
-          let badgeID = links[i].getAttribute('data-use-badges');
-          let n = shiftStats.new[badgeID];
-          let e = shiftStats.expiring[badgeID];
+  t = setInterval(function () {
+    if (tryToRun) {
+      clearInterval(t);
+      tryToRun({
+        attempts: false,
+        delay: 500,
+        function: function () {
+          if (shiftStats) {
+            let links = getClasses(document.getElementById('sidebar'), 'use-badge');
+            let template = document.getElementById('sidebar_template_badges').content.children;
 
-          if (badgeID) {
-            if (n > 0 || e > 0) {
-              let link = links[i];
-              let badges = {};
-                (function () {
-                  badges.base = template[0].cloneNode(true);
-                  badges.new = template[1].cloneNode(true);
-                  badges.exp = template[2].cloneNode(true);
-                })();
-              let badgeBase;
+            for (i = 0; i < links.length; i++) {
+              let badgeID = links[i].pathname.slice(1);
+              let n = shiftStats.new[badgeID];
+              let e = shiftStats.expiring[badgeID];
 
-              link.appendChild(badges.base);
-              badgeBase = link.getElementsByClassName('badges')[0];
+              if (n > 0 || e > 0) {
+                let link = links[i];
+                let badges = {};
+                  (function () {
+                    badges.base = copyElm(template[0]);
+                    badges.new = copyElm(template[1]);
+                    badges.exp = copyElm(template[2]);
+                  })();
+                let badgeBase;
 
-              if (n > 0) { badgeBase.appendChild(badges.new); }
-              if (e > 0) { badgeBase.appendChild(badges.exp); }
+                link.appendChild(badges.base);
+                badgeBase = link.getElementsByClassName('badges')[0];
+
+                if (n > 0) { badgeBase.appendChild(badges.new); }
+                if (e > 0) { badgeBase.appendChild(badges.exp); }
+              }
             }
+
+            document.getElementById('sidebar_template_badges').remove();
+            return true;
+          }
+          else {
+            return false;
           }
         }
-
-        document.getElementById('sidebar_template_badges').remove();
-        return true;
-      }
-      else {
-        return false;
-      }
+      });
     }
-  });
+  }, 500);
 })();
 
 // *** Event Listeners ***

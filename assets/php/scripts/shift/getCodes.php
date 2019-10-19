@@ -83,7 +83,20 @@
       $illegalVal($parameter, $p);
     };
     $vars = [
-      'gameID'    => $checkNumeric('gameID'),
+      'gameID'    => (function () use ($params, $illegalVal) {
+        $parameter = 'gameID';
+        $p = $params[$parameter];
+        $ids = ['bl1', 'bl2', 'bl3', 'tps'];
+
+        foreach ($ids as $id) {
+          if ($p == $id) {
+            return $p;
+          }
+        }
+
+        // Else
+        $illegalVal($parameter, $p);
+      })(),
       'filter'    => (function () use ($params, $illegalVal) {
         $parameter = 'filter';
         $f = $params[$parameter];
@@ -154,30 +167,30 @@
                                  END,")
     ];
 
-    return parseSQL(
-      "SELECT
+      return "SELECT
           *
        FROM
           shift_codes
        WHERE
           ${vars['hashWhere']}
-          (game_id = ${vars['gameID']}
-          AND (${vars['filter']}))
+          (game_id = '${vars['gameID']}'
+          AND ${vars['filter']})
        ORDER BY
           ${vars['hashOrder']}
           ${vars['order']}
        LIMIT
           ${vars['limit']}
        OFFSET
-          ${vars['offset']}");
+          ${vars['offset']}";
   })();
+
   $sql = $con->prepare($sqlStatement);
 
   if ($sql) {
     $sql->execute();
     $sql->store_result();
     // Record code details
-    (function () use ($sql, $response) {
+    (function () use (&$sql, &$response) {
       $meta = $sql->result_metadata();
       $fields = [];
       $values = [];
