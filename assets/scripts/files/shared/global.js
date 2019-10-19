@@ -791,60 +791,98 @@ function execGlobalScripts () {
     (function () {
       let header = document.getElementById('primary_header');
 
-      if (header !== null) {
-        let breadcrumbs = (function () {
-          let meta = document.getElementById('breadcrumbs');
+      if (header) {
+        // Breadcrumb Definitions
+        let pages = {
+          'bl1': 'Borderlands: GOTY',
+          'bl2': 'Borderlands 2',
+          'tps': 'Borderlands: The Pre-Sequel',
+          'bl3': 'Borderlands 3',
+          'about-us': 'About us',
+          'credits': 'Credits',
+          'updates': 'Updates',
+          'help': 'Help Center',
+          'clearing-your-system-cache': 'Clearing your System Cache',
+          'faq': 'FAQ'
+        }
+        let url = window.location.pathname; // URL
+        let urlF = (function () {
+          let str = url;
 
-          if (meta !== null) { return JSON.parse(meta.content); }
-          else               { return null; }
-        })();
+          str = str.slice(1);
+
+          if (str[str.length - 1] == '/') {
+            str = str.slice(0, -1);
+          }
+
+          return str;
+        })(); // Formatted URL
         let container = document.getElementById('breadcrumb_container');
-        let separatorTemplate = document.getElementById('breadcrumb_separator_template');
-        let crumbTemplate = document.getElementById('breadcrumb_crumb_template');
+        let tmps = {
+          separator: 'breadcrumb_separator_template',
+          crumb: 'breadcrumb_crumb_template',
+          here: 'breadcrumb_crumb_here_template'
+        };
+        let tmpsNames = Object.keys(tmps);
 
-        if (breadcrumbs !== null) {
-          // Root Page
-          (function () {
-            let crumb = crumbTemplate.content.children[0].cloneNode(true);
-            let icon = document.createElement('span');
+        function newBreadcrumb(props) {
+          let s = getTemplate(tmps[props.type]);
 
-            crumb.href = '/';
-            crumb.innerHTML = '';
-            icon.className = 'fas fa-home box-icon';
-            updateLabel(crumb, 'Home');
-            crumb.appendChild(icon);
-            container.appendChild(crumb);
-          })();
+          if (props.type != 'separator') {
+            if (props.type == 'crumb') {
+              s.href = props.link;
+              updateLabel(s, props.title);
+            }
 
-          for (i = 0; i < breadcrumbs.length; i++) {
-            let current = breadcrumbs[i];
-            let separator = separatorTemplate.content.children[0].cloneNode(true);
-            let crumb;
+            if (props.icon) { addClass(s, props.icon); }
+            else            { s.innerHTML = props.title; }
+          }
 
-            if ((i + 1) != breadcrumbs.length) {
-              crumb = crumbTemplate.content.children[0].cloneNode(true);
+          container.appendChild(s);
+        }
 
-              crumb.href = current.url;
-              updateLabel(crumb, current.name);
-              crumb.innerHTML = current.name;
+        // Home
+        (function () {
+          newBreadcrumb({
+            type: 'crumb',
+            title: 'Home',
+            icon: 'fas fa-home',
+            link: '/'
+          });
+          newBreadcrumb({ type: 'separator' });
+        })();
+        // Links
+        (function () {
+          let regex = new RegExp('(\\/)|([\\w-]+)', 'g');
+
+          for (let oMatch of regexMatchAll(regex, urlF)) {
+            let match = oMatch[0];
+
+            if (match == '/') {
+              newBreadcrumb({ type: 'separator' });
             }
             else {
-              crumb = document.createElement('b');
+              let baseURL = `/${match}`;
+              let titleRegex = new RegExp('\\/', 'g');
+              let linkRegex = new RegExp(`${baseURL}(.*)`);
+              let options = {
+                title: pages[match.replace(titleRegex, '')],
+                link: url.replace(linkRegex, baseURL)
+              };
 
-              crumb.className = 'crumb';
-              crumb.innerHTML = current.name;
+              if (options.link != url) { options.type = 'crumb'; }
+              else                     { options.type = 'here'; }
+
+              newBreadcrumb(options);
+
             }
-
-            container.appendChild(separator);
-            container.appendChild(crumb);
           }
+        })();
+        // Cleanup
+        addClass(container.parentNode, 'ready')
+        for (let t of tmpsNames) {
+          document.getElementById(tmps[t]).remove();
         }
-        else {
-          container.remove();
-        }
-
-        separatorTemplate.remove();
-        crumbTemplate.remove();
       }
     })();
     // Get SHiFT stats

@@ -868,59 +868,131 @@ function execGlobalScripts() {
     (function () {
       var header = document.getElementById('primary_header');
 
-      if (header !== null) {
-        var breadcrumbs = function () {
-          var meta = document.getElementById('breadcrumbs');
+      if (header) {
+        var newBreadcrumb = function newBreadcrumb(props) {
+          var s = getTemplate(tmps[props.type]);
 
-          if (meta !== null) {
-            return JSON.parse(meta.content);
-          } else {
-            return null;
-          }
-        }();
-
-        var container = document.getElementById('breadcrumb_container');
-        var separatorTemplate = document.getElementById('breadcrumb_separator_template');
-        var crumbTemplate = document.getElementById('breadcrumb_crumb_template');
-
-        if (breadcrumbs !== null) {
-          // Root Page
-          (function () {
-            var crumb = crumbTemplate.content.children[0].cloneNode(true);
-            var icon = document.createElement('span');
-            crumb.href = '/';
-            crumb.innerHTML = '';
-            icon.className = 'fas fa-home box-icon';
-            updateLabel(crumb, 'Home');
-            crumb.appendChild(icon);
-            container.appendChild(crumb);
-          })();
-
-          for (i = 0; i < breadcrumbs.length; i++) {
-            var current = breadcrumbs[i];
-            var separator = separatorTemplate.content.children[0].cloneNode(true);
-            var crumb = void 0;
-
-            if (i + 1 != breadcrumbs.length) {
-              crumb = crumbTemplate.content.children[0].cloneNode(true);
-              crumb.href = current.url;
-              updateLabel(crumb, current.name);
-              crumb.innerHTML = current.name;
-            } else {
-              crumb = document.createElement('b');
-              crumb.className = 'crumb';
-              crumb.innerHTML = current.name;
+          if (props.type != 'separator') {
+            if (props.type == 'crumb') {
+              s.href = props.link;
+              updateLabel(s, props.title);
             }
 
-            container.appendChild(separator);
-            container.appendChild(crumb);
+            if (props.icon) {
+              addClass(s, props.icon);
+            } else {
+              s.innerHTML = props.title;
+            }
           }
-        } else {
-          container.remove();
-        }
 
-        separatorTemplate.remove();
-        crumbTemplate.remove();
+          container.appendChild(s);
+        }; // Home
+
+
+        // Breadcrumb Definitions
+        var pages = {
+          'bl1': 'Borderlands: GOTY',
+          'bl2': 'Borderlands 2',
+          'tps': 'Borderlands: The Pre-Sequel',
+          'bl3': 'Borderlands 3',
+          'about-us': 'About us',
+          'credits': 'Credits',
+          'updates': 'Updates',
+          'help': 'Help Center',
+          'clearing-your-system-cache': 'Clearing your System Cache',
+          'faq': 'FAQ'
+        };
+        var url = window.location.pathname; // URL
+
+        var urlF = function () {
+          var str = url;
+          str = str.slice(1);
+
+          if (str[str.length - 1] == '/') {
+            str = str.slice(0, -1);
+          }
+
+          return str;
+        }(); // Formatted URL
+
+
+        var container = document.getElementById('breadcrumb_container');
+        var tmps = {
+          separator: 'breadcrumb_separator_template',
+          crumb: 'breadcrumb_crumb_template',
+          here: 'breadcrumb_crumb_here_template'
+        };
+        var tmpsNames = Object.keys(tmps);
+
+        (function () {
+          newBreadcrumb({
+            type: 'crumb',
+            title: 'Home',
+            icon: 'fas fa-home',
+            link: '/'
+          });
+          newBreadcrumb({
+            type: 'separator'
+          });
+        })(); // Links
+
+
+        (function () {
+          var regex = new RegExp('(\\/)|([\\w-]+)', 'g');
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = regexMatchAll(regex, urlF)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var oMatch = _step.value;
+              var match = oMatch[0];
+
+              if (match == '/') {
+                newBreadcrumb({
+                  type: 'separator'
+                });
+              } else {
+                var baseURL = "/".concat(match);
+                var titleRegex = new RegExp('\\/', 'g');
+                var linkRegex = new RegExp("".concat(baseURL, "(.*)"));
+                var options = {
+                  title: pages[match.replace(titleRegex, '')],
+                  link: url.replace(linkRegex, baseURL)
+                };
+
+                if (options.link != url) {
+                  options.type = 'crumb';
+                } else {
+                  options.type = 'here';
+                }
+
+                newBreadcrumb(options);
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        })(); // Cleanup
+
+
+        addClass(container.parentNode, 'ready');
+
+        for (var _i9 = 0, _tmpsNames = tmpsNames; _i9 < _tmpsNames.length; _i9++) {
+          var t = _tmpsNames[_i9];
+          document.getElementById(tmps[t]).remove();
+        }
       }
     })(); // Get SHiFT stats
 
@@ -948,8 +1020,8 @@ function execGlobalScripts() {
     (function () {
       var clickables = getElements(document, 'clickables');
 
-      for (var _i9 = 0; _i9 < clickables.length; _i9++) {
-        fixClickableContent(clickables[_i9]);
+      for (var _i10 = 0; _i10 < clickables.length; _i10++) {
+        fixClickableContent(clickables[_i10]);
       }
     })(); // Add Press Toggle Listener to buttons
 
@@ -957,8 +1029,8 @@ function execGlobalScripts() {
     (function () {
       var buttons = getTags(document, 'button');
 
-      for (var _i10 = 0; _i10 < buttons.length; _i10++) {
-        var btn = buttons[_i10];
+      for (var _i11 = 0; _i11 < buttons.length; _i11++) {
+        var btn = buttons[_i11];
 
         if (hasClass(btn, 'o-pressed')) {
           btnPressToggle(btn);
@@ -1020,8 +1092,8 @@ function execGlobalScripts() {
       if (container !== null) {
         var dropdowns = getClasses(container, 'dropdown-menu');
         window.addEventListener('resize', function (e) {
-          for (var _i11 = 0; _i11 < dropdowns.length; _i11++) {
-            var dd = dropdowns[_i11];
+          for (var _i12 = 0; _i12 < dropdowns.length; _i12++) {
+            var dd = dropdowns[_i12];
 
             if (dd.getAttribute('data-expanded')) {
               updateDropdownMenuPos(dd);

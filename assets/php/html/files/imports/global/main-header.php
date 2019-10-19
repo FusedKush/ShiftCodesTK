@@ -23,5 +23,8 @@
     <template id="breadcrumb_crumb_template">
       <a class="crumb tr-underline"></a>
     </template>
+    <template id="breadcrumb_crumb_here_template">
+      <b class="crumb"></b>
+    </template>
   </div>
 </header>

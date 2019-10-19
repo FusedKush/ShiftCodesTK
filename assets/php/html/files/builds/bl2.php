@@ -21,7 +21,6 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/bl2">
     <meta property="og:url" content="https://shiftcodes.tk/bl2">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Borderlands 2", "url": "/bl2"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">

@@ -225,7 +225,8 @@ header.main {
     border-bottom: 4px solid;
     background-position: center;
     background-size: cover;
-    overflow: hidden; }
+    overflow: hidden;
+    z-index: 1; }
     body[data-theme="main"] header.main .intro {
       border-color: #f00; }
     body[data-theme="bl1"] header.main .intro {
@@ -283,7 +284,14 @@ header.main {
       padding-top: 4px; }
   header.main .breadcrumbs {
     display: flex;
-    border-bottom: 2px solid rgba(255, 255, 255, 0.5); }
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+    animation: breadcrumbFadeIn 0.2s ease-out; }
+
+@keyframes breadcrumbFadeIn {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
     body[data-theme="main"] header.main .breadcrumbs {
       background-color: #f00; }
     body[data-theme="bl1"] header.main .breadcrumbs {
@@ -303,13 +311,16 @@ header.main {
       border-radius: inherit;
       content: "";
       background-color: rgba(0, 0, 0, 0.5); }
+    header.main .breadcrumbs:not(.ready) {
+      display: none; }
     header.main .breadcrumbs .content-wrapper {
       display: flex;
       align-items: center;
       justify-content: flex-start;
       flex-wrap: wrap;
       width: 100%;
-      padding: 8px 12px; }
+      padding: 8px 12px;
+      transition: transform 0.8s; }
     header.main .breadcrumbs .separator {
       opacity: 0.5; }
     header.main .breadcrumbs .separator, header.main .breadcrumbs b.crumb {

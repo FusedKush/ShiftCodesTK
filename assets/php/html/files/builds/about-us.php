@@ -21,7 +21,6 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/about-us">
     <meta property="og:url" content="https://shiftcodes.tk/about-us">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "About us", "url": "/about-us"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">

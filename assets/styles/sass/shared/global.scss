@@ -181,6 +181,7 @@ header.main {
     @include theme(bc);
     @include bgImg;
     overflow: hidden;
+    z-index: zOrder(higher);
 
     &::after {
       position: absolute;
@@ -241,19 +242,32 @@ header.main {
     }
   }
   .breadcrumbs {
+    @keyframes breadcrumbFadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
     display: flex;
-    // background-color: tpw(0.1);
     @include theme(bg);
     border-bottom: bd(2px, tpw(0.5));
+    animation: breadcrumbFadeIn 0.2s ease-out;
 
     &::before {
       @include fill(true, tpb(0.5));
+    }
+    &:not(.ready) {
+      display: none
     }
 
     .content-wrapper {
       @include flexbox($hAlign: s, $wrap: true);
       width: 100%;
       padding: 8px 12px;
+      transition: transform 0.8s;
     }
     .separator { opacity: 0.5; }
     .separator, b.crumb { cursor: default; }

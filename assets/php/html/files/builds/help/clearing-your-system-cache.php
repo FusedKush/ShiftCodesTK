@@ -21,7 +21,6 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodes.tk/help/clearing-your-system-cache">
     <meta property="og:url" content="https://shiftcodes.tk/help/clearing-your-system-cache">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Help Center", "url": "/help/"}, {"name": "Clearing your System Cache", "url": "/help/clearing-your-system-cache"}]'>
     <!-- Page Thumbnail Image -->
     <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/help/clearing-your-system-cache.png">
     <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/help/clearing-your-system-cache.png">
@@ -196,7 +195,5 @@
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/scripts/min/local/help/clearing-your-system-cache.min.js?v=<?php echo $svQueryString; ?>"></script>
   </body>
 </html>
