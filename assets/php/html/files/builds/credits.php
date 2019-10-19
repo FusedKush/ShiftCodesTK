@@ -19,11 +19,11 @@
     <meta property="og:description" content="The people and projects that make ShiftCodesTK possible">
     <meta property="twitter:description" content="The people and projects that make ShiftCodesTK possible">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/credits">
-    <meta property="og:url" content="https://shiftcodes.tk/credits">
+    <meta name="canonical" href="https://shiftcodestk.com/credits">
+    <meta property="og:url" content="https://shiftcodestk.com/credits">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/credits.png">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/credits.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/credits.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">

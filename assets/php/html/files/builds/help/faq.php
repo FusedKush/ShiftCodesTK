@@ -19,11 +19,11 @@
     <meta property="og:description" content="Answers to some frequently asked questions">
     <meta property="twitter:description" content="Answers to some frequently asked questions">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/help/faq">
-    <meta property="og:url" content="https://shiftcodes.tk/help/faq">
+    <meta name="canonical" href="https://shiftcodestk.com/help/faq">
+    <meta property="og:url" content="https://shiftcodestk.com/help/faq">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/help/faq.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/help/faq.png">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/help/faq.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/help/faq.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">

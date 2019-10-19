@@ -19,11 +19,11 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/tps">
-    <meta property="og:url" content="https://shiftcodes.tk/tps">
+    <meta name="canonical" href="https://shiftcodestk.com/tps">
+    <meta property="og:url" content="https://shiftcodestk.com/tps">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/tps.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#1e90ff">

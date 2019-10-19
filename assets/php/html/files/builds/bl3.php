@@ -19,11 +19,11 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands 3">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands 3">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/bl3">
-    <meta property="og:url" content="https://shiftcodes.tk/bl3">
+    <meta name="canonical" href="https://shiftcodestk.com/bl3">
+    <meta property="og:url" content="https://shiftcodestk.com/bl3">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl3.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl3.png">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl3.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl3.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/bl3.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#ffb600">

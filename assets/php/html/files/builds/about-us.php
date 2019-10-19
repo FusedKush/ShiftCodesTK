@@ -19,11 +19,11 @@
     <meta property="og:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
     <meta property="twitter:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/about-us">
-    <meta property="og:url" content="https://shiftcodes.tk/about-us">
+    <meta name="canonical" href="https://shiftcodestk.com/about-us">
+    <meta property="og:url" content="https://shiftcodestk.com/about-us">
     <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/about-us.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/about-us.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
