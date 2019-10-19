@@ -37,6 +37,8 @@
 
         $arr[$key] = $val;
       }
+
+      $arr[$key] = htmlspecialchars($arr[$key]);
     }
 
     return $arr;
@@ -229,13 +231,11 @@
         $response->addPayload(array_combine($fields, $arr));
       }
     })();
-    $response->debug_sqlStatement = $sqlStatement;
     $response->send();
   }
   else {
     $response->fatalError(3, [
-      'name'   => 'MySQL Error',
-      'errors' => $con->error_list
+      'name'   => 'MySQL Error'
     ]);
   }
 
