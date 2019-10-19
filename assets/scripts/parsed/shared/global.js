@@ -53,7 +53,7 @@ function parseWebpImages(parent) {
 
       if (eAttr !== null) {
         webp = JSON.parse(eAttr);
-        webp.fullPath = webp.path + '/' + webp.path.replace(/\/.+\//g, '');
+        webp.fullPath = webp.path;
 
         if (support === true) {
           webp.fullPath += '.webp';

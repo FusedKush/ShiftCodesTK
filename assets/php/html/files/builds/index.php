@@ -20,9 +20,9 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodestk.com">
     <meta property="og:url" content="https://shiftcodestk.com">
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/landing.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/landing.png">
+    <!-- Page Images -->
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/2.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/2.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
@@ -36,7 +36,7 @@
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
     <main class="no-header">
-      <section class="main" data-webp='{"path": "/assets/img/banners/landing", "alt": ".jpg", "type": "bg"}'>
+      <section class="main" data-webp='{"path": "/assets/img/banners/bl2/2", "alt": ".jpg", "type": "bg"}'>
         <div class="content-wrapper">
           <div class="brand">
             <img class="logo" src="/assets/img/logo.svg" width="3.5em" alt="ShiftCodesTK Logo">

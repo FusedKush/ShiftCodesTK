@@ -175,7 +175,7 @@ function execLocalScripts() {
 
 
         addClass(panel.base, id);
-        panel.bg.path += id;
+        panel.bg.path += "".concat(id, "/1");
         panel.base.setAttribute('data-webp', JSON.stringify(panel.bg)); // Title
 
         panel.title.innerHTML = shortStr; // Quote

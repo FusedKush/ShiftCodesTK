@@ -19,9 +19,10 @@
     <meta property="og:description" content="How to clear your system cache on PC, Xbox, or Playstation">
     <meta property="twitter:description" content="How to clear your system cache on PC, Xbox, or Playstation">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/help/clearing-your-system-cache">
-    <meta property="og:url" content="https://shiftcodestk.com/help/clearing-your-system-cache">
-    <!-- Page Thumbnail Image -->
+    <meta name="header:image" content="tps_3">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/3.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/3.png">
+    <!-- Page Images -->
     <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/help/clearing-your-system-cache.png">
     <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/help/clearing-your-system-cache.png">
     <!-- Page-Specific Browser Properties -->

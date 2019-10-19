@@ -21,9 +21,10 @@
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodestk.com/updates">
     <meta property="og:url" content="https://shiftcodestk.com/updates">
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/updates.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/updates.png">
+    <!-- Page Images -->
+    <meta name="header:image" content="bl2_5">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
