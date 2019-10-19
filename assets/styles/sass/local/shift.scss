@@ -270,10 +270,30 @@ main.shift-code-list {
       overflow: hidden;
 
       &.inactive { color: tpw(0.5); }
+      .day {
+        position: absolute;
+        @include pull(all);
+        @include flexbox($hAlign: s);
+        background-color: $site-color-light;
+        border-radius: 4px;
+        margin-top: 0;
+        transition-duration: 0.35s;
+        pointer-events: none;
+
+        &::before {
+          @include fill(true, tpb(0.2));
+        }
+      }
       &:not(.code) { padding: $padding; }
       &.code {
         display: grid;
         grid-template-columns: 1fr auto;
+      }
+      @include mouseState(noHover) {
+        .day { opacity: 1; }
+      }
+      @include mouseState(hover) {
+        .day { opacity: 0; }
       }
 
       a { word-break: break-all; }
