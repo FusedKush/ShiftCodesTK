@@ -297,7 +297,7 @@ main.shift-code-list {
         bottom: 0;
         right: 0;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: flex-start;
         background-color: #1c3652;
         border-radius: 4px;

@@ -273,7 +273,7 @@ main.shift-code-list {
       .day {
         position: absolute;
         @include pull(all);
-        @include flexbox($hAlign: s);
+        @include flexbox(s, s);
         background-color: $site-color-light;
         border-radius: 4px;
         margin-top: 0;
