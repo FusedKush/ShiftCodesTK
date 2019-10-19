@@ -257,6 +257,7 @@ main.shift-code-list {
       padding: 8px;
 
       &:not(.can-split) { @include fullWidth; }
+      &.can-split       { @include flexbox(none, none, $direction: c); }
 
       @media screen and (max-width: 380px) { @include fullWidth; }
     }
@@ -288,6 +289,9 @@ main.shift-code-list {
       &.code {
         display: grid;
         grid-template-columns: 1fr auto;
+      }
+      @at-root .shift-code .body .section.can-split .content {
+        flex: 1;
       }
       @include mouseState(noHover) {
         .day { opacity: 1; }
