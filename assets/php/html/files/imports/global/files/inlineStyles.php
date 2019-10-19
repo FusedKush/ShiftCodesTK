@@ -1,7 +1,7 @@
 <style id="startup">
   @media screen and (max-width: 474px) {
-    header.main .intro   { height: 30vh; }
-    main:not(.no-header) { min-height: 70vh; }
+    header.main .intro   { height: calc(30vh + 32px); }
+    main:not(.no-header) { min-height: calc(70vh - 32px); }
   }
   @media screen and (min-width: 475px) {
     header.main .intro   { height: calc(30vh + 64px); }
