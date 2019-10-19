@@ -26,7 +26,7 @@ var shiftUpdates = {
   update_time: '',
   interval: {
     id: 0,
-    frequency: 5000// 60000 * 2 // 1 Minute * Multiplier
+    frequency: 60000 * 2 // 1 Minute * Multiplier
   }
 };
     shiftUpdates.interval.set = function () {
