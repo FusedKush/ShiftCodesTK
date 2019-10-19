@@ -48,14 +48,14 @@
           <span class="icon">
             <span class="box-icon fas fa-toolbox"></span>
           </span>
-          <p>ShiftCodesTK is an exercise in quality over quantity, striving to provide an experience that is consistently accessible, reliable, and rewarding, instead of focusing on posessing the longest list of SHiFT Codes.</p>
+          <p>ShiftCodesTK is an exercise in quality over quantity, striving to provide an experience that is consistently accessible, reliable, and rewarding.</p>
         </div>
         <div class="section">
           <span class="icon">
             <span class="box-icon fas fa-laptop-code"></span>
           </span>
           <p>
-            ShiftCodesTK is also a showcase of everything the developer has learned since his introduction into the world of Web Development, and has been shaped by an ever-expanding understanding of the various Web Development principles, guidelines, and standards.
+            ShiftCodesTK is also a personal Web Development playground, and has been shaped by an ever-expanding understanding of the various Web Development principles, guidelines, and standards.
           </p>
         </div>
         <div class="section">
