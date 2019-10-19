@@ -170,7 +170,7 @@ function getCodes() {
         var des = getClass(e.labels, 'basic');
         getClass(e.header, 'reward').innerHTML = rew;
 
-        if (rew.search('Golden Key') == -1) {
+        if (rew.search('\\d+ Golden Key') != 0) {
           des.childNodes[0].innerHTML = 'Rare SHiFT Code';
           updateLabel(des, 'Rare SHiFT Code with an uncommon reward');
         }
