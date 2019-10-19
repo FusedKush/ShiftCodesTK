@@ -69,6 +69,28 @@
             <p><em><b>Note:</b>&nbsp;One or more files may fail to verify. This is normal for most Steam games, as the files that fail to verify are local configuration files that should not be replaced during the process. You can safely ignore this message.</em></p>
           </div>
         </section>
+        <section class="dropdown-panel" id="epic">
+          <button class="header">
+            <div class="wrapper">
+              <div class="title">
+                <div class="string">
+                  <h2 class="primary">Epic Games Launcher</h2>
+                </div>
+              </div>
+              <div class="indicator">
+                <span class="fas fa-chevron-right"></span>
+              </div>
+            </div>
+          </button>
+          <div class="body content-container">
+            <p>Instead of clearing your cache in the Epic Games Launcher, you can instead verify the integrity of the cache and automatically conduct the necessary repairs by performing the following steps:</p>
+            <ol class="styled">
+              <li>Navigate to the game in your library</li>
+              <li>Select the&nbsp;<strong>gear icon</strong>&nbsp;next to the&nbsp;<em>Launch</em>&nbsp;button.</li>
+              <li>Select&nbsp;<strong>Verify</strong>.</li>
+            </ol>
+          </div>
+        </section>
         <section class="dropdown-panel" id="xb1">
           <button class="header">
             <div class="wrapper">
@@ -175,5 +197,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
+    <script async src="/assets/scripts/min/local/help/clearing-your-system-cache.min.js?v=<?php echo $svQueryString; ?>"></script>
   </body>
 </html>
