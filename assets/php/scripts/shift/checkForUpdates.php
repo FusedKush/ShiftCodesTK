@@ -12,6 +12,7 @@
   foreach ($timestamps as $ts) {
     $col = "${ts}_time";
     $sql = $con->prepare("SELECT
+                            timezone,
                             ${col},
                             game_id
                           FROM
@@ -23,10 +24,19 @@
                                           shift_codes)");
     if ($sql) {
       $data = array_fill_keys(['timestamp', 'game_id'], '');
+      $tz = '';
       $sql->execute();
       $sql->store_result();
-      $sql->bind_result($data['timestamp'], $data['game_id']);
+      $sql->bind_result($tz, $data['timestamp'], $data['game_id']);
       $sql->fetch();
+
+      // Format Timestamp
+      (function () use(&$data, &$tz) {
+        $val = &$data['timestamp'];
+        $date = new DateTime($val, new DateTimeZone(timezone_name_from_abbr($tz)));
+        $val = $date->format('c');
+      })();
+
       $response->addPayload($data, $col);
     }
     else {

@@ -141,72 +141,115 @@ function getCodes () {
       })();
       // Labels, Dates, Progress Bar
       (function () {
-        function getFDate(date = 'now') {
-          return getDate('m-d-y', '/', date);
+        let dateFormat = 'monthN date, year';
+
+        function getFDate(date = false) {
+          return datetime(dateFormat, date);
         }
 
-        let expField = getField('exp');
-        // Dates
         let today = getFDate();
-        let rel = getFDate(code.rel_date);
-        let exp = (function () {
-          let ex = code.exp_date;
+        let names = ['rel', 'exp'];
+        let events = {
+          rel: 'new',
+          exp: 'exp'
+        };
+        let dates = {
+          today: getFDate()
+        };
+          (function () {
+            for (let n of names) {
+              dates[n] = {};
+              dates[n].origin = code[`${n}_date`];
+              dates[n].form = getFDate(dates[n].origin);
+              dates[n].str = (function () {
+                let o = dates[n].origin;
 
-          if (ex === null) {
-            addClass(expField, 'inactive');
-            return 'N/A';
+                if (o) {
+                  if (o.search('00:00:00') != -1) {
+                    return dates[n].form;
+                  }
+                  else {
+                    return datetime(`${dateFormat} @ hour12:minute ampm`, o);
+                  }
+                }
+                else {
+                  return 'N/A';
+                }
+              })();
+            }
+          })();
+
+        // Panel Class, Labels, & Fields
+        for (let n of names) {
+          let d = dates[n];
+          let field = getField(n);
+
+          function set (label, str = d.str) {
+            field.innerHTML += str;
+            updateLabel(field, label);
+          }
+
+          if (d.origin && dates.today == d.form) {
+            addClass(panel, events[n]);
           }
           else {
-            return getFDate(ex);
+            e.labels.removeChild(getClass(e.labels, events[n]));
           }
-        })();
 
-        // Labels
-        if (today == rel) { addClass(panel, 'new'); }
-        else              { e.labels.removeChild(getClass(e.labels, 'new')); }
-        if (today == exp) { addClass(panel, 'exp'); }
-        else              { e.labels.removeChild(getClass(e.labels, 'exp')); }
-        // Date Fields
-        getField('rel').innerHTML = rel;
-        expField.innerHTML = exp;
+          if (d.origin) {
+            let relative = dateRel(d.origin);
+
+            function getLabel (string) {
+              return string.replace(datetime('monthN', d.form), datetime('monthL', d.form));
+            }
+
+            if (relative) {
+              let day = copyElm(field);
+              let str = `${relative}, ${d.str}`;
+
+              addClass(day, 'day');
+              day.innerHTML = `<span>${d.str.replace(datetime(dateFormat, d.origin), relative)}</span>`;
+              field.appendChild(day);
+              set(getLabel(str), str);
+            }
+            else {
+              set(getLabel(d.str));
+            }
+          }
+          else {
+            addClass(field, 'inactive');
+            set('No Expiration Date');
+          }
+        }
         // Progress Bar
         (function () {
           let pb = getClass(e.header, 'progress-bar');
+          let exp = dates.exp.origin;
 
-          function getDif (start, end) {
-            let date = {
-              start: new Date(start),
-              end: new Date(end)
-            };
-            let dif = Math.abs(date.end.getTime() - date.start.getTime());
-
-            return Math.ceil(dif / (1000 * 3600 * 24));
-          }
-          function update (percent, label) {
-            updateProgressBar(pb, percent, { useWidth: true });
+          function update (val, label) {
+            updateProgressBar(pb, val, { useWidth: true });
             updateLabel(pb, label);
           }
 
-          if (exp != 'N/A') {
-            let percent = (function () {
-              if (rel != exp) {
-                return Math.round((getDif(today, rel) / getDif(exp, rel)) * 100);
+          if (exp) {
+            let val = (function () {
+              let rel = dates.rel.origin;
+              let exp = dates.exp.origin;
+
+              if (dates.rel.form != dates.exp.form) {
+                return Math.round((dateDif(rel) / dateDif(rel, exp)) * 100);
               }
               else {
                 return 100;
               }
             })();
             let label = (function () {
-              let days = getDif(today, exp);
-                let plural = (function () {
-                  if (days != 1) { return 's'; }
-                  else           { return ''; }
-                })();
+              let dif = dateDif(exp);
 
-              return `${days} Day${plural} Left`;
+              return `${dif} Day${checkPlural(dif)} left`;
             })();
 
-            update(percent, label)
+            update(val, label);
           }
           else {
             update(0, 'No Expiration Date');

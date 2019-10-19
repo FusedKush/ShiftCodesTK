@@ -7,9 +7,9 @@
 
   $counts = [];
   $stmts = [
-    'total'    => '(exp_date >= CURRENT_DATE() OR exp_date IS NULL)',
-    'new'      => 'rel_date = CURRENT_DATE()',
-    'expiring' => 'exp_date = CURRENT_DATE()'
+    'total'    => 'exp_date >= CURRENT_TIMESTAMP() OR exp_date IS NULL',
+    'new'      => 'Date(rel_date) = CURRENT_DATE()',
+    'expiring' => 'Date(exp_date) = CURRENT_DATE() AND Time(exp_date) >= CURRENT_TIME()'
   ];
 
   foreach ($stmts as $name => $stmt) {

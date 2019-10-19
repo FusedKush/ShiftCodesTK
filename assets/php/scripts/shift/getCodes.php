@@ -102,13 +102,13 @@
         $f = $params[$parameter];
         $str = '';
         $filters = [
-          'new'      => 'rel_date = CURRENT_DATE()',
-          'expiring' => 'exp_date = CURRENT_DATE()'
+          'new'      => 'Date(rel_date) = CURRENT_DATE()',
+          'expiring' => 'Date(exp_date) = CURRENT_DATE() AND TIME(exp_date) >= CURRENT_TIME()'
         ];
 
         // No filter
         if (strlen($f) == 0) {
-          $str .= '(exp_date >= CURRENT_DATE() OR exp_date IS NULL)';
+          $str .= '(exp_date >= CURRENT_TIMESTAMP() OR exp_date IS NULL)';
         }
         // Filters
         foreach ($filters as $name => $stmt) {
@@ -128,14 +128,15 @@
         $p = $params[$parameter];
         $options = [
           'default' =>
-            'CASE exp_date
+            'CASE Date(exp_date)
                 WHEN CURRENT_DATE THEN
-                    CASE rel_date
-                        WHEN CURRENT_DATE THEN 1
-                        ELSE 0
+                    CASE Date(rel_date)
+                        WHEN CURRENT_DATE THEN 2
+                        ELSE 1
                     END
+                ELSE 0
              END DESC,
-             CASE rel_date
+             CASE Date(rel_date)
                 WHEN CURRENT_DATE THEN 1
                 ELSE 0
              END DESC,
@@ -201,9 +202,29 @@
       $sql->bind_result(...$values);
 
       while ($sql->fetch()) {
+        $tz = '';
         $arr = [];
+
         foreach ($values as $key => $val) {
-          $arr[$key] = $val;
+          $field = $fields[$key];
+
+          if ($field == 'timezone') {
+            $tz = $val;
+          }
+          if (!strpos($field, 'date') && !strpos($field, 'time') || !$val) {
+            $v = $val;
+          }
+          else {
+            if (strpos($val, '00:00:00')) {
+              $date = new DateTime($val);
+            }
+            else {
+              $date = new DateTime($val, new DateTimeZone(timezone_name_from_abbr($tz)));
+            }
+
+            $v = $date->format('c');
+          }
+          $arr[$key] = $v;
         }
         $response->addPayload(array_combine($fields, $arr));
       }

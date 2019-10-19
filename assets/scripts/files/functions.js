@@ -3,6 +3,117 @@ var globalFunctionsReady = true;
 
 var pbIntervals = {};
 
+// Error Handling
+function thrownTryError (error, behavior) {
+  if (behavior == 'silent') {
+    console.error(error);
+    return false;
+  }
+  else if (behavior == 'throw') {
+    throw error;
+  }
+  else if (behavior == 'ignore') {
+    return false;
+  }
+  else {
+    error.message = `${error.message}\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ${behavior}`;
+    throw error;
+  }
+}
+function tryParseInt (int = null, behavior = 'silent') {
+  let error = new Error;
+    (function () {
+      error.name = 'parseInt Error';
+      error.message = `Not a valid number.\n\rInt: ${int}`;
+    })();
+  let result = parseInt(int);
+
+  if (!isNaN(result)) {
+    return result;
+  }
+  else {
+    return thrownTryError(error, behavior);
+  }
+}
+function tryJSONParse (string = null, behavior = 'silent') {
+  let error = new Error;
+    (function () {
+      error.name = 'JSONParse Error';
+      error.message = `Not a valid JSON string.\n\rString: ${string}`;
+    })();
+
+  try {
+    return JSON.parse(string);
+  }
+  catch (e) {
+    return thrownTryError(error, behavior);
+  }
+}
+function tryToRun(settings, currentAttempt = 1) {
+  let sets = (function () {
+    if (currentAttempt) {
+      let defaultSettings = {
+        function: function () {
+          return true;
+        },
+        attempts: 10,
+        delay: 250,
+        behavior: 'silent',
+        logCatch: false,
+        customError: false
+      };
+
+      return mergeObj(defaultSettings, settings);
+    }
+    else {
+      return settings;
+    }
+  })();
+
+  function failed() {
+    if (currentAttempt <= sets.attempts || !sets.attempts) {
+      setTimeout(function () {
+        tryToRun(settings, currentAttempt + 1);
+      }, sets.delay);
+    }
+    else {
+      let error = new Error;
+          error.name = 'tryToRun Error';
+
+      if (sets.customError !== false) {
+        error.message = sets.customError;
+      }
+      else {
+        error.message = `Max Tries Exceeded.\r\n\r\nSettings: ${JSON.stringify(sets)}`;
+      }
+      if (sets.logCatch) {
+        error.message += `\r\n\r\nCaught Error: ${e}`;
+      }
+
+      if (sets.behavior == 'throw') {
+        throw error;
+      }
+      else if (sets.behavior == 'silent') {
+        console.error(error);
+        return false;
+      }
+      else if (sets.behavior == 'ignore') {
+        return false;
+      }
+    }
+  }
+
+  try {
+    let result = sets.function();
+
+    if (!result) {
+      failed();
+    }
+  }
+  catch (e) {
+    failed();
+  }
+};
 // Toggle element states
 function disenable (element, state, optTx) {
   let tabIndexes = {
@@ -111,26 +222,179 @@ function newAjaxRequest (properties) {
     ajaxError(`File path was not specified.\n\rProperties: ${JSON.stringify(props)}`);
   }
 }
-// Handles Date Requests
-function getDate (format = 'y-m-d', separator = '-', date = 'now') {
-  let d = {};
-    (function () {
-      if (date == 'now') { d.base = new Date(); }
-      else               { d.base = new Date(date); }
+// Handles DateTime Requests
+function datetime (format = 'y-m-d', useDate = false, utc = 'check') {
+  let base = (function () {
+    if (!useDate) {
+      return new Date();
+    }
+    else {
+      let d = new Date(useDate);
 
-      d.year  = d.base.getFullYear();
-      d.month = ('0' + (d.base.getMonth() + 1)).slice(-2);
-      d.day   = ('0' + d.base.getDate()).slice(-2);
+      if (d != 'Invalid Date') {
+        return d;
+      }
+      else {
+        return false;
+      }
+    }
+  })();
+
+  if (base !== false) {
+    function addLeading (val) {
+      return `0${val}`.slice(-2);
+    }
+    function replaceDate (match) {
+      let str = date[match];
+
+      if (str) { return str; }
+      else     { return match; }
+    }
+
+    let vals = (function () {
+      if (utc == 'check') {
+          // Not Now || Time is Specified                   && Time is not default
+        if (!useDate || useDate.search('(\\d{2}\\:)') != -1 && useDate.search('00:00:00') == -1) {
+          utc = false;
+        }
+        else {
+          utc = true;
+        }
+      }
+
+      if (utc) {
+        return {
+          year: base.getUTCFullYear(),
+          month: base.getUTCMonth(),
+          date: base.getUTCDate(),
+          day: base.getUTCDay(),
+          hour: base.getUTCHours(),
+          minute: base.getUTCMinutes(),
+          seconds: base.getUTCSeconds()
+        };
+      }
+      else {
+        return {
+          year: base.getFullYear(),
+          month: base.getMonth(),
+          date: base.getDate(),
+          day: base.getDay(),
+          hour: base.getHours(),
+          minute: base.getMinutes(),
+          seconds: base.getSeconds()
+        };
+      }
     })();
-  let formats = {
-    'y': 'year',
-    'm': 'month',
-    'd': 'day'
-  };
+    let templates = {
+      'tmp-full': 'monthN date, year hour12:minute ampm',
+      'tmp-date': 'month/date/year',
+      'tmp-time12': 'hour12:minute ampm',
+      'tmp-time24': 'hour24:minute'
+    }
+    let def = {
+      // String definitions
+      days: {
+        0: 'Sunday',
+        1: 'Monday',
+        2: 'Tuesday',
+        3: 'Wednesday',
+        4: 'Thursday',
+        5: 'Friday',
+        6: 'Saturday'
+      },
+      months: {
+        0: 'January',
+        1: 'Feburary',
+        2: 'March',
+        3: 'April',
+        4: 'May',
+        5: 'June',
+        6: 'July',
+        7: 'August',
+        8: 'September',
+        9: 'October',
+        10: 'November',
+        11: 'December'
+      }
+    };
+    let date = {
+      year: vals.year,
+      month: addLeading(vals.month + 1),
+      monthN: def.months[vals.month].slice(0, 3),
+      monthL: def.months[vals.month],
+      date: addLeading(vals.date),
+      day: vals.day,
+      dayN: def.days[vals.day].slice(0, 3),
+      dayL: def.days[vals.day],
+      hour12: (function () {
+        let h = vals.hour;
 
-  return d[formats[format.slice(0, 1)]] + separator +
-         d[formats[format.slice(2, 3)]] + separator +
-         d[formats[format.slice(4, 5)]];
+        if (h > 1 && h <= 12) { return h; }
+        else if (h > 12)      { return h - 12; }
+        else                  { return 12; }
+      })(),
+      hour24: vals.hour,
+      minute: addLeading(vals.minute),
+      second: addLeading(vals.second),
+      ampm: (function () {
+        let h = vals.hour;
+
+        if (h <= 12) { return 'AM'; }
+        else         { return 'PM'; }
+      })(),
+      js: base, // JS Date Object
+      iso: base.toISOString() // ISO 8601 String
+    }
+    let regex = new RegExp(`(\\w+)`, 'g');
+
+    if (templates[format]) {
+      return datetime(templates[format], useDate);
+    }
+    else if (format == 'js') {
+      return date.js;
+    }
+    else {
+      return format.replace(regex, replaceDate);
+    }
+  }
+  else {
+    return false;
+  }
+}
+function dateDif (date, start = false) {
+  let dates = {};
+  let args = {
+    'date': date,
+    'start': start
+  };
+  let names = Object.keys(args);
+
+  for (let i = 0; i < names.length; i++) {
+    let name = names[i];
+    let arg = args[name];
+    let d = datetime('js', arg);
+
+    dates[name] = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  let dif = Math.abs(dates.start - dates.date);
+
+  return Math.ceil(dif / (1000 * 3600 * 24));
+}
+function dateRel (date, start = false) {
+  let dates = {
+    date: datetime('tmp-date', date),
+    start: datetime('tmp-date', start)
+  };
+  let dif = dateDif(dates.date, dates.start);
+
+  if (dif == 0)                   { return 'Today'; }
+  else if (dif == 1) {
+    if (dates.start > dates.date) { return 'Yesterday'; }
+    else                          { return 'Tomorrow'; }
+  }
+  else if (dif < 7 && dif > -7)   { return datetime('dayL', date); }
+  else                            { return false; }
 }
 // Generates a random number between two values
 function randomNum (min, max) {
@@ -505,117 +769,6 @@ function deleteCookie(cookie, type = 'immediately') {
   if (type == 'immediately') { del(0); }
   else                       { del(false); }
 }
-// Error Handling
-function thrownTryError (error, behavior) {
-  if (behavior == 'silent') {
-    console.error(error);
-    return false;
-  }
-  else if (behavior == 'throw') {
-    throw error;
-  }
-  else if (behavior == 'ignore') {
-    return false;
-  }
-  else {
-    error.message = `${error.message}\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ${behavior}`;
-    throw error;
-  }
-}
-function tryParseInt (int = null, behavior = 'silent') {
-  let error = new Error;
-    (function () {
-      error.name = 'parseInt Error';
-      error.message = `Not a valid number.\n\rInt: ${int}`;
-    })();
-  let result = parseInt(int);
-
-  if (!isNaN(result)) {
-    return result;
-  }
-  else {
-    return thrownTryError(error, behavior);
-  }
-}
-function tryJSONParse (string = null, behavior = 'silent') {
-  let error = new Error;
-    (function () {
-      error.name = 'JSONParse Error';
-      error.message = `Not a valid JSON string.\n\rString: ${string}`;
-    })();
-
-  try {
-    return JSON.parse(string);
-  }
-  catch (e) {
-    return thrownTryError(error, behavior);
-  }
-}
-function tryToRun(settings, currentAttempt = 1) {
-  let sets = (function () {
-    if (currentAttempt) {
-      let defaultSettings = {
-        function: function () {
-          return true;
-        },
-        attempts: 10,
-        delay: 250,
-        behavior: 'silent',
-        logCatch: false,
-        customError: false
-      };
-
-      return mergeObj(defaultSettings, settings);
-    }
-    else {
-      return settings;
-    }
-  })();
-
-  function failed() {
-    if (currentAttempt <= sets.attempts || !sets.attempts) {
-      setTimeout(function () {
-        tryToRun(settings, currentAttempt + 1);
-      }, sets.delay);
-    }
-    else {
-      let error = new Error;
-          error.name = 'tryToRun Error';
-
-      if (sets.customError !== false) {
-        error.message = sets.customError;
-      }
-      else {
-        error.message = `Max Tries Exceeded.\r\n\r\nSettings: ${JSON.stringify(sets)}`;
-      }
-      if (sets.logCatch) {
-        error.message += `\r\n\r\nCaught Error: ${e}`;
-      }
-
-      if (sets.behavior == 'throw') {
-        throw error;
-      }
-      else if (sets.behavior == 'silent') {
-        console.error(error);
-        return false;
-      }
-      else if (sets.behavior == 'ignore') {
-        return false;
-      }
-    }
-  }
-
-  try {
-    let result = sets.function();
-
-    if (!result) {
-      failed();
-    }
-  }
-  catch (e) {
-    failed();
-  }
-};
 // Update a Progress Bar
 function updateProgressBar (progressBar = null, value = 100, options = {}) {
   let defaultOptions = {
@@ -623,7 +776,8 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
     intervalDelay: 1000,
     intervalIncrement: 5,
     start: null,
-    resetOnZero: false
+    resetOnZero: false,
+    useWidth: false
   };
 
   if (progressBar !== null && progressBar.getAttribute('role') == 'progressbar') {
@@ -704,4 +858,9 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
 
     throw error;
   }
+}
+// Determine if a plural letter is needed
+function checkPlural (val, letter = 's') {
+  if (val != 1) { return 's'; }
+  else          { return ''; }
 }
