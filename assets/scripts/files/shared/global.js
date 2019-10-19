@@ -626,7 +626,7 @@ function checkShiftUpdate (firstRun = false) {
           let name = shiftNames[g];
           let url = `/${g}` == window.location.pathname;
 
-          if (r != l && !firstRun) {
+          if (r > l && !firstRun) {
             if (time == 'creation' || url) {
               shiftUpdates.interval.clear();
               newToast({
