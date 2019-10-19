@@ -104,42 +104,6 @@ function indexLinkNoHoverEvent(event) {
     indexIsHover = false;
     indexStringScrollInterval = setInterval(indexPrimaryStringScroll, indexStringScrollIntervalDelay);
   }
-}
-
-function addLandingFlags() {
-  if (typeof shiftBadgeCount != 'undefined') {
-    (function () {
-      var flags = {
-        'template': document.getElementById('flag_template')
-      };
-      var buttons = getClasses(getTag(document, 'main'), 'button');
-      clearInterval(addLandingFlagsRetry);
-
-      for (i = 0; i < buttons.length; i++) {
-        var button = buttons[i];
-        var regex = new RegExp('button|\\s', 'g');
-        var buttonName = button.className.replace(regex, '');
-
-        if (shiftBadgeCount["new"][buttonName] > 0 || shiftBadgeCount.expiring[buttonName] > 0) {
-          (function () {
-            flags.root = flags.template.content.children[0].cloneNode(true);
-            flags["new"] = flags.root.getElementsByClassName('flag new')[0];
-            flags.exp = flags.root.getElementsByClassName('flag exp')[0];
-          })();
-
-          if (shiftBadgeCount["new"][buttonName] == 0) {
-            flags["new"].remove();
-          }
-
-          if (shiftBadgeCount.expiring[buttonName] == 0) {
-            flags.exp.remove();
-          }
-
-          button.appendChild(flags.root);
-        }
-      }
-    })();
-  }
 } // Immediate Functions & Event Listeners
 
 
@@ -262,7 +226,54 @@ function execLocalScripts() {
     })(); // Add landing flags
 
 
-    addLandingFlagsRetry = setInterval(addLandingFlags, 250);
+    tryToRun({
+      attempts: false,
+      delay: 250,
+      "function": function _function() {
+        if (shiftStats) {
+          var _ret2 = function () {
+            var flags = {
+              'template': document.getElementById('flag_template')
+            };
+            var buttons = getClasses(getTag(document, 'main'), 'button');
+
+            for (i = 0; i < buttons.length; i++) {
+              var button = buttons[i];
+              var regex = new RegExp('button|\\s', 'g');
+              var name = button.className.replace(regex, '');
+              var n = shiftStats["new"][name];
+              var e = shiftStats.expiring[name];
+
+              if (n > 0 || e > 0) {
+                (function () {
+                  flags.root = flags.template.content.children[0].cloneNode(true);
+                  flags["new"] = flags.root.getElementsByClassName('flag new')[0];
+                  flags.exp = flags.root.getElementsByClassName('flag exp')[0];
+                })();
+
+                if (n == 0) {
+                  flags["new"].remove();
+                }
+
+                if (e == 0) {
+                  flags.exp.remove();
+                }
+
+                button.appendChild(flags.root);
+              }
+            }
+
+            return {
+              v: true
+            };
+          }();
+
+          if (_typeof(_ret2) === "object") return _ret2.v;
+        } else {
+          return false;
+        }
+      }
+    });
   } else {
     setTimeout(execLocalScripts, 250);
   }

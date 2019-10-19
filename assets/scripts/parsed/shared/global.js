@@ -15,25 +15,18 @@ var focusLockedElement = null;
 var shiftStats = false;
 var hashRequests = {};
 var shiftNames = {
-  "long": {
-    1: 'Borderlands 2',
-    2: 'Borderlands: The Pre-Sequel',
-    3: 'Borderlands: GOTY',
-    4: 'Borderlands 3'
-  },
-  "short": {
-    1: 'BL2',
-    2: 'TPS',
-    3: 'BL1',
-    4: 'BL3'
-  }
+  bl1: 'Borderlands: GOTY',
+  bl2: 'Borderlands 2',
+  bl3: 'Borderlands 3',
+  tps: 'Borderlands: The Pre-Sequel'
 };
 var shiftUpdates = {
   creation_time: '',
   update_time: '',
   interval: {
     id: 0,
-    frequency: 60000
+    frequency: 60000 * 2 // 1 Minute * Multiplier
+
   }
 };
 
@@ -673,13 +666,10 @@ function checkShiftUpdate() {
 
           var g = response[t].game_id; // Game ID
 
-          var name = shiftNames["long"][g];
+          var name = shiftNames[g];
+          var url = "/".concat(g) == window.location.pathname;
 
-          var _short = shiftNames["short"][g].toLowerCase();
-
-          var url = "/".concat(_short) == window.location.pathname;
-
-          if (r != l && !firstRun) {
+          if (r > l && !firstRun) {
             if (time == 'creation' || url) {
               shiftUpdates.interval.clear();
               newToast({
@@ -721,8 +711,7 @@ function checkShiftUpdate() {
                     if (url) {
                       return ' ';
                     } else {
-                      return "/".concat(_short);
-                      ;
+                      return "/".concat(g);
                     }
                   }(),
                   name: function () {
@@ -933,16 +922,6 @@ function execGlobalScripts() {
         separatorTemplate.remove();
         crumbTemplate.remove();
       }
-    })(); // Get SHiFT Badge count and update variable
-
-
-    (function () {
-      newAjaxRequest({
-        file: '/assets/php/scripts/shift/getAlerts.php',
-        callback: function callback(request) {
-          shiftBadgeCount = JSON.parse(request).response.alerts;
-        }
-      });
     })(); // Get SHiFT stats
 
 

@@ -290,11 +290,38 @@ main.shift-code-list {
       overflow: hidden; }
       .dropdown-panel.shift-code .body .content.inactive {
         color: rgba(255, 255, 255, 0.5); }
+      .dropdown-panel.shift-code .body .content .day {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        background-color: #1c3652;
+        border-radius: 4px;
+        margin-top: 0;
+        transition-duration: 0.35s;
+        pointer-events: none; }
+        .dropdown-panel.shift-code .body .content .day::before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          border-radius: inherit;
+          content: "";
+          background-color: rgba(0, 0, 0, 0.2); }
       .dropdown-panel.shift-code .body .content:not(.code) {
         padding: 8px; }
       .dropdown-panel.shift-code .body .content.code {
         display: grid;
         grid-template-columns: 1fr auto; }
+      .dropdown-panel.shift-code .body .content:not(:hover):not(:focus) .day {
+        opacity: 1; }
+      .dropdown-panel.shift-code .body .content:hover .day, .dropdown-panel.shift-code .body .content:focus .day {
+        opacity: 0; }
       .dropdown-panel.shift-code .body .content a {
         word-break: break-all; }
       .dropdown-panel.shift-code .body .content ul {

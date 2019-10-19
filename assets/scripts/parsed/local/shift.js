@@ -1,7 +1,7 @@
 var shiftProps = {};
 
 function updateShiftPager() {
-  var id = shiftProps.gameInfo.id;
+  var id = shiftProps.gameID;
   var pager = document.getElementById('shift_code_pager');
   var limit = shiftProps.limit;
   var total = getClasses(document.getElementById('shift_code_feed'), 'shift-code').length;
@@ -178,87 +178,125 @@ function getCodes() {
 
 
       (function () {
-        function getFDate() {
-          var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'now';
-          return getDate('m-d-y', '/', date);
-        }
+        var dateFormat = 'monthN date, year';
 
-        var expField = getField('exp'); // Dates
+        function getFDate() {
+          var date = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+          return datetime(dateFormat, date);
+        }
 
         var today = getFDate();
-        var rel = getFDate(code.rel_date);
+        var names = ['rel', 'exp'];
+        var events = {
+          rel: 'new',
+          exp: 'exp'
+        };
+        var dates = {
+          today: getFDate()
+        };
 
-        var exp = function () {
-          var ex = code.exp_date;
+        (function () {
+          var _loop = function _loop() {
+            var n = _names[_i5];
+            dates[n] = {};
+            dates[n].origin = code["".concat(n, "_date")];
+            dates[n].form = getFDate(dates[n].origin);
 
-          if (ex === null) {
-            addClass(expField, 'inactive');
-            return 'N/A';
-          } else {
-            return getFDate(ex);
+            dates[n].str = function () {
+              var o = dates[n].origin;
+
+              if (o) {
+                if (o.search('00:00:00') != -1) {
+                  return dates[n].form;
+                } else {
+                  return datetime("".concat(dateFormat, " @ hour12:minute ampm"), o);
+                }
+              } else {
+                return 'N/A';
+              }
+            }();
+          };
+
+          for (var _i5 = 0, _names = names; _i5 < _names.length; _i5++) {
+            _loop();
           }
-        }(); // Labels
+        })(); // Panel Class, Labels, & Fields
 
 
-        if (today == rel) {
-          addClass(panel, 'new');
-        } else {
-          e.labels.removeChild(getClass(e.labels, 'new'));
-        }
+        var _loop2 = function _loop2() {
+          var n = _names2[_i6];
+          var d = dates[n];
+          var field = getField(n);
 
-        if (today == exp) {
-          addClass(panel, 'exp');
-        } else {
-          e.labels.removeChild(getClass(e.labels, 'exp'));
-        } // Date Fields
+          function set(label) {
+            var str = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : d.str;
+            field.innerHTML += str;
+            updateLabel(field, label);
+          }
 
+          if (d.origin && dates.today == d.form) {
+            addClass(panel, events[n]);
+          } else {
+            e.labels.removeChild(getClass(e.labels, events[n]));
+          }
 
-        getField('rel').innerHTML = rel;
-        expField.innerHTML = exp; // Progress Bar
+          if (d.origin) {
+            var getLabel = function getLabel(string) {
+              return string.replace(datetime('monthN', d.form), datetime('monthL', d.form));
+            };
+
+            var relative = dateRel(d.origin);
+
+            if (relative) {
+              var day = copyElm(field);
+              var str = "".concat(relative, ", ").concat(d.str);
+              addClass(day, 'day');
+              day.innerHTML = "<span>".concat(d.str.replace(datetime(dateFormat, d.origin), relative), "</span>");
+              field.appendChild(day);
+              set(getLabel(str), str);
+            } else {
+              set(getLabel(d.str));
+            }
+          } else {
+            addClass(field, 'inactive');
+            set('No Expiration Date');
+          }
+        };
+
+        for (var _i6 = 0, _names2 = names; _i6 < _names2.length; _i6++) {
+          _loop2();
+        } // Progress Bar
+
 
         (function () {
           var pb = getClass(e.header, 'progress-bar');
+          var exp = dates.exp.origin;
 
-          function getDif(start, end) {
-            var date = {
-              start: new Date(start),
-              end: new Date(end)
-            };
-            var dif = Math.abs(date.end.getTime() - date.start.getTime());
-            return Math.ceil(dif / (1000 * 3600 * 24));
-          }
-
-          function update(percent, label) {
-            updateProgressBar(pb, percent, {
+          function update(val, label) {
+            updateProgressBar(pb, val, {
               useWidth: true
             });
             updateLabel(pb, label);
           }
 
-          if (exp != 'N/A') {
-            var percent = function () {
-              if (rel != exp) {
-                return Math.round(getDif(today, rel) / getDif(exp, rel) * 100);
+          if (exp) {
+            var val = function () {
+              var rel = dates.rel.origin;
+              var exp = dates.exp.origin;
+
+              if (dates.rel.form != dates.exp.form) {
+                return Math.round(dateDif(rel) / dateDif(rel, exp) * 100);
               } else {
                 return 100;
               }
             }();
 
             var label = function () {
-              var days = getDif(today, exp);
-
-              var plural = function () {
-                if (days != 1) {
-                  return 's';
-                } else {
-                  return '';
-                }
-              }();
-
-              return "".concat(days, " Day").concat(plural, " Left");
+              var dif = dateDif(exp);
+              return "".concat(dif, " Day").concat(checkPlural(dif), " left");
             }();
 
-            update(percent, label);
+            update(val, label);
           } else {
             update(0, 'No Expiration Date');
             addClass(pb, 'inactive');
@@ -311,8 +349,8 @@ function getCodes() {
     (function () {
       var platforms = ['pc', 'xbox', 'ps'];
 
-      for (var _i5 = 0; _i5 < platforms.length; _i5++) {
-        var platform = platforms[_i5];
+      for (var _i7 = 0; _i7 < platforms.length; _i7++) {
+        var platform = platforms[_i7];
         var field = getClass(e.body, platform);
         var codeVal = code["code_".concat(platform)];
         getClass(field, 'title').innerHTML = code["platforms_".concat(platform)];
@@ -365,8 +403,8 @@ function getCodes() {
       count.fetched = response.payload.length;
 
       if (count.fetched > 0) {
-        for (var _i6 = 0; _i6 < count.fetched; _i6++) {
-          addCode(codes[_i6]);
+        for (var _i8 = 0; _i8 < count.fetched; _i8++) {
+          addCode(codes[_i8]);
         }
       } else {
         clearList();
@@ -395,7 +433,7 @@ function getCodes() {
     start: 20
   });
   newAjaxRequest({
-    file: "/assets/php/scripts/shift/getCodes\n           ?gameID=".concat(shiftProps.gameInfo.id, "\n           &order=").concat(shiftProps.order, "\n           &filter=").concat(shiftProps.filter.join(', '), "\n           &limit=").concat(shiftProps.limit, "\n           &offset=").concat(shiftProps.offset, "\n           &hash=").concat(shiftProps.hash),
+    file: "/assets/php/scripts/shift/getCodes\n           ?gameID=".concat(shiftProps.gameID, "\n           &order=").concat(shiftProps.order, "\n           &filter=").concat(shiftProps.filter.join(', '), "\n           &limit=").concat(shiftProps.limit, "\n           &offset=").concat(shiftProps.offset, "\n           &hash=").concat(shiftProps.hash),
     callback: fetchCodes
   });
 } // Initial Functions
@@ -406,7 +444,7 @@ shiftScriptsInit = setInterval(function () {
     clearInterval(shiftScriptsInit);
     var header = document.getElementById('shift_header');
     shiftProps = {
-      gameInfo: tryJSONParse(document.body.getAttribute('data-shift')),
+      gameID: window.location.pathname.slice(1),
       order: 'default',
       filter: [],
       limit: 10,
@@ -439,7 +477,7 @@ shiftScriptsInit = setInterval(function () {
         delay: 500,
         "function": function _function() {
           if (shiftStats) {
-            var id = shiftProps.gameInfo.id; // Setup badges
+            var id = shiftProps.gameID; // Setup badges
 
             (function () {
               var regex = new RegExp('\\d{1,2}');
@@ -450,8 +488,8 @@ shiftScriptsInit = setInterval(function () {
               };
               var badgeNames = Object.keys(badges);
 
-              var _loop = function _loop(_i7) {
-                var bn = badgeNames[_i7];
+              var _loop3 = function _loop3(_i9) {
+                var bn = badgeNames[_i9];
                 var b = badges[bn];
                 var c = shiftStats[bn][id];
 
@@ -500,8 +538,8 @@ shiftScriptsInit = setInterval(function () {
                 }
               };
 
-              for (var _i7 = 0; _i7 < badgeNames.length; _i7++) {
-                _loop(_i7);
+              for (var _i9 = 0; _i9 < badgeNames.length; _i9++) {
+                _loop3(_i9);
               }
             })(); // Setup pager
 
@@ -520,8 +558,8 @@ shiftScriptsInit = setInterval(function () {
       var dropdown = document.getElementById('shift_header_sort_dropdown');
       var options = getTags(dropdown, 'button');
 
-      for (var _i8 = 0; _i8 < options.length; _i8++) {
-        options[_i8].addEventListener('click', function (e) {
+      for (var _i10 = 0; _i10 < options.length; _i10++) {
+        options[_i10].addEventListener('click', function (e) {
           var attr = this.getAttribute('aria-pressed');
 
           if (!attr || attr == 'false') {

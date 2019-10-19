@@ -89,60 +89,64 @@ sidebarMarkup(); // Check for Current Page and update Sidebar Links
 
 
 (function () {
-  tryToRun({
-    attempts: false,
-    delay: 500,
-    "function": function _function() {
-      if (shiftStats) {
-        var _ret = function () {
-          var links = document.getElementById('sidebar').getElementsByTagName('a');
-          var template = document.getElementById('sidebar_template_badges').content.children;
+  var t;
+  t = setInterval(function () {
+    if (tryToRun) {
+      clearInterval(t);
+      tryToRun({
+        attempts: false,
+        delay: 500,
+        "function": function _function() {
+          if (shiftStats) {
+            var _ret = function () {
+              var links = getClasses(document.getElementById('sidebar'), 'use-badge');
+              var template = document.getElementById('sidebar_template_badges').content.children;
 
-          for (i = 0; i < links.length; i++) {
-            var badgeID = links[i].getAttribute('data-use-badges');
-            var n = shiftStats["new"][badgeID];
-            var e = shiftStats.expiring[badgeID];
+              for (i = 0; i < links.length; i++) {
+                var badgeID = links[i].pathname.slice(1);
+                var n = shiftStats["new"][badgeID];
+                var e = shiftStats.expiring[badgeID];
 
-            if (badgeID) {
-              if (n > 0 || e > 0) {
-                (function () {
-                  var link = links[i];
-                  var badges = {};
-
+                if (n > 0 || e > 0) {
                   (function () {
-                    badges.base = template[0].cloneNode(true);
-                    badges["new"] = template[1].cloneNode(true);
-                    badges.exp = template[2].cloneNode(true);
+                    var link = links[i];
+                    var badges = {};
+
+                    (function () {
+                      badges.base = copyElm(template[0]);
+                      badges["new"] = copyElm(template[1]);
+                      badges.exp = copyElm(template[2]);
+                    })();
+
+                    var badgeBase = void 0;
+                    link.appendChild(badges.base);
+                    badgeBase = link.getElementsByClassName('badges')[0];
+
+                    if (n > 0) {
+                      badgeBase.appendChild(badges["new"]);
+                    }
+
+                    if (e > 0) {
+                      badgeBase.appendChild(badges.exp);
+                    }
                   })();
-
-                  var badgeBase = void 0;
-                  link.appendChild(badges.base);
-                  badgeBase = link.getElementsByClassName('badges')[0];
-
-                  if (n > 0) {
-                    badgeBase.appendChild(badges["new"]);
-                  }
-
-                  if (e > 0) {
-                    badgeBase.appendChild(badges.exp);
-                  }
-                })();
+                }
               }
-            }
+
+              document.getElementById('sidebar_template_badges').remove();
+              return {
+                v: true
+              };
+            }();
+
+            if (_typeof(_ret) === "object") return _ret.v;
+          } else {
+            return false;
           }
-
-          document.getElementById('sidebar_template_badges').remove();
-          return {
-            v: true
-          };
-        }();
-
-        if (_typeof(_ret) === "object") return _ret.v;
-      } else {
-        return false;
-      }
+        }
+      });
     }
-  });
+  }, 500);
 })(); // *** Event Listeners ***
 
 
