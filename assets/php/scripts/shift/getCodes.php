@@ -146,7 +146,7 @@
           'new' =>
             'rel_date DESC',
           'old' =>
-            'exp_date DESC'
+            'rel_date ASC'
           ];
 
         foreach ($options as $value => $string) {
