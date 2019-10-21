@@ -11,7 +11,112 @@ var defaultDropdownPanelLabels = {
   "false": 'Expand Panel',
   "true": 'Collapse Panel'
 };
-var focusLockedElement = null;
+var focusLock = {
+  set: function set(elements, callback) {
+    focusLock.active = {};
+    focusLock.active.elements = elements;
+    focusLock.active.callback = callback;
+  },
+  clear: function clear() {
+    focusLock.active = false;
+  },
+  handle: function handle(event) {
+    var type = event.type;
+    var target = event.target;
+
+    if (focusLock.active) {
+      var matches = function () {
+        var arr = [];
+        var elms = focusLock.active.elements; // Global matches
+
+        arr.push(document.getElementById('alert_popup_feed')); // Specified matches
+
+        if (elms.constructor === Array) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = elms[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var match = _step.value;
+              arr.push(match);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        } else {
+          arr.push(elms);
+        }
+
+        return arr;
+      }();
+
+      if (type == 'click') {
+        do {
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = matches[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var match = _step2.value;
+
+              if (target == match) {
+                return;
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
+          target = target.parentNode;
+        } while (target);
+
+        focusLock.active.callback();
+      } else if (type == 'keydown') {
+        var fs = getElements(focusLockedElement.element, 'focusables');
+        var first = fs[0];
+        var last = fs[fs.length - 1];
+
+        if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
+          event.preventDefault();
+
+          if (target == first) {
+            last.focus();
+          } else if (target == last) {
+            first.focus();
+          }
+        } else if (event.key == 'Escape') {
+          event.preventDefault();
+          focusLock.active.callback();
+        }
+      }
+    }
+  },
+  active: false
+};
 var shiftStats = false;
 var hashRequests = {};
 var shiftNames = {
@@ -543,47 +648,6 @@ function setupDropdownMenu(dropdown) {
       console.error('Dropdown Menu "' + props.id + '" is missing the following required properties: "' + missingProps.join('", "') + '". Dropdown Menu Creation Failed.');
     }
   })();
-} // Control focus within element
-
-
-function handleFocusLock(event) {
-  var type = event.type;
-
-  if (focusLockedElement !== null) {
-    var target = event.target;
-    var matches = [focusLockedElement.element, document.getElementById('alert_popup_feed')];
-
-    if (type == 'click') {
-      do {
-        for (var _i4 = 0; _i4 < matches.length; _i4++) {
-          if (target == matches[_i4]) {
-            return;
-          }
-        }
-
-        target = target.parentNode;
-      } while (target);
-
-      focusLockedElement.callback();
-    } else if (type == 'keydown') {
-      var fs = getElements(focusLockedElement.element, 'focusables');
-      var first = fs[0];
-      var last = fs[fs.length - 1];
-
-      if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
-        event.preventDefault();
-
-        if (target == first) {
-          last.focus();
-        } else if (target == last) {
-          first.focus();
-        }
-      } else if (event.key == 'Escape') {
-        event.preventDefault();
-        focusLockedElement.callback();
-      }
-    }
-  }
 } // Copy the contents of the field to the clipboard
 
 
@@ -594,7 +658,7 @@ function copyToClipboard(event) {
     var treeJumps = parseInt(button.getAttribute('data-copy-target'));
     var pos = button;
 
-    for (var _i5 = 0; _i5 < treeJumps; _i5++) {
+    for (var _i4 = 0; _i4 < treeJumps; _i4++) {
       pos = pos.parentNode;
     }
 
@@ -627,8 +691,8 @@ function copyToClipboard(event) {
 function fixClickableContent(e) {
   var children = e.childNodes;
 
-  for (var _i6 = 0; _i6 < children.length; _i6++) {
-    var child = children[_i6];
+  for (var _i5 = 0; _i5 < children.length; _i5++) {
+    var child = children[_i5];
 
     if (child.nodeName == '#text') {
       var span = document.createElement('span');
@@ -671,7 +735,7 @@ function checkShiftUpdate() {
         response = response.payload;
 
         var _loop2 = function _loop2() {
-          var time = _times[_i7];
+          var time = _times[_i6];
           var t = "".concat(time, "_time"); // creation_time
 
           var r = response[t].timestamp; // Server Timestamp
@@ -750,7 +814,7 @@ function checkShiftUpdate() {
           shiftUpdates[t] = r;
         };
 
-        for (var _i7 = 0, _times = times; _i7 < _times.length; _i7++) {
+        for (var _i6 = 0, _times = times; _i6 < _times.length; _i6++) {
           _loop2();
         }
       } else {
@@ -864,8 +928,8 @@ function execGlobalScripts() {
     (function () {
       var panels = document.getElementsByClassName('dropdown-panel');
 
-      for (var _i8 = 0; _i8 < panels.length; _i8++) {
-        dropdownPanelSetup(panels[_i8]);
+      for (var _i7 = 0; _i7 < panels.length; _i7++) {
+        dropdownPanelSetup(panels[_i7]);
       }
     })(); // Setup present Dropdown Menus
 
@@ -956,13 +1020,13 @@ function execGlobalScripts() {
 
         (function () {
           var regex = new RegExp('(\\/)|([\\w-]+)', 'g');
-          var _iteratorNormalCompletion = true;
-          var _didIteratorError = false;
-          var _iteratorError = undefined;
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
 
           try {
-            for (var _iterator = regexMatchAll(regex, urlF)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-              var oMatch = _step.value;
+            for (var _iterator3 = regexMatchAll(regex, urlF)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var oMatch = _step3.value;
               var match = oMatch[0];
 
               if (match == '/') {
@@ -988,16 +1052,16 @@ function execGlobalScripts() {
               }
             }
           } catch (err) {
-            _didIteratorError = true;
-            _iteratorError = err;
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion && _iterator["return"] != null) {
-                _iterator["return"]();
+              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                _iterator3["return"]();
               }
             } finally {
-              if (_didIteratorError) {
-                throw _iteratorError;
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -1006,8 +1070,8 @@ function execGlobalScripts() {
 
         addClass(container.parentNode, 'ready');
 
-        for (var _i9 = 0, _tmpsNames = tmpsNames; _i9 < _tmpsNames.length; _i9++) {
-          var t = _tmpsNames[_i9];
+        for (var _i8 = 0, _tmpsNames = tmpsNames; _i8 < _tmpsNames.length; _i8++) {
+          var t = _tmpsNames[_i8];
           document.getElementById(tmps[t]).remove();
         }
       }
@@ -1037,8 +1101,8 @@ function execGlobalScripts() {
     (function () {
       var clickables = getElements(document, 'clickables');
 
-      for (var _i10 = 0; _i10 < clickables.length; _i10++) {
-        fixClickableContent(clickables[_i10]);
+      for (var _i9 = 0; _i9 < clickables.length; _i9++) {
+        fixClickableContent(clickables[_i9]);
       }
     })(); // Add Press Toggle Listener to buttons
 
@@ -1046,8 +1110,8 @@ function execGlobalScripts() {
     (function () {
       var buttons = getTags(document, 'button');
 
-      for (var _i11 = 0; _i11 < buttons.length; _i11++) {
-        var btn = buttons[_i11];
+      for (var _i10 = 0; _i10 < buttons.length; _i10++) {
+        var btn = buttons[_i10];
 
         if (hasClass(btn, 'o-pressed')) {
           btnPressToggle(btn);
@@ -1098,10 +1162,11 @@ function execGlobalScripts() {
           e[i].addEventListener('click', hashUpdate);
         }
       }
-    })();
+    })(); // Manage focus lock
 
-    window.addEventListener('click', handleFocusLock);
-    window.addEventListener('keydown', handleFocusLock); // Update Dropdown Menu Pos
+
+    window.addEventListener('click', focusLock.handle);
+    window.addEventListener('keydown', focusLock.handle); // Update Dropdown Menu Pos
 
     (function () {
       var container = document.getElementById('dropdown_menu_container');
@@ -1109,8 +1174,8 @@ function execGlobalScripts() {
       if (container !== null) {
         var dropdowns = getClasses(container, 'dropdown-menu');
         window.addEventListener('resize', function (e) {
-          for (var _i12 = 0; _i12 < dropdowns.length; _i12++) {
-            var dd = dropdowns[_i12];
+          for (var _i11 = 0; _i11 < dropdowns.length; _i11++) {
+            var dd = dropdowns[_i11];
 
             if (dd.getAttribute('data-expanded')) {
               updateDropdownMenuPos(dd);

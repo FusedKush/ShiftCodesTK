@@ -26,6 +26,7 @@ function imgViewClick(e) {
     setTimeout(function () {
       delClass(viewer, 'inactive');
       v.close.focus();
+      focusLock.set([v.header, copy], imgViewClose);
     }, 50);
   }
 }
@@ -42,6 +43,7 @@ function imgViewClose() {
   })();
 
   addClass(viewer, 'inactive');
+  focusLock.clear();
   setTimeout(function () {
     vishidden(viewer, true);
     viewer.removeChild(v.img);

@@ -28,14 +28,11 @@ function toggleSB() {
 
   if (state === true) {
     updateState();
-    focusLockedElement = null;
+    focusLock.clear();
     setTimeout(updateVis, 300);
   } else {
     updateVis();
-    focusLockedElement = {
-      element: getClass(sb, 'panel'),
-      callback: toggleSB
-    };
+    focusLock.set(getClass(sb, 'panel'), toggleSB);
     setTimeout(updateState, 50);
   }
 } // Updates the markup of the sidebar
