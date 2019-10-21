@@ -55,20 +55,10 @@
   img {
     box-shadow: shadow(tpb(0.75), 10px);
     transition-duration: 0.4s;
+    max-height: 100%;
 
     @at-root .image-viewer.inactive img {
       transform: scale(0.85);
-    }
-  }
-  .overlay {
-    position: absolute;
-    @include pull(all);
-    box-shadow: inset 0 0 1em 5px tpb(0.75);
-
-    @include noHoverState {
-      .overlay {
-        opacity: 0.25;
-      }
     }
   }
   .header {
