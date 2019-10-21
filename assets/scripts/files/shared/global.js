@@ -208,17 +208,30 @@ function hashUpdate () {
   }
 }
 // Check hash for request
-function checkHash () {
+function checkHash (key = false) {
   let hash = window.location.hash;
-  let keys = Object.keys(hashRequests);
 
-  for (let i = 0; i < keys.length; i++) {
-    let key = keys[i];
-
-    if (hash.search(`#${key}`) == 0) {
-      hashRequests[key]();
+  function search(keyName) {
+    if (hash.search(`#${keyName}`) == 0) {
+      hashRequests[keyName](hash);
     }
   }
+
+  if (key) {
+    search(key);
+  }
+  else {
+    let keys = Object.keys(hashRequests);
+
+    for (let i = 0; i < keys.length; i++) {
+      search(keys[i]);
+    }
+  }
+}
+// Add a new hash listener
+function addHashListener (key, callback) {
+  hashRequests[key] = callback;
+  checkHash(key);
 }
 // Update Dropdown Panel Attributes
 function updateDropdownPanelAttributes (panel, state) {
