@@ -36,7 +36,7 @@
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
     <main class="no-header">
-      <section class="main" data-webp='{"path": "/assets/img/banners/bl2/2", "alt": ".jpg", "type": "bg"}'>
+      <section class="main" data-webp='{"path": "/assets/img/banners/bl3/2", "alt": ".jpg", "type": "bg"}'>
         <div class="content-wrapper">
           <div class="brand">
             <img class="logo" src="/assets/img/logo.svg" width="3.5em" alt="ShiftCodesTK Logo">
