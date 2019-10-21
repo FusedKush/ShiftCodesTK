@@ -25,6 +25,7 @@ function imgViewClick (e) {
     setTimeout(function () {
       delClass(viewer, 'inactive');
       v.close.focus();
+      toggleBodyScroll(false);
       focusLock.set([v.header, copy], imgViewClose);
     }, 50);
   }
@@ -39,6 +40,7 @@ function imgViewClose () {
     })();
 
     addClass(viewer, 'inactive');
+    toggleBodyScroll(true);
     focusLock.clear();
 
     setTimeout(function () {

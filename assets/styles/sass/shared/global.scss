@@ -18,8 +18,12 @@
 body {
   background-color: #0f1e2d;
 
-  &.popup-open {
-    overflow: hidden;
+  &:not(.scroll-disabled) {
+    top: 0 !important;
+  }
+  &.scroll-disabled {
+    position: fixed;
+    overflow-y: scroll;
   }
 }
 body * {

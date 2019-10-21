@@ -26,9 +26,9 @@ var focusLock = {
     let target = event.target;
 
     if (focusLock.active) {
+      let elms = focusLock.active.elements;
       let matches = (function () {
         let arr = [];
-        let elms = focusLock.active.elements;
 
         // Global matches
         arr.push(document.getElementById('alert_popup_feed'));
@@ -60,7 +60,20 @@ var focusLock = {
         focusLock.active.callback();
       }
       else if (type == 'keydown') {
-        let fs = getElements(focusLockedElement.element, 'focusables');
+        let fs = (function () {
+          let arr = [];
+
+          if (elms.constructor === Array) {
+            for (let e of elms) {
+              arr.push(getElements(e, 'focusables'));
+            }
+          }
+          else {
+            arr.push(elms, 'focusables');
+          }
+
+          return arr;
+        })();
         let first = fs[0];
         let last = fs[fs.length - 1];
 
@@ -79,6 +92,7 @@ var focusLock = {
   },
   active: false
 };
+var lastFocus;
 var shiftStats = false;
 var hashRequests = {};
 var shiftNames = {
@@ -228,6 +242,43 @@ function updateScroll (element) {
     }
     if (matches.top === true || matches.bottom === true) { globalScrollUpdates = 0; }
   }
+}
+// Toggle the body scrollbar
+function toggleBodyScroll (allowScroll = 'toggle') {
+  let body = document.body;
+  let classname = 'scroll-disabled';
+  let attr = 'data-last-scroll';
+  let state = hasClass(body, classname);
+
+  if (body.scrollHeight > window.innerHeight) {
+    if (allowScroll == 'toggle') {
+      allowScroll = state;
+    }
+
+    if (allowScroll) {
+      delClass(body, classname);
+      body.style.removeProperty('top');
+
+      setTimeout(function () {
+        window.scrollTo(0, tryParseInt(body.getAttribute(attr)));
+        body.removeAttribute(attr);
+      }, 50);
+    }
+    else {
+      let scroll = window.pageYOffset;
+
+      body.setAttribute(attr, scroll);
+
+      setTimeout(function () {
+        body.style.top = `-${scroll}px`;
+        addClass(body, classname);
+      }, 50);
+    }
+
+    return true;
+  }
+
+  return false;
 }
 // Update visibility of hash-targeted elements
 function hashUpdate () {

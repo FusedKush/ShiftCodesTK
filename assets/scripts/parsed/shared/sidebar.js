@@ -28,10 +28,12 @@ function toggleSB() {
 
   if (state === true) {
     updateState();
+    toggleBodyScroll(true);
     focusLock.clear();
     setTimeout(updateVis, 300);
   } else {
     updateVis();
+    toggleBodyScroll(false);
     focusLock.set(getClass(sb, 'panel'), toggleSB);
     setTimeout(updateState, 50);
   }

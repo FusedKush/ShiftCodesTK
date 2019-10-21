@@ -25,9 +25,10 @@ var focusLock = {
     var target = event.target;
 
     if (focusLock.active) {
+      var elms = focusLock.active.elements;
+
       var matches = function () {
-        var arr = [];
-        var elms = focusLock.active.elements; // Global matches
+        var arr = []; // Global matches
 
         arr.push(document.getElementById('alert_popup_feed')); // Specified matches
 
@@ -96,7 +97,40 @@ var focusLock = {
 
         focusLock.active.callback();
       } else if (type == 'keydown') {
-        var fs = getElements(focusLockedElement.element, 'focusables');
+        var fs = function () {
+          var arr = [];
+
+          if (elms.constructor === Array) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
+
+            try {
+              for (var _iterator3 = elms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var e = _step3.value;
+                arr.push(getElements(e, 'focusables'));
+              }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+                  _iterator3["return"]();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
+              }
+            }
+          } else {
+            arr.push(elms, 'focusables');
+          }
+
+          return arr;
+        }();
+
         var first = fs[0];
         var last = fs[fs.length - 1];
 
@@ -117,6 +151,7 @@ var focusLock = {
   },
   active: false
 };
+var lastFocus;
 var shiftStats = false;
 var hashRequests = {};
 var shiftNames = {
@@ -284,6 +319,41 @@ function updateScroll(element) {
       globalScrollUpdates = 0;
     }
   }
+} // Toggle the body scrollbar
+
+
+function toggleBodyScroll() {
+  var allowScroll = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'toggle';
+  var body = document.body;
+  var classname = 'scroll-disabled';
+  var attr = 'data-last-scroll';
+  var state = hasClass(body, classname);
+
+  if (body.scrollHeight > window.innerHeight) {
+    if (allowScroll == 'toggle') {
+      allowScroll = state;
+    }
+
+    if (allowScroll) {
+      delClass(body, classname);
+      body.style.removeProperty('top');
+      setTimeout(function () {
+        window.scrollTo(0, tryParseInt(body.getAttribute(attr)));
+        body.removeAttribute(attr);
+      }, 50);
+    } else {
+      var scroll = window.pageYOffset;
+      body.setAttribute(attr, scroll);
+      setTimeout(function () {
+        body.style.top = "-".concat(scroll, "px");
+        addClass(body, classname);
+      }, 50);
+    }
+
+    return true;
+  }
+
+  return false;
 } // Update visibility of hash-targeted elements
 
 
@@ -1020,13 +1090,13 @@ function execGlobalScripts() {
 
         (function () {
           var regex = new RegExp('(\\/)|([\\w-]+)', 'g');
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
 
           try {
-            for (var _iterator3 = regexMatchAll(regex, urlF)[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var oMatch = _step3.value;
+            for (var _iterator4 = regexMatchAll(regex, urlF)[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var oMatch = _step4.value;
               var match = oMatch[0];
 
               if (match == '/') {
@@ -1052,16 +1122,16 @@ function execGlobalScripts() {
               }
             }
           } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-                _iterator3["return"]();
+              if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+                _iterator4["return"]();
               }
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              if (_didIteratorError4) {
+                throw _iteratorError4;
               }
             }
           }
