@@ -1,3 +1,5 @@
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 /*********************************
   Global (Shared) Scripts
 *********************************/
@@ -153,7 +155,7 @@ var focusLock = {
 };
 var lastFocus;
 var shiftStats = false;
-var hashRequests = {};
+var hashListeners = {};
 var shiftNames = {
   bl1: 'Borderlands: GOTY',
   bl2: 'Borderlands 2',
@@ -165,20 +167,145 @@ var shiftUpdates = {
   update_time: '',
   interval: {
     id: 0,
-    frequency: 60000 * 2 // 1 Minute * Multiplier
+    frequency: 60000 * 2,
+    // 1 Minute * Multiplier
+    set: function set() {
+      shiftUpdates.interval.id = setInterval(shiftUpdates.interval.check, shiftUpdates.interval.frequency);
+    },
+    clear: function clear() {
+      clearInterval(shiftUpdates.interval.id);
+    },
+    check: function check(firstRun) {
+      var file = '/assets/php/scripts/shift/checkForUpdates';
+      newAjaxRequest({
+        file: "".concat(file, "?getDetails=false"),
+        callback: function callback(serverResponse) {
+          var times = ['creation', 'update'];
+          var response = tryJSONParse(serverResponse);
 
+          if (response) {
+            response = response.payload;
+
+            var _loop = function _loop() {
+              var time = _times[_i];
+              var t = "".concat(time, "_time"); // creation_time
+
+              var r = response[t].timestamp; // Server Timestamp
+
+              var l = shiftUpdates[t]; // Last Timestamp
+
+              if (r > l && !firstRun) {
+                shiftUpdates.interval.clear();
+                newAjaxRequest({
+                  file: "".concat(file, "?getDetails=true"),
+                  callback: function callback(detailedResponse) {
+                    response = tryJSONParse(detailedResponse).payload;
+                    var id = response[t].id; // Code ID
+
+                    var g = response[t].game_id; // Game ID
+
+                    var name = shiftNames[g];
+                    var url = "/".concat(g) == window.location.pathname;
+                    var hash = "#shift_code_".concat(id);
+
+                    if (time == 'creation' || url) {
+                      newToast({
+                        settings: {
+                          id: 'shift_update_notice',
+                          duration: 'infinite'
+                        },
+                        content: {
+                          icon: 'fas fa-key',
+                          title: function () {
+                            if (time == 'creation') {
+                              return "New SHiFT Code for ".concat(name, "!");
+                            } else {
+                              return "SHiFT Code Update for ".concat(name, "!");
+                            }
+                          }(),
+                          body: function () {
+                            var str = '';
+
+                            if (time == 'creation') {
+                              str += "A new SHiFT Code has just been added to ShiftCodesTK! ";
+
+                              if (url) {
+                                str += 'Refresh the list to access the new code.';
+                              } else {
+                                str += 'Do you want to go there now?';
+                              }
+                            } else {
+                              str += "A SHiFT Code has just been updated. Refresh the list for changes to take effect.";
+                            }
+
+                            return str;
+                          }()
+                        },
+                        action: {
+                          use: true,
+                          type: 'link',
+                          close: url,
+                          action: function () {
+                            if (url) {
+                              return function () {
+                                if (window.location.hash == hash) {
+                                  window.location.hash = '#0';
+                                }
+
+                                shiftUpdates.interval.set();
+                              };
+                            } else {
+                              return false;
+                            }
+                          }(),
+                          link: function () {
+                            if (url) {
+                              return hash;
+                            } else {
+                              return "/".concat(g).concat(hash);
+                            }
+                          }(),
+                          name: function () {
+                            if (url) {
+                              return 'Refresh';
+                            } else {
+                              return 'View code';
+                            }
+                          }(),
+                          label: function () {
+                            if (url) {
+                              return 'Refresh the list of SHiFT Codes.';
+                            } else {
+                              return "Visit the ".concat(name, " SHiFT Code page");
+                            }
+                          }()
+                        }
+                      });
+                    }
+                  }
+                });
+                return {
+                  v: void 0
+                };
+              }
+
+              shiftUpdates[t] = r;
+            };
+
+            for (var _i = 0, _times = times; _i < _times.length; _i++) {
+              var _ret = _loop();
+
+              if (_typeof(_ret) === "object") return _ret.v;
+            }
+          } else {
+            shiftUpdates.interval.clear();
+          }
+        }
+      });
+    }
   }
-};
-
-shiftUpdates.interval.set = function () {
-  shiftUpdates.interval.id = setInterval(checkShiftUpdate, shiftUpdates.interval.frequency);
-};
-
-shiftUpdates.interval.clear = function () {
-  clearInterval(shiftUpdates.interval.id);
 }; // *** Functions ***
 // Parse Webp images and update as required
-
 
 function parseWebpImages(parent) {
   var attr = document.body.getAttribute('data-webp-support');
@@ -411,25 +538,36 @@ function checkHash() {
 
   function search(keyName) {
     if (hash.search("#".concat(keyName)) == 0) {
-      hashRequests[keyName](hash);
+      hashListeners[keyName](hash);
+      return true;
     }
   }
 
   if (key) {
-    search(key);
-  } else {
-    var keys = Object.keys(hashRequests);
+    if (search(key)) {
+      return true;
+    }
 
-    for (var _i = 0; _i < keys.length; _i++) {
-      search(keys[_i]);
+    ;
+  } else {
+    var keys = Object.keys(hashListeners);
+
+    for (var _i2 = 0; _i2 < keys.length; _i2++) {
+      if (search(keys[_i2])) {
+        return true;
+      }
+
+      ;
     }
   }
+
+  return false;
 } // Add a new hash listener
 
 
 function addHashListener(key, callback) {
-  hashRequests[key] = callback;
-  checkHash(key);
+  hashListeners[key] = callback;
+  return checkHash(key);
 } // Update Dropdown Panel Attributes
 
 
@@ -484,8 +622,8 @@ function dropdownPanelSetup(panel) {
       template.base.id = panel.id;
     }
 
-    for (var _i2 = 0; _i2 < props.length; _i2++) {
-      var prop = props[_i2];
+    for (var _i3 = 0; _i3 < props.length; _i3++) {
+      var prop = props[_i3];
       var val = getClass(panel, prop);
 
       if (val !== undefined) {
@@ -674,8 +812,8 @@ function setupDropdownMenu(dropdown) {
       (function () {
         var p = props.options;
 
-        var _loop = function _loop(_i3) {
-          var o = p[_i3];
+        var _loop2 = function _loop2(_i4) {
+          var o = p[_i4];
 
           if (hasClass(dropdown, 'o-press')) {
             o.addEventListener('click', function (e) {
@@ -700,8 +838,8 @@ function setupDropdownMenu(dropdown) {
           }
         };
 
-        for (var _i3 = 0; _i3 < p.length; _i3++) {
-          _loop(_i3);
+        for (var _i4 = 0; _i4 < p.length; _i4++) {
+          _loop2(_i4);
         }
       })(); // Create Dropdown Menu Container if not initalized
 
@@ -728,7 +866,7 @@ function copyToClipboard(event) {
     var treeJumps = parseInt(button.getAttribute('data-copy-target'));
     var pos = button;
 
-    for (var _i4 = 0; _i4 < treeJumps; _i4++) {
+    for (var _i5 = 0; _i5 < treeJumps; _i5++) {
       pos = pos.parentNode;
     }
 
@@ -761,8 +899,8 @@ function copyToClipboard(event) {
 function fixClickableContent(e) {
   var children = e.childNodes;
 
-  for (var _i5 = 0; _i5 < children.length; _i5++) {
-    var child = children[_i5];
+  for (var _i6 = 0; _i6 < children.length; _i6++) {
+    var child = children[_i6];
 
     if (child.nodeName == '#text') {
       var span = document.createElement('span');
@@ -789,108 +927,6 @@ function btnPressToggle(button) {
     setTimeout(function () {
       t.setAttribute('aria-pressed', !state);
     }, 500);
-  });
-} // Update checks
-
-
-function checkShiftUpdate() {
-  var firstRun = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-  newAjaxRequest({
-    file: '/assets/php/scripts/shift/checkForUpdates',
-    callback: function callback(serverResponse) {
-      var times = ['creation', 'update'];
-      var response = tryJSONParse(serverResponse);
-
-      if (response) {
-        response = response.payload;
-
-        var _loop2 = function _loop2() {
-          var time = _times[_i6];
-          var t = "".concat(time, "_time"); // creation_time
-
-          var r = response[t].timestamp; // Server Timestamp
-
-          var l = shiftUpdates[t]; // Last Timestamp
-
-          var g = response[t].game_id; // Game ID
-
-          var name = shiftNames[g];
-          var url = "/".concat(g) == window.location.pathname;
-
-          if (r > l && !firstRun) {
-            if (time == 'creation' || url) {
-              shiftUpdates.interval.clear();
-              newToast({
-                settings: {
-                  id: 'shift_update_notice',
-                  duration: 'infinite'
-                },
-                content: {
-                  icon: 'fas fa-key',
-                  title: function () {
-                    if (time == 'creation') {
-                      return "New SHiFT Code for ".concat(name, "!");
-                    } else {
-                      return "SHiFT Code update for ".concat(name, "!");
-                    }
-                  }(),
-                  body: function () {
-                    var str = '';
-
-                    if (time == 'creation') {
-                      str += "A new SHiFT Code has just been added to ShiftCodesTK! ";
-
-                      if (url) {
-                        str += 'Reload the page to access the new code.';
-                      } else {
-                        str += 'Do you want to go there now?';
-                      }
-                    } else {
-                      str += "A SHiFT Code has just been updated. Reload the page for changes to take effect.";
-                    }
-
-                    return str;
-                  }()
-                },
-                action: {
-                  use: true,
-                  type: 'link',
-                  link: function () {
-                    if (url) {
-                      return ' ';
-                    } else {
-                      return "/".concat(g);
-                    }
-                  }(),
-                  name: function () {
-                    if (url) {
-                      return 'Reload';
-                    } else {
-                      return 'View code';
-                    }
-                  }(),
-                  label: function () {
-                    if (url) {
-                      return 'Reload the current page.';
-                    } else {
-                      return "Visit the ".concat(name, " SHiFT Code page");
-                    }
-                  }()
-                }
-              });
-            }
-          }
-
-          shiftUpdates[t] = r;
-        };
-
-        for (var _i6 = 0, _times = times; _i6 < _times.length; _i6++) {
-          _loop2();
-        }
-      } else {
-        shiftUpdates.interval.clear();
-      }
-    }
   });
 } // *** Event Listener Reference Functions ***
 
@@ -1271,7 +1307,7 @@ window.addEventListener('load', function () {
 
 
     (function () {
-      checkShiftUpdate(true);
+      shiftUpdates.interval.check(true);
       shiftUpdates.interval.set();
     })();
   }, 2500);
