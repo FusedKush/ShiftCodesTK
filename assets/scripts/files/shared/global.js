@@ -816,20 +816,21 @@ function execGlobalScripts () {
           'updates': 'Updates',
           'help': 'Help Center',
           'clearing-your-system-cache': 'Clearing your System Cache',
-          'faq': 'FAQ'
+          'faq': 'FAQ',
+          'how-to-redeem': 'How to Redeem',
+          'borderlands-website': 'Borderlands Website',
+          'shift-website': 'SHiFT Website'
         }
-        let url = window.location.pathname; // URL
-        let urlF = (function () {
-          let str = url;
-
-          str = str.slice(1);
+        let url = (function () {
+          let str = window.location.pathname;
 
           if (str[str.length - 1] == '/') {
             str = str.slice(0, -1);
           }
 
           return str;
-        })(); // Formatted URL
+        })(); // URL
+        let urlF = url.slice(1); // Formatted URL
         let container = document.getElementById('breadcrumb_container');
         let tmps = {
           separator: 'breadcrumb_separator_template',
