@@ -56,7 +56,7 @@ function tryToRun(settings, currentAttempt = 1) {
         function: function () {
           return true;
         },
-        attempts: 10,
+        attempts: false,
         delay: 250,
         behavior: 'silent',
         logCatch: false,
