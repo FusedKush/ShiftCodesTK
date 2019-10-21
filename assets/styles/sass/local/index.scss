@@ -208,51 +208,52 @@ section {
       font-size: 1em;
       @include multiProp(32px, padding-left, padding-right);
     }
-  }
-  a.button {
-    background-color: tpw(0.15);
-    overflow: hidden;
-    font-size: 1.15em;
-    padding: 16px 32px;
 
-    &::before {
-      border: none;
-    }
-    &::after {
-      border: bd(1.5px, tpw(0.5));
-    }
+    a.button {
+      background-color: tpw(0.15);
+      overflow: hidden;
+      font-size: 1.15em;
+      padding: 16px 32px;
 
-    @each $themeN, $themeV in $themeColors {
-      @if ($themeN != main) {
-        &.#{$themeN}::before {
-          background-color: #{$themeV};
+      &::before {
+        border: none;
+      }
+      &::after {
+        border: bd(1.5px, tpw(0.5));
+      }
+
+      @each $themeN, $themeV in $themeColors {
+        @if ($themeN != main) {
+          &.#{$themeN}::before {
+            background-color: #{$themeV};
+          }
         }
       }
-    }
 
-    // Mouse States
-    & {
-      @mixin linkPs ($before, $after) {
-        &::before { opacity: $before; }
-        &::after  { opacity: $after; }
-      }
-      @at-root %idleState {
-        @include linkPs(0, 1);
-      }
+      // Mouse States
+      & {
+        @mixin linkPs ($before, $after) {
+          &::before { opacity: $before; }
+          &::after  { opacity: $after; }
+        }
+        @at-root %idleState {
+          @include linkPs(0, 1);
+        }
 
-      &:not([disabled]) {
-        @include mouseState(noHover) {
+        &:not([disabled]) {
+          @include mouseState(noHover) {
+            @extend %idleState;
+          }
+          @include mouseState(hover) {
+            @include linkPs(1, 0);
+          }
+          @include mouseState(click) {
+            opacity: 0.75;
+          }
+        }
+        &[disabled] {
           @extend %idleState;
         }
-        @include mouseState(hover) {
-          @include linkPs(1, 0);
-        }
-        @include mouseState(click) {
-          opacity: 0.75;
-        }
-      }
-      &[disabled] {
-        @extend %idleState;
       }
     }
   }
