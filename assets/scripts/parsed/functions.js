@@ -72,7 +72,7 @@ function tryToRun(settings) {
         "function": function _function() {
           return true;
         },
-        attempts: 10,
+        attempts: false,
         delay: 250,
         behavior: 'silent',
         logCatch: false,

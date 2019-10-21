@@ -3,13 +3,25 @@
 *********************************/
 // *** Variables ***
 var helpCenterArticles = [{
-  'title': 'FAQ',
-  'description': 'Answers to some frequently asked questions',
-  'link': 'faq'
+  title: 'Clearing your System Cache',
+  description: 'How to clear your system cache on PC, Xbox, and Playstation',
+  link: 'clearing-your-system-cache'
 }, {
-  'title': 'Clearing your System Cache',
-  'description': 'How to clear your system cache on PC, Xbox, and Playstation',
-  'link': 'clearing-your-system-cache'
+  title: 'How to Redeem',
+  description: 'How to redeem SHiFT Codes in Borderlands',
+  link: 'how-to-redeem'
+}, {
+  title: 'FAQ',
+  description: 'Answers to some frequently asked questions',
+  link: 'faq'
+  /*
+  {
+    'title': 'Supported Devices & Browsers',
+    'description': 'Devices and Browsers supported by ShiftCodesTK',
+    'link': 'supported-devices-and-browsers'
+  }
+  */
+
 }]; // *** Immediate Functions ***
 // Constructs Article Links
 

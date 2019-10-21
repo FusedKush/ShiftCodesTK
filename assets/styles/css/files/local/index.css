@@ -204,33 +204,33 @@ section {
         font-size: 1em;
         padding-left: 32px;
         padding-right: 32px; } }
-  section a.button {
-    background-color: rgba(255, 255, 255, 0.15);
-    overflow: hidden;
-    font-size: 1.15em;
-    padding: 16px 32px; }
-    section a.button::before {
-      border: none; }
-    section a.button::after {
-      border: 1.5px solid rgba(255, 255, 255, 0.5); }
-    section a.button.bl1::before {
-      background-color: #dc143c; }
-    section a.button.bl2::before {
-      background-color: #ff4500; }
-    section a.button.tps::before {
-      background-color: #1e90ff; }
-    section a.button.bl3::before {
-      background-color: #ffa900; }
-    section a.button:not(:focus):not(:hover):not([disabled])::before, section a.button[disabled]::before {
-      opacity: 0; }
-    section a.button:not(:focus):not(:hover):not([disabled])::after, section a.button[disabled]::after {
-      opacity: 1; }
-    section a.button:not([disabled]):hover::before, section a.button:not([disabled]):focus::before {
-      opacity: 1; }
-    section a.button:not([disabled]):hover::after, section a.button:not([disabled]):focus::after {
-      opacity: 0; }
-    section a.button:not([disabled]):active {
-      opacity: 0.75; }
+    section .content-wrapper a.button {
+      background-color: rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      font-size: 1.15em;
+      padding: 16px 32px; }
+      section .content-wrapper a.button::before {
+        border: none; }
+      section .content-wrapper a.button::after {
+        border: 1.5px solid rgba(255, 255, 255, 0.5); }
+      section .content-wrapper a.button.bl1::before {
+        background-color: #dc143c; }
+      section .content-wrapper a.button.bl2::before {
+        background-color: #ff4500; }
+      section .content-wrapper a.button.tps::before {
+        background-color: #1e90ff; }
+      section .content-wrapper a.button.bl3::before {
+        background-color: #ffa900; }
+      section .content-wrapper a.button:not(:focus):not(:hover):not([disabled])::before, section .content-wrapper a.button[disabled]::before {
+        opacity: 0; }
+      section .content-wrapper a.button:not(:focus):not(:hover):not([disabled])::after, section .content-wrapper a.button[disabled]::after {
+        opacity: 1; }
+      section .content-wrapper a.button:not([disabled]):hover::before, section .content-wrapper a.button:not([disabled]):focus::before {
+        opacity: 1; }
+      section .content-wrapper a.button:not([disabled]):hover::after, section .content-wrapper a.button:not([disabled]):focus::after {
+        opacity: 0; }
+      section .content-wrapper a.button:not([disabled]):active {
+        opacity: 0.75; }
   section .flags {
     display: flex;
     justify-content: space-between;

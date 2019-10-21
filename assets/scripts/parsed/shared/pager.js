@@ -60,8 +60,17 @@ function pagerUpdate(pager) {
 
   function update(button, val) {
     var jump = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+    var negativeOffset = function () {
+      if (props.subtractOffset) {
+        return props.offset;
+      } else {
+        return 0;
+      }
+    }();
+
     button.setAttribute('data-page', val);
-    button.setAttribute('data-value', val * props.offset - props.offset);
+    button.setAttribute('data-value', val * props.offset - negativeOffset);
 
     if (jump) {
       var regex = new RegExp('\\d+');
@@ -238,6 +247,7 @@ function configurePager(pager) {
   (function () {
     var defaultProps = {};
     defaultProps.now = defaultProps.min = defaultProps.max = defaultProps.offset = 1;
+    defaultProps.subtractOffset = false;
     defaultProps.onclick = false;
     var props = Object.keys(defaultProps);
     pagers[id] = {};
@@ -263,6 +273,7 @@ function configurePager(pager) {
 
   (function () {
     var props = pagers[id];
+    var customLabel = pager.getAttribute('data-label');
 
     if (props.max > 1) {
       var copies = function () {
@@ -287,6 +298,10 @@ function configurePager(pager) {
         for (var _iterator3 = getTags(p, 'button')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
           var button = _step3.value;
           button.addEventListener('click', pagerEvent);
+
+          if (customLabel) {
+            updateLabel(button, button.title.replace('Page', customLabel));
+          }
         }
       } catch (err) {
         _didIteratorError3 = true;

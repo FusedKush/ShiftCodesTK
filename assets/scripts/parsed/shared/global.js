@@ -231,16 +231,30 @@ function hashUpdate() {
 
 
 function checkHash() {
+  var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
   var hash = window.location.hash;
-  var keys = Object.keys(hashRequests);
 
-  for (var _i = 0; _i < keys.length; _i++) {
-    var key = keys[_i];
-
-    if (hash.search("#".concat(key)) == 0) {
-      hashRequests[key]();
+  function search(keyName) {
+    if (hash.search("#".concat(keyName)) == 0) {
+      hashRequests[keyName](hash);
     }
   }
+
+  if (key) {
+    search(key);
+  } else {
+    var keys = Object.keys(hashRequests);
+
+    for (var _i = 0; _i < keys.length; _i++) {
+      search(keys[_i]);
+    }
+  }
+} // Add a new hash listener
+
+
+function addHashListener(key, callback) {
+  hashRequests[key] = callback;
+  checkHash(key);
 } // Update Dropdown Panel Attributes
 
 
@@ -900,21 +914,24 @@ function execGlobalScripts() {
           'updates': 'Updates',
           'help': 'Help Center',
           'clearing-your-system-cache': 'Clearing your System Cache',
-          'faq': 'FAQ'
+          'faq': 'FAQ',
+          'how-to-redeem': 'How to Redeem',
+          'borderlands-website': 'Borderlands Website',
+          'shift-website': 'SHiFT Website'
         };
-        var url = window.location.pathname; // URL
 
-        var urlF = function () {
-          var str = url;
-          str = str.slice(1);
+        var url = function () {
+          var str = window.location.pathname;
 
           if (str[str.length - 1] == '/') {
             str = str.slice(0, -1);
           }
 
           return str;
-        }(); // Formatted URL
+        }(); // URL
 
+
+        var urlF = url.slice(1); // Formatted URL
 
         var container = document.getElementById('breadcrumb_container');
         var tmps = {

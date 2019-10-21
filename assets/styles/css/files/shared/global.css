@@ -114,16 +114,21 @@ button.styled, a.button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  text-align: center;
+  padding: 12px;
   border-radius: 4px;
   font-size: 1em;
   line-height: 1; }
-  button.styled:not(:focus):not(:hover):not([disabled])::before, a.button:not(:focus):not(:hover):not([disabled])::before, button.styled[disabled]::before, a.button[disabled]::before {
+  button.styled:not(:focus):not(:hover):not([disabled]):not(.color-light)::before, a.button:not(:focus):not(:hover):not([disabled]):not(.color-light)::before, button.styled[disabled]:not(.color-light)::before, a.button[disabled]:not(.color-light)::before {
     opacity: 0.15; }
+  button.styled:not(.color-light):not([disabled]):not(:hover):not(:focus) span, a.button:not(.color-light):not([disabled]):not(:hover):not(:focus) span, button.styled:not(.color-light)[disabled] span, a.button:not(.color-light)[disabled] span {
+    opacity: 0.85; }
+  button.color-light.styled:not(:focus):not(:hover):not([disabled])::before, a.color-light.button:not(:focus):not(:hover):not([disabled])::before, button.color-light.styled[disabled]::before, a.color-light.button[disabled]::before {
+    opacity: 0.75; }
+  button.color-light.styled:not([disabled]):not(:hover):not(:focus) span, a.color-light.button:not([disabled]):not(:hover):not(:focus) span, button.color-light.styled[disabled] span, a.color-light.button[disabled] span {
+    opacity: 0.75; }
   button.styled:not(:focus):not(:hover):not([disabled])::after, a.button:not(:focus):not(:hover):not([disabled])::after, button.styled[disabled]::after, a.button[disabled]::after {
     opacity: 0.5; }
-  button.styled:not([disabled]):not(:hover):not(:focus) span, a.button:not([disabled]):not(:hover):not(:focus) span, button.styled[disabled] span, a.button[disabled] span {
-    opacity: 0.85; }
   button.styled::before, button.styled::after, a.button::before, a.button::after {
     position: absolute;
     top: 0;
@@ -132,16 +137,19 @@ button.styled, a.button {
     right: 0;
     border-radius: inherit;
     content: ""; }
-  button.styled::before, a.button::before {
-    background-color: #fff;
-    opacity: 0.15; }
+  button.styled:not(.color-light)::before, a.button:not(.color-light)::before {
+    background-color: #fff; }
+  button.styled.color-light::before, a.button.color-light::before {
+    background-color: #224365; }
   button.styled::after, a.button::after {
     border: 1.5px solid #fff;
     border-radius: inherit; }
   button.styled:not(:last-child), a.button:not(:last-child) {
     margin-right: 8px; }
-  button.styled:not([disabled]):hover::before, button.styled:not([disabled]):focus::before, a.button:not([disabled]):hover::before, a.button:not([disabled]):focus::before {
+  button.styled:not([disabled]):hover:not(.color-light)::before, button.styled:not([disabled]):focus:not(.color-light)::before, a.button:not([disabled]):hover:not(.color-light)::before, a.button:not([disabled]):focus:not(.color-light)::before {
     opacity: 0.25; }
+  button.styled:not([disabled]):hover.color-light::before, button.styled:not([disabled]):focus.color-light::before, a.button:not([disabled]):hover.color-light::before, a.button:not([disabled]):focus.color-light::before {
+    opacity: 1; }
   button.styled:not([disabled]):hover::after, button.styled:not([disabled]):focus::after, a.button:not([disabled]):hover::after, a.button:not([disabled]):focus::after {
     opacity: 0.75; }
   button.styled:not([disabled]):hover span, button.styled:not([disabled]):focus span, a.button:not([disabled]):hover span, a.button:not([disabled]):focus span {
@@ -201,14 +209,17 @@ pre, code {
   border-radius: 4px;
   background-color: rgba(255, 255, 255, 0.25); }
 
+img {
+  max-width: 100%; }
+
 template, .webp-support {
   display: none; }
 
 @media screen and (max-width: 474px) {
   header.main .intro {
-    height: 30vh; }
+    height: calc(30vh + 32px); }
   main:not(.no-header) {
-    min-height: 70vh; } }
+    min-height: calc(70vh - 32px); } }
 
 @media screen and (min-width: 475px) {
   header.main .intro {
@@ -261,20 +272,14 @@ header.main {
       text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
       max-width: 85%; }
       @media screen and (max-width: 474px) {
-        header.main .intro .content.short {
-          font-size: 1em; }
-        header.main .intro .content.long {
-          font-size: 0.75em; } }
-      @media screen and (min-width: 475px) and (max-width: 699px) {
-        header.main .intro .content.short {
-          font-size: 1.25em; }
-        header.main .intro .content.long {
+        header.main .intro .content {
           font-size: 1em; } }
-      @media screen and (min-width: 700px) {
-        header.main .intro .content.short {
-          font-size: 1.5em; }
-        header.main .intro .content.long {
+      @media screen and (min-width: 475px) and (max-width: 699px) {
+        header.main .intro .content {
           font-size: 1.25em; } }
+      @media screen and (min-width: 700px) {
+        header.main .intro .content {
+          font-size: 1.5em; } }
     header.main .intro .title {
       font-size: 2em;
       line-height: 1.1; }
