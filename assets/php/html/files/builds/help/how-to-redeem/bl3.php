@@ -48,7 +48,7 @@
       <div class="step 4">Enter the 25-character SHiFT Code into the provided fields. Once you are finished, click&nbsp;<em>Submit</em>.</div>
       <div class="step 5">If successful, you will receive a confirmation message. The reward from the SHiFT Code will also appear in the&nbsp;<strong>Rewards History</strong>&nbsp;section.</div>
       <div class="step 6">If you are not already in-game, load into any character and return to the&nbsp;<strong>Social</strong>&nbsp;menu. Then, switch to the&nbsp;<strong>Mail</strong>&nbsp;tab. Select the&nbsp;<strong>rewards</strong>&nbsp;from your mailbox to claim them.</div>
-      <div class="step 7">You can now make your way to the&nbsp;<strong>Golden Chest</strong>&nbsp;aboard&nbsp;<strong>Sanctuary</strong>&nbsp;to spend your Golden Keys. The Golden Chest can be found near in the hallway leading to&nbsp;<strong>Marcus Munitions</strong>. Opening the chest will cost&nbsp;<strong>one Golden Key</strong>, and the rewards will be droppped at the&nbsp;<strong>level of your current character</strong>, regardless of playthrough.</div>
+      <div class="step 7">You can now make your way to the&nbsp;<strong>Golden Chest</strong>&nbsp;aboard&nbsp;<strong>Sanctuary</strong>&nbsp;to spend your Golden Keys. The Golden Chest can be found near the hallway leading to&nbsp;<strong>Marcus Munitions</strong>. Opening the chest will cost&nbsp;<strong>one Golden Key</strong>, and the rewards will be droppped at the&nbsp;<strong>level of your current character</strong>, regardless of playthrough.</div>
     </div>
     <!-- Support Footer -->
     <?php include_once('local/support-footer.php'); ?>
