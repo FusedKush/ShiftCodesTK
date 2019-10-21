@@ -31,8 +31,13 @@ function pagerUpdate (pager, newPage = 1, firstRun = false) {
     }
   }
   function update(button, val, jump = false) {
+    let negativeOffset = (function () {
+      if (props.subtractOffset) { return props.offset; }
+      else                      { return 0; }
+    })();
+
     button.setAttribute('data-page', val);
-    button.setAttribute('data-value', ((val * props.offset) - props.offset));
+    button.setAttribute('data-value', ((val * props.offset) - negativeOffset));
 
     if (jump) {
       let regex = new RegExp('\\d+');
@@ -181,6 +186,7 @@ function configurePager (pager) {
   (function () {
     let defaultProps = {}
         defaultProps.now = defaultProps.min = defaultProps.max = defaultProps.offset = 1;
+        defaultProps.subtractOffset = false;
         defaultProps.onclick = false;
     let props = Object.keys(defaultProps);
 
