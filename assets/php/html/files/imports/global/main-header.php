@@ -9,7 +9,7 @@
   <div class="intro" data-webp='{"path": "/assets/img/banners<?php echo "/${img}"; ?>", "alt": ".jpg", "type": "bg"}'>
     <div class="content-container">
       <div class="content-wrapper">
-        <div class="content short">
+        <div class="content">
           <h1 class="title"><?php echo $title; ?></h1>
           <div class="description"><?php echo $description; ?></div>
         </div>

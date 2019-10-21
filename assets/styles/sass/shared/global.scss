@@ -204,28 +204,13 @@ header.main {
     }
     .content {
       @media screen and (max-width: 474px) {
-        &.short {
-          font-size: 1em;
-        }
-        &.long {
-          font-size: 0.75em;
-        }
+        font-size: 1em;
       }
       @media screen and (min-width: 475px) and (max-width: 699px) {
-        &.short {
-          font-size: 1.25em;
-        }
-        &.long {
-          font-size: 1em;
-        }
+        font-size: 1.25em;
       }
       @media screen and (min-width: 700px) {
-        &.short {
-          font-size: 1.5em;
-        }
-        &.long {
-          font-size: 1.25em;
-        }
+        font-size: 1.5em;
       }
 
       text-shadow: 1px 1px 4px tpb(0.8);
