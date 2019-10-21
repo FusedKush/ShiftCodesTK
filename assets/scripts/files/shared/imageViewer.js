@@ -46,5 +46,12 @@ function imgViewClose () {
     }, 450);
 }
 
-window.addEventListener('click', imgViewClick);
-getClass(document.getElementById('image_viewer'), 'close').addEventListener('click', imgViewClose);
+(function () {
+  let t = setInterval(function () {
+    if (globalFunctionsReady) {
+      clearInterval(t);
+      window.addEventListener('click', imgViewClick);
+      getClass(document.getElementById('image_viewer'), 'close').addEventListener('click', imgViewClose);
+    }
+  }, 250);
+})();
