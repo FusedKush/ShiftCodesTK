@@ -12,7 +12,73 @@ var defaultDropdownPanelLabels = {
   false: 'Expand Panel',
   true: 'Collapse Panel'
 };
-var focusLockedElement = null;
+var focusLock = {
+  set: function (elements, callback) {
+    focusLock.active = {};
+    focusLock.active.elements = elements;
+    focusLock.active.callback = callback;
+  },
+  clear: function () {
+    focusLock.active = false;
+  },
+  handle: function (event) {
+    let type = event.type;
+    let target = event.target;
+
+    if (focusLock.active) {
+      let matches = (function () {
+        let arr = [];
+        let elms = focusLock.active.elements;
+
+        // Global matches
+        arr.push(document.getElementById('alert_popup_feed'));
+        // Specified matches
+        if (elms.constructor === Array) {
+          for (let match of elms) {
+            arr.push(match);
+          }
+        }
+        else {
+          arr.push(elms);
+        }
+
+        return arr;
+      })();
+
+      if (type == 'click') {
+        do {
+          for (let match of matches) {
+            if (target == match) {
+              return;
+            }
+          }
+
+          target = target.parentNode;
+        }
+        while (target);
+
+        focusLock.active.callback();
+      }
+      else if (type == 'keydown') {
+        let fs = getElements(focusLockedElement.element, 'focusables');
+        let first = fs[0];
+        let last = fs[fs.length - 1];
+
+        if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
+          event.preventDefault();
+
+          if (target == first)     { last.focus(); }
+          else if (target == last) { first.focus(); }
+        }
+        else if (event.key == 'Escape') {
+          event.preventDefault();
+          focusLock.active.callback();
+        }
+      }
+    }
+  },
+  active: false
+};
 var shiftStats = false;
 var hashRequests = {};
 var shiftNames = {
@@ -506,49 +572,6 @@ function setupDropdownMenu (dropdown) {
     }
   })();
 }
-// Control focus within element
-function handleFocusLock (event) {
-  let type = event.type;
-
-  if (focusLockedElement !== null) {
-    let target = event.target;
-    let matches = [
-      focusLockedElement.element,
-      document.getElementById('alert_popup_feed')
-    ];
-
-    if (type == 'click') {
-      do {
-        for (let i = 0; i < matches.length; i++) {
-          if (target == matches[i]) {
-            return;
-          }
-        }
-
-        target = target.parentNode;
-      }
-      while (target);
-
-      focusLockedElement.callback();
-    }
-    else if (type == 'keydown') {
-      let fs = getElements(focusLockedElement.element, 'focusables');
-      let first = fs[0];
-      let last = fs[fs.length - 1];
-
-      if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
-        event.preventDefault();
-
-        if (target == first)     { last.focus(); }
-        else if (target == last) { first.focus(); }
-      }
-      else if (event.key == 'Escape') {
-        event.preventDefault();
-        focusLockedElement.callback();
-      }
-    }
-  }
-}
 // Copy the contents of the field to the clipboard
 function copyToClipboard (event) {
   let button = event.currentTarget;
@@ -980,8 +1003,9 @@ function execGlobalScripts () {
         if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
       }
     })();
-    window.addEventListener('click', handleFocusLock);
-    window.addEventListener('keydown', handleFocusLock);
+    // Manage focus lock
+    window.addEventListener('click', focusLock.handle);
+    window.addEventListener('keydown', focusLock.handle);
     // Update Dropdown Menu Pos
     (function () {
       let container = document.getElementById('dropdown_menu_container');
