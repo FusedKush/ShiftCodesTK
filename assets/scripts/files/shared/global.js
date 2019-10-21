@@ -106,15 +106,118 @@ var shiftUpdates = {
   update_time: '',
   interval: {
     id: 0,
-    frequency: 60000 * 2 // 1 Minute * Multiplier
-  }
-};
-    shiftUpdates.interval.set = function () {
-      shiftUpdates.interval.id = setInterval(checkShiftUpdate, shiftUpdates.interval.frequency);
-    };
-    shiftUpdates.interval.clear = function () {
+    frequency: 60000 * 2, // 1 Minute * Multiplier
+    set: function () {
+      shiftUpdates.interval.id = setInterval(shiftUpdates.interval.check, shiftUpdates.interval.frequency);
+    },
+    clear: function () {
       clearInterval(shiftUpdates.interval.id);
+    },
+    check: function (firstRun) {
+      let file = '/assets/php/scripts/shift/checkForUpdates';
+
+      newAjaxRequest({
+      file: `${file}?getDetails=false`,
+      callback: function (serverResponse) {
+        let times = ['creation', 'update'];
+        let response = tryJSONParse(serverResponse);
+
+        if (response) {
+          response = response.payload;
+
+          for (let time of times) {
+            let t = `${time}_time`; // creation_time
+            let r = response[t].timestamp; // Server Timestamp
+            let l = shiftUpdates[t]; // Last Timestamp
+
+            if (r > l && !firstRun) {
+              shiftUpdates.interval.clear();
+              newAjaxRequest({
+                file: `${file}?getDetails=true`,
+                callback: function (detailedResponse) {
+                      response = tryJSONParse(detailedResponse).payload;
+                  let id = response[t].id; // Code ID
+                  let g = response[t].game_id; // Game ID
+                  let name = shiftNames[g];
+                  let url = `/${g}` == window.location.pathname;
+                  let hash = `#shift_code_${id}`;
+
+                  if (time == 'creation' || url) {
+                    newToast({
+                      settings: {
+                        id: 'shift_update_notice',
+                        duration: 'infinite'
+                      },
+                      content: {
+                        icon: 'fas fa-key',
+                        title: (function () {
+                          if (time == 'creation') { return `New SHiFT Code for ${name}!`; }
+                          else                    { return `SHiFT Code Update for ${name}!`; }
+                        })(),
+                        body: (function () {
+                          let str = '';
+
+                          if (time == 'creation') {
+                            str += `A new SHiFT Code has just been added to ShiftCodesTK! `;
+
+                            if (url) { str += 'Refresh the list to access the new code.'; }
+                            else     { str += 'Do you want to go there now?'; }
+                          }
+                          else {
+                            str += `A SHiFT Code has just been updated. Refresh the list for changes to take effect.`;
+                          }
+
+                          return str;
+                        })()
+                      },
+                      action: {
+                        use: true,
+                        type: 'link',
+                        close: url,
+                        action: (function () {
+                          if (url) {
+                            return function () {
+                              if (window.location.hash == hash) {
+                                window.location.hash = '#0';
+                              }
+                              shiftUpdates.interval.set();
+                            }
+                          }
+                          else {
+                            return false;
+                          }
+                        })(),
+                        link: (function () {
+                          if (url) { return hash; }
+                          else     { return `/${g}${hash}`; }
+                        })(),
+                        name: (function () {
+                          if (url) { return 'Refresh'; }
+                          else     { return 'View code'; }
+                        })(),
+                        label: (function () {
+                          if (url) { return 'Refresh the list of SHiFT Codes.'; }
+                          else     { return `Visit the ${name} SHiFT Code page`; }
+                        })()
+                      }
+                    });
+                  }
+                }
+              });
+              return;
+            }
+
+            shiftUpdates[t] = r;
+          }
+        }
+        else {
+          shiftUpdates.interval.clear();
+        }
+      }
+    });
     }
+  },
+};
 
 // *** Functions ***
 // Parse Webp images and update as required
@@ -701,84 +804,6 @@ function btnPressToggle (button) {
     }, 500);
   });
 }
-// Update checks
-function checkShiftUpdate (firstRun = false) {
-  newAjaxRequest({
-    file: '/assets/php/scripts/shift/checkForUpdates',
-    callback: function (serverResponse) {
-      let times = ['creation', 'update'];
-      let response = tryJSONParse(serverResponse);
-
-      if (response) {
-        response = response.payload;
-
-        for (let time of times) {
-          let t = `${time}_time`; // creation_time
-          let r = response[t].timestamp; // Server Timestamp
-          let l = shiftUpdates[t]; // Last Timestamp
-          let g = response[t].game_id; // Game ID
-          let name = shiftNames[g];
-          let url = `/${g}` == window.location.pathname;
-
-          if (r > l && !firstRun) {
-            if (time == 'creation' || url) {
-              shiftUpdates.interval.clear();
-              newToast({
-                settings: {
-                  id: 'shift_update_notice',
-                  duration: 'infinite'
-                },
-                content: {
-                  icon: 'fas fa-key',
-                  title: (function () {
-                    if (time == 'creation') { return `New SHiFT Code for ${name}!`; }
-                    else                    { return `SHiFT Code update for ${name}!`; }
-                  })(),
-                  body: (function () {
-                    let str = '';
-
-                    if (time == 'creation') {
-                      str += `A new SHiFT Code has just been added to ShiftCodesTK! `;
-
-                      if (url) { str += 'Reload the page to access the new code.'; }
-                      else     { str += 'Do you want to go there now?'; }
-                    }
-                    else {
-                      str += `A SHiFT Code has just been updated. Reload the page for changes to take effect.`;
-                    }
-
-                    return str;
-                  })()
-                },
-                action: {
-                  use: true,
-                  type: 'link',
-                  link: (function () {
-                    if (url) { return ' '; }
-                    else     { return `/${g}`; }
-                  })(),
-                  name: (function () {
-                    if (url) { return 'Reload'; }
-                    else     { return 'View code'; }
-                  })(),
-                  label: (function () {
-                    if (url) { return 'Reload the current page.'; }
-                    else     { return `Visit the ${name} SHiFT Code page`; }
-                  })()
-                }
-              });
-            }
-          }
-
-          shiftUpdates[t] = r;
-        }
-      }
-      else {
-        shiftUpdates.interval.clear();
-      }
-    }
-  });
-}
 
 // *** Event Listener Reference Functions ***
 function globalListenerLoadClearScroll () {
@@ -1101,7 +1126,7 @@ window.addEventListener('load', function () {
     })();
     // SHiFT Code update checker
     (function () {
-      checkShiftUpdate(true);
+      shiftUpdates.interval.check(true);
       shiftUpdates.interval.set();
     })();
   }, 2500);

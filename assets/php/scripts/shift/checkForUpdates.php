@@ -8,13 +8,21 @@
     'creation',
     'update'
   ];
+  $details = $_GET['getDetails'] == 'true';
 
   foreach ($timestamps as $ts) {
     $col = "${ts}_time";
+    $select = (function () use ($details, $col) {
+      $str = "timezone, ${col}";
+
+      if ($details) {
+        $str .= ", id, game_id";
+      }
+
+      return $str;
+    })();
     $sql = $con->prepare("SELECT
-                            timezone,
-                            ${col},
-                            game_id
+                            ${select}
                           FROM
                             shift_codes
                           WHERE
@@ -23,11 +31,24 @@
                                         FROM
                                           shift_codes)");
     if ($sql) {
-      $data = array_fill_keys(['timestamp', 'game_id'], '');
+      $keys = (function () use ($details) {
+        $k = ['timestamp'];
+
+        if ($details) {
+          $k[] = 'id';
+          $k[] = 'game_id';
+        }
+
+        return $k;
+      })();
+      $data = array_fill_keys($keys, '');
       $tz = '';
       $sql->execute();
       $sql->store_result();
-      $sql->bind_result($tz, $data['timestamp'], $data['game_id']);
+
+      if ($details) { $sql->bind_result($tz, $data['timestamp'], $data['id'], $data['game_id']); }
+      else          { $sql->bind_result($tz, $data['timestamp']); }
+
       $sql->fetch();
 
       // Format Timestamp
