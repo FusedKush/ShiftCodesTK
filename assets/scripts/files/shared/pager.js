@@ -210,6 +210,7 @@ function configurePager (pager) {
   // Setup buttons
   (function () {
     let props = pagers[id];
+    let customLabel = pager.getAttribute('data-label');
 
     if (props.max > 1) {
       let copies = (function () {
@@ -223,6 +224,10 @@ function configurePager (pager) {
       }
       for (let button of getTags(p, 'button')) {
         button.addEventListener('click', pagerEvent);
+
+        if (customLabel) {
+          updateLabel(button, button.title.replace('Page', customLabel));
+        }
       }
     }
   })();
