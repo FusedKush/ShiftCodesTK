@@ -80,7 +80,8 @@ button.styled, a.button {
   }
 
   @include flexbox;
-  padding: 8px;
+  text-align: center;
+  padding: 12px;
   border-radius: 4px;
   font-size: 1em;
   line-height: 1;
