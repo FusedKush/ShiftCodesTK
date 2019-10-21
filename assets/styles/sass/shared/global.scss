@@ -67,10 +67,16 @@ button {
 }
 button.styled, a.button {
   @at-root %idle {
-    &::before { opacity: 0.15; }
-    &::after  { opacity: 0.5; }
+    &:not(.color-light) {
+      &::before { opacity: 0.15; }
+      span      { opacity: 0.85; }
+    }
+    &.color-light {
+      &::before { opacity: 0.75; }
+      span      { opacity: 0.75; }
+    }
 
-    span      { opacity: 0.85; }
+    &::after  { opacity: 0.5; }
   }
 
   @include flexbox;
@@ -82,10 +88,8 @@ button.styled, a.button {
   @include pshared {
     @include fill(true);
   }
-  &::before {
-    background-color: #fff;
-    opacity: 0.15;
-  }
+  &:not(.color-light)::before { background-color: #fff; }
+  &.color-light::before       { background-color: $site-color-lighter; }
   &::after {
     border: bd(1.5px, #fff);
     border-radius: inherit;
@@ -98,9 +102,14 @@ button.styled, a.button {
       @extend %idle;
     }
     @include mouseState(hover) {
-      &::before { opacity: 0.25; }
-      &::after  { opacity: 0.75; }
+      &:not(.color-light){
+        &::before { opacity: 0.25; }
+      }
+      &.color-light {
+        &::before { opacity: 1; }
+      }
 
+      &::after  { opacity: 0.75; }
       span      { opacity: 1; }
     }
     @include mouseState(click) {
