@@ -341,6 +341,8 @@ function getCodes () {
         });
       }
       if (count.added == count.fetched) {
+        hashUpdate();
+
         setTimeout(function () {
           toggleControls(false);
         }, 600);
@@ -405,6 +407,7 @@ shiftScriptsInit = setInterval(function () {
     clearInterval(shiftScriptsInit);
 
     let header = document.getElementById('shift_header');
+    let hashState;
 
     shiftProps = {
       gameID: window.location.pathname.slice(1),
@@ -412,27 +415,18 @@ shiftScriptsInit = setInterval(function () {
       filter: [],
       limit: 10,
       offset: 0,
-      hash: (function () {
-        let h = window.location.hash;
-
-        if (h.search('#shift_code_') == 0) {
-          return h.replace('#shift_code_', '');
-        }
-        else {
-          return false;
-        }
-      })()
+      hash: false
     };
-    hashRequests['shift_code_'] = function () {
-      shiftProps.hash = window.location.hash.replace('#shift_code_', '');
+    hashState = addHashListener('shift_code_', function (hash) {
+      shiftProps.hash = hash.replace('#shift_code_', '');
       getCodes();
-      hashUpdate();
       shiftProps.hash = false;
-    };
+    });
 
     // Initial code listing
-    getCodes();
-    shiftProps.hash = false;
+    if (!hashState) {
+      getCodes();
+    }
     // Setup badges & pager
     (function () {
       tryToRun({

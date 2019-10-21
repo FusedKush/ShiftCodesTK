@@ -94,7 +94,7 @@ var focusLock = {
 };
 var lastFocus;
 var shiftStats = false;
-var hashRequests = {};
+var hashListeners = {};
 var shiftNames = {
   bl1: 'Borderlands: GOTY',
   bl2: 'Borderlands 2',
@@ -330,25 +330,32 @@ function checkHash (key = false) {
 
   function search(keyName) {
     if (hash.search(`#${keyName}`) == 0) {
-      hashRequests[keyName](hash);
+      hashListeners[keyName](hash);
+      return true;
     }
   }
 
   if (key) {
-    search(key);
+    if (search(key)) {
+      return true;
+    };
   }
   else {
-    let keys = Object.keys(hashRequests);
+    let keys = Object.keys(hashListeners);
 
     for (let i = 0; i < keys.length; i++) {
-      search(keys[i]);
+      if (search(keys[i])) {
+        return true;
+      };
     }
   }
+
+  return false;
 }
 // Add a new hash listener
 function addHashListener (key, callback) {
-  hashRequests[key] = callback;
-  checkHash(key);
+  hashListeners[key] = callback;
+  return checkHash(key);
 }
 // Update Dropdown Panel Attributes
 function updateDropdownPanelAttributes (panel, state) {
