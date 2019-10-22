@@ -136,6 +136,25 @@ main {
   padding: 32px 16px 64px;
   overflow: hidden;
 }
+.overlay {
+  @include fill(false, $site-color-main);
+  @include flexbox;
+
+  &.inactive { opacity: 0; }
+  &[hidden]  { display: none; }
+
+  .spinner {
+    transform: scale(1.25);
+  }
+}
+.full-changelog-link {
+  border: bd(1.5px);
+  border-radius: 4px;
+  @include multiProp(tpw(0.25), background-color, border-color);
+  padding: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+}
 .changelog {
   @keyframes panelFadeIn {
     0%    { opacity: 0; }
@@ -175,12 +194,4 @@ main {
     }
   }
   h3 { font-size: 1.15em; }
-  .full-changelog-link {
-    border: bd(1.5px);
-    border-radius: 4px;
-    @include multiProp(tpw(0.25), background-color, border-color);
-    padding: 8px;
-    margin-top: 16px;
-    text-align: center;
-  }
 }
