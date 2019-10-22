@@ -110,7 +110,9 @@
     &.content-container { padding: 16px; }
 
     @include panelRoot {
-      &[data-expanded="false"] .body { display: none; }
+      &[data-expanded="false"], &:not([data-expanded]) {
+        .body                        { display: none; }
+      }
       &[data-expanded="true"] .body  { display: block; }
     }
   }

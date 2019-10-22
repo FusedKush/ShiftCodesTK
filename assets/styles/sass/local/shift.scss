@@ -86,7 +86,7 @@
 
       &::before { @include fill(true, #fff); }
 
-      &[data-pressed="false"] {
+      &[aria-pressed="false"] {
         @include mouseState(noHover) {
           &::before                { opacity: 0.2; }
         }
@@ -95,7 +95,7 @@
         }
         @include mouseState(click) { opacity: 0.75; }
       }
-      &[data-pressed="true"] {
+      &[aria-pressed="true"] {
         opacity: 0.75;
 
         &::before { opacity: 0.4; }
