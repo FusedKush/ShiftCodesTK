@@ -63,6 +63,7 @@ function newToast (properties) {
         duration: 'infinite'
       },
       content: {
+        icon: 'fas fa-exclamation-triangle',
         title: 'An error has occurred'
       },
       action: {
