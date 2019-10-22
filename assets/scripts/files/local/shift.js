@@ -36,16 +36,14 @@ function updateShiftPager () {
   delClass(pager, 'configured');
   pager = configurePager(pager);
 
-  for (let button of getTags(pager, 'button')) {
-    button.addEventListener('click', function (e) {
-      let val = tryParseInt(this.getAttribute('data-value'));
+  addPagerListeners(pager, function (e) {
+    let val = tryParseInt(this.getAttribute('data-value'));
 
-      if (val != shiftProps.offset) {
-        shiftProps.offset = val;
-        getCodes();
-      }
-    });
-  }
+    if (val != shiftProps.offset) {
+      shiftProps.offset = val;
+      getCodes();
+    }
+  });
 }
 function getCodes () {
   let count = {

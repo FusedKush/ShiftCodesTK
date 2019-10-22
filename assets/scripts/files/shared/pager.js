@@ -173,6 +173,11 @@ function pagerEvent (event) {
     }, 250);
   }
 }
+function addPagerListeners (pager, callback) {
+  for (let button of getTags(pager, 'button')) {
+    button.addEventListener('click', callback);
+  }
+}
 function configurePager (pager) {
   let p = getTemplate('pager_template');
   let id = (function () {
