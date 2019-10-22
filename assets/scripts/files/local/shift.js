@@ -416,6 +416,7 @@ shiftScriptsInit = setInterval(function () {
       hash: false
     };
     hashState = addHashListener('shift_code_', function (hash) {
+      shiftProps.offset = 0;
       shiftProps.hash = hash.replace('#shift_code_', '');
       getCodes();
       shiftProps.hash = false;
