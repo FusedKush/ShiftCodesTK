@@ -2,7 +2,7 @@
   <div class="steps">
     <div class="scroller"></div>
   </div>
-  <div class="pager" id="instructions_pager" aria-controls="instructions" data-label="Step"><div>
+  <div class="pager" id="instructions_pager" aria-controls="instructions" data-label="Step"></div>
 </div>
 <template id="how_to_redeem_step_template">
   <div class="step">
