@@ -68,18 +68,11 @@
       $p = $params[$parameter];
 
       if ($p != 'false') {
-        if (strpos('shift_code_', $p) != -1) {
-          return preg_replace('/\#parameter/', $p, $returnValue);
-        }
-        else {
-          $illegalVal($parameter, $p);
-          return '';
-        }
+        return preg_replace('/\#parameter/', $p, $returnValue);
       }
       else {
         return '';
       }
-      if (strpos('shift_code_', $p) == -1)
 
       // Else
       $illegalVal($parameter, $p);
