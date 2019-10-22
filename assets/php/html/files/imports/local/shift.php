@@ -31,7 +31,7 @@
     </div>
   </div>
 </header>
-<main class="feed shift-code-list content-wrapper" id="shift_code_feed" data-filter="none" data-sort="default">
+<main class="feed shift-code-list content-wrapper" id="shift_code_feed">
   <div class="overlay" id="shift_overlay">
     <!-- Spinner -->
     <?php include("./assets/php/html/min/imports/local/spinner.php"); ?>
