@@ -127,42 +127,78 @@ function tryToRun(settings) {
 
 ; // Toggle element states
 
-function disenable(element, state, optTx) {
-  var tabIndexes = {
-    "true": '-1',
-    "false": '0'
-  };
-  element.disabled = state;
-  element.setAttribute('aria-disabled', state);
+function setElementState(affectedState, element, state, setTabIndex) {
+  var validStates = ['disabled', 'hidden'];
 
-  if (state === true) {
-    element.setAttribute('disabled', '');
-  } else {
-    element.removeAttribute('disabled');
+  function error(message) {
+    var error = new Error();
+    error.name = 'setElementStateError';
+    error.message = message;
+    throw error;
   }
 
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
+  if (validStates.indexOf(affectedState) != -1) {
+    if (element) {
+      var hasProp = element[affectedState]; // Toggle state
+
+      if (state == 'toggle') {
+        if (hasProp) {
+          state = !element[affectedState];
+        } else {
+          state = element.getAttribute(affectedState) !== null;
+        }
+      } // Update element
+
+
+      if (hasProp) {
+        element[affectedState] = state;
+      } else {
+        if (state) {
+          element.setAttribute(affectedState, '');
+        } else {
+          element.removeAttribute(affectedState);
+        }
+
+        element.setAttribute("aria-".concat(affectedState), state);
+      } // Tabindex
+
+
+      if (setTabIndex) {
+        var indexes = {
+          "true": -1,
+          "false": 0
+        };
+        element.tabIndex = indexes[state];
+      }
+
+      return true;
+    } else {
+      error("Provided element is ".concat(element, "."));
+    }
+  } else {
+    error("".concat(affectedState, " is not a valid state."));
   }
 }
 
+function isDisabled(element) {
+  var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'toggle';
+  var setTabIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  return setElementState('disabled', element, state, setTabIndex);
+}
+
+function isHidden(element) {
+  var state = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'toggle';
+  var setTabIndex = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  return setElementState('hidden', element, state, setTabIndex);
+} // Aliases of ^
+
+
+function disenable(element, state, optTx) {
+  return isDisabled(element, state, optTx);
+}
+
 function vishidden(element, state, optTx) {
-  var tabIndexes = {
-    "true": '-1',
-    "false": '0'
-  };
-  element.hidden = state;
-  element.setAttribute('aria-hidden', state);
-
-  if (state === true) {
-    element.setAttribute('hidden', '');
-  } else {
-    element.removeAttribute('hidden');
-  }
-
-  if (optTx === true) {
-    element.tabIndex = tabIndexes[state];
-  }
+  return isHidden(element, state, optTx);
 } // Update ELement Labels
 
 
@@ -562,17 +598,25 @@ function getElements(parent, elements) {
   }
 
   return matches;
-} // Copy elements
+} // Manipulate lements
 
+
+function getElement(element) {
+  if (typeof element == 'string') {
+    return document.getElementById(element);
+  } else {
+    return element;
+  }
+}
 
 function copyElm(element) {
   var deepClone = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
   return element.cloneNode(deepClone);
 }
 
-function getTemplate(templateID) {
+function getTemplate(template) {
   var deepClone = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-  var e = document.getElementById(templateID);
+  var e = getElement(template);
 
   if (e !== null && e !== undefined) {
     if (e.tagName == 'TEMPLATE') {
@@ -583,6 +627,11 @@ function getTemplate(templateID) {
   } else {
     throw 'getTemplate called on an undefined element: ' + templateID;
   }
+}
+
+function deleteElm(element) {
+  var e = getElement(element);
+  return e.parentNode.removeChild(e);
 } // Traverse the dom until it reaches the specified element
 
 

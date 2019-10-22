@@ -9,10 +9,6 @@ var globalScriptLoaded = true;
 var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
-var defaultDropdownPanelLabels = {
-  "false": 'Expand Panel',
-  "true": 'Collapse Panel'
-};
 var focusLock = {
   set: function set(elements, callback) {
     focusLock.active = {};
@@ -568,294 +564,6 @@ function checkHash() {
 function addHashListener(key, callback) {
   hashListeners[key] = callback;
   return checkHash(key);
-} // Update Dropdown Panel Attributes
-
-
-function updateDropdownPanelAttributes(panel, state) {
-  var toggler = panel.getElementsByClassName('header')[0];
-
-  var labels = function () {
-    var customLabels = toggler.getAttribute('data-custom-labels');
-
-    if (customLabels === null) {
-      return defaultDropdownPanelLabels;
-    } else {
-      return JSON.parse(customLabels);
-    }
-  }();
-
-  panel.setAttribute('data-expanded', state);
-  panel.setAttribute('aria-expanded', state);
-  toggler.setAttribute('data-pressed', state);
-  toggler.setAttribute('aria-pressed', state);
-  toggler.title = labels[state];
-  toggler.setAttribute('aria-label', labels[state]);
-} // Add Dropdown Panel Listener
-
-
-function addDropdownPanelListener(panel) {
-  panel.getElementsByClassName('header')[0].addEventListener('click', function (e) {
-    toggleDropdownPanel(this);
-  });
-} // Set up Dropdown Panel
-
-
-function dropdownPanelSetup(panel) {
-  var hashTargetOverlay = document.createElement('span'); // Requires constructor
-
-  if (hasClass(panel, 'c') === true) {
-    var parent = panel.parentNode;
-    var template = {};
-
-    (function () {
-      template.base = getTemplate('dropdown_panel_template');
-      template.title = getClass(template.base, 'title');
-      template.icon = getClass(template.title, 'icon');
-      template.primary = getClass(template.title, 'primary');
-      template.secondary = getClass(template.title, 'secondary');
-      template.body = getClass(template.base, 'body');
-    })();
-
-    var props = ['icon', 'primary', 'secondary', 'body'];
-
-    if (panel.id != '') {
-      template.base.id = panel.id;
-    }
-
-    for (var _i3 = 0; _i3 < props.length; _i3++) {
-      var prop = props[_i3];
-      var val = getClass(panel, prop);
-
-      if (val !== undefined) {
-        template[prop].innerHTML = val.innerHTML;
-      } else {
-        template[prop].parentNode.removeChild(template[prop]);
-      }
-    }
-
-    delClass(panel, 'c');
-    parent.replaceChild(template.base, panel);
-    panel = template.base;
-  }
-
-  updateDropdownPanelAttributes(panel, false);
-  addDropdownPanelListener(panel);
-  hashTargetOverlay.className = 'overlay-hashtarget';
-  panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
-} // Toggle Dropdown Panel
-
-
-function toggleDropdownPanel(toggler) {
-  var panel = toggler.parentNode;
-  var state = panel.getAttribute('data-expanded') == 'true';
-  updateDropdownPanelAttributes(panel, !state);
-} // Retrieve Dropdown Menu Properties
-
-
-function retrieveDropdownMenuProps(dropdown) {
-  var props = {};
-
-  props.id = function () {
-    if (dropdown.id === null) {
-      return 'dropdown_menu_' + Math.floor(Math.random() * (1000 - 100));
-    } else {
-      return dropdown.id;
-    }
-  }();
-
-  props.target = document.getElementById(dropdown.getAttribute('data-target'));
-
-  props.toggler = function () {
-    var prop = dropdown.getAttribute('data-toggler');
-
-    if (prop === null) {
-      return props.target;
-    } else {
-      return prop;
-    }
-  }();
-
-  props.pos = dropdown.getAttribute('data-pos');
-  props.options = getClasses(dropdown, 'choice');
-  return props;
-} // Update Dropown Menu Positioning
-
-
-function updateDropdownMenuPos(dropdown) {
-  var props = retrieveDropdownMenuProps(dropdown);
-  var bodyPos = document.body.getBoundingClientRect();
-  var targetPos = props.target.getBoundingClientRect();
-  dropdown.style.top = 'calc(' + (bodyPos.top + '').replace('-', '') + 'px + ' + targetPos.top + 'px)';
-  dropdown.style.left = targetPos.left + 'px';
-  dropdown.style.bottom = 'calc(' + bodyPos.top + 'px + ' + bodyPos.height + 'px - ' + targetPos.bottom + 'px)';
-  dropdown.style.right = 'calc(100% - ' + targetPos.right + 'px)';
-} // Toggle Dropdown Menu
-
-
-function toggleDropdownMenu(dropdown) {
-  var preventToggleFocus = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-  var props = retrieveDropdownMenuProps(dropdown);
-  var bodyPos = document.body.getBoundingClientRect();
-  var targetPos = props.target.getBoundingClientRect();
-  var state = dropdown.getAttribute('data-expanded') == 'true';
-
-  function toggleState() {
-    dropdown.setAttribute('data-expanded', !state);
-    dropdown.setAttribute('aria-expanded', !state);
-    props.toggler.setAttribute('data-pressed', !state);
-    props.toggler.setAttribute('aria-pressed', !state);
-  } // Not Expanded
-
-
-  if (state === false) {
-    updateDropdownMenuPos(dropdown);
-    vishidden(dropdown, false);
-    setTimeout(function () {
-      toggleState();
-      window.addEventListener('click', checkDropdownMenuClick);
-      window.addEventListener('keydown', checkDropdownMenuKey); // Assign initial focus
-
-      (function () {
-        var choices = dropdown.getElementsByClassName('choice');
-
-        for (i = 0; i < choices.length; i++) {
-          var choice = choices[i];
-
-          if (choice.getAttribute('data-pressed') == 'true') {
-            choice.focus();
-            return;
-          }
-        }
-
-        choices[0].focus();
-      })();
-    }, 50);
-  } // Expanded
-  else {
-      toggleState();
-      window.removeEventListener('click', checkDropdownMenuClick);
-      window.removeEventListener('keydown', checkDropdownMenuKey);
-      setTimeout(function () {
-        vishidden(dropdown, true);
-
-        if (preventToggleFocus === false) {
-          props.toggler.focus();
-        } else {
-          document.activeElement.blur();
-        }
-      }, 250);
-    }
-} // Configure Dropdown Menu
-
-
-function setupDropdownMenu(dropdown) {
-  var props = retrieveDropdownMenuProps(dropdown); // Validate Properties
-
-  (function () {
-    var requiredProps = ['target', 'pos'];
-    var missingProps = [];
-
-    for (i = 0; i < requiredProps.length; i++) {
-      var currentCheck = requiredProps[i];
-
-      if (props[currentCheck] === null) {
-        missingProps.push(currentCheck);
-      }
-    }
-
-    if (missingProps.length == 0) {
-      // Configure dropdown and add to container
-      (function () {
-        var arrow = document.createElement('div');
-        var choices = dropdown.getElementsByClassName('choice');
-        addClass(dropdown, 'configured');
-        dropdown.id = props.id;
-        updateDropdownMenuPos(dropdown);
-        dropdown.setAttribute('data-expanded', false);
-        dropdown.setAttribute('aria-expanded', false);
-        vishidden(dropdown, true);
-        arrow.className = 'arrow';
-        dropdown.getElementsByClassName('choice-list')[0].setAttribute('role', 'menu');
-
-        for (i = 0; i < choices.length; i++) {
-          var choice = choices[i];
-          var id = props.id + '_item_' + i + '_label';
-          var label = document.createElement('span');
-          label.id = id;
-          label.innerHTML = choice.innerHTML;
-          choice.setAttribute('role', 'menuitem');
-          choice.setAttribute('aria-labelledby', id);
-          choice.innerHTML = '';
-          choice.appendChild(label);
-        }
-
-        dropdown.appendChild(arrow);
-      })(); // Configure Target
-
-
-      (function () {
-        props.target.classList.add('dropdown-menu-target');
-      })(); // Configure Toggler
-
-
-      (function () {
-        props.toggler.setAttribute('aria-haspopup', 'menu');
-        props.toggler.setAttribute('data-pressed', false);
-        props.toggler.setAttribute('aria-pressed', false);
-        props.toggler.setAttribute('autocomplete', false);
-        props.toggler.addEventListener('click', function (e) {
-          toggleDropdownMenu(document.getElementById(props.id));
-        });
-      })(); // Configure Options
-
-
-      (function () {
-        var p = props.options;
-
-        var _loop2 = function _loop2(_i4) {
-          var o = p[_i4];
-
-          if (hasClass(dropdown, 'o-press')) {
-            o.addEventListener('click', function (e) {
-              setTimeout(function () {
-                for (var _x = 0; _x < p.length; _x++) {
-                  var po = p[_x];
-
-                  if (po.getAttribute('aria-pressed') == 'true') {
-                    po.setAttribute('aria-pressed', false);
-                  }
-                }
-
-                o.setAttribute('aria-pressed', true);
-              }, 500);
-            });
-          }
-
-          if (hasClass(dropdown, 'o-toggle')) {
-            o.addEventListener('click', function (e) {
-              toggleDropdownMenu(dropdown);
-            });
-          }
-        };
-
-        for (var _i4 = 0; _i4 < p.length; _i4++) {
-          _loop2(_i4);
-        }
-      })(); // Create Dropdown Menu Container if not initalized
-
-
-      if (document.getElementById('dropdown_menu_container') === null) {
-        var container = document.createElement('div');
-        container.className = 'dropdown-menu-container';
-        container.id = 'dropdown_menu_container';
-        document.body.insertBefore(container, document.body.childNodes[0]);
-      }
-
-      document.getElementById('dropdown_menu_container').appendChild(dropdown);
-    } else {
-      console.error('Dropdown Menu "' + props.id + '" is missing the following required properties: "' + missingProps.join('", "') + '". Dropdown Menu Creation Failed.');
-    }
-  })();
 } // Copy the contents of the field to the clipboard
 
 
@@ -866,7 +574,7 @@ function copyToClipboard(event) {
     var treeJumps = parseInt(button.getAttribute('data-copy-target'));
     var pos = button;
 
-    for (var _i5 = 0; _i5 < treeJumps; _i5++) {
+    for (var _i3 = 0; _i3 < treeJumps; _i3++) {
       pos = pos.parentNode;
     }
 
@@ -899,8 +607,8 @@ function copyToClipboard(event) {
 function fixClickableContent(e) {
   var children = e.childNodes;
 
-  for (var _i6 = 0; _i6 < children.length; _i6++) {
-    var child = children[_i6];
+  for (var _i4 = 0; _i4 < children.length; _i4++) {
+    var child = children[_i4];
 
     if (child.nodeName == '#text') {
       var span = document.createElement('span');
@@ -949,61 +657,6 @@ function globalListenerHashTargetHover(event) {
 
 function globalListenerHashTargetAway() {
   clearTimeout(hashTargetTimeout);
-}
-
-function checkDropdownMenuClick(event) {
-  var target = event.target;
-
-  var dropdown = function () {
-    var e = document.getElementsByClassName('dropdown-menu');
-
-    for (i = 0; i < e.length; i++) {
-      if (e[i].getAttribute('data-expanded') == 'true') {
-        return e[i];
-      }
-    }
-  }();
-
-  do {
-    if (target == dropdown) {
-      return;
-    }
-
-    target = target.parentNode;
-  } while (target);
-
-  toggleDropdownMenu(dropdown, true);
-}
-
-function checkDropdownMenuKey(event) {
-  var target = event.target;
-
-  var dropdown = function () {
-    var e = document.getElementsByClassName('dropdown-menu');
-
-    for (i = 0; i < e.length; i++) {
-      if (e[i].getAttribute('data-expanded') == 'true') {
-        return e[i];
-      }
-    }
-  }();
-
-  var choices = dropdown.getElementsByClassName('choice');
-  var first = choices[0];
-  var last = choices[choices.length - 1];
-
-  if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
-    event.preventDefault();
-
-    if (target == first) {
-      last.focus();
-    } else if (target == last) {
-      first.focus();
-    }
-  } else if (event.key == 'Escape') {
-    event.preventDefault();
-    toggleDropdownMenu(dropdown);
-  }
 } // *** Immediate Functions & Event Listeners *** //
 // Checking for Dependencies
 
@@ -1029,25 +682,7 @@ function execGlobalScripts() {
     })(); // Check for hash-targeted elements
 
 
-    hashUpdate(); // Automatic Dropdown Panel Functions
-
-    (function () {
-      var panels = document.getElementsByClassName('dropdown-panel');
-
-      for (var _i7 = 0; _i7 < panels.length; _i7++) {
-        dropdownPanelSetup(panels[_i7]);
-      }
-    })(); // Setup present Dropdown Menus
-
-
-    (function () {
-      var dropdowns = document.getElementsByClassName('dropdown-menu');
-
-      for (i = 0; i < dropdowns.length; i++) {
-        setupDropdownMenu(dropdowns[i]);
-      }
-    })(); // Update Breadcrumbs
-
+    hashUpdate(); // Update Breadcrumbs
 
     (function () {
       var header = document.getElementById('primary_header');
@@ -1176,8 +811,8 @@ function execGlobalScripts() {
 
         addClass(container.parentNode, 'ready');
 
-        for (var _i8 = 0, _tmpsNames = tmpsNames; _i8 < _tmpsNames.length; _i8++) {
-          var t = _tmpsNames[_i8];
+        for (var _i5 = 0, _tmpsNames = tmpsNames; _i5 < _tmpsNames.length; _i5++) {
+          var t = _tmpsNames[_i5];
           document.getElementById(tmps[t]).remove();
         }
       }
@@ -1207,8 +842,8 @@ function execGlobalScripts() {
     (function () {
       var clickables = getElements(document, 'clickables');
 
-      for (var _i9 = 0; _i9 < clickables.length; _i9++) {
-        fixClickableContent(clickables[_i9]);
+      for (var _i6 = 0; _i6 < clickables.length; _i6++) {
+        fixClickableContent(clickables[_i6]);
       }
     })(); // Add Press Toggle Listener to buttons
 
@@ -1216,8 +851,8 @@ function execGlobalScripts() {
     (function () {
       var buttons = getTags(document, 'button');
 
-      for (var _i10 = 0; _i10 < buttons.length; _i10++) {
-        var btn = buttons[_i10];
+      for (var _i7 = 0; _i7 < buttons.length; _i7++) {
+        var btn = buttons[_i7];
 
         if (hasClass(btn, 'o-pressed')) {
           btnPressToggle(btn);
@@ -1272,24 +907,7 @@ function execGlobalScripts() {
 
 
     window.addEventListener('click', focusLock.handle);
-    window.addEventListener('keydown', focusLock.handle); // Update Dropdown Menu Pos
-
-    (function () {
-      var container = document.getElementById('dropdown_menu_container');
-
-      if (container !== null) {
-        var dropdowns = getClasses(container, 'dropdown-menu');
-        window.addEventListener('resize', function (e) {
-          for (var _i11 = 0; _i11 < dropdowns.length; _i11++) {
-            var dd = dropdowns[_i11];
-
-            if (dd.getAttribute('data-expanded')) {
-              updateDropdownMenuPos(dd);
-            }
-          }
-        });
-      }
-    })();
+    window.addEventListener('keydown', focusLock.handle);
   } else {
     setTimeout(execGlobalScripts, 250);
   }

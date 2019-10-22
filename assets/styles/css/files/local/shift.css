@@ -101,15 +101,15 @@
       border-radius: inherit;
       content: "";
       background-color: #fff; }
-    .shift-header .sort > button[data-pressed="false"]:not(:hover):not(:focus)::before {
+    .shift-header .sort > button[aria-pressed="false"]:not(:hover):not(:focus)::before {
       opacity: 0.2; }
-    .shift-header .sort > button[data-pressed="false"]:hover::before, .shift-header .sort > button[data-pressed="false"]:focus::before {
+    .shift-header .sort > button[aria-pressed="false"]:hover::before, .shift-header .sort > button[aria-pressed="false"]:focus::before {
       opacity: 0.4; }
-    .shift-header .sort > button[data-pressed="false"]:active {
+    .shift-header .sort > button[aria-pressed="false"]:active {
       opacity: 0.75; }
-    .shift-header .sort > button[data-pressed="true"] {
+    .shift-header .sort > button[aria-pressed="true"] {
       opacity: 0.75; }
-      .shift-header .sort > button[data-pressed="true"]::before {
+      .shift-header .sort > button[aria-pressed="true"]::before {
         opacity: 0.4; }
 
 main.shift-code-list {

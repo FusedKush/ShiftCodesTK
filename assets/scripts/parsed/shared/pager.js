@@ -62,7 +62,7 @@ function pagerUpdate(pager) {
     var jump = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
     var negativeOffset = function () {
-      if (props.subtractOffset) {
+      if (props.subtractoffset) {
         return props.offset;
       } else {
         return 0;
@@ -231,6 +231,32 @@ function pagerEvent(event) {
   }
 }
 
+function addPagerListeners(pager, callback) {
+  var _iteratorNormalCompletion3 = true;
+  var _didIteratorError3 = false;
+  var _iteratorError3 = undefined;
+
+  try {
+    for (var _iterator3 = getTags(pager, 'button')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+      var button = _step3.value;
+      button.addEventListener('click', callback);
+    }
+  } catch (err) {
+    _didIteratorError3 = true;
+    _iteratorError3 = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
+        _iterator3["return"]();
+      }
+    } finally {
+      if (_didIteratorError3) {
+        throw _iteratorError3;
+      }
+    }
+  }
+}
+
 function configurePager(pager) {
   var p = getTemplate('pager_template');
 
@@ -247,7 +273,7 @@ function configurePager(pager) {
   (function () {
     var defaultProps = {};
     defaultProps.now = defaultProps.min = defaultProps.max = defaultProps.offset = 1;
-    defaultProps.subtractOffset = false;
+    defaultProps.subtractoffset = false;
     defaultProps.onclick = false;
     var props = Object.keys(defaultProps);
     pagers[id] = {};
@@ -290,13 +316,13 @@ function configurePager(pager) {
         jumps.appendChild(copyElm(getTag(jumps, 'button')));
       }
 
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
-        for (var _iterator3 = getTags(p, 'button')[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var button = _step3.value;
+        for (var _iterator4 = getTags(p, 'button')[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          var button = _step4.value;
           button.addEventListener('click', pagerEvent);
 
           if (customLabel) {
@@ -304,16 +330,16 @@ function configurePager(pager) {
           }
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3["return"] != null) {
-            _iterator3["return"]();
+          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
+            _iterator4["return"]();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -331,29 +357,29 @@ pagerScripts = setInterval(function () {
 
     (function () {
       var pagers = getClasses(document, 'pager');
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
-        for (var _iterator4 = pagers[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-          var p = _step4.value;
+        for (var _iterator5 = pagers[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+          var p = _step5.value;
 
           if (!hasClass(p, 'no-auto-config') && !hasClass(p, 'configured')) {
             configurePager(p);
           }
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4["return"] != null) {
-            _iterator4["return"]();
+          if (!_iteratorNormalCompletion5 && _iterator5["return"] != null) {
+            _iterator5["return"]();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }

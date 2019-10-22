@@ -53,36 +53,14 @@ function updateShiftPager() {
 
   delClass(pager, 'configured');
   pager = configurePager(pager);
-  var _iteratorNormalCompletion2 = true;
-  var _didIteratorError2 = false;
-  var _iteratorError2 = undefined;
+  addPagerListeners(pager, function (e) {
+    var val = tryParseInt(this.getAttribute('data-value'));
 
-  try {
-    for (var _iterator2 = getTags(pager, 'button')[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-      var button = _step2.value;
-      button.addEventListener('click', function (e) {
-        var val = tryParseInt(this.getAttribute('data-value'));
-
-        if (val != shiftProps.offset) {
-          shiftProps.offset = val;
-          getCodes();
-        }
-      });
+    if (val != shiftProps.offset) {
+      shiftProps.offset = val;
+      getCodes();
     }
-  } catch (err) {
-    _didIteratorError2 = true;
-    _iteratorError2 = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
-        _iterator2["return"]();
-      }
-    } finally {
-      if (_didIteratorError2) {
-        throw _iteratorError2;
-      }
-    }
-  }
+  });
 }
 
 function getCodes() {
@@ -454,6 +432,7 @@ shiftScriptsInit = setInterval(function () {
       hash: false
     };
     hashState = addHashListener('shift_code_', function (hash) {
+      shiftProps.offset = 0;
       shiftProps.hash = hash.replace('#shift_code_', '');
       getCodes();
       shiftProps.hash = false;
@@ -549,18 +528,14 @@ shiftScriptsInit = setInterval(function () {
 
     (function () {
       var dropdown = document.getElementById('shift_header_sort_dropdown');
-      var options = getTags(dropdown, 'button');
+      addDropdownMenuListeners(dropdown, function (e) {
+        var attr = this.getAttribute('aria-pressed');
 
-      for (var _i10 = 0; _i10 < options.length; _i10++) {
-        options[_i10].addEventListener('click', function (e) {
-          var attr = this.getAttribute('aria-pressed');
-
-          if (!attr || attr == 'false') {
-            shiftProps.order = this.getAttribute('data-value');
-            getCodes();
-          }
-        });
-      }
+        if (!attr || attr == 'false') {
+          shiftProps.order = this.getAttribute('data-value');
+          getCodes();
+        }
+      });
     })();
   }
 }, 250);

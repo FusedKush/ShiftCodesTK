@@ -1,202 +1,295 @@
-/*********************************
-  Updates Page Scripts
-*********************************/
-// *** Immediate Functions ***
-// Handles Changelogs' Construction
-(function () {
+var changelogProps = {
+  limit: 10,
+  offset: 0,
+  hash: false,
+  firstRun: true
+};
+var changelogIdPrefix = 'changelog_';
+
+function getChangelogs() {
+  var idPrefix = changelogIdPrefix;
   var count = {
-    'retrieved': 0,
-    'total': 0
-  }; // Construct the Changelog Panel & add it to the page
+    fetched: 0,
+    added: 0
+  };
 
-  function constructPanel(updateObject) {
-    var panel = {}; // Changelog Panel Elements
+  var query = function () {
+    var str = '';
+    var propNames = Object.keys(changelogProps);
+
+    for (var i = 0; i < propNames.length; i++) {
+      var name = propNames[i];
+      var val = changelogProps[name];
+      str += "&".concat(name, "=").concat(val);
+    }
+
+    return str.replace('&', '?');
+  }();
+
+  var jump = getElement('updates_header_jump');
+  var list = document.getElementById('changelog_list');
+
+  function toggleOverlay(overlayIsHidden) {
+    var overlay = getElement('changelog_overlay');
+
+    if (overlayIsHidden) {
+      addClass(overlay, 'inactive');
+      setTimeout(function () {
+        isHidden(overlay, true);
+      }, 250);
+    } else {
+      isHidden(overlay, false);
+      setTimeout(function () {
+        delClass(overlay, 'inactive');
+      }, 50);
+    }
+  }
+
+  function clearList() {
+    list.innerHTML = '';
+  }
+
+  function addChangelog(cl) {
+    var changelog = getTemplate('changelog_template');
+    var e = {
+      icon: getClass(changelog, 'icon').childNodes[0],
+      version: getClass(changelog, 'version'),
+      date: getClass(changelog, 'date'),
+      type: getClass(changelog, 'type'),
+      body: getClass(changelog, 'body')
+    };
+    var ver = cl.version; // Properties
 
     (function () {
-      panel.template = document.getElementById('panel_template');
-      panel.base = panel.template.content.children[0].cloneNode(true);
-      panel.header = panel.base.getElementsByClassName('header')[0];
-      panel.icon = panel.header.getElementsByClassName('icon')[0].getElementsByClassName('fas')[0];
-      panel.version = panel.header.getElementsByClassName('version')[0];
-      panel.date = panel.header.getElementsByClassName('info')[0].getElementsByClassName('date')[0];
-      panel.type = panel.header.getElementsByClassName('info')[0].getElementsByClassName('type')[0];
-      panel.body = panel.base.getElementsByClassName('body')[0];
-      panel.fullLink = panel.body.getElementsByClassName('full-changelog-link')[0].getElementsByTagName('a')[0];
-    })();
-
-    var ver = updateObject.version; // Handle Panel Properties
-
-    (function () {
-      // Panel ID
-      panel.base.id = 'version_' + ver; // Panel animation timing
-
-      panel.base.style.animationDelay = count.total * 0.2 + 's';
-    })(); // Handle Header Properties
+      changelog.id = idPrefix + ver;
+      changelog.style.animationDelay = "".concat(count.added * 0.2, "s");
+    })(); // Header
 
 
     (function () {
-      var type = updateObject.type;
       var icons = {
-        'Major': 'fa-broadcast-tower',
-        'Minor': 'fa-cogs',
-        'Patch': 'fa-tools'
-      };
+        major: 'fa-broadcast-tower',
+        minor: 'fa-cogs',
+        patch: 'fa-tools'
+      }; //  ^ Changelog Icons
 
-      var typeString = function () {
-        if (type != 'Patch') {
-          return type + ' Update';
+      var type = cl.type.toLowerCase();
+
+      var typeStr = function () {
+        if (type == 'patch') {
+          return cl.type;
         } else {
-          return type;
+          return "".concat(cl.type, " Update");
         }
       }();
 
-      panel.icon.classList.add(icons[type]);
-      updateLabel(panel.icon, typeString);
-      panel.version.innerHTML = 'Version ' + updateObject.version;
+      addClass(e.icon, icons[type]);
+      updateLabel(e.icon, typeStr);
+      e.version.innerHTML = "Version ".concat(ver);
+      e.date.innerHTML = datetime('month-date-year', cl.date);
+      e.type.innerHTML = typeStr;
+    })(); // Body
 
-      panel.date.innerHTML = function () {
-        var date = updateObject.date;
-        var y = date.substring(0, 4);
-        var md = date.substring(5);
-        return md + '-' + y;
+
+    (function () {
+      var notes = function () {
+        var regexps = {
+          // Format Sections
+          '(#{3}\\s{1})(?=\\w)': '</ul><h3>',
+          '\\s{1}#{3}': '</h3><ul class="styled">',
+          // Format Lists
+          '-.+': function _(match) {
+            return match.replace(/-\s{1}/g, '<li>') + '</li>';
+          },
+          // Format Bolded Content
+          '\\*{2}(?=[\\w.])': '<strong>',
+          '\\*{2}(?![\\w.])': '</strong>',
+          // Format Emphasized Content
+          '_{1}(?=[\\w.])': '<em>',
+          '_{1}(?![\\w.])': '</em>',
+          // Format Code Content
+          '`{1}(?=[\\w.])': '<code>',
+          '`{1}(?![\\w.])': '</code>'
+        };
+        var exps = Object.keys(regexps);
+        var n = cl.notes;
+
+        for (var i = 0; i < exps.length; i++) {
+          var exp = exps[i];
+          var regex = new RegExp(exp, 'g');
+          var replacement = regexps[exp];
+          n = n.replace(regex, replacement);
+        }
+
+        n = n.replace(/<\/ul>/, ''); // Remove First closing List tag
+
+        n += '</ul>'; // Add Final closing List tag
+
+        return n;
       }();
 
-      panel.type.innerHTML = typeString;
-    })(); // Handle Body Properties
+      e.body.innerHTML = notes;
+    })(); // Listeners
 
 
-    (function () {
-      var updateNotes = document.createElement('div');
-      updateNotes.className = 'update-notes';
-
-      updateNotes.innerHTML = function () {
-        var notes = updateObject.notes;
-
-        function updateChanges(match) {
-          return match.replace(/-\s{1}/g, '<li>') + '</li>';
-        } // Replace Markdown with HTML Markup
-        // Format Sections
-
-
-        notes = notes.replace(/(#{3}\s{1})(?=\w)/g, '</ul><h3>');
-        notes = notes.replace(/\s{1}#{3}/g, '</h3><ul class="styled">'); // Format Lists
-
-        notes = notes.replace(/-.*/g, updateChanges); // Format Bolded Content
-
-        notes = notes.replace(/\*{2}(?=[\w.])/g, '<strong>');
-        notes = notes.replace(/\*{2}(?![\w.])/g, '</strong>'); // Format Emphasized Content
-
-        notes = notes.replace(/_{1}(?=[\w.])/g, '<em>');
-        notes = notes.replace(/_{1}(?![\w.])/g, '</em>'); // Format Code Content
-
-        notes = notes.replace(/`{1}(?=[\w.])/g, '<code>');
-        notes = notes.replace(/`{1}(?![\w.])/g, '</code>'); // Correct the final output
-
-        notes = notes.replace(/<\/ul>/, ''); // Remove First closing List tag
-
-        notes = notes + '</ul>'; // Add Final closing List tag
-
-        return notes;
-      }();
-
-      panel.body.insertBefore(updateNotes, panel.body.childNodes[0]);
-      panel.fullLink.href = 'https://github.com/FusedKush/ShiftCodesTK/releases/tag/v' + ver;
-      updateLabel(panel.fullLink, 'Complete Release Notes for Version ' + ver + ' (External Link)');
-    })(); // Handle Panel Event Listeners
-
+    dropdownPanelSetup(changelog); // Add to page
 
     (function () {
-      dropdownPanelSetup(panel.base);
-    })(); // Add panel to page
+      if (count.added == 0) {
+        clearList();
+      }
 
+      list.appendChild(changelog);
+      count.added++;
 
-    (function () {
-      var main = document.getElementsByTagName('main')[0];
-      main.appendChild(panel.base);
-      count.total++; // Handle Header Updates
+      if (count.added == 1) {
+        toggleOverlay(true);
+      }
 
-      (function () {
-        var id = panel.base.id;
+      if (count.added == count.fetched) {
+        addFocusScrollListeners(list);
+        hashUpdate();
 
-        var title = function () {
-          var start = id.slice(0, 1).toUpperCase();
-          var parsed = id.replace('_', ' ');
-          return start + parsed.slice(1);
-        }();
+        if (!changelogProps.firstRun) {
+          isDisabled(jump, false);
+        }
+      }
+    })();
+  }
 
-        var current = document.getElementById('updates_header_current');
-        var dropdown = document.getElementById('updates_header_jump_dropdown');
-        var choiceList = dropdown.getElementsByClassName('choice-list')[0]; // Update Latest Update field
+  function handleResponse(serverResponse) {
+    var response = tryJSONParse(serverResponse);
 
-        if (count.total == 1) {
-          var section = current.parentNode.parentNode;
-          current.href = '#' + id;
-          current.getElementsByTagName('strong')[0].innerHTML = title.replace('Version ', '');
-          updateLabel(current, 'Jump to ' + title + ' Changelog');
-          vishidden(section, false);
-          setTimeout(function () {
-            section.removeAttribute('data-hidden');
-          }, 50);
-        } // Add link to Jump Button
+    if (response && response.statusCode == 0) {
+      var changelogs = response.payload.changelogs;
+      count.fetched = changelogs.length;
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = changelogs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var changelog = _step.value;
+          addChangelog(changelog);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"] != null) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      if (changelogProps.firstRun) {
+        var vers = response.payload.versions;
+        changelogProps.firstRun = false; // Setup pager
+
+        (function () {
+          var pager = getElement('changelog_pager');
+          pager.setAttribute('data-max', Math.ceil(vers.length / changelogProps.limit));
+          pager = configurePager(pager);
+          addPagerListeners(pager, function (e) {
+            var val = tryParseInt(this.getAttribute('data-value'));
+
+            if (val != changelogProps.offset) {
+              changelogProps.offset = val;
+              getChangelogs();
+            }
+          });
+        })(); // Setup Jump dropdown
 
 
         (function () {
-          var e = {};
-
-          (function () {
-            e.li = document.createElement('li');
-            e.a = document.createElement('a');
-            e.span = document.createElement('span');
-          })();
-
-          e.li.setAttribute('role', 'menuitem');
-          e.a.className = 'choice internal';
-          e.a.href = '#' + id;
-          e.a.setAttribute('data-value', title);
-          e.span.innerHTML = title;
-          updateLabel(e.a, 'Jump to ' + title + ' Changelog');
-          e.a.appendChild(e.span);
-          e.li.appendChild(e.a);
-          choiceList.appendChild(e.li);
-          choiceList.lastChild.addEventListener('click', function () {
-            toggleDropdownMenu(dropdown, true);
+          var jump, dropdown;
+          var template = document.getElementById('changelog_jump_template');
+          tryToRun({
+            "function": function _function() {
+              jump = document.getElementById('updates_header_jump');
+              dropdown = document.getElementById('updates_header_jump_dropdown');
+              return true;
+            }
           });
-        })();
-      })();
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
-      if (count.retrieved == count.total) {
-        addFocusScrollListeners(main);
-        disenable(document.getElementById('updates_header_jump'), false);
-        panel.template.remove();
-      }
-    })();
-  } // Retrieve updates and add them to the page
-
-
-  (function () {
-    // Wait for dependencies
-    function waitForDep() {
-      if (typeof newAjaxRequest == 'function') {
-        // Fetch changelogs
-        newAjaxRequest({
-          file: 'assets/php/scripts/getChangelogs.php',
-          callback: function callback(response) {
-            var changelogs = JSON.parse(response).response;
-            count.retrieved = changelogs.length; // Process changelogs
-
-            for (var i = 0; i < count.retrieved; i++) {
-              // Construct the panel
-              constructPanel(changelogs[i]);
+          try {
+            for (var _iterator2 = vers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var ver = _step2.value;
+              var choice = getTemplate(template);
+              var link = getTag(choice, 'a');
+              link.href += idPrefix + ver;
+              updateLabel(link, link.href.replace('[\\d\\.]+', ver));
+              link.childNodes[0].innerHTML = "Version ".concat(ver);
+              getClass(dropdown, 'choice-list').appendChild(choice);
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"] != null) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
             }
           }
-        });
-      } else {
-        setTimeout(function () {
-          waitForDep();
-        }, 100);
+
+          setupDropdownMenu(dropdown);
+          isDisabled(jump, false);
+          deleteElm(template);
+        })();
       }
+    } else {
+      clearList();
+      toggleOverlay(false);
+      newToast({
+        settings: {
+          template: 'exception'
+        },
+        content: {
+          body: 'We could not retrieve the changelogs from the server at this time. Please try again later.'
+        }
+      });
     }
 
-    waitForDep();
-  })();
-})(); // *** Event Listeners ***
+    lpbUpdate(100);
+  }
+
+  lpbUpdate(90, true, {
+    start: 20
+  });
+  isDisabled(jump, true);
+  newAjaxRequest({
+    file: "assets/php/scripts/getChangelogs".concat(query),
+    callback: handleResponse
+  });
+}
+
+(function () {
+  var interval = setInterval(function () {
+    if (globalFunctionsReady && pagers) {
+      clearInterval(interval);
+      var currentHashState = addHashListener(changelogIdPrefix, function (hash) {
+        changelogProps.offset = 0;
+        changelogProps.hash = hash.replace("#".concat(changelogIdPrefix), '');
+        getChangelogs();
+        changelogProps.hash = false;
+      });
+
+      if (!currentHashState) {
+        getChangelogs();
+      }
+    }
+  }, 250);
+})();

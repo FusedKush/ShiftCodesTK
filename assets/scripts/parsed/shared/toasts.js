@@ -62,6 +62,7 @@ function newToast(properties) {
         duration: 'infinite'
       },
       content: {
+        icon: 'fas fa-exclamation-triangle',
         title: 'An error has occurred'
       },
       action: {
@@ -187,7 +188,7 @@ function newToast(properties) {
     if (toasts.active[n] === undefined && Object.keys(toasts.active).length <= 3 && toasts.ready) {
       addToast(toast, settings);
       return toast;
-    } else if (toasts.queue[n] === undefined) {
+    } else if (!toasts.queue[n]) {
       toasts.queue[n] = {
         toast: toast,
         settings: settings
@@ -248,14 +249,25 @@ function toastEvent(event) {
 }
 
 window.addEventListener('load', function () {
-  var qKeys = Object.keys(toasts.queue);
   setTimeout(function () {
+    var qKeys = Object.keys(toasts.queue);
+
+    var start = function () {
+      var len = qKeys.length;
+
+      if (len >= 3) {
+        return 2;
+      } else {
+        return len - 1;
+      }
+    }();
+
     toasts.ready = true;
 
-    for (var i = 0; i < qKeys.length && i <= 3; i++) {
+    for (var i = start; i >= 0; i--) {
       var key = qKeys[i];
-      var item = toasts.queue[key];
-      addToast(item.toast, item.settings);
+      var t = toasts.queue[key];
+      addToast(t.toast, t.settings);
       delete toasts.queue[key];
     }
   }, 2500);
