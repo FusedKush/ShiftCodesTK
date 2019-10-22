@@ -110,7 +110,7 @@
         foreach ($data as $key => $val) {
           $v;
 
-          if ($key == 'date') {
+          if ($cols[$key] == 'date') {
             $date = new DateTime($val);
             $v = $date->format('c');
           }
@@ -118,7 +118,7 @@
             $v = $val;
           }
 
-          $arr[$key] = $val;
+          $arr[$key] = $v;
         }
         $response->payload['changelogs'][] = array_combine($cols, $arr);
       }
