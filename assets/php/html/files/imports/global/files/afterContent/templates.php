@@ -1,7 +1,7 @@
 <!-- Dropdown Panels -->
 <template id="dropdown_panel_template">
   <div class="dropdown-panel">
-    <button class="header">
+    <button class="header dropdown-panel-toggle">
       <div class="wrapper">
         <div class="title">
           <div class="icon"></div>

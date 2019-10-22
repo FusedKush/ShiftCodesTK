@@ -69,7 +69,7 @@
     </main>
     <template id="changelog_template">
       <section class="dropdown-panel changelog">
-        <button class="header" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
+        <button class="header dropdown-panel-toggle" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
           <div class="wrapper">
             <div class="title">
               <div class="icon">

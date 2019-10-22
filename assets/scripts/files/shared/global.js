@@ -8,10 +8,6 @@ var globalScriptLoaded = true;
 var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
-var defaultDropdownPanelLabels = {
-  false: 'Expand Panel',
-  true: 'Collapse Panel'
-};
 var focusLock = {
   set: function (elements, callback) {
     focusLock.active = {};
@@ -460,83 +456,6 @@ function addHashListener (key, callback) {
   hashListeners[key] = callback;
   return checkHash(key);
 }
-// Update Dropdown Panel Attributes
-function updateDropdownPanelAttributes (panel, state) {
-  let toggler = panel.getElementsByClassName('header')[0];
-  let labels = (function () {
-    let customLabels = toggler.getAttribute('data-custom-labels');
-
-    if (customLabels === null) { return defaultDropdownPanelLabels; }
-    else                       { return JSON.parse(customLabels); }
-  })();
-
-  panel.setAttribute('data-expanded', state);
-  panel.setAttribute('aria-expanded', state);
-  toggler.setAttribute('data-pressed', state);
-  toggler.setAttribute('aria-pressed', state);
-  toggler.title = labels[state];
-  toggler.setAttribute('aria-label', labels[state]);
-}
-// Add Dropdown Panel Listener
-function addDropdownPanelListener (panel) {
-  panel.getElementsByClassName('header')[0].addEventListener('click', function (e) { toggleDropdownPanel(this); });
-}
-// Set up Dropdown Panel
-function dropdownPanelSetup (panel) {
-  let hashTargetOverlay = document.createElement('span');
-
-  // Requires constructor
-  if (hasClass(panel, 'c') === true) {
-    let parent = panel.parentNode;
-    let template = {};
-      (function () {
-        template.base = getTemplate('dropdown_panel_template');
-        template.title = getClass(template.base, 'title');
-          template.icon = getClass(template.title, 'icon');
-          template.primary = getClass(template.title, 'primary');
-          template.secondary = getClass(template.title, 'secondary');
-        template.body = getClass(template.base, 'body');
-      })();
-      let props = [
-        'icon',
-        'primary',
-        'secondary',
-        'body'
-      ]
-
-    if (panel.id != '') {
-      template.base.id = panel.id;
-    }
-
-    for (let i = 0; i < props.length; i++) {
-      let prop = props[i];
-      let val = getClass(panel, prop);
-
-      if (val !== undefined) {
-        template[prop].innerHTML = val.innerHTML;
-      }
-      else {
-        template[prop].parentNode.removeChild(template[prop]);
-      }
-    }
-
-    delClass(panel, 'c');
-    parent.replaceChild(template.base, panel);
-    panel = template.base;
-  }
-
-  updateDropdownPanelAttributes(panel, false);
-  addDropdownPanelListener(panel);
-  hashTargetOverlay.className = 'overlay-hashtarget';
-  panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
-}
-// Toggle Dropdown Panel
-function toggleDropdownPanel (toggler) {
-  let panel = toggler.parentNode;
-  let state = panel.getAttribute('data-expanded') == 'true';
-
-  updateDropdownPanelAttributes(panel, !state);
-}
 // Copy the contents of the field to the clipboard
 function copyToClipboard (event) {
   let button = event.currentTarget;
@@ -647,14 +566,6 @@ function execGlobalScripts () {
     })();
     // Check for hash-targeted elements
     hashUpdate();
-    // Automatic Dropdown Panel Functions
-    (function () {
-      let panels = document.getElementsByClassName('dropdown-panel');
-
-      for(let i = 0; i < panels.length; i++) {
-        dropdownPanelSetup(panels[i]);
-      }
-    })();
     // Update Breadcrumbs
     (function () {
       let header = document.getElementById('primary_header');

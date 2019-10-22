@@ -1,0 +1,119 @@
+@import "../partials/_globals";
+
+.dropdown-panel {
+  $margins: 8px;
+
+  border-radius: 4px;
+  padding: 2px;
+  overflow: hidden;
+
+  // Hide panels requesting a constructor
+  &.c {
+    display: none;
+  }
+  &::before {
+    @include fill(true, $site-color-lighter);
+    @include multiProp(100%, sizing);
+    border: bd(2px, tpw(0.25));
+    border-radius: inherit;
+  }
+  &:not(:first-child) { margin-top: $margins; }
+  &:not(:last-child) { margin-bottom: $margins; }
+
+  @mixin panelRoot {
+    @at-root .dropdown-panel { @content; }
+  }
+
+  .overlay-hashtarget {
+    @keyframes dropdownPanelHashTargetVisible {
+      0%, 50%, 100% { opacity: 0.25; }
+      25%, 75%      { opacity: 1; }
+    }
+    @keyframes dropdownPanelHashTargetSeen {
+      0%   { opacity: 0.75; }
+      100% { opacity: 0; }
+    }
+
+    @include fill(true);
+    border: bd(2px, #fff);
+    border-radius: inherit;
+    opacity: 0;
+
+    @include panelRoot {
+      &[data-hashtarget="visible"] .overlay-hashtarget { animation: dropdownPanelHashTargetVisible 2.5s linear infinite; }
+      &[data-hashtarget="seen"] .overlay-hashtarget { animation: dropdownPanelHashTargetSeen 0.75s linear; }
+    }
+  }
+  .header {
+    font-size: inherit;
+    width: 100%;
+
+    &::before { @include fill(true, #fff); }
+
+    @include mouseState(noHover) {
+      &::before { opacity: 0; }
+    }
+    @include mouseState(hover) {
+      &::before { opacity: 0.1; }
+    }
+    @include mouseState(click) {
+      &::before { opacity: 0.2; }
+    }
+
+    .wrapper {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      padding: 8px;
+      width: 100%;
+    }
+    .title {
+      @include flexbox($hAlign: s);
+      align-self: center;
+      text-align: start;
+      grid-column: 1;
+      font-size: 1.15em;
+
+      .icon {
+        @include flexbox;
+        padding: 8px;
+        font-size: 1.25em;
+      }
+      .string {
+        @include flexbox(none, s, $direction: c);
+        padding: 8px;
+      }
+        .primary { font-size: 1em; }
+        .secondary {
+          font-size: 0.8em;
+          opacity: 0.5;
+        }
+    }
+    .indicator {
+      @include flexbox;
+      padding: 8px;
+      grid-column: 2;
+      font-size: 1.25em;
+      line-height: 1;
+      align-self: flex-start;
+
+      @include panelRoot {
+        &[data-expanded="true"] .header .indicator .fas { transform: rotate(90deg); }
+      }
+    }
+    .title, .indicator { grid-row: 1; }
+    .full-width { grid-column: 1 / span 2; }
+    .fas { @include boxIcon; }
+  }
+  .body {
+    background-color: rgba(0, 0, 0, 0.2);
+
+    &.content-container { padding: 16px; }
+
+    @include panelRoot {
+      &[data-expanded="false"] .body { display: none; }
+      &[data-expanded="true"] .body  { display: block; }
+    }
+  }
+  .header, .body { overflow: hidden; }
+}
+.dropdown-panel-group { margin: 24px 0; }

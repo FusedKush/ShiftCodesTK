@@ -46,7 +46,7 @@
 </main>
 <template id="shift_code_template">
   <div class="dropdown-panel shift-code">
-    <button class="header" data-custom-labels='{"false": "Expand SHiFT Code", "true": "Collapse SHiFT Code"}'>
+    <button class="header dropdown-panel-toggle" data-custom-labels='{"false": "Expand SHiFT Code", "true": "Collapse SHiFT Code"}'>
       <div class="wrapper">
         <div class="title">
           <div class="icon" title="SHiFT Code" aria-label="SHiFT Code">
