@@ -106,7 +106,7 @@ var focusLock = {
             try {
               for (var _iterator3 = elms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                 var e = _step3.value;
-                arr.push(getElements(e, 'focusables'));
+                arr = arr.concat(getElements(e, 'focusables'));
               }
             } catch (err) {
               _didIteratorError3 = true;
@@ -123,7 +123,7 @@ var focusLock = {
               }
             }
           } else {
-            arr.push(elms, 'focusables');
+            arr = arr.concat(getElements(elms, 'focusables'));
           }
 
           return arr;

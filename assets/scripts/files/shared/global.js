@@ -61,15 +61,16 @@ var focusLock = {
 
           if (elms.constructor === Array) {
             for (let e of elms) {
-              arr.push(getElements(e, 'focusables'));
+              arr = arr.concat(getElements(e, 'focusables'));
             }
           }
           else {
-            arr.push(elms, 'focusables');
+            arr = arr.concat(getElements(elms, 'focusables'));
           }
 
           return arr;
         })();
+
         let first = fs[0];
         let last = fs[fs.length - 1];
 
