@@ -174,7 +174,7 @@ function newToast (properties) {
       addToast(toast, settings);
       return toast;
     }
-    else if (toasts.queue[n] === undefined) {
+    else if (!toasts.queue[n]) {
       toasts.queue[n] = {
         toast: toast,
         settings: settings
@@ -240,16 +240,21 @@ function toastEvent (event) {
 }
 
 window.addEventListener('load', function () {
-  let qKeys = Object.keys(toasts.queue);
-
   setTimeout(function () {
+    let qKeys = Object.keys(toasts.queue);
+    let start = (function () {
+      let len = qKeys.length;
+
+      if (len >= 3) { return 2; }
+      else          { return len - 1; }
+    })();
     toasts.ready = true;
 
-    for (let i = 0; (i < qKeys.length && i <= 3); i++) {
+    for (let i = start; i >= 0; i--) {
       let key = qKeys[i];
-      let item = toasts.queue[key];
+      let t = toasts.queue[key];
 
-      addToast(item.toast, item.settings);
+      addToast(t.toast, t.settings);
       delete toasts.queue[key];
     }
   }, 2500);
