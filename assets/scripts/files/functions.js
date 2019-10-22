@@ -115,32 +115,68 @@ function tryToRun(settings, currentAttempt = 1) {
   }
 };
 // Toggle element states
+function setElementState (affectedState, element, state, setTabIndex) {
+  let validStates = ['disabled', 'hidden'];
+
+  function error (message) {
+    let error = new Error();
+        error.name = 'setElementStateError';
+        error.message = message;
+
+    throw error;
+  }
+
+  if (validStates.indexOf(affectedState) != -1) {
+    if (element) {
+      let hasProp = element[affectedState];
+
+      // Toggle state
+      if (state == 'toggle') {
+        if (hasProp) { state = !element[affectedState]; }
+        else         { state = element.getAttribute(affectedState) !== null; }
+      }
+      // Update element
+      if (hasProp) {
+        element[affectedState] = state;
+      }
+      else {
+        if (state) { element.setAttribute(affectedState, ''); }
+        else       { element.removeAttribute(affectedState); }
+
+        element.setAttribute(`aria-${affectedState}`, state);
+      }
+      // Tabindex
+      if (setTabIndex) {
+        let indexes = {
+          true: -1,
+          false: 0
+        };
+
+        element.tabIndex = indexes[state];
+      }
+
+      return true;
+    }
+    else {
+      error(`Provided element is ${element}.`);
+    }
+  }
+  else {
+    error(`${affectedState} is not a valid state.`);
+  }
+}
+function isDisabled (element, state = 'toggle', setTabIndex = false) {
+  return setElementState('disabled', element, state, setTabIndex);
+}
+function isHidden (element, state = 'toggle', setTabIndex = false) {
+  return setElementState('hidden', element, state, setTabIndex);
+}
+// Aliases of ^
 function disenable (element, state, optTx) {
-  let tabIndexes = {
-    true: '-1',
-    false: '0'
-  };
-
-  element.disabled = state;
-  element.setAttribute('aria-disabled', state);
-
-  if (state === true) { element.setAttribute('disabled', ''); }
-  else                { element.removeAttribute('disabled'); }
-  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
+  return isDisabled(element, state, optTx);
 }
 function vishidden (element, state, optTx) {
-  let tabIndexes = {
-    true: '-1',
-    false: '0'
-  };
-
-  element.hidden = state;
-  element.setAttribute('aria-hidden', state);
-
-  if (state === true) { element.setAttribute('hidden', ''); }
-  else                { element.removeAttribute('hidden'); }
-
-  if (optTx === true) { element.tabIndex = tabIndexes[state]; }
+  return isHidden(element, state, optTx);
 }
 // Update ELement Labels
 function updateLabel(element, label) {
