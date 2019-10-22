@@ -509,18 +509,15 @@ shiftScriptsInit = setInterval(function () {
     // Sort Listeners
     (function () {
       let dropdown = document.getElementById('shift_header_sort_dropdown');
-      let options = getTags(dropdown, 'button');
 
-      for (let i = 0; i < options.length; i++) {
-        options[i].addEventListener('click', function (e) {
-          let attr = this.getAttribute('aria-pressed');
+      addDropdownMenuListeners(dropdown, function (e) {
+        let attr = this.getAttribute('aria-pressed');
 
-          if (!attr || attr == 'false') {
-            shiftProps.order = this.getAttribute('data-value');
-            getCodes();
-          }
-        });
-      }
+        if (!attr || attr == 'false') {
+          shiftProps.order = this.getAttribute('data-value');
+          getCodes();
+        }
+      });
     })();
   }
 }, 250);

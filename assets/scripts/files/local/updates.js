@@ -8,7 +8,6 @@ var changelogIdPrefix = 'changelog_';
 
 function getChangelogs () {
   let idPrefix = changelogIdPrefix;
-  //  ^ Prefix for changelog IDs
   let count = {
     fetched: 0,
     added: 0
