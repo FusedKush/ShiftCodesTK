@@ -21,14 +21,7 @@ function updateDropdownPanelAttributes(panel, state) {
   toggler.setAttribute('aria-pressed', state);
   toggler.title = labels[state];
   toggler.setAttribute('aria-label', labels[state]);
-} // Add Dropdown Panel Listener
-
-
-function addDropdownPanelListener(panel) {}
-/*
-panel.getElementsByClassName('header')[0].addEventListener('click', function (e) { toggleDropdownPanel(this); });
-*/
-// Set up Dropdown Panel
+} // Set up Dropdown Panel
 
 
 function dropdownPanelSetup(panel) {
@@ -70,7 +63,6 @@ function dropdownPanelSetup(panel) {
   }
 
   updateDropdownPanelAttributes(panel, false);
-  addDropdownPanelListener(panel);
   hashTargetOverlay.className = 'overlay-hashtarget';
   panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
 } // Toggle Dropdown Panel
