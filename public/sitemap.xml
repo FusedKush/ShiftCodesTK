@@ -1,45 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>https://shiftcodes.tk/</loc>
-        <lastmod>2019-05-24</lastmod>
+        <loc>https://shiftcodestk.com/</loc>
+        <lastmod>2019-10-21</lastmod>
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://shiftcodes.tk/bl1</loc>
-        <lastmod>2019-05-24</lastmod>
+        <loc>https://shiftcodestk.com/bl1</loc>
+        <lastmod>2019-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://shiftcodes.tk/bl2</loc>
-        <lastmod>2019-05-24</lastmod>
+        <loc>https://shiftcodestk.com/bl2</loc>
+        <lastmod>2019-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://shiftcodes.tk/tps</loc>
-        <lastmod>2019-05-24</lastmod>
+        <loc>https://shiftcodestk.com/tps</loc>
+        <lastmod>2019-10-21</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
     <url>
-        <loc>https://shiftcodes.tk/about-us</loc>
+        <loc>https://shiftcodestk.com/bl3</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/about-us</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/credits</loc>
         <lastmod>2019-05-24</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.5</priority>
     </url>
     <url>
-        <loc>https://shiftcodes.tk/credits</loc>
-        <lastmod>2019-05-24</lastmod>
-        <changefreq>yearly</changefreq>
-        <priority>0.5</priority>
-    </url>
-    <url>
-        <loc>https://shiftcodes.tk/updates</loc>
-        <lastmod>2019-05-24</lastmod>
+        <loc>https://shiftcodestk.com/updates</loc>
+        <lastmod>2019-10-21</lastmod>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/index</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/faq</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/clearing-your-system-cache</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/index</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/bl2</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/tps</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/bl1</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/bl3</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/borderlands-website</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    <url>
+        <loc>https://shiftcodestk.com/help/how-to-redeem/shift-website</loc>
+        <lastmod>2019-10-21</lastmod>
+        <changefreq>yearly</changefreq>
+        <priority>0.5</priority>
     </url>
 </urlset>
