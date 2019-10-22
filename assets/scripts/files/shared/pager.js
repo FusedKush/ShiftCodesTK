@@ -32,7 +32,7 @@ function pagerUpdate (pager, newPage = 1, firstRun = false) {
   }
   function update(button, val, jump = false) {
     let negativeOffset = (function () {
-      if (props.subtractOffset) { return props.offset; }
+      if (props.subtractoffset) { return props.offset; }
       else                      { return 0; }
     })();
 
@@ -191,7 +191,7 @@ function configurePager (pager) {
   (function () {
     let defaultProps = {}
         defaultProps.now = defaultProps.min = defaultProps.max = defaultProps.offset = 1;
-        defaultProps.subtractOffset = false;
+        defaultProps.subtractoffset = false;
         defaultProps.onclick = false;
     let props = Object.keys(defaultProps);
 
