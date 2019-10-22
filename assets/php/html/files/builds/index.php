@@ -76,54 +76,21 @@
         <div class="content-wrapper">
           <h2 class="title">Frequently Asked Questions</h2>
           <div class="questions">
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What is SHiFT?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">What is SHiFT?</h3>
+              <div class="body">
                 <p>SHiFT is a service created by Gearbox to reward their players with in-game loot and special events.</p>
               </div>
             </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What are SHiFT Codes?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">What are SHiFT Codes?</h3>
+              <div class="body">
                 <p>SHiFT Codes are 25-character keys that grant in-game rewards.</p>
               </div>
             </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">How often are SHiFT Codes released?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">How often are SHiFT Codes released?</h3>
+              <div class="body">
                 <p>SHiFT Codes are typically released every Friday around 10AM PST.</p>
               </div>
             </div>
