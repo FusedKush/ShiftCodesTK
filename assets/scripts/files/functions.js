@@ -542,12 +542,16 @@ function getElements(parent, elements) {
 
   return matches;
 }
-// Copy elements
+// Manipulate lements
+function getElement (element) {
+  if (typeof element == 'string') { return document.getElementById(element); }
+  else                            { return element; }
+}
 function copyElm(element, deepClone = true) {
   return element.cloneNode(deepClone);
 }
-function getTemplate(templateID, deepClone = true) {
-  let e = document.getElementById(templateID);
+function getTemplate(template, deepClone = true) {
+  let e = getElement(template);
 
   if (e !== null && e !== undefined) {
     if (e.tagName == 'TEMPLATE') {
@@ -560,6 +564,11 @@ function getTemplate(templateID, deepClone = true) {
   else {
     throw ('getTemplate called on an undefined element: ' + templateID);
   }
+}
+function deleteElm(element) {
+  let e = getElement(element);
+
+  return e.parentNode.removeChild(e);
 }
 // Traverse the dom until it reaches the specified element
 function findAttr (startingPos, direction, type, attribute, match) {
