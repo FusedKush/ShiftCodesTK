@@ -1,0 +1,88 @@
+@import "../partials/_globals";
+
+.image-viewer {
+  @include ready;
+
+  @mixin noHoverState {
+    @at-root .image-viewer {
+      @include mouseState(noHover) {
+        @content;
+      }
+    }
+  }
+
+  position: fixed;
+  @include pull(all);
+  @include flexbox;
+  background-color: tpb(0.75);
+  z-index: zOrder(popup);
+  transition-duration: 0.4s;
+
+  &.inactive {
+    opacity: 0;
+  }
+  &[hidden] {
+    display: none;
+  }
+
+  .container {
+    @keyframes imgViewPopIn {
+      0%, 100%  { transform: scale(1); }
+      50%       { transform: scale(0.85); }
+    }
+    @keyframes imgViewPopOut {
+      0%   { transform: scale(1); }
+      100% { transform: scale(0.85); }
+    }
+
+    @include flexbox;
+    @include multiProp(100%, max-height, max-width);
+    border: bd(1.5px);
+    border-radius: 4px;
+    box-shadow: shadow(tpb(0.5), 10px);
+    overflow: hidden;
+    @include animation($duration: 0.4s, $timing: linear);
+    transition-duration: 0.4s;
+
+    @at-root .image-viewer {
+      &.inactive .container { transform: scale(0.85); }
+      /*
+      &.inactive .container       { animation-name: imgViewPopOut; }
+      &:not(.inactive) .container { animation-name: imgViewPopIn; }
+      */
+    }
+  }
+  img {
+    box-shadow: shadow(tpb(0.75), 10px);
+    transition-duration: 0.4s;
+    max-height: 100%;
+
+    @at-root .image-viewer.inactive img {
+      transform: scale(0.85);
+    }
+  }
+  .header {
+    position: absolute;
+    @include pull(t, lr);
+    @include flexbox($hAlign: sb);
+    @include multiProp(tpb(0.75), colors);
+    padding: 16px;
+    box-shadow: shadow(currentColor, 10px);
+
+    @include noHoverState {
+      .header {
+        opacity: 0;
+      }
+    }
+  }
+  .title {
+    font-size: 1.25em;
+    margin-right: 8px;
+  }
+  .title, .close {
+    color: #fff;
+  }
+}
+img.fullscreen {
+  cursor: pointer;
+}

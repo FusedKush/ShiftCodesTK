@@ -1,0 +1,107 @@
+/*********************************
+  Help Center Page Styles
+*********************************/
+/*********************************
+  Global Sass Declarations
+*********************************/
+/*** Variables ***/
+/*** Functions ***/
+/*** Mixins ***/
+main, main * {
+  opacity: 1; }
+
+h2, h3 {
+  width: 100%;
+  margin-bottom: 8px;
+  text-align: center; }
+
+section {
+  margin-top: 24px; }
+
+.intro {
+  display: block;
+  font-size: 1.25em;
+  text-align: center;
+  opacity: 0.75; }
+
+.resource {
+  display: flex;
+  justify-content: flex-start;
+  flex: 1;
+  border-radius: 4px;
+  margin: 4px;
+  background-color: #224365; }
+  .resource::before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    border-radius: inherit;
+    content: "";
+    background-color: #fff; }
+  .resource:not(:hover):not(:focus)::before {
+    opacity: 0; }
+  .resource:hover::before, .resource:focus::before {
+    opacity: 0.2; }
+  .resource:active {
+    opacity: 0.75; }
+  .resource .icon {
+    font-size: 1.75em;
+    padding: 16px;
+    line-height: 0;
+    border-radius: 4px 0 0 4px;
+    background-color: rgba(0, 0, 0, 0.25); }
+    .resource .icon .fas, .resource .icon .fab {
+      height: 1em;
+      width: 1em; }
+    .resource .icon, .resource .icon .fas, .resource .icon .fab {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+  .resource .content {
+    padding: 16px; }
+
+.articles .wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  padding: 8px 6px; }
+  .articles .wrapper .resource .content {
+    min-width: 14em; }
+  .articles .wrapper .resource .title {
+    font-size: 1.25em; }
+  .articles .wrapper .resource .description {
+    margin-top: 4px;
+    opacity: 0.75; }
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -4px;
+  margin-right: -4px; }
+  .links .wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex: 1;
+    width: 50%;
+    margin: 4px;
+    padding: 8px 6px;
+    border: 1.5px solid rgba(255, 255, 255, 0.5);
+    border-radius: 4px; }
+  .links h3 {
+    font-size: 1.25em;
+    margin-top: 4px; }
+  .links .resource .content {
+    min-width: 10em; }
+
+.notice {
+  padding: 8px;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  text-align: center; }
+  .notice h2 {
+    font-size: 1.25em; }

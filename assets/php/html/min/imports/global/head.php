@@ -1,0 +1,1 @@
+<?php include_once('files/head/metadata.php'); ?><?php include_once('files/head/noscript-styles.php'); ?>

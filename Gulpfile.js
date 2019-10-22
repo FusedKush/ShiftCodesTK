@@ -351,6 +351,7 @@ function copyToPublic (cb) {
     './.htaccess',
     '!./node_modules/**',
     '!./public/**',
+    '!./assets/img/assets/**/*',
     '!./assets/php/html/files/**',
     '!./assets/php/html/min/builds/**'
   ]

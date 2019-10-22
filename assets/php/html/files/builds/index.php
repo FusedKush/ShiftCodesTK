@@ -18,11 +18,11 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk">
-    <meta property="og:url" content="https://shiftcodes.tk">
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/landing.png">
+    <meta name="canonical" href="https://shiftcodestk.com">
+    <meta property="og:url" content="https://shiftcodestk.com">
+    <!-- Page Images -->
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/2.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/2.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
@@ -36,7 +36,7 @@
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
     <main class="no-header">
-      <section class="main" data-webp='{"path": "/assets/img/banners/landing", "alt": ".jpg", "type": "bg"}'>
+      <section class="main" data-webp='{"path": "/assets/img/banners/bl3/2", "alt": ".jpg", "type": "bg"}'>
         <div class="content-wrapper">
           <div class="brand">
             <img class="logo" src="/assets/img/logo.svg" width="3.5em" alt="ShiftCodesTK Logo">
@@ -76,54 +76,21 @@
         <div class="content-wrapper">
           <h2 class="title">Frequently Asked Questions</h2>
           <div class="questions">
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What is SHiFT?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">What is SHiFT?</h3>
+              <div class="body">
                 <p>SHiFT is a service created by Gearbox to reward their players with in-game loot and special events.</p>
               </div>
             </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">What are SHiFT Codes?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">What are SHiFT Codes?</h3>
+              <div class="body">
                 <p>SHiFT Codes are 25-character keys that grant in-game rewards.</p>
               </div>
             </div>
-            <div class="dropdown-panel">
-              <button class="header">
-                <div class="wrapper">
-                  <div class="title">
-                    <div class="string">
-                      <h3 class="primary">How often are SHiFT Codes released?</h3>
-                    </div>
-                  </div>
-                  <div class="indicator">
-                    <span class="fas fa-chevron-right"></span>
-                  </div>
-                </div>
-              </button>
-              <div class="body content-container">
+            <div class="dropdown-panel c">
+              <h3 class="primary">How often are SHiFT Codes released?</h3>
+              <div class="body">
                 <p>SHiFT Codes are typically released every Friday around 10AM PST.</p>
               </div>
             </div>

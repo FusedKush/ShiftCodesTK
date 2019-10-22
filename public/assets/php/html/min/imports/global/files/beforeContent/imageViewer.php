@@ -1,0 +1,1 @@
+<div class="image-viewer inactive"hidden id=image_viewer><div class=header><div class=title></div><button aria-label="Close image"class="close styled"title="Close image"><span class="box-icon fa-times fas"></span></button></div></div>

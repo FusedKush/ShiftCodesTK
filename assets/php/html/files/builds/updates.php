@@ -19,12 +19,12 @@
     <meta property="og:description" content="Recent changes and updates to ShiftCodesTK">
     <meta property="twitter:description" content="Recent changes and updates to ShiftCodesTK">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/updates">
-    <meta property="og:url" content="https://shiftcodes.tk/updates">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Updates", "url": "/updates"}]'>
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/updates.png">
+    <meta name="canonical" href="https://shiftcodestk.com/updates">
+    <meta property="og:url" content="https://shiftcodestk.com/updates">
+    <!-- Page Images -->
+    <meta name="header:image" content="bl2_5">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
@@ -39,14 +39,14 @@
     <!-- Main Content -->
     <header class="updates-header" id="updates_header">
       <div class="content-wrapper">
-        <div class="section current" hidden aria-hidden="true" data-hidden="true">
-          <span><span class="title">Current Version:</span>&nbsp;<a class="currentver tr-underline interal" id="updates_header_current"><strong></strong></a></span>
+        <div class="section current">
+          <span><span class="title">Current Version:</span>&nbsp;<strong class="currentver"><?php echo $serverVersion; ?></strong></span>
         </div>
         <div class="section jump">
           <button id="updates_header_jump" title="Jump to Changelog" aria-label="Jump to Changelog" data-pressed="false" aria-pressed="false" aria-haspopup="true" autocomplete="off" disabled aria-disabled="true">
             <span>Jump to&nbsp;<span class="fas fa-caret-down"></span></span>
           </button>
-          <div class="dropdown-menu no-refocus" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom" data-align="right">
+          <div class="dropdown-menu no-auto-config no-refocus o-toggle" id='updates_header_jump_dropdown' data-target="updates_header_jump" data-pos="bottom" data-align="right">
             <div class="panel">
               <div class="title">Jump to:</div>
               <ul class="choice-list scrollable"></ul>
@@ -56,37 +56,47 @@
       </div>
     </header>
     <main class="content-wrapper">
-      <template id="panel_template">
-        <section class="dropdown-panel changelog">
-          <button class="header" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
-            <div class="wrapper">
-              <div class="title">
-                <div class="icon">
-                  <span class="fas"></span>
-                </div>
-                <div class="string">
-                  <h2 class="primary version"></h2>
-                  <div class="secondary info">
-                    <span class="date"></span>
-                    <span class="separator">&bull;</span>
-                    <span class="type"></span>
-                  </div>
-                </div>
+      <div class="full-changelog-link">
+        This is a simplified list of changes related to ShiftCodesTK's service. For the complete list of changes, visit the&nbsp;<strong>Releases</strong>&nbsp;page on&nbsp;
+        <a class="themed" href="https://github.com/FusedKush/ShiftCodesTK/releases" rel="external noopener" target="_blank" title="ShiftCodesTK Releases on Github" aria-label="ShiftCodesTK Releases on Github"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span>GitHub</a>
+      </div>
+      <div id="changelog_list"></div>
+      <div class="pager no-auto-config" id="changelog_pager" data-offset="10" data-subtractoffset="true" data-onclick="updates_header_jump"></div>
+      <div class="overlay" id="changelog_overlay">
+        <!-- Loading spinner -->
+        <?php include_once('local/spinner.php'); ?>
+      </div>
+    </main>
+    <template id="changelog_template">
+      <section class="dropdown-panel changelog">
+        <button class="header dropdown-panel-toggle" data-custom-labels='{"false": "Expand Changelog", "true": "Collapse Changelog"}'>
+          <div class="wrapper">
+            <div class="title">
+              <div class="icon">
+                <span class="fas"></span>
               </div>
-              <div class="indicator">
-                <span class="fas fa-chevron-right"></span>
+              <div class="string">
+                <h2 class="primary version"></h2>
+                <div class="secondary info">
+                  <span class="date"></span>
+                  <span class="separator">&bull;</span>
+                  <span class="type"></span>
+                </div>
               </div>
             </div>
-          </button>
-          <div class="body content-container">
-            <div class="full-changelog-link">
-              This is a simplified list of changes related to ShiftCodesTK's service. For the complete list of changes, view the full release on&nbsp;
-              <a class="themed" rel="external noopener" target="_blank"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span>GitHub</a>
+            <div class="indicator">
+              <span class="fas fa-chevron-right"></span>
             </div>
           </div>
-        </section>
-      </template>
-    </main>
+        </button>
+        <div class="body content-container"></div>
+      </section>
+    </template>
+    <template id="changelog_jump_template">
+      <li role="menuitem">
+        <a class="choice" href="#" title="Jump to Version 1.0.0 Changelog" aria-label="Jump to Version 1.0.0 Changelog"><span></span></a>
+      </li>
+    </template>
     <!--// After-Content Imports \\-->
     <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->

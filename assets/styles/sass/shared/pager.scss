@@ -1,0 +1,40 @@
+// Pager styles
+@import '../partials/_globals';
+
+.pager.configured {
+  @include ready;
+  width: 100%;
+
+  .content-wrapper {
+    padding: 16px 0;
+  }
+  .jumps {
+    flex: 1;
+    padding: 0 4px;
+    overflow: hidden;
+  }
+  .content-wrapper, .jumps {
+    @include flexbox;
+  }
+  .content-container {
+    @include flexbox(c, s);
+    overflow: auto;
+  }
+  button {
+    font-size: 1.25em;
+    padding: 12px;
+
+    &[aria-pressed="true"] {
+      opacity: 0.5;
+    }
+    &.jump {
+      margin: 4px;
+    }
+    &:not(.jump) {
+      margin: 0;
+    }
+  }
+}
+.pager:not(.configured) {
+  display: none;
+}

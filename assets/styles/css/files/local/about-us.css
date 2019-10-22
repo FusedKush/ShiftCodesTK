@@ -1,0 +1,54 @@
+/*********************************
+  About Us Page Styles
+*********************************/
+/*** Imports ***/
+/*********************************
+  Global Sass Declarations
+*********************************/
+/*** Variables ***/
+/*** Functions ***/
+/*** Mixins ***/
+/*** Style Declarations ***/
+main, main * {
+  opacity: 1; }
+
+.banner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 32px;
+  font-size: 1.75em;
+  text-align: center; }
+  .banner img {
+    height: 3.5em;
+    width: 3.5em;
+    margin-bottom: 8px; }
+  .banner .title {
+    font-size: 1.5em; }
+  .banner .tagline {
+    font-size: 1em;
+    opacity: 0.75; }
+
+.wrapper {
+  display: flex;
+  flex-direction: column; }
+
+.section {
+  display: flex;
+  flex: 1;
+  margin-bottom: 16px;
+  background-color: #224365;
+  border-radius: 4px; }
+  .section .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    padding: 24px;
+    background-color: rgba(0, 0, 0, 0.25); }
+  .section p {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 12px; }

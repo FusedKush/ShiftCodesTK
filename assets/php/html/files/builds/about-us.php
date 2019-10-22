@@ -19,12 +19,12 @@
     <meta property="og:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
     <meta property="twitter:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/about-us">
-    <meta property="og:url" content="https://shiftcodes.tk/about-us">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "About us", "url": "/about-us"}]'>
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/about-us.png">
+    <meta name="canonical" href="https://shiftcodestk.com/about-us">
+    <meta property="og:url" content="https://shiftcodestk.com/about-us">
+    <!-- Page Images -->
+    <meta name="header:image" content="bl2_3">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/3.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/3.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/main.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
@@ -48,14 +48,14 @@
           <span class="icon">
             <span class="box-icon fas fa-toolbox"></span>
           </span>
-          <p>ShiftCodesTK is an exercise in quality over quantity, striving to provide an experience that is consistently accessible, reliable, and rewarding, instead of focusing on posessing the longest list of SHiFT Codes.</p>
+          <p>ShiftCodesTK is an exercise in quality over quantity, striving to provide an experience that is consistently accessible, reliable, and rewarding.</p>
         </div>
         <div class="section">
           <span class="icon">
             <span class="box-icon fas fa-laptop-code"></span>
           </span>
           <p>
-            ShiftCodesTK is also a showcase of everything the developer has learned since his introduction into the world of Web Development, and has been shaped by an ever-expanding understanding of the various Web Development principles, guidelines, and standards.
+            ShiftCodesTK is also a personal Web Development playground, and has been shaped by an ever-expanding understanding of the various Web Development principles, guidelines, and standards.
           </p>
         </div>
         <div class="section">

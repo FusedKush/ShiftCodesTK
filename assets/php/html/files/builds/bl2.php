@@ -19,19 +19,19 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands 2">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands 2">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/bl2">
-    <meta property="og:url" content="https://shiftcodes.tk/bl2">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Borderlands 2", "url": "/bl2"}]'>
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl2.png">
+    <meta name="canonical" href="https://shiftcodestk.com/bl2">
+    <meta property="og:url" content="https://shiftcodestk.com/bl2">
+    <!-- Page Images -->
+    <meta name="header:image" content="bl2_1">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/1.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/1.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/bl2.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#ff4500">
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl2" data-shiftData='{"id": "1", "name": "Borderlands 2"}'>
+  <body data-theme="bl2">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

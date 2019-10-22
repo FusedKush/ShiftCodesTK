@@ -92,35 +92,6 @@ function indexLinkNoHoverEvent (event) {
     indexStringScrollInterval = setInterval(indexPrimaryStringScroll, indexStringScrollIntervalDelay);
   }
 }
-function addLandingFlags () {
-  if (typeof shiftBadgeCount != 'undefined') {
-    let flags = {
-      'template': document.getElementById('flag_template')
-    };
-    let buttons = getClasses(getTag(document, 'main'), 'button');
-
-    clearInterval(addLandingFlagsRetry);
-
-    for (i = 0; i < buttons.length; i++) {
-      let button = buttons[i];
-      let regex = new RegExp('button|\\s', 'g');
-      let buttonName = button.className.replace(regex, '');
-
-      if (shiftBadgeCount.new[buttonName] > 0 || shiftBadgeCount.expiring[buttonName] > 0) {
-          (function () {
-            flags.root = flags.template.content.children[0].cloneNode(true);
-            flags.new = flags.root.getElementsByClassName('flag new')[0];
-            flags.exp = flags.root.getElementsByClassName('flag exp')[0];
-          })();
-
-        if (shiftBadgeCount.new[buttonName] == 0)      { flags.new.remove(); }
-        if (shiftBadgeCount.expiring[buttonName] == 0) { flags.exp.remove(); }
-
-        button.appendChild(flags.root);
-      }
-    }
-  }
-}
 
 // Immediate Functions & Event Listeners
 function execLocalScripts () {
@@ -182,7 +153,7 @@ function execLocalScripts () {
 
         // Section
         addClass(panel.base, id);
-        panel.bg.path += id;
+        panel.bg.path += `${id}/1`;
         panel.base.setAttribute('data-webp', JSON.stringify(panel.bg));
         // Title
         panel.title.innerHTML = shortStr;
@@ -228,7 +199,44 @@ function execLocalScripts () {
       }
     })();
     // Add landing flags
-    addLandingFlagsRetry = setInterval(addLandingFlags, 250);
+    tryToRun({
+      attempts: false,
+      delay: 250,
+      function: function () {
+        if (shiftStats) {
+          let flags = {
+            'template': document.getElementById('flag_template')
+          };
+          let buttons = getClasses(getTag(document, 'main'), 'button');
+
+          for (i = 0; i < buttons.length; i++) {
+            let button = buttons[i];
+            let regex = new RegExp('button|\\s', 'g');
+            let name = button.className.replace(regex, '');
+            let n = shiftStats.new[name];
+            let e = shiftStats.expiring[name];
+
+            if (n > 0 || e > 0) {
+                (function () {
+                  flags.root = flags.template.content.children[0].cloneNode(true);
+                  flags.new = flags.root.getElementsByClassName('flag new')[0];
+                  flags.exp = flags.root.getElementsByClassName('flag exp')[0];
+                })();
+
+              if (n == 0) { flags.new.remove(); }
+              if (e == 0) { flags.exp.remove(); }
+
+              button.appendChild(flags.root);
+            }
+          }
+
+          return true;
+        }
+        else {
+          return false;
+        }
+      }
+    });
   }
   else {
     setTimeout(execLocalScripts, 250);

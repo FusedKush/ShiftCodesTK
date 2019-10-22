@@ -1,0 +1,64 @@
+@import "../../../partials/_globals";
+// Support Footer
+@import "../../../partials/_support-footer";
+
+main {
+  @include ready;
+
+  .note {
+    background-color: tpw(0.25);
+    padding: 16px;
+    margin-top: 8px;
+    border-radius: 4px;
+  }
+  .instructions {
+    @include ready;
+    background-color: $site-color-lighter;
+    border-radius: 4px;
+    padding: 16px;
+    overflow: hidden;
+
+    &.not-ready {
+      opacity: 0;
+    }
+
+    .steps {
+      overflow: hidden;
+
+      .scroller {
+        @include flexbox(none, s);
+        transition-duration: 0.4s;
+      }
+    }
+    .step {
+      @include flexbox(none, none, $direction: c);
+      min-width: 100%;
+    }
+    .description {
+      margin-top: 8px;
+      flex: 1;
+    }
+    .img-container {
+      $shadow: 0 0 10px tpb(.5);
+
+      @include flexbox;
+      margin: 16px 0;
+      background-color: tpb(0.5);
+      border-radius: 4px;
+      box-shadow: inset $shadow;
+      overflow: hidden;
+      min-height: 20vh;
+
+      img {
+        max-height: 40vh;
+        box-shadow: $shadow;
+      }
+    }
+    .pager .content-wrapper {
+      padding: 0;
+    }
+  }
+}
+.setup {
+  display: none;
+}

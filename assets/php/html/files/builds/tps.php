@@ -19,19 +19,19 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/tps">
-    <meta property="og:url" content="https://shiftcodes.tk/tps">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Borderlands: The Pre-Sequel", "url": "/tpb"}]'>
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/tps.png">
+    <meta name="canonical" href="https://shiftcodestk.com/tps">
+    <meta property="og:url" content="https://shiftcodestk.com/tps">
+    <!-- Page Images -->
+    <meta name="header:image" content="tps_1">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/1.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/1.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/tps.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#1e90ff">
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="tps" data-shiftData='{"id": "2", "name": "Borderlands: The Pre-Sequel"}'>
+  <body data-theme="tps">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

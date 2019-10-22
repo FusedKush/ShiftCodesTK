@@ -1,18 +1,18 @@
-/*********************************
-  Navbar Styles
-*********************************/
-
-/*** Imports ***/
 @import "../partials/_globals";
 
-/*** Style Declarations ***/
-.navbar-container { @include ready; }
+// Show when loaded
+.navbar-container {
+  @include ready;
+}
+// Navbar / Progress Bar Container
+.navbar-container {
+  z-index: zOrder(navbar);
+  overflow: hidden;
+}
 .navbar {
   position: fixed;
   @include pull(t, lr);
   height: 64px;
-  overflow: hidden;
-  z-index: 100;
 
   &[data-at-top="true"] {
     &::before        { opacity: 0; }
@@ -93,5 +93,39 @@
     }
 
     img { @include multiProp(inherit, sizing); }
+  }
+  // Loader Progress Bar
+  .loader.progress-bar {
+    $dur: 0.4s;
+
+    position: absolute;
+    height: 3px;
+    background-color: transparent;
+    opacity: 0;
+    transition: opacity $dur linear;
+
+    &.is-loading {
+      opacity: 1;
+      transition: none;
+    }
+
+    .progress {
+      @include progressBarShadow(10px);
+      transition: none;
+
+      @at-root {
+        // Progress Bar Color
+        $sel: unquote(".loader.progress-bar .progress");
+
+        .navbar {
+          &[data-at-top="true"] #{$sel}  { @include theme(c, bg); }
+          &[data-at-top="false"] #{$sel} { @include multiProp(#fff, colors); }
+        }
+        // Animations
+        .loader.progress-bar.is-loading .progress {
+          transition: transform $dur ease;
+        }
+      }
+    }
   }
 }

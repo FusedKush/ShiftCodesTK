@@ -1,0 +1,1 @@
+<?php include_once("files/afterContent/footer.php"); ?><?php include_once("files/afterContent/toasts.php"); ?><?php include_once("files/afterContent/templates.php"); ?><?php include_once("files/afterContent/noscript-markup.php"); ?>

@@ -1,44 +1,3 @@
-/*********************************
-  Sidebar Scripts
-*********************************/
-// *** Variables ***
-var addSidebarBadgesRetry;
-
-// *** Functions ***
-// Update Badges
-function addSidebarBadges () {
-  if (typeof shiftBadgeCount != 'undefined') {
-    let links = document.getElementById('sidebar').getElementsByTagName('a');
-    let template = document.getElementById('sidebar_template_badges').content.children;
-
-    clearInterval(addSidebarBadgesRetry);
-
-    for (i = 0; i < links.length; i++) {
-      let badgeID = links[i].getAttribute('data-use-badges');
-
-      if (badgeID !== null) {
-        if (shiftBadgeCount.new[badgeID] > 0 || shiftBadgeCount.expiring[badgeID] > 0) {
-          let link = links[i];
-          let badges = {};
-            (function () {
-              badges.base = template[0].cloneNode(true);
-              badges.new = template[1].cloneNode(true);
-              badges.exp = template[2].cloneNode(true);
-            })();
-          let badgeBase;
-
-          link.appendChild(badges.base);
-          badgeBase = link.getElementsByClassName('badges')[0];
-
-          if (shiftBadgeCount.new[badgeID] > 0)      { badgeBase.appendChild(badges.new); }
-          if (shiftBadgeCount.expiring[badgeID] > 0) { badgeBase.appendChild(badges.exp); }
-        }
-      }
-    }
-
-    document.getElementById('sidebar_template_badges').remove();
-  }
-};
 // Toggle the Sidebar
 function toggleSB () {
   let sb = document.getElementById('sidebar');
@@ -68,15 +27,14 @@ function toggleSB () {
 
   if (state === true) {
     updateState();
-    focusLockedElement = null;
+    toggleBodyScroll(true);
+    focusLock.clear();
     setTimeout(updateVis, 300);
   }
   else {
     updateVis();
-    focusLockedElement = {
-      element: getClass(sb, 'panel'),
-      callback: toggleSB
-    };
+    toggleBodyScroll(false);
+    focusLock.set(getClass(sb, 'panel'), toggleSB);
     setTimeout(updateState, 50);
   }
 }
@@ -128,7 +86,54 @@ sidebarMarkup();
   }
 })();
 // Update sidebar badges
- addSidebarBadgesRetry = setInterval(addSidebarBadges, 250);
+(function () {
+  let t;
+
+  t = setInterval(function () {
+    if (tryToRun) {
+      clearInterval(t);
+      tryToRun({
+        attempts: false,
+        delay: 500,
+        function: function () {
+          if (shiftStats) {
+            let links = getClasses(document.getElementById('sidebar'), 'use-badge');
+            let template = document.getElementById('sidebar_template_badges').content.children;
+
+            for (i = 0; i < links.length; i++) {
+              let badgeID = links[i].pathname.slice(1);
+              let n = shiftStats.new[badgeID];
+              let e = shiftStats.expiring[badgeID];
+
+              if (n > 0 || e > 0) {
+                let link = links[i];
+                let badges = {};
+                  (function () {
+                    badges.base = copyElm(template[0]);
+                    badges.new = copyElm(template[1]);
+                    badges.exp = copyElm(template[2]);
+                  })();
+                let badgeBase;
+
+                link.appendChild(badges.base);
+                badgeBase = link.getElementsByClassName('badges')[0];
+
+                if (n > 0) { badgeBase.appendChild(badges.new); }
+                if (e > 0) { badgeBase.appendChild(badges.exp); }
+              }
+            }
+
+            document.getElementById('sidebar_template_badges').remove();
+            return true;
+          }
+          else {
+            return false;
+          }
+        }
+      });
+    }
+  }, 500);
+})();
 
 // *** Event Listeners ***
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);

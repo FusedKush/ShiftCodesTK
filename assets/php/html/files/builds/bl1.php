@@ -19,19 +19,19 @@
     <meta property="og:description" content="SHiFT Codes for Borderlands: Game of the Year Edition">
     <meta property="twitter:description" content="SHiFT Codes for Borderlands: Game of the Year Edition">
     <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodes.tk/bl1">
-    <meta property="og:url" content="https://shiftcodes.tk/bl1">
-    <meta name="breadcrumbs" id="breadcrumbs" content='[{"name": "Borderlands: GOTY", "url": "/bl1"}]'>
-    <!-- Page Thumbnail Image -->
-    <meta property="og:image" content="https://shiftcodes.tk/assets/img/metadata/bl1.png">
-    <meta property="twitter:image" content="https://shiftcodes.tk/assets/img/metadata/bl1.png">
+    <meta name="canonical" href="https://shiftcodestk.com/bl1">
+    <meta property="og:url" content="https://shiftcodestk.com/bl1">
+    <!-- Page Images -->
+    <meta name="header:image" content="bl1_1">
+    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl1/1.png">
+    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl1/1.png">
     <!-- Page-Specific Browser Properties -->
     <link rel="manifest" href="/assets/manifests/bl1.webmanifest">
     <meta name="theme-color-tm" id="theme_color_tm" content="#dc143c">
     <!--// Shared Head Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl1" data-shiftData='{"id": "3", "name": "Borderlands: Game of the Year Edition"}'>
+  <body data-theme="bl1">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

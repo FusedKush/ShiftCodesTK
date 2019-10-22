@@ -1,0 +1,39 @@
+@import "../../../partials/_globals";
+// Support Footer
+@import "../../../partials/_support-footer";
+
+main {
+  @include ready;
+  text-align: center;
+
+  .intro {
+    padding: 16px;
+    border: bd(1.5px);
+    border-radius: 4px;
+    margin-bottom: 16px;
+  }
+  .links {
+    $margins: 8px;
+
+    @include flexbox(none, none, $wrap: true);
+    margin: -#{$margins};
+    padding-top: 24px;
+
+    .title {
+      @include multiProp(8px, spacing);
+      font-size: 1.25em;
+      width: 100%;
+      background-color: tpw(0.25);
+      border: bd(1.5px, tpw(0.75));
+      border-radius: 4px;
+    }
+    .button {
+      margin: $margins;
+      min-width: calc(50% - #{$margins * 2)});
+      flex: 1;
+      font-size: 1.25em;
+      padding: 32px 16px;
+    }
+  }
+
+}
