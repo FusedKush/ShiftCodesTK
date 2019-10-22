@@ -42,7 +42,7 @@
       </strong>
     </div>
   </div>
-  <div class="pager no-auto-config" id="shift_code_pager" data-onclick="shift_header_sort"></div>
+  <div class="pager no-auto-config" id="shift_code_pager" data-subtractoffset="true" data-onclick="shift_header_sort"></div>
 </main>
 <template id="shift_code_template">
   <div class="dropdown-panel shift-code">
