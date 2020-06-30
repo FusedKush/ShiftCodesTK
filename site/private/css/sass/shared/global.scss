@@ -4,6 +4,7 @@
 
 @import "../partials/_globals";
 @import "../partials/_spinner";
+@import "../partials/profile-card";
 
 /*** Global Declarations ***/
 // Default Styles
@@ -16,18 +17,15 @@
 }
 // Startup styles
 body {
-  background-color: #0f1e2d;
+  background-color: $site-color-main;
 
   &:not(.scroll-disabled) {
     top: 0 !important;
   }
   &.scroll-disabled {
     position: fixed;
-    overflow-y: scroll;
+    overflow: hidden;
   }
-}
-body * {
-  // opacity: 0;
 }
 main.no-header {
   min-height: 100%;
@@ -56,12 +54,6 @@ a {
     @include mouseState(click)   { text-decoration: underline; }
   }
   &:not(.themed) { color: inherit; }
-  // Warning! .colored will be deprecated in the future. Use .themed instead.
-  &.themed {
-    color: #0ff;
-
-    @extend a.tr-underline;
-  }
 }
 p:not(:first-child) { margin-top: $df-elm-spacing; }
 button {
@@ -70,59 +62,147 @@ button {
   @include multiProp(inherit, color, font-family);
 }
 button.styled, a.button {
-  @at-root %idle {
-    &:not(.color-light) {
-      &::before { opacity: 0.15; }
-      span      { opacity: 0.85; }
+  $buttonColors: (
+    'info': #6beaff,
+    'warning': #ff6c00,
+    'danger': #ff0000
+  );
+
+  @at-root %noHover {
+    &:not(.color-on-hover):not(.color-text) {
+      &:not(.color)::before              { opacity: 0.1; }
+      &.color {
+        &.light::before, &.dark::before  { opacity: 0.4; }
+        &:not(.light):not(.dark)::before { opacity: 0.4; }
+      }
     }
-    &.color-light {
-      &::before { opacity: 0.75; }
-      span      { opacity: 0.75; }
+    &.color-on-hover,
+    &.color-text {
+      &::before                          { opacity: 0; }
+    }           
+    &.color-text {
+      &.light                            { color: $site-color-lighter; }
+      &.dark                             { color: $site-color-darker; }
+      &.theme                            { @include theme(c); }
+      &.class-theme                      { @include classTheme((c)); }
+
+      @each $name, $color in $buttonColors {
+        &.#{$name}                       { color: $color; }
+      }
     }
 
-    &::after  { opacity: 0.5; }
+    &::after                             { opacity: 0.5; }
+    span                                 { opacity: 0.85; }
+  }
+  @at-root %hover {
+    &:not(.color) {
+      &::before                        { opacity: 0.25 }
+    }
+    &.color {
+      &.light::before, &.dark::before  { opacity: 1; }
+      &:not(.light):not(.dark)::before { opacity: 0.75; }
+
+      @each $name, $color in $buttonColors {
+        &.#{$name}::before             { opacity: 0.75; }
+      }
+    }
+
+    &::after                           { opacity: 0.75; }
+    span                               { opacity: 1; }
   }
 
   @include flexbox;
   text-align: center;
+  text-shadow: dropShadow(tpb(0.5));
   padding: 12px;
   border-radius: 4px;
   font-size: 1em;
   line-height: 1;
-
+  transition: color $trd;
+  
   @include pshared {
     @include fill(true);
   }
-  &:not(.color-light)::before { background-color: #fff; }
-  &.color-light::before       { background-color: $site-color-lighter; }
+  
   &::after {
     border: bd(1.5px, #fff);
     border-radius: inherit;
   }
-  &:not(:last-child) {
-    margin-right: 8px;
+  &:not(:first-child) {
+    margin-left: 8px;
   }
-  &:not([disabled]) {
-    @include mouseState(noHover) {
-      @extend %idle;
-    }
-    @include mouseState(hover) {
-      &:not(.color-light){
-        &::before { opacity: 0.25; }
-      }
-      &.color-light {
-        &::before { opacity: 1; }
-      }
 
-      &::after  { opacity: 0.75; }
-      span      { opacity: 1; }
-    }
-    @include mouseState(click) {
-      &::before { opacity: 0.5; }
+  &:not(.color) {
+    &::before {
+      background-color: #fff;
     }
   }
-  &[disabled] {
-    @extend %idle;
+  &.color {
+    &.light::before       { background-color: $site-color-lighter; }
+    &.dark::before        { background-color: $site-color-darker; }
+    &.theme::before       { @include theme(bg); }
+    &.class-theme         { @include classTheme((bg), before); }
+
+    @each $name, $color in $buttonColors {
+      &.#{$name}::before  { background-color: $color; }
+    }
+  }
+  &:not([aria-pressed="true"]) {
+    &:not([disabled]) {
+      @include mouseState(noHover) {
+        @extend %noHover;
+      }
+      @include mouseState(hover) {
+        @extend %hover;
+      }
+      @include mouseState(click) {
+        &:not(.color) {
+          &::before                        { opacity: 0.15 }
+        }
+        &.color {
+          &.light::before, &.dark::before  { opacity: 0.75; }
+          &:not(.light):not(.dark)::before { opacity: 0.5; }
+        }
+      }
+    }
+    &[disabled] {
+      @extend %noHover;
+    }
+  }
+  &[aria-pressed="true"] {
+    &:not([disabled]) {
+      @include mouseState(noHover) {
+        @extend %hover;
+      }
+      @include mouseState(hover) {
+        &:not(.color) {
+          &::before                        { opacity: 0.1 }
+        }
+        &.color {
+          &.light::before, &.dark::before  { opacity: 0.85; }
+          &:not(.light):not(.dark)::before { opacity: 0.6; }
+        }
+    
+        // &::after                           { opacity: 0.75; }
+        // span                               { opacity: 1; }
+      }
+      @include mouseState(click) {
+        &:not(.color) {
+          &::before                        { opacity: 0.15 }
+        }
+        &.color {
+          &.light::before, &.dark::before  { opacity: 0.65; }
+          &:not(.light):not(.dark)::before { opacity: 0.4; }
+        }
+      }
+    }
+    &[disabled] {
+      @extend %hover;
+    }
+  }
+
+  span {
+    white-space: nowrap;
   }
 }
 button, a {
@@ -131,8 +211,11 @@ button, a {
   }
 }
 button, a, input, select, textarea {
-  &[disabled] {
-    opacity: .5 !important;
+  &[disabled], &[readonly] {
+    &:not(.checkbox):not(.radio) {
+      opacity: 0.5 !important;
+    }
+    
     cursor: not-allowed !important;
   }
 }
@@ -157,7 +240,11 @@ ul, ol {
   }
   &:not(.styled) { list-style: none; }
 }
-code { padding: 3px 6px; }
+code {
+  padding: 2px 6px;
+  line-height: 1.5;
+  white-space: nowrap;
+}
 pre {
   @include spacing($df-elm-spacing 0, 8px);
 
@@ -169,12 +256,25 @@ pre {
 pre, code {
   font-family: inherit;
   border-radius: 4px;
-  background-color: tpw(0.25);
+  background-color: tpw(0.1);
+  border: bd(1.5px, tpw(0.5));
+  overflow: auto;
+  text-shadow: dropShadow(tpb(0.5));
 }
 img {
   max-width: 100%;
 }
 template, .webp-support { display: none; }
+.xe-notice {
+  // text-shadow: dropShadow(tpb(0.5));
+
+  th, td {
+    padding: 6px;
+    color: black;
+    // text-shadow: dropShadow(tpb(0.25));
+  }
+}
+
 // Reusable Classes
 // ------------------------
 // Header
@@ -296,7 +396,8 @@ main {
   margin: 0 auto;
 }
 div, span, a, button, strong, b, em, i {
-  &.box-icon { @include boxIcon; }
+  &.box-icon        { @include boxIcon(false); }
+  &.inline-box-icon { @include boxIcon(true); }
 }
 .highlight {
   width: 100%;
@@ -343,11 +444,17 @@ div, span, a, button, strong, b, em, i {
 .bubble-parent {
   @include flexbox;
 
-  &:not(:hover):not(:focus) .bubble { @include bubbleStates(0, 0); }
-  &:hover, &:focus {
-    .bubble                         { @include bubbleStates(0.3, 1); }
+  &:not(:hover):not(:focus):not([aria-pressed="true"]) .bubble { 
+    @include bubbleStates(0, 0); 
   }
-  &:active .bubble                  { @include bubbleStates(0.5, 1); }
+  &:hover, &:focus, &[aria-pressed="true"] {
+    .bubble {
+      @include bubbleStates(0.3, 1); 
+    }
+  }
+  &:active .bubble {
+    @include bubbleStates(0.5, 1);
+  }
 
   .bubble {
     position: absolute;
@@ -422,6 +529,7 @@ button.copy {
 .progress-bar {
   @include sizing(6px, 100%);
   background-color: tpb(0.5);
+  border-radius: 8px;
 
   .progress {
     @include multiProp(100%, sizing);
@@ -430,11 +538,65 @@ button.copy {
 
     // Pull bar to 0%
     position: absolute;
-    left: -100%;
-    transform: translateX(0);
+    // left: -100%;
+    // transform: translateX(0);
+    width: 0%;
+    transition: width 0.4s ease;
 
     &.no-animation {
       transition: none;
     }
+  }
+}
+// Horizontal Menus
+.h-menu {
+  @include flexbox(e);
+  padding: 8px;
+  font-size: 1.15em;
+  
+  a, button {
+    @include multiProp(8px, spacing);
+    font-size: 1em;
+
+    @include pshared {
+      @include fill(true);
+      border-bottom: 2px solid;
+      opacity: 0;
+    }
+    &::before {
+      border-color: #fff;
+    }
+    &::after {
+      @include theme(bc);
+    }
+    @include mouseState(noHover) {
+      &:not([aria-selected="true"]):not([aria-pressed="true"]) {
+        opacity: 0.75;
+      }
+    }
+    @include mouseState(hover) {
+      &::before {
+        opacity: 1;
+      }
+    }
+    @include mouseState(click) {
+      opacity: 0.75;
+    }
+    &[aria-selected="true"], &[aria-pressed="true"] {
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}
+#containers {
+  @include fill;
+  pointer-events: none;
+
+  #templates {
+    display: none;
+  }
+  #modals .modal {
+    pointer-events: all;
   }
 }

@@ -6,9 +6,10 @@
 @import "../partials/_globals";
 
 /*** Style Declarations ***/
-.credits {
+main{
   @include ready;
-
+}
+.credits {
   @include flexbox(none, none, $wrap: true);
   padding: 16px 8px;
   overflow: hidden;

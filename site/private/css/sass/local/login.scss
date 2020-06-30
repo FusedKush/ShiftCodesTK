@@ -1,0 +1,25 @@
+/*********************************
+  Index Page Styles
+*********************************/
+@import "../partials/_globals";
+
+main {
+  @include ready;
+  @include bgImg;
+  @include flexbox($direction: c);
+  
+  padding: 32px; 
+
+  &::before {
+    @include fill(true, tpb(0.5));
+  }
+
+  form {
+    background-color: adjust-color($site-color-main, $alpha: -0.25);
+    border-radius: 8px;
+    box-shadow: shadow(tpb(0.5));
+    border: bd($theme-main);
+    min-width: 50%;
+    max-width: 32em;
+  }
+}

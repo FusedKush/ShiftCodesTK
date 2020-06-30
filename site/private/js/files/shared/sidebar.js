@@ -9,7 +9,7 @@ function toggleSB () {
 
   // Updates the Visibility of the Sidebar
   function updateVis () {
-    vishidden(sb, state);
+    isHidden(sb, state);
   }
   // Update Sidebar and Button states
   function updateState () {
@@ -34,7 +34,7 @@ function toggleSB () {
   else {
     updateVis();
     toggleBodyScroll(false);
-    focusLock.set(getClass(sb, 'panel'), toggleSB);
+    focusLock.set(dom.find.child(sb, 'class', 'panel'), toggleSB);
     setTimeout(updateState, 50);
   }
 }
@@ -85,56 +85,6 @@ sidebarMarkup();
     }
   }
 })();
-// Update sidebar badges
-(function () {
-  let t;
-
-  t = setInterval(function () {
-    if (tryToRun) {
-      clearInterval(t);
-      tryToRun({
-        attempts: false,
-        delay: 500,
-        function: function () {
-          if (shiftStats) {
-            let links = getClasses(document.getElementById('sidebar'), 'use-badge');
-            let template = document.getElementById('sidebar_template_badges').content.children;
-
-            for (i = 0; i < links.length; i++) {
-              let badgeID = links[i].pathname.slice(1);
-              let n = shiftStats.new[badgeID];
-              let e = shiftStats.expiring[badgeID];
-
-              if (n > 0 || e > 0) {
-                let link = links[i];
-                let badges = {};
-                  (function () {
-                    badges.base = copyElm(template[0]);
-                    badges.new = copyElm(template[1]);
-                    badges.exp = copyElm(template[2]);
-                  })();
-                let badgeBase;
-
-                link.appendChild(badges.base);
-                badgeBase = link.getElementsByClassName('badges')[0];
-
-                if (n > 0) { badgeBase.appendChild(badges.new); }
-                if (e > 0) { badgeBase.appendChild(badges.exp); }
-              }
-            }
-
-            document.getElementById('sidebar_template_badges').remove();
-            return true;
-          }
-          else {
-            return false;
-          }
-        }
-      });
-    }
-  }, 500);
-})();
-
 // *** Event Listeners ***
 document.getElementById('navbar_sb').addEventListener('click', toggleSB);
 document.getElementById('sidebar_toggle').addEventListener('click', toggleSB);

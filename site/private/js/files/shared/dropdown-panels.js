@@ -24,16 +24,16 @@ function dropdownPanelSetup (panel) {
   let hashTargetOverlay = document.createElement('span');
 
   // Requires constructor
-  if (hasClass(panel, 'c')) {
+  if (dom.has(panel, 'class', 'c')) {
     let parent = panel.parentNode;
     let template = {};
       (function () {
-        template.base = getTemplate('dropdown_panel_template');
-        template.title = getClass(template.base, 'title');
-          template.icon = getClass(template.title, 'icon');
-          template.primary = getClass(template.title, 'primary');
-          template.secondary = getClass(template.title, 'secondary');
-        template.body = getClass(template.base, 'body');
+        template.base = edit.copy(dom.find.id('dropdown_panel_template'));
+        template.title = dom.find.child(template.base, 'class', 'title');
+          template.icon = dom.find.child(template.title, 'class', 'icon');
+          template.primary = dom.find.child(template.title, 'class', 'primary');
+          template.secondary = dom.find.child(template.title, 'class', 'secondary');
+        template.body = dom.find.child(template.base, 'class', 'body');
       })();
       let props = [
         'icon',
@@ -48,19 +48,29 @@ function dropdownPanelSetup (panel) {
 
     for (let i = 0; i < props.length; i++) {
       let prop = props[i];
-      let val = getClass(panel, prop);
+      let val = dom.find.child(panel, 'class', prop);
 
-      if (val !== undefined) {
-        template[prop].innerHTML = val.innerHTML;
+      if (val) {
+        template[prop].innerHTML = val.outerHTML;
       }
       else {
         template[prop].parentNode.removeChild(template[prop]);
       }
     }
 
-    delClass(panel, 'c');
-    parent.replaceChild(template.base, panel);
-    panel = template.base;
+    // Update template
+    (function () {
+      let newBase = document.createElement(dom.get(panel, 'tag'));
+          edit.class(newBase, 'add', panel.className);
+          edit.class(newBase, 'add', template.base.className);
+          newBase.innerHTML = template.base.innerHTML;
+
+      edit.class(newBase, 'remove', 'c');
+
+      template.base = newBase;
+      parent.replaceChild(template.base, panel);
+      panel = template.base;
+    })();
   }
 
   updateDropdownPanelAttributes(panel, false);
@@ -85,7 +95,7 @@ function toggleDropdownPanel (toggler) {
         let panels = document.getElementsByClassName('dropdown-panel');
 
         for (let panel of panels) {
-          if (!hasClass(panel, 'no-auto-config')) {
+          if (!dom.has(panel, 'class', 'no-auto-config')) {
             dropdownPanelSetup(panel);
           }
         }
@@ -94,13 +104,13 @@ function toggleDropdownPanel (toggler) {
       window.addEventListener('click', function (e) {
         let classname = 'dropdown-panel-toggle';
         let target = e.target;
-        let parent = findClass(target, 'up', classname);
+        let parent = dom.find.parent(target, 'class', classname);
 
         function toggle (id) {
           toggleDropdownMenu(document.getElementById(id));
         }
 
-        if (hasClass(target, classname)) { toggleDropdownPanel(target); }
+        if (dom.has(target, 'class', classname)) { toggleDropdownPanel(target); }
         else if (parent)                 { toggleDropdownPanel(parent); }
       });
     }

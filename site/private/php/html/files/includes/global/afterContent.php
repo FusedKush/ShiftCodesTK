@@ -1,8 +1,7 @@
-<!-- Footer -->
-<?php include_once("files/afterContent/footer.php"); ?>
-<!-- Alert Popups -->
-<?php include_once("files/afterContent/toasts.php"); ?>
-<!-- Templates -->
-<?php include_once("files/afterContent/templates.php"); ?>
-<!-- No Javascript Error -->
-<?php include_once("files/afterContent/noscript-markup.php"); ?>
+<?php
+  $files = ['footer', 'containers/containers', 'noscript-markup'];
+
+  foreach ($files as $file) {
+    include_once(HTML_INCLUDES_PATH . "global/files/afterContent/$file.php");
+  }
+?>

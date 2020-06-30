@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'About us - ShiftCodesTK',
+    'description' => 'ShiftCodesTK: Less time Scrolling, More time Gaming',
+    'canonical'   => '/about-us',
+    'image'       => 'bl2/3',
+    'theme'       => 'main'
+  ];
+
+  require_once('initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +17,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="assets/css/local/about-us.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>About us - ShiftCodesTK</title>
-    <meta name="title" content="About us - ShiftCodesTK">
-    <meta property="og:title" content="About us - ShiftCodesTK">
-    <meta property="twitter:title" content="About us - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
-    <meta property="og:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
-    <meta property="twitter:description" content="ShiftCodesTK: Less time Scrolling, More time Gaming">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/about-us">
-    <meta property="og:url" content="https://shiftcodestk.com/about-us">
-    <!-- Page Images -->
-    <meta name="header:image" content="bl2_3">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/3.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/3.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!--// Shared Head Markup \\-->
+    <link href="/assets/css/local/about-us.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">

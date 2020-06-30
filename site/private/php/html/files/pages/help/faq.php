@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'FAQ - ShiftCodesTK',
+    'description' => 'Answers to some frequently asked questions',
+    'canonical'   => '/help/faq',
+    'image'       => 'tps/4',
+    'theme'       => 'main'
+  ];
+
+  require_once('../initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +17,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="assets/css/local/help/faq.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>FAQ - ShiftCodesTK</title>
-    <meta name="title" content="FAQ - ShiftCodesTK">
-    <meta property="og:title" content="FAQ - ShiftCodesTK">
-    <meta property="twitter:title" content="FAQ - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="Answers to some frequently asked questions">
-    <meta property="og:description" content="Answers to some frequently asked questions">
-    <meta property="twitter:description" content="Answers to some frequently asked questions">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/help/faq">
-    <meta property="og:url" content="https://shiftcodestk.com/help/faq">
-    <!-- Page Images -->
-    <meta name="header:image" content="tps_4">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/4.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/4.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!--// Shared Head Markup \\-->
+    <link href="/assets/css/local/help/faq.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
@@ -37,6 +27,94 @@
     <!-- Main Header -->
     <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
+    <?php
+      $questions = [
+        "SHiFT" => [
+          [
+            "q" => "What is SHiFT?",
+            "a" => "SHiFT is a service created by Gearbox to reward their players with in-game loot and special events."
+          ],
+          [
+            "q" => "Do you need an account to use SHiFT?",
+            "a" => 'Yes. You can create a free account <a class="themed" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT (External Link)" aria-label="Register for SHiFT (External Link)"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span><span class="label">here</span></a>.</p>'
+          ],
+          [
+            "q" => "How old do you need to be to use SHiFT?",
+            "a" => "You must be at least 18 years old to sign up for SHiFT."
+          ]
+        ],
+        "ShiftCodesTK" => [
+          [
+            "q" => "Is ShiftCodesTK affiliated with Gearbox or 2K?",
+            "a" => "Nope, ShiftCodesTK is a completely fan-made service, and is not affiliated with Gearbox Software or 2K Games in any way."
+          ],
+          [
+            "q" => "Can you create a SHiFT Code for me? Can you change the properties of a SHiFT Code? Can you give me a legendary?",
+            "a" => "No, we have no control over the SHiFT Codes themselves, and just share the codes released by Gearbox."
+          ],
+          [
+            "q" => "Why is ShiftCodesTK not updated as soon as SHiFT Codes are posted?",
+            "a" => "At the time of writing, ShiftCodesTK does not have access to the necessary features of the Twitter & Facebook APIs to retrieve the necessary posts and automatically parse them, as well as lacking the ability to then update our own personal pages once this information has been obtained."
+          ],
+          [
+            "q" => "Do you have any information on future titles, expansions, or events related to Borderlands?",
+            "a" => "Nope, we have no information on anything regarding the future of Borderlands."
+          ]
+        ],
+        "SHiFT Codes" => [
+          [
+            "q" => "What are SHiFT Codes?",
+            "a" => "SHiFT Codes are 25-character keys that grant in-game rewards."
+          ],
+          [
+            "q" => "Where are SHiFT Codes released?",
+            "a" => "SHiFT Codes are typically released on Twitter and Facebook via official handles, but are also sometimes released during special events and livestreams."
+          ],
+          [
+            "q" => "How often are SHiFT Codes released?",
+            "a" => "SHiFT Codes have no strict schedule, but are often released on Friday's around 10AM PST."
+          ],
+          [
+            "q" => "How many times can a SHiFT Code be redeemed?",
+            "a" => "SHiFT Codes can be redeemed once per platform, per account."
+          ],
+          [
+            "q" => "Do SHiFT Codes ever expire?",
+            "a" => "Yes, most SHiFT Codes will be issued with an Expiration Date, typically about two to three weeks after their release. However, some SHiFT Codes have and can be issued without an Expiration Date."
+          ],
+          [
+            "q" => "What games support SHiFT Codes?",
+            "a" => 
+              '
+                <p>The following titles support SHiFT Codes:</p>
+                  <ul class="styled">
+                    <li>Borderlands: Game of the Year Edition</li>
+                    <li>Borderlands 2</li>
+                    <li>Borderlands: The Pre-Sequel</li>
+                    <li>Borderlands 3</li>
+                  </ul>
+                <p><em>There are other titles that accept SHiFT Codes, such as Battleborn, but they are not supported on ShiftCodesTK.</em></p>
+              '
+          ],
+          [
+            "q" => "Can I add a SHiFT Code to ShiftCodesTK?",
+            "a" => "At the moment, SHiFT Codes cannot be added to ShiftCodesTK by the community. This feature will likely be implemented in the future."
+          ]
+        ]
+      ];
+
+      // Add wrapper <p> tags as needed, Add IDs
+      foreach ($questions as $section => &$questionList) {
+        foreach ($questionList as &$question) {
+          $question['id'] = clean_url($question['q']);
+          $question['a'] = collapseWhitespace($question['a']);
+
+          if (!strpos($question['a'], '<p>')) {
+            $question['a'] = "<p>{$question['a']}</p>";
+          }
+        }
+      }
+    ?>
     <main class="content-wrapper">
       <header class="toc dropdown-panel">
         <button class="header dropdown-panel-toggle">
@@ -55,101 +133,39 @@
           </div>
         </button>
         <div class="body content-container" id="table_of_contents">
+          <?php foreach ($questions as $section => &$questionList) : ?>
+            <div class="section">
+              <h3><a href="<?= '#' .clean_url($section); ?>"><?= $section; ?></a></h3>
+              <ul class="styled">
+                <?php foreach ($questionList as &$question) : ?>
+                  <?php $title = clean_html('Jump to question: "' . $question['q'] . '"'); ?>
+                  <li>
+                    <a href="<?= "#{$question['id']}"; ?>"
+                       title="<?= $title; ?>"
+                       aria-label="<?= $title; ?>"><?= $question['q']; ?></a>
+                  </li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          <?php endforeach; ?>
         </div>
       </header>
-      <section class="faq-group">
-        <header>
-          <h2 class="title">SHiFT</h2>
-        </header>
-        <div class="dropdown-panel c">
-          <h3 class="primary">What is SHiFT?</h3>
-          <div class="body"><p>SHiFT is a service created by Gearbox to reward their players with in-game loot and special events.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Do you need an account to use SHiFT?</h3>
-          <div class="body"><p>Yes. You can create a free account&nbsp;<a class="themed" href="https://shift.gearboxsoftware.com/registration/pre" rel="external noopener" target="_blank" title="Register for SHiFT (External Link)" aria-label="Register for SHiFT (External Link)"><span class="fas fa-external-link-square-alt" title="External Link" aria-label="External Link">&nbsp;</span><span class="label">here</span></a>.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">How old do you need to be to use SHiFT?</h3>
-          <div class="body"><p>You must be at least 18 years old to sign up for SHiFT.</p></div>
-        </div>
-      </section>
-      <section class="faq-group">
-        <header>
-          <h2 class="title">ShiftCodesTK</h2>
-        </header>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Is ShiftCodesTK affiliated with Gearbox or 2K?</h3>
-          <div class="body"><p>Nope, ShiftCodesTK is a completely fan-made service, and is not affiliated with Gearbox Software or 2K Games in any way.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Can you create a SHiFT Code for me? Can you change the properties of a SHiFT Code? Can you give me a legendary?</h3>
-          <div class="body"><p>No, we have no control over the SHiFT Codes themselves, and just share the codes released by Gearbox.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Why is ShiftCodesTK not updated as soon as SHiFT Codes are posted?</h3>
-          <div class="body"><p>At the time of writing, ShiftCodesTK does not have access to the necessary features of the Twitter & Facebook APIs to retrieve the necessary posts and automatically parse them, as well as lacking the ability to then update our own personal pages once this information has been obtained.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Do you have any information on future titles, expansions, or events related to Borderlands?</h3>
-          <div class="body"><p>Nope, we have no information on anything regarding the future of Borderlands.</p></div>
-        </div>
-      </section>
-      <section class="faq-group">
-        <header>
-          <h2 class="title">SHiFT Codes</h2>
-        </header>
-        <div class="dropdown-panel c">
-          <h3 class="primary">What are SHiFT Codes?</h3>
-          <div class="body"><p>SHiFT Codes are 25-character keys that grant in-game rewards.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Where are SHiFT Codes released?</h3>
-          <div class="body"><p>SHiFT Codes are typically released on Twitter and Facebook via official handles, but are also sometimes released during special events and livestreams.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">How often are SHiFT Codes released?</h3>
-          <div class="body"><p>SHiFT Codes are typically released every Friday around 10AM PST.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">How many times can a SHiFT Code be redeemed?</h3>
-          <div class="body"><p>SHiFT Codes can be redeemed once per platform, per account.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <h3 class="primary">Do SHiFT Codes ever expire?</h3>
-          <div class="body"><p>Yes, most SHiFT Codes will be issued with an Expiration Date, typically about two to three weeks after their release. However, some SHiFT Codes have and can be issued without an Expiration Date.</p></div>
-        </div>
-        <div class="dropdown-panel c">
-          <div class="primary">What games support SHiFT Codes?</div>
-          <div class="body">
-            <p>The following titles support SHiFT Codes:</p>
-            <ul class="styled">
-              <li>Borderlands: Game of the Year Edition</li>
-              <li>Borderlands 2</li>
-              <li>Borderlands: The Pre-Sequel</li>
-              <li>Borderlands 3</li>
-            </ul>
-            <p><em>There are other titles that accept SHiFT Codes, such as Battleborn, but they are not supported on ShiftCodesTK.</em></p>
-          </div>
-        </div>
-        <div class="dropdown-panel c">
-          <div class="primary">Can I add a SHiFT Code to ShiftCodesTK?</div>
-          <div class="body">
-            <p>At the moment, SHiFT Codes cannot be added to ShiftCodesTK by the community. This feature will likely be implemented in the future.</p>
-          </div>
-        </div>
-      </section>
+      <?php foreach ($questions as $section => &$questionList) : ?>
+        <section class="faq-group">
+          <header id="<?= clean_url($section); ?>">
+            <h2 class="title"><?= $section; ?></h2>
+          </header>
+            <?php foreach ($questionList as &$question) : ?>
+              <?php $title = 'Jump to question: "' . $question['q'] . '"'; ?>
+              <div class="dropdown-panel c" id="<?= $question['id']; ?>">
+                <h3 class="primary"><?= $question['q']; ?></h3>
+                <div class="body"><?= $question['a']; ?></div>
+              </div>
+            <?php endforeach; ?>
+          </ul>
+        </section>
+      <?php endforeach; ?>
     </main>
-    <template id="toc_entry_template">
-      <div class="section">
-        <h3><a class="internal"></a></h3>
-        <ul class="styled">
-        </ul>
-      </div>
-    </template>
-    <template id="toc_entry_listitem_template">
-      <li><a class="internal"></a></li>
-    </template>
     <!-- Support Footer -->
     <?php include_once('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
@@ -157,7 +173,5 @@
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/js/local/help/faq.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>

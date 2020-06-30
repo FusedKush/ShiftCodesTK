@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'Updates - ShiftCodesTK',
+    'description' => 'Recent changes and updates to ShiftCodesTK',
+    'canonical'   => '/updates',
+    'image'       => 'bl2/5',
+    'theme'       => 'main'
+  ];
+
+  require_once('initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +17,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="assets/css/local/updates.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>Updates - ShiftCodesTK</title>
-    <meta name="title" content="Updates - ShiftCodesTK">
-    <meta property="og:title" content="Updates - ShiftCodesTK">
-    <meta property="twitter:title" content="Updates - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="Recent changes and updates to ShiftCodesTK">
-    <meta property="og:description" content="Recent changes and updates to ShiftCodesTK">
-    <meta property="twitter:description" content="Recent changes and updates to ShiftCodesTK">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/updates">
-    <meta property="og:url" content="https://shiftcodestk.com/updates">
-    <!-- Page Images -->
-    <meta name="header:image" content="bl2_5">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/5.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!--// Shared Head Markup \\-->
+    <link href="/assets/css/local/updates.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
@@ -103,6 +93,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/updates.js<?php echo $svQueryString; ?>"></script>
+    <script async src="/assets/js/local/updates.js<?php echo TK_VERSION_STR; ?>"></script>
   </body>
 </html>

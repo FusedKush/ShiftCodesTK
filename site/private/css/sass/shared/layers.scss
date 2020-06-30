@@ -1,0 +1,275 @@
+@import "../partials/_globals";
+
+// The layer container
+#layers {
+  @include multiProp(100%, sizing);
+
+  > .layer {
+    @include flexbox();
+  }
+}
+.layer {
+  @mixin layerRoot {
+    @at-root #layers .layer {
+      @content;
+    }
+  }
+
+  $layerBorders: (
+    dropdown: 1.5px,
+    tooltip: 1px
+  );
+  $contentSpacing: 12px;
+  $layerShadow: tpb(0.75);
+
+  display: none; // Hide inactive Layers
+
+  position: absolute;
+  transition-duration: 0.1s;
+  transition-timing-function: ease-in-out;
+  z-index: zOrder(layer);
+
+  &.sticky {
+    position: fixed;
+  }
+
+  &[hidden] {
+    opacity: 0;
+
+    &.tooltip {
+      transform: scale(0.95);
+    }
+  }
+  
+  // Positioning
+  & {
+    $posList: (
+      top: (
+        direction: bottom,
+        alignments: (left, right),
+        pointer-transform: translateY(0.125em),
+        pointer-rotation: 180,
+        dropdownTransition: translateY(25%)
+      ),
+      right: (
+        direction: left,
+        alignments: (top, bottom),
+        pointer-transform: translateX(-0.125em),
+        pointer-rotation: 270,
+        dropdownTransition: translateX(-25%)
+      ),
+      bottom: (
+        direction: top,
+        alignments: (left, right),
+        pointer-transform: translateY(-0.125em),
+        pointer-rotation: 0,
+        dropdownTransition: translateY(-25%)
+      ),
+      left: (
+        direction: right,
+        alignments: (top, bottom),
+        pointer-transform: translateX(0.125em),
+        pointer-rotation: 90,
+        dropdownTransition: translateX(25%)
+      )
+    );
+
+    @each $pos, $posProps in $posList {
+      &[data-layer-pos="#{$pos}"] {
+        $layerSpacing: 16px;
+
+        &[hidden].dropdown {
+          transform: map-get($posProps, 'dropdownTransition');
+        }
+
+        @each $alignment in map-get($posProps, "alignments") {
+          &[data-layer-align="#{$alignment}"] .layer-content {
+            #{$alignment}: -#{$layerSpacing};
+
+            @if $alignment == left {
+              justify-content: start;
+            }
+            @else if $alignment == right {
+              justify-content: end;
+            }
+          }
+        }
+
+        .layer-content, .pointer {
+          #{map-get($posProps, "direction")}: 100%;
+        }
+        .pointer {
+          transform: #{map-get($posProps, 'pointer-transform')} rotate(#{map-get($posProps, "pointer-rotation")}deg);
+        }
+      }
+    }
+  }
+
+  .layer-content {
+    @include flexbox($hAlign: s);
+    margin: 12px;
+    box-shadow: shadow($layerShadow, 2em);
+    overflow: hidden;
+
+    @include layerRoot {
+      &.tooltip {
+        $tooltipBackground: #000;
+        $maxTooltipWidth: 16em;
+
+        &.wrapped .layer-content {
+          white-space: normal;
+          min-width: $maxTooltipWidth;
+        }
+
+        .layer-content {
+          padding: 8px 12px;
+          background-color: $tooltipBackground;
+          // border: 1px solid tpw(0.25);
+          border-radius: 8px;
+          max-width: $maxTooltipWidth;
+          font-size: 0.85em;
+          white-space: nowrap;
+          // text-align: center;
+        }
+        .pointer {
+          color: $tooltipBackground;
+        }
+      }
+      &.dropdown {
+        $dropdownBorder: tpw(0.75);
+        $dropdownRadius: 8px;
+
+        .layer-content {
+          pointer-events: all;
+          @include colors(#fff, $site-color-light);
+          border: bd(1.5px, #fff);
+          border-radius: $dropdownRadius;
+
+          .title {
+            opacity: 0.5;
+            font-size: 1.2em;
+            border-radius: $dropdownRadius $dropdownRadius 0 0;
+            cursor: default;
+          }
+          .choice-list {
+            &.scrollable {
+              max-height: 12.5em;
+              overflow-x: hidden;
+              overflow-y: scroll;
+            }
+      
+            li {
+              margin: 8px;
+            }
+            .separator {
+              border-bottom: bd(tpw(0.25));
+              margin: 12px 16px;
+              border-radius: 4px;
+            }
+          }
+          .choice {
+            @include flexbox(c, s);
+            font-size: 1.1em;
+            cursor: pointer;
+            border-radius: 4px;
+      
+            &.styled, &.button {
+              &::after {
+                border: none;
+              }
+            }
+      
+            &[hidden] {
+              display: none;
+            }
+      
+            &:not(.styled):not(.button) {
+              &::before {
+                @include fill(true);
+              }
+        
+              &[aria-pressed="false"], &:not([aria-pressed]) {
+                color: inherit;
+        
+                &::before { 
+                  background-color: tpw(0.75); 
+                }
+      
+                @include mouseState(noHover) {
+                  &::before                          { opacity: 0; }
+                  &::after                           { opacity: 0.5; }
+      
+                  > span                             { opacity: 0.75; }
+                }
+                @include mouseState(hover) {
+                  &::before                          { opacity: 0.35 }
+                  &::after                           { opacity: 0.75; }
+                  
+                  > span                             { opacity: 1; }
+                }
+                @include mouseState(click) {
+                  &::before                          { opacity: 0.15 }
+                }
+              }
+              &[aria-pressed="true"] {
+                color: #fff;
+                @include theme(bg);
+        
+                &::before {
+                  background-color: #fff;
+                }
+        
+                @include mouseState(noHover) {
+                  &::before { opacity: 0; }
+                }
+                @include mouseState(hover) {
+                  &::before { opacity: 0.25; }
+                }
+                @include mouseState(click) {
+                  opacity: 0.75;
+                }
+              }
+            }
+      
+            &::after {
+              @include fill(true);
+            }
+          }
+          .title, .choice {
+            $basePadding: 8px;
+      
+            text-align: left;
+            width: 100%;
+            white-space: nowrap;
+            padding: #{$basePadding * 1.75} #{$basePadding * 4} #{$basePadding * 1.75} #{$basePadding * 2};
+            min-width: 7.5em;
+      
+            &.title {
+              padding-bottom: 0;
+            }
+          }
+        }
+        .pointer {
+          border-bottom-color: $dropdownBorder;
+        }
+      }
+    }
+
+    // .content-container {
+    //   @include flexbox($hAlign: s);
+    // }
+  }
+  .pointer {
+    font-size: 1.5em;
+    text-shadow: 0 -2px 2em $layerShadow;
+  }
+  .layer-content, .pointer {
+    position: absolute;
+    transition: none;
+  }
+}
+.layer-target {
+  div, span, p, b, strong, i, em {
+    // pointer-events: none;
+  }
+}

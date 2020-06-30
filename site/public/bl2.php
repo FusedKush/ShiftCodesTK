@@ -1,1 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><link href="assets/css/local/shift.css<?php echo $svQueryString; ?>"rel=stylesheet><title>Borderlands 2 - ShiftCodesTK</title><meta content="Borderlands 2 - ShiftCodesTK"name=title><meta content="Borderlands 2 - ShiftCodesTK"property=og:title><meta content="Borderlands 2 - ShiftCodesTK"property=twitter:title><meta content="SHiFT Codes for Borderlands 2"name=description><meta content="SHiFT Codes for Borderlands 2"property=og:description><meta content="SHiFT Codes for Borderlands 2"property=twitter:description><meta name=canonical href=https://shiftcodestk.com/bl2><meta content=https://shiftcodestk.com/bl2 property=og:url><meta content=bl2_1 name=header:image><meta content=https://shiftcodestk.com/assets/img/metadata/bl2/1.png property=og:image><meta content=https://shiftcodestk.com/assets/img/metadata/bl2/1.png property=twitter:image><link href=/assets/manifests/bl2.webmanifest rel=manifest><meta content=#ff4500 name=theme-color-tm id=theme_color_tm><?php include_once('global/head.php'); ?><body data-theme=bl2><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><?php include_once("local/shift.php"); ?><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?><script async src="/assets/js/local/shift.js<?php echo $svQueryString; ?>"></script>
+<?php
+  $page['meta'] = [
+    'title'       => 'Borderlands 2 - ShiftCodesTK',
+    'description' => 'SHiFT Codes for Borderlands 2',
+    'canonical'   => '/bl2',
+    'image'       => 'bl2/1',
+    'theme'       => 'bl2'
+  ];
+  $page['shift'] = [
+    'game'  => 'bl2'
+  ];
+
+  include_once('initialize.php');
+?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>"rel=stylesheet><?php include_once('global/head.php'); ?><body data-theme=bl2><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><?php include_once('local/shift.php'); ?><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?><script async src="/assets/js/local/shift.js<?php echo TK_VERSION_STR; ?>"></script>

@@ -94,6 +94,7 @@
 
     img { @include multiProp(inherit, sizing); }
   }
+
   // Loader Progress Bar
   .loader.progress-bar {
     $dur: 0.4s;
@@ -123,9 +124,83 @@
         }
         // Animations
         .loader.progress-bar.is-loading .progress {
-          transition: transform $dur ease;
+          transition: width $dur ease;
         }
       }
+    }
+  }
+}
+#layers .layer.navbar-layer {
+  margin: 8px 16px;
+
+  &.dropdown {
+    .title{
+      @include flexbox($hAlign: none);
+      opacity: 1;
+      padding: 0;
+      background-color: tpb(0.25);
+      font-size: 1em;
+    }
+
+    .profile-card {
+      padding: 12px;
+    }
+    // .profile-picture {
+    //   @include flexbox;
+    //   @include multiProp(42px, sizing);
+    //   background-color: tpw(0.15);
+    //   border: bd(1.5px, tpw(0.5));
+    //   border-radius: 50%;
+    //   margin-right: 12px;
+    // }
+    // .user_id {
+    //   font-size: 0.75em;
+    //   opacity: 0.5;
+    // }
+    // .user_name, .user_id {
+    //   cursor: text;
+    // }
+    li {
+      .box-icon {
+        display: inline-flex;
+        margin-right: 16px
+      }
+    }
+  }
+}
+.dropdown-menu.account-menu {
+  margin: 16px;
+
+  .title {
+    @include flexbox($hAlign: none);
+    padding: 0;
+    background-color: tpb(0.25);
+    opacity: 1;
+    font-size: 1em;
+
+    .profile-card {
+      padding: 12px;
+    }
+  }
+  // .profile-picture {
+  //   @include flexbox;
+  //   @include multiProp(42px, sizing);
+  //   background-color: tpw(0.15);
+  //   border: bd(1.5px, tpw(0.5));
+  //   border-radius: 50%;
+  //   margin-right: 12px;
+  // }
+  // .user_id {
+  //   font-size: 0.75em;
+  //   opacity: 0.5;
+  // }
+  // .user_name, .user_id {
+  //   cursor: text;
+  // }
+  li {
+    .box-icon {
+      display: inline-flex;
+      margin-right: 16px
     }
   }
 }

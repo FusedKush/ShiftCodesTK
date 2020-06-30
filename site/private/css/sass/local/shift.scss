@@ -17,14 +17,14 @@
     @include flexbox(c, sb);
     padding: 12px 16px;
   }
-  .section { @include flexbox; }
+  .section { @include flexbox($vAlign: none); }
   .badge {
     display: flex;
-    @include sizing(1.7em, 3.4em);
     font-size: 1em;
     border-radius: 4px;
     text-shadow: dropShadow(tpb(0.25));
     margin-right: 6px;
+    min-width: 3.5em;
     overflow: hidden;
     cursor: default;
 
@@ -33,38 +33,39 @@
       $colors: (
         total: #808080,
         new: $badge-new,
-        exp: $badge-exp
+        expiring: $badge-expiring
         );
 
       @each $colorN, $colorV in $colors {
         &.#{$colorN} { background-color: $colorV; }
       }
     }
-    &.new, &.exp {
+    &.new, &.expiring {
       &::before { background-color: #000; }
       &::after {
         border: bd(2px);
         border-radius: 4px;
       }
       @include pshared { @include fill(true); }
-      &:not(.inactive) {
-        &[aria-pressed="false"]::after { opacity: 0; }
-        &[aria-pressed="true"]::after  { opacity: 1; }
-        @include mouseState(noHover) {
-          &::before                    { opacity: 0; }
-        }
-        @include mouseState(hover) {
-          cursor: pointer;
-
-          &::before                    { opacity: 0.25; }
-        }
-        @include mouseState(click)     { opacity: 0.75; }
+    }
+    
+    &:not(.inactive) {
+      &[aria-pressed="false"]::after { opacity: 0; }
+      &[aria-pressed="true"]::after  { opacity: 1; }
+      @include mouseState(noHover) {
+        &::before                    { opacity: 0; }
       }
-      &.inactive {
-        opacity: 0.5;
+      @include mouseState(hover) {
+        cursor: pointer;
 
-        @include pshared { opacity: 0; }
+        &::before                    { opacity: 0.25; }
       }
+      @include mouseState(click)     { opacity: 0.75; }
+    }
+    &.inactive {
+      opacity: 0.5;
+
+      @include pshared { opacity: 0; }
     }
 
     .count { background-color: tpb(0.2); }
@@ -73,9 +74,11 @@
       @include flexbox;
       flex: 1;
       height: inherit;
+      padding: 6px 8px;
     }
   }
-  .sort > button {
+  .buttons {
+    button, a {
       @include flexbox;
       @include multiProp(1.5em, sizing);
       font-size: 1.25em;
@@ -83,10 +86,13 @@
       line-height: 1;
       border-radius: 4px;
       overflow: hidden;
-
+  
       &::before { @include fill(true, #fff); }
-
-      &[aria-pressed="false"] {
+      &:not(:last-child) {
+        margin-right: 6px;
+      }
+  
+      &:not([aria-pressed="true"]) {
         @include mouseState(noHover) {
           &::before                { opacity: 0.2; }
         }
@@ -97,15 +103,29 @@
       }
       &[aria-pressed="true"] {
         opacity: 0.75;
-
+  
         &::before { opacity: 0.4; }
       }
     }
+  }
+  .slideout {
+    font-size: 1rem;
+    background-color: tpb(0.35);
+    box-shadow: inset shadow(tpb(0.5), 1em);
+
+    .content-wrapper {
+      @keyframes slideoutFadeIn {
+        0%   { opacity: 0; }
+        100% { opacity: 1; }
+      }
+
+      padding: 32px 16px;
+      animation: slideoutFadeIn 0.1s ease-in-out;
+    }
+  }
 }
-main.shift-code-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+main.content-wrapper {
+  @include flexbox($vAlign: none, $direction: c);
   padding: 16px;
 }
 .overlay {
@@ -146,216 +166,601 @@ main.shift-code-list {
   }
   .spinner, .error { position: absolute; }
 }
-.dropdown-panel.shift-code {
-  @keyframes panelFadeIn {
-    0%    { opacity: 0; }
-    100%  { opacity: 1; }
+.update-indicator {
+  @mixin uiAnim ($transform, $opacity) {
+    transform: translateY($transform);
+    opacity: $opacity;
+  }
+  @keyframes updateIndicatorPopin {
+    0%   { @include uiAnim(-100%, 0); }
+    // 25%  { @include uiAnim(-100%, 1); }
+    // 50%  { @include uiAnim(-50%, ); }
+    100% { @include uiAnim(0, 1); }
+  }
+  @keyframes updateIndicatorPopout {
+    0%   { @include uiAnim(0, 1); }
+    // 25%  { @include uiAnim(-100%, 1); }
+    // 50%  { @include uiAnim(-50%, ); }
+    100% { @include uiAnim(-100%, 0); }
   }
 
-  opacity: 0;
-  margin: 8px 0;
-  animation: panelFadeIn 0.4s linear forwards;
+  @include flexbox($hAlign: none);
+  position: absolute;
+  z-index: zOrder(higher);
+  padding: 4px 12px;
+  border: 1.5px solid;
+  border-radius: 20px;
+  margin: 16px;
+  @include theme(bg, bc);
+  box-shadow: shadow(tpb(0.5));
+  cursor: pointer;
+  @include animation($duration: 0.4s, $timing: ease-out, $fill: forwards);
 
-  &[data-filtered="true"] {
-    &::before, .header { opacity: 0.5; }
+  &::before {
+    @include fill(true, tpb(0.5));
   }
-  &.new::before { border-color: $badge-new; }
-  &.exp::before { border-color: $badge-exp; }
-  &.new.exp::before {
-    $colors: (
-      top: $badge-new,
-      left: $badge-new,
-      bottom: $badge-exp,
-      right: $badge-exp
-      );
+  &[hidden]      { display: none; }
+  &.hidden       { animation-name: updateIndicatorPopout; }
+  &:not(.hidden) { animation-name: updateIndicatorPopin; }
+  &.sticky {
+    position: fixed;
+    top: 64px;
+  }
 
-    @each $side, $color in $colors {
-      border-#{$side}-color: $color;
+  .counter {
+    padding: 12px;
+    background-color: tpb(0.25);
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+}
+.shift-code-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.shift-code {
+  &.dropdown-panel {
+    @keyframes panelFadeIn {
+      0%    { opacity: 0; }
+      100%  { opacity: 1; }
     }
-  }
-
-  .header {
-    .title {
-      @media screen and (min-width: 435px) { font-size: 1.3em; }
+    @keyframes panelExpiredFadeIn {
+      0%    { opacity: 0; }
+      100%  { opacity: 0.5; }
     }
-    .icon { font-size: 1.5em; }
-    .labels {
-      $cMargins: -2px;
+    @keyframes panelRedeemedFadeIn {
+      0%    { opacity: 0; }
+      100%  { opacity: 0.75; }
+    }
+    $redemptionColor: rgb(206, 146, 255);
+    $labelColors: (
+      basic: #fff,
+      rare: #fff,
+      expired: tpw(0.75),
+      hidden: rgb(143, 178, 255),
+      deleted: #f00,
+      game-label: class-theme,
+      new: $badge-new,
+      expiring: $badge-expiring,
+      recently-added: $theme-main,
+      recently-updated: $theme-main,
+      owned: $theme-main,
+      redeemed: $redemptionColor
+    );
 
-      @include flexbox(mone, none, $wrap: true);
-      font-size: 0.65em;
-      margin: 2px $cMargins $cMargins;
-      width: calc(100% + 1.25em + 24px);
-      opacity: 1;
+    opacity: 0;
+    margin: 8px 0;
+    animation: panelFadeIn 0.4s linear forwards;
 
-      .label {
-        @include flexbox;
-        margin: 2px;
-        padding: 4px 8px;
-        border: bd(1.5px);
-        border-radius: 4px;
-        text-shadow: dropShadow(tpb(0.25));
-        line-height: 1;
+    &::before {
+      transition: border-color $trd;
+    }
 
-        &::before {
-          @include fill(true);
-          border-radius: 0;
-          opacity: 0.25;
+    &.expired, &.hidden, &.deleted, &.redeemed {
+      // > .header            { opacity: 0.75; }
+      &.hidden, &.redeemed {
+        > .header            { opacity: 0.75; }
+      }
+      &.expired, &.deleted {
+        > .header            { opacity: 0.5 }
+      } 
+
+      &:hover, &:focus, &[data-expanded="true"] {
+        > .header          { opacity: 1; }
+      }
+    }
+    &.new::before {
+      border-color: $badge-new; 
+    }
+    &.expiring::before { 
+      border-color: $badge-expiring; 
+    }
+    &.new.expiring::before {
+      $colors: (
+        top: $badge-new,
+        left: $badge-new,
+        bottom: $badge-expiring,
+        right: $badge-expiring
+        );
+
+      @each $side, $color in $colors {
+        border-#{$side}-color: $color;
+      }
+    }
+    &.redeemed::before {
+      border-color: $redemptionColor;
+    }
+
+    .header {
+      .title {
+        @media screen and (min-width: 435px) { font-size: 1.3em; }
+      }
+      .icon { font-size: 1.5em; }
+      .labels {
+        $cMargins: -2px;
+
+        @include flexbox(none, none, $wrap: true);
+        font-size: 0.65em;
+        margin: 2px $cMargins $cMargins;
+        width: calc(100% + 1.25em + 24px);
+        opacity: 1;
+        
+
+        .code, .user {
+          @include flexbox(none, none, $wrap: true);
+          width: 100%;
         }
+        .label {
+          @keyframes labelFadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+          }
 
-        // Theming
-        & {
-          $bgColors: (
-            description: #fff,
-            new: $badge-new,
-            exp: $badge-exp
-            );
+          @include flexbox;
+          display: none; // Default visibility is hidden
+          margin: 2px;
+          padding: 4px 8px;
+          border: bd(1.5px);
+          border-radius: 4px;
+          text-shadow: dropShadow(tpb(0.25));
+          line-height: 1;
+          animation: labelFadeIn 0.2s ease-out forwards;
 
-          @each $label, $color in $bgColors {
-            &.#{$label} {
-              border-color: $color;
+          &::before {
+            @include fill(true);
+            border-radius: 0;
+            opacity: 0.25;
+          }
 
-              &::before { background-color: $color; }
+          // Theming
+          & {
+            $bgColors: (       
+              basic: #fff,
+              rare: #fff,
+              expired: tpw(0.75),
+              hidden: rgb(143, 178, 255),
+              deleted: #f00,
+              game-label: class-theme,
+              new: $badge-new,
+              expiring: $badge-expiring,
+              recently-added: $theme-main,
+              recently-updated: $theme-main,
+              owned: $theme-main,
+              redeemed: $redemptionColor
+              );
+
+            @each $label, $color in $bgColors {
+              &.#{$label} {
+                @if $label == game-label { 
+                  @include classTheme(bc); 
+                  @include classTheme((bg), before); 
+                }
+                @else { 
+                  @if $label == basic or $label == expired {
+                    color: $color;
+                  }
+
+                  border-color: $color; 
+
+                  &::before {
+                    background-color: $color;
+                  }
+                } 
+              }
+
+              @at-root .shift-code.#{$label} .header .labels .label.#{$label} {
+                display: inline-flex;
+              }
             }
           }
         }
       }
-    }
-    .full-width { padding: 8px; }
-    .progress-bar {
-      @include sizing(9px, 100%);
-      border: bd(1px);
-      border-radius: 4px;
-      @include multiProp(tpb(0.25), background-color, border-color);
-      overflow: hidden;
-
-      &.inactive { opacity: 0.5; }
-    }
-    .progress {
-      @keyframes progressClimb {
-        0%    { transform: translateX(-100%); }
-        100%  { transform: translateX(0); }
-      }
-
-      @include theme(c, bg);
-      box-shadow: 0 0 2.5em;
-      width: 0;
-      left: 0;
-      transform: translateX(-100%);
-      animation: progressClimb 1.2s 0.4s ease-out forwards;
-    }
-  }
-  .body {
-    grid-template-columns: repeat(2, 1fr);
-    padding: 8px;
-
-    @mixin fullWidth { grid-column: 1 / span 2; }
-
-    @at-root .dropdown-panel[data-expanded="true"] .body { display: grid; }
-
-    .section {
-      padding: 8px;
-
-      &:not(.can-split) { @include fullWidth; }
-      &.can-split       { @include flexbox(none, none, $direction: c); }
-
-      @media screen and (max-width: 380px) { @include fullWidth; }
-    }
-    .content {
-      $padding: 8px;
-
-      margin-top: 8px;
-      border-radius: 4px;
-      background-color: tpb(0.2);
-      word-wrap: break-word;
-      overflow: hidden;
-
-      &.inactive { color: tpw(0.5); }
-      .day {
-        position: absolute;
-        @include pull(all);
-        @include flexbox(s, s);
-        background-color: $site-color-light;
+      .full-width { padding: 8px; }
+      .progress-bar {
+        @include sizing(9px, 100%);
+        border: bd(1px);
         border-radius: 4px;
-        margin-top: 0;
-        transition-duration: 0.35s;
-        pointer-events: none;
+        @include multiProp(tpb(0.25), background-color, border-color);
+        
+        overflow: hidden;
 
-        &::before {
-          @include fill(true, tpb(0.2));
+        &.inactive { opacity: 0.5; }
+      }
+      .progress {
+        @keyframes progressClimb {
+          0%    { transform: translateX(-100%); }
+          100%  { transform: translateX(0); }
         }
+
+        // @include theme(c, bg);
+        @include classTheme((c, bg), base);
+        box-shadow: 0 0 2.5em;
+        width: 0;
+        left: 0;
+        transform: translateX(-100%);
+        animation: progressClimb 1.2s 0.4s ease-out forwards;
       }
-      &:not(.code) { padding: $padding; }
-      &.code {
-        display: grid;
-        grid-template-columns: 1fr auto;
-      }
-      @at-root .shift-code .body .section.can-split .content {
-        flex: 1;
-      }
-      @include mouseState(noHover) {
-        .day { opacity: 1; }
-      }
-      @include mouseState(hover) {
-        .day { opacity: 0; }
+    }
+    .body {
+      @mixin fullWidth { grid-column: 1 / span 2; }
+      
+      width: 100%;
+      // padding: 8px;
+      
+      @at-root .shift-code.deleted .body {
+        padding: 16px;
       }
 
-      a { word-break: break-all; }
-      ul { margin-left: 8px; }
-      input {
-        display: block;
-        position: absolute;
-        transform: translateY(calc(-100% - 8px));
-        width: 100%;
-      }
-      .display { padding: $padding; }
-      .copy {
-        position: absolute;
-        @include pull(tb, r);
-        font-size: 1.1em;
-        padding: #{$padding} #{$padding * 4};
-        background-color: scale-color($site-color-lighter, $lightness: -35%);
+      .view.code {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 8px;
+        
+        @at-root .dropdown-panel[data-expanded="true"] .body .view.code {
+          display: grid; 
+        }
 
-        &::before { @include fill(true, #fff); }
-
-        @at-root .dropdown-panel .section .content {
+        .background {
+          @include fill;
+          @include flexbox;
+          color: #000;
+          opacity: 0.1;
+          overflow: hidden;
+  
+          @media screen and (max-width: 499px) { font-size: 16em; }
+          @media screen and (min-width: 500px) { font-size: 22em; }
+        }
+        .section {
+          padding: 8px;
+  
+          &:not(.can-split) { @include fullWidth; }
+          &.can-split       { @include flexbox(none, none, $direction: c); }
+  
+          @media screen and (max-width: 380px) { @include fullWidth; }
+        }
+        .title {
+          font-weight: 600;
+  
+          &::after {
+            content: ":";
+          }
+        }
+        .content {
+          $padding: 8px;
+  
+          margin-top: 8px;
+          border-radius: 4px;
+          background-color: tpb(0.2);
+          word-wrap: break-word;
+          overflow: hidden;
+  
+          &.inactive { color: tpw(0.5); }
+          .simple {
+            position: absolute;
+            @include pull(all);
+            @include flexbox(s, s);
+            background-color: $site-color-light;
+            border-radius: 4px;
+            margin-top: 0;
+            transition-duration: 0.35s;
+            pointer-events: none;
+  
+            &::before {
+              @include fill(true, tpb(0.2));
+            }
+          }
+          &:not(.code) { padding: $padding; }
+          &.code {
+            display: grid;
+            grid-template-columns: 1fr auto;
+          }
+          @at-root .shift-code .body .section.can-split .content {
+            flex: 1;
+          }
           @include mouseState(noHover) {
-            .copy:not(:focus) { opacity: 0; }
+            .simple { opacity: 1; }
           }
           @include mouseState(hover) {
-            .copy             { opacity: 1; }
+            .simple { opacity: 0; }
+          }
+  
+          a { word-break: break-all; }
+          ul { margin-left: 8px; }
+          input {
+            display: block;
+            position: absolute;
+            transform: translateY(calc(-100% - 8px));
+            width: 100%;
+          }
+          dd, .display {
+            display: inline-block;
+          }
+          .display {
+            padding: $padding;
+          }
+          .copy {
+            position: absolute;
+            @include pull(tb, r);
+            font-size: 1.1em;
+            padding: #{$padding} #{$padding * 4};
+            background-color: scale-color($site-color-lighter, $lightness: -35%);
+  
+            &::before { @include fill(true, #fff); }
+  
+            @at-root .dropdown-panel .section .content {
+              @include mouseState(noHover) {
+                .copy:not(:focus) { opacity: 0; }
+              }
+              @include mouseState(hover) {
+                .copy             { opacity: 1; }
+              }
+            }
+            @include mouseState(noHover) {
+              &::before                { opacity: 0.2; }
+            }
+            @include mouseState(hover) {
+              &::before                { opacity: 0.4; }
+            }
+            @include mouseState(click) { opacity: 0.75; }
+  
+            .fas { @include multiProp(1em, sizing); }
           }
         }
-        @include mouseState(noHover) {
-          &::before                { opacity: 0.2; }
+        > .separator {
+          @include fullWidth;
+          margin: 8px;
+          height: 4px;
+          background-color: tpb(0.15);
+          border-radius: 4px;
         }
-        @include mouseState(hover) {
-          &::before                { opacity: 0.4; }
-        }
-        @include mouseState(click) { opacity: 0.75; }
+        .footer {
+          @include fullWidth;
+          background-color: tpb(0.25);
+          box-shadow: inset shadow(tpb(0.25));
+          margin: 8px -8px -8px;
+  
+          .actions, .info {
+            width: 100%;
+          }
+          .actions {
+            $spacing: 8px;
+  
+            // display: grid;
+            display: flex;
+            padding: $spacing * 2 $spacing;
+            // grid-template-columns: 1fr 2fr 2fr 1fr;
+  
+            // @media screen and (max-width: 499px) {
+            //   .mark-as-redeemed {
+            //     grid-column: 1 / span 4;
+            //     grid-row: 1;
+            //   }
+            //   .redemption-help, .overflow-menu {
+            //     grid-row: 2;
+            //   }
+            //   .redemption-help {
+            //     grid-column: 1 / span 2;
+            //   } 
+            //   .overflow-menu {
+            //     grid-column: 3 / span 2;
+            //   }
+            // }
+            // @media screen and (min-width: 500px) {
+            //   .redemption-help {
+            //     grid-column: 1;
+            //   }
+            //   .mark-as-redeemed {
+            //     grid-column: 2 / span 2;
+            //     grid-row: 1 / span 2;
+            //   }
+            //   .overflow-menu {
+            //     grid-column: 4;
+            //   }
+            // }
+  
+            .action {
+              @include multiProp(#{$spacing * 2}, padding-left, padding-right);
+              margin: $spacing;
+  
+              .icon {
+                // padding-right: 4px;
+                font-size: 1.15em;
+              }
+            }
+            .redeem {
+              flex: 1;
+  
+              &::before {
+                background-color: $redemptionColor;
+              }
+  
+              &.in-progress {
+                .label   { opacity: 0; }
+                .spinner { opacity: 1; }
+              }
+              &[aria-pressed="true"] {
+                @include mouseState(noHover) {
+                  & {
+                    opacity: 0.75;
+                  };
+                }
+              }
+  
+              .spinner {
+                position: absolute;
+                opacity: 0;
+              }
+            }
+            .options-menu {
+              @include multiProp(#{$spacing * 3}, padding-left, padding-right);
+  
+              @at-root .shift-code-options-dropdown {
+                .panel .title {
+                  div:not(.code-id) {
+                    opacity: 0.75;
+                  }
+                }
+              }
+            }
+          }
+          .code-info {
+            padding: 16px;
+            font-size: 0.85em;
+  
+            dt, dd {
+              display: inline;
+            }
+            dt {
+              opacity: 0.5;
+            }
+            dd {
+              cursor: default;
 
-        .fas { @include multiProp(1em, sizing); }
+              @include mouseState(noHover) {
+                opacity: 0.5;
+              }
+              @include mouseState(hover) {
+                opacity: 0.75;
+              }
+            }
+            dt::after {
+              content: ':';
+            }
+          }
+          .separator {
+            border-bottom: 1.5px solid tpw(0.5);
+            margin: 0 16px;
+          }
+        }
       }
-    }
-    .separator {
-      @include fullWidth;
-      margin: 8px;
-      height: 4px;
-      background-color: tpb(0.15);
-      border-radius: 4px;
-    }
-    .background {
-      @include fill;
-      @include flexbox;
-      color: #000;
-      opacity: 0.1;
-      overflow: hidden;
+      .view.edit {
+        padding: 16px;
 
-      @media screen and (max-width: 499px) { font-size: 16em; }
-      @media screen and (min-width: 500px) { font-size: 22em; }
+        // form > .content-container {
+        //   margin: 0;
+        // }
+      }
+
     }
+  }
+}
+.search-result {
+  margin: 32px 0;
+
+  &.issue {
+
   }
 }
 .pager {
   margin-top: auto;
+}
+
+
+@import "../partials/_globals.scss";
+
+.shift-header, .shift-code-list {
+  @include ready;
+}
+.shift-header {
+  font-size: 1.25em;
+  width: 100%;
+  background-color: $site-color-lighter;
+  border-bottom: bd(2px, $site-color-darker);
+
+  .content-wrapper {
+    @include flexbox(c, sb);
+    padding: 12px 16px;
+  }
+  .section {
+    @include flexbox($vAlign: none);
+  }
+  .badge {
+    $badgeColors: (
+      total: #808080,
+      new: $badge-new,
+      expiring: $badge-expiring
+    );
+
+    display: flex;
+    font-size: 1em;
+    min-width: 3.5em;
+    margin-right: 6px;
+    border-radius: 4px;
+    text-shadow: dropShadow(tpb(0.25));
+    overflow: hidden;
+
+    // Colors
+    @each $name, $color in $badgeColors {
+      &.#{$name} {
+        background-color: $color;
+      }
+    }
+
+    // Filter Badges
+    &button {
+      @include pshared {
+        @include fill(true);
+      }
+      &::before {
+        background-color: #000;
+      }
+      &::after {
+        border: bd(2px);
+        border-radius: 4px;
+      }
+    }
+    // Active States
+    &.inactive {
+      opacity: 0.5;
+
+      @include pshared {
+        opacity: 0;
+      }
+    }
+    &:not(.inactive) {
+      &:not([aria-pressed="true"])::after { 
+        opacity: 0; 
+      }
+      &[aria-pressed="true"]::after {
+        opacity: 1; 
+      }
+
+
+      &button {
+        @include mouseState(noHover) {
+          &::before {
+            opacity: 0; 
+          }
+        }
+        @include mouseState(hover) {
+          &::before {
+            opacity: 0.25; 
+          }
+        }
+        @include mouseState(click) {
+          opacity: 0.75;
+        }
+      }
+    }
+  }
 }

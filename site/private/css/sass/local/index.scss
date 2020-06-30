@@ -131,9 +131,9 @@ section {
       }
     }
   }
-  &:not(.main) {
-    // @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
-  }
+  // &:not(.main) {
+  //   // @include multiProp(calc(75vh + #{$sBorderWidth} - 64px), height, min-height);
+  // }
   &.secondary {
     &:nth-of-type(odd) .content-wrapper {
       align-items: flex-end;
@@ -215,46 +215,46 @@ section {
       font-size: 1.15em;
       padding: 16px 32px;
 
-      &::before {
-        border: none;
-      }
-      &::after {
-        border: bd(1.5px, tpw(0.5));
-      }
+      // &::before {
+      //   border: none;
+      // }
+      // &::after {
+      //   border: bd(1.5px, tpw(0.5));
+      // }
 
-      @each $themeN, $themeV in $themeColors {
-        @if ($themeN != main) {
-          &.#{$themeN}::before {
-            background-color: #{$themeV};
-          }
-        }
-      }
+      // @each $themeN, $themeV in $themeColors {
+      //   @if ($themeN != main) {
+      //     &.#{$themeN}::before {
+      //       background-color: #{$themeV};
+      //     }
+      //   }
+      // }
 
-      // Mouse States
-      & {
-        @mixin linkPs ($before, $after) {
-          &::before { opacity: $before; }
-          &::after  { opacity: $after; }
-        }
-        @at-root %idleState {
-          @include linkPs(0, 1);
-        }
+      // // Mouse States
+      // & {
+      //   @mixin linkPs ($before, $after) {
+      //     &::before { opacity: $before; }
+      //     &::after  { opacity: $after; }
+      //   }
+      //   @at-root %idleState {
+      //     @include linkPs(0, 1);
+      //   }
 
-        &:not([disabled]) {
-          @include mouseState(noHover) {
-            @extend %idleState;
-          }
-          @include mouseState(hover) {
-            @include linkPs(1, 0);
-          }
-          @include mouseState(click) {
-            opacity: 0.75;
-          }
-        }
-        &[disabled] {
-          @extend %idleState;
-        }
-      }
+      //   &:not([disabled]) {
+      //     @include mouseState(noHover) {
+      //       @extend %idleState;
+      //     }
+      //     @include mouseState(hover) {
+      //       @include linkPs(1, 0);
+      //     }
+      //     @include mouseState(click) {
+      //       opacity: 0.75;
+      //     }
+      //   }
+      //   &[disabled] {
+      //     @extend %idleState;
+      //   }
+      // }
     }
   }
   .flags {
@@ -299,7 +299,7 @@ section {
         .fas { transform: rotate($rotation); }
       }
       &.new { background-color: $badge-new; }
-      &.exp { background-color: $badge-exp; }
+      &.expiring{ background-color: $badge-expiring; }
     }
   }
 }

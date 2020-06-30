@@ -1,1 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><link href="assets/css/local/shift.css<?php echo $svQueryString; ?>"rel=stylesheet><title>Borderlands: The Pre-Sequel - ShiftCodesTK</title><meta content="Borderlands: TPS - ShiftCodesTK"name=title><meta content="Borderlands: The Pre-Sequel - ShiftCodesTK"property=og:title><meta content="Borderlands: The Pre-Sequel - ShiftCodesTK"property=twitter:title><meta content="SHiFT Codes for Borderlands: The Pre-Sequel"name=description><meta content="SHiFT Codes for Borderlands: The Pre-Sequel"property=og:description><meta content="SHiFT Codes for Borderlands: The Pre-Sequel"property=twitter:description><meta name=canonical href=https://shiftcodestk.com/tps><meta content=https://shiftcodestk.com/tps property=og:url><meta content=tps_1 name=header:image><meta content=https://shiftcodestk.com/assets/img/metadata/tps/1.png property=og:image><meta content=https://shiftcodestk.com/assets/img/metadata/tps/1.png property=twitter:image><link href=/assets/manifests/tps.webmanifest rel=manifest><meta content=#1e90ff name=theme-color-tm id=theme_color_tm><?php include_once('global/head.php'); ?><body data-theme=tps><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><?php include_once("local/shift.php"); ?><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?><script async src="/assets/js/local/shift.js<?php echo $svQueryString; ?>"></script>
+<?php
+  $page['meta'] = [
+    'title'       => 'Borderlands: TPS - ShiftCodesTK',
+    'description' => 'SHiFT Codes for Borderlands: The Pre-Sequel',
+    'canonical'   => '/tps',
+    'image'       => 'tps/1',
+    'theme'       => 'tps'
+  ];
+  $page['shift'] = [
+    'game'  => 'tps'
+  ];
+
+  include_once('initialize.php');
+?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>"rel=stylesheet><?php include_once('global/head.php'); ?><body data-theme=tps><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><?php include_once('local/shift.php'); ?><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?><script async src="/assets/js/global/libs/moment.js<?php echo TK_VERSION_STR; ?>"></script><script async src="/assets/js/local/shift.js<?php echo TK_VERSION_STR; ?>"></script>

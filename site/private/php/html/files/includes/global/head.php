@@ -1,4 +1,7 @@
-<!-- Global Metadata -->
-<?php include_once('files/head/metadata.php'); ?>
-<!-- No Javascript Error Styles -->
-<?php include_once('files/head/noscript-styles.php'); ?>
+<?php
+  $files = ['metadata', 'inlineStyles', 'noscript-styles'];
+
+  foreach ($files as $file) {
+    include_once(HTML_INCLUDES_PATH . "global/files/head/$file.php");
+  }
+?>

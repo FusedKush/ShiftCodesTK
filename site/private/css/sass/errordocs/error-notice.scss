@@ -1,0 +1,79 @@
+/*********************************
+  ErrorDoc Page Styles
+*********************************/
+
+/*** Imports ***/
+@import "../partials/_globals";
+
+/*** Media Queries ***/
+@media screen and (max-width: 499px) {
+  .content-wrapper { font-size: 0.8em; }
+}
+@media screen and (min-width: 500px) {
+  .content-wrapper { font-size: 1em; }
+}
+
+/*** Style Declarations ***/
+body {
+  overflow: hidden;
+}
+.error-notice {
+  position: fixed;
+  @include pull(all);
+  @include bgImg("/assets/img/banners/bl2/4.jpg");
+  z-index: zOrder(max);
+
+  &::before {
+    @include fill(true);
+    background-color: #000;
+    opacity: 0.75;
+  }
+
+  .content-wrapper {
+    @include ready;
+
+    @include flexbox($direction: c);
+    height: 100%;
+    padding: 16px;
+    text-shadow: dropShadow(tpb(0.5));
+  }
+
+  .logo { @include multiProp(7.5em, height, width); }
+  .info {
+    padding: 16px 0;
+    text-align: center;
+  }
+    .title {
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+    .currentURL {
+      display: inline-block;
+      font-size: 1.5em;
+      opacity: 0.5;
+      padding-top: 4px;
+    }
+    p.description {
+      font-size: 1.25em;
+      padding: 16px 0;
+      margin: 0;
+    }
+  .action {
+    font-size: 1.25em;
+    padding: 12px 16px;
+    @include colors(inherit, $theme-main);
+    text-decoration: none;
+    line-height: 1;
+    border-radius: 4px;
+
+    &::before { @include fill(true, #000); }
+
+    @include mouseState(noHover) {
+      &::before                { opacity: 0; }
+    }
+    @include mouseState(hover) {
+      &::before                { opacity: 0.25; }
+    }
+    @include mouseState(click) { transform: scale(0.9); }
+  }
+}

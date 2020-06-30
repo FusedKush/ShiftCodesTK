@@ -3,28 +3,39 @@
 .dropdown-menu-container {
   @include ready;
   @include fill;
+
+  .dropdown-menu {
+    display: grid;
+  }
 }
-.dropdown-menu-target { z-index: zOrder(aboveNormal); }
 .dropdown-menu {
   $borderWidth: 1.5px;
+  $borderRadius: 8px;
+
+  display: none; // Hide dropdowns that are not inside of the Dropdown Menu Container
 
   position: absolute;
   font-size: 1rem;
-  z-index: zOrder(higher);
+  cursor: pointer;
+  z-index: zOrder(dropdownMenuPanel);
+  transition: opacity 0.2s ease-in-out;
 
   @mixin menuRoot {
     @at-root .dropdown-menu { @content; }
   }
 
-  &[hidden], &:not([hidden]):not(.configured) { display: none; }
-  &:not([hidden])                             { display: grid; }
-  &[data-expanded="false"] { opacity: 0; }
-  &[data-expanded="true"]  { opacity: 1; }
+  &[hidden] {
+    opacity: 0;
+  }
+  &.sticky {
+    position: fixed;
+  }
 
   .arrow {
+    display: none;
     position: absolute;
     @include multiProp(0, sizing);
-    border: bd(0.5em, transparent);
+    border: bd(0.75em, transparent);
     border-bottom-color: #fff;
 
     @mixin pos($translation, $rotation) {
@@ -34,10 +45,10 @@
     // Positioning
     & {
       $posList: (
-        bottom: (0 -0.5em, 0deg),
-        top: (0 0.5em, 180deg),
-        right: (-0.5em 0, 270deg),
-        left: (0.5em 0, 90deg)
+        bottom: (0 -1em, 0deg),
+        top: (0 1em, 180deg),
+        right: (-1em 0, 270deg),
+        left: (1em 0, 90deg)
         );
 
       @include menuRoot {
@@ -54,11 +65,11 @@
   }
   .panel {
     position: absolute;
-    @include colors(#fff, $site-color-lighter);
+    @include colors(#fff, $site-color-light);
     border: bd($borderWidth, #fff);
-    border-radius: 4px;
+    border-radius: $borderRadius;
     box-shadow: shadow(tpb(0.5));
-
+    
     // Positioning
     & {
       $posList: (
@@ -78,7 +89,7 @@
 
           &#{unquote($selector)} .panel { #{$property}: $alignV; }
         }
-        #{unquote($pos)}        { min-#{$min}: calc(50% + 1em); }
+        #{unquote($pos)}         { min-#{$min}: calc(50% + 1em); }
         &#{unquote($neg)} .panel { #{$property}: center; }
       }
 
@@ -107,58 +118,91 @@
     .title {
       opacity: 0.5;
       font-size: 1.2em;
+      border-radius: $borderRadius $borderRadius 0 0;
       cursor: default;
     }
-    .choice-list.scrollable {
-      max-height: 12.5em;
-      overflow-x: hidden;
-      overflow-y: scroll;
+    .choice-list {
+      &.scrollable {
+        max-height: 12.5em;
+        overflow-x: hidden;
+        overflow-y: scroll;
+      }
+
+      li {
+        margin: 8px;
+      }
+      .separator {
+        border-bottom: bd(tpw(0.25));
+        margin: 12px 16px;
+        border-radius: 4px;
+      }
     }
     .choice {
-      display: block;
+      @include flexbox(c, s);
       font-size: 1.1em;
       cursor: pointer;
+      border-radius: 4px;
 
-      &::before { @include fill(true); }
-
-      &[aria-pressed="false"], &:not([aria-pressed]) {
-        color: inherit;
-
-        &::before {
-          background-color: tpw(0.75);
-        }
-
-        @include mouseState(noHover) {
-          opacity: 0.8;
-
-          &::before { opacity: 0; }
-        }
-        @include mouseState(hover) {
-          opacity: 1;
-
-          &::before { opacity: 0.25; }
-        }
-        @include mouseState(click) {
-          &::before { opacity: 0.5; }
+      &.styled, &.button {
+        &::after {
+          border: none;
         }
       }
-      &[aria-pressed="true"] {
-        color: #fff;
-        @include theme(bg);
 
+      &[hidden] {
+        display: none;
+      }
+
+      &:not(.styled):not(.button) {
         &::before {
-          background-color: #fff;
+          @include fill(true);
         }
+  
+        &[aria-pressed="false"], &:not([aria-pressed]) {
+          color: inherit;
+  
+          &::before { 
+            background-color: tpw(0.75); 
+          }
 
-        @include mouseState(noHover) {
-          &::before { opacity: 0; }
+          @include mouseState(noHover) {
+            &::before                          { opacity: 0; }
+            &::after                           { opacity: 0.5; }
+
+            > span                             { opacity: 0.75; }
+          }
+          @include mouseState(hover) {
+            &::before                          { opacity: 0.35 }
+            &::after                           { opacity: 0.75; }
+            
+            > span                             { opacity: 1; }
+          }
+          @include mouseState(click) {
+            &::before                          { opacity: 0.15 }
+          }
         }
-        @include mouseState(hover) {
-          &::before { opacity: 0.25; }
+        &[aria-pressed="true"] {
+          color: #fff;
+          @include theme(bg);
+  
+          &::before {
+            background-color: #fff;
+          }
+  
+          @include mouseState(noHover) {
+            &::before { opacity: 0; }
+          }
+          @include mouseState(hover) {
+            &::before { opacity: 0.25; }
+          }
+          @include mouseState(click) {
+            opacity: 0.75;
+          }
         }
-        @include mouseState(click) {
-          opacity: 0.75;
-        }
+      }
+
+      &::after {
+        @include fill(true);
       }
     }
     .title, .choice {
@@ -167,9 +211,17 @@
       text-align: left;
       width: 100%;
       white-space: nowrap;
-      padding: $basePadding ($basePadding * 4) $basePadding ($basePadding * 2);
+      padding: #{$basePadding * 1.75} #{$basePadding * 4} #{$basePadding * 1.75} #{$basePadding * 2};
       min-width: 7.5em;
+
+      &.title {
+        padding-bottom: 0;
+      }
     }
+  }
+  .arrow, .panel {
+    cursor: default;
+    z-index: zOrder(dropdownMenuPanel);
   }
   // Positioning
   & {
@@ -182,9 +234,18 @@
 
     @each $posN, $posD in $posList {
       @include menuRoot {
-        &[data-pos="#{$posN}"] .arrow { #{$posD}: calc(100% + 4px + #{$borderWidth}); }
+        &[data-pos="#{$posN}"] .arrow { #{$posD}: calc(100% + 3.5px + #{$borderWidth}); }
         &[data-pos="#{$posN}"] .panel { #{$posD}: calc(100% + 4px); }
       }
     }
+  }
+}
+.dropdown-menu-toggle {
+  &::after {
+    @include fill(true);
+  }
+
+  &[aria-expanded="true"] {
+    z-index: zOrder(dropdownMenuToggle);
   }
 }

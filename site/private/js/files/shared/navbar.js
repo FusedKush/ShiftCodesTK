@@ -8,9 +8,9 @@ function updNav () {
   ]
   let nav = document.getElementById("navbar");
   let themeColor = {
-    'setting': document.getElementById('theme_color'),
-    'background': document.getElementById('theme_color_bg').content,
-    'theme': document.getElementById('theme_color_tm').content
+    'setting': getMetaTag('theme-color'),
+    'background': getMetaTag('tk-bg-color').content,
+    'theme': getMetaTag('tk-theme-color').content
   };
 
   if(pos[1] > 0 || pos[2] > 0 || pos[3] > 0) {
@@ -39,8 +39,8 @@ function lpbUpdate (progress, interval = false, additionalOptions = {}) {
     }
 
     // Reset for start
-    if (!hasClass(pb, 'is-loading')) {
-      addClass(pb, 'is-loading');
+    if (!dom.has(pb, 'class', 'is-loading')) {
+      edit.class(pb, 'add', 'is-loading');
       update();
     }
     else {
@@ -49,7 +49,7 @@ function lpbUpdate (progress, interval = false, additionalOptions = {}) {
     // Reset when complete
     if (progress == 100) {
       setTimeout(function () {
-        delClass(pb, 'is-loading');
+        edit.class(pb, 'remove', 'is-loading');
 
         setTimeout(function () {
           update(0);
@@ -69,9 +69,29 @@ function lpbUpdate (progress, interval = false, additionalOptions = {}) {
 }
 
 // *** Immediate Functions ***
-// Immediately update the position of the Navbar
-updNav();
+(function () {
+  let interval = setInterval(function () {
+    if (globalFunctionsReady) {
+      clearInterval(interval);
 
-// *** Event Listeners ***
-// Watch for Scrolling
-window.addEventListener("scroll", updNav);
+      // Update the position of the Navbar
+      updNav();
+
+      // *** Event Listeners ***
+      // Watch for Scrolling
+      window.addEventListener("scroll", updNav);
+
+      if (dom.find.id('auth_logout_button')) {
+        dom.find.id('auth_logout_button').addEventListener('click', function () {
+          newAjaxRequest({
+            file: '/assets/requests/post/auth/logout',
+            type: 'POST',
+            callback: function (responseText) {
+              console.log(tryJSONParse(responseText));
+            }
+          })
+        });
+      }
+    }
+  }, 250);
+})();

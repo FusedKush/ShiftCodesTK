@@ -1,0 +1,41 @@
+@import "../partials/_globals";
+
+.multi-view {
+  @keyframes multiViewFadeIn {
+    0%   { opacity: 0.25; }
+    100% { opacity: 1; }
+  }
+
+  .views {
+    @include flexbox(none, none);
+  }
+  .view {
+    @include multiProp(100%, sizing);
+    // opacity: 0.25;
+    opacity: 1;
+    // animation: multiViewFadeIn 0.4s ease-in-out forwards;
+    transition: opacity 0.75s linear;
+
+    &:not([hidden]) {
+      z-index: 1;
+    }
+    &:not(.active) {
+      opacity: 0;
+    }
+
+    @at-root .multi-view {
+      &.force-size .view {
+        &:not(:first-of-type) {
+          &[hidden] {
+            display: none !important;
+          }
+          &:not([hidden]) {
+            position: absolute;
+            overflow-y: scroll;
+            overflow-x: hidden;
+          }
+        }
+      }
+    }
+  }  
+}

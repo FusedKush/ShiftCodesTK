@@ -12,31 +12,43 @@ $site-color-dark:        adjust-color($site-color-main, $lightness: -5%);
 $site-color-darker:      adjust-color($site-color-main, $lightness: -10%);
 
 // Secondary Site Themes
-$theme-main:             #f00;                 // Main Theme Color
-$theme-bl1:              #dc143c;              // BL1: GOTY Theme Color
-$theme-bl2:              #ff4500;              // Borderlands 2 Theme Color
-$theme-tps:              #1e90ff;              // Borderlands: TPS Theme Color
-$theme-bl3:              #ffa900;              // Borderlands 3 Theme Color
+$theme-main:             #f00;               // Main Theme Color
+$theme-bl1:              #dc143c;            // BL1: GOTY Theme Color
+$theme-bl2:              #ff4500;            // Borderlands 2 Theme Color
+$theme-tps:              #1e90ff;            // Borderlands: TPS Theme Color
+$theme-bl3:              #ffa900;            // Borderlands 3 Theme Color
 $themeColors: (                                // Theme Color Definition List
-                         main: $theme-main,
-                         bl1: $theme-bl1,
-                         bl2: $theme-bl2,
-                         tps: $theme-tps,
-                         bl3: $theme-bl3
-              );
+  main:                  $theme-main,
+  bl1:                   $theme-bl1,
+  bl2:                   $theme-bl2,
+  tps:                   $theme-tps,
+  bl3:                   $theme-bl3
+);
 
 // Misc. Site Properties
-$df-color:               #fff;                 // Default Site Color
+$df-color:               #fff;               // Default Site Color
 $df-font:                Arial, sans-serif;    // Default Site Font
 $df-line-height:         1.25;                 // Default Line-Height
 $df-elm-spacing:         12px;                 // Default Element Margins
 $trd:                    0.2s ease-out;        // Default Transition Timing & Style
 $trds:                   0.4s ease-out;        // Slower Transition Timing & Style
 
-$bbl-light:              #fff;                 // Light Bubble Color
-$bbl-dark:               #000;                 // Dark Bubble Color
-$badge-new:              #0057ff;              // New! Badge Color
-$badge-exp:              #ff8c00;              // Expiring! Badge Color
+$bbl-light:              #fff;               // Light Bubble Color
+$bbl-dark:               #000;               // Dark Bubble Color
+
+$badge-new:              #0057ff;            // New! Badge Color
+$badge-expiring:         #ff8c00;            // Expiring! Badge Color
+$badgeColors : (                               // Badge Color Definition List
+  new:                   $badge-new,
+  expiring:              $badge-expiring
+);
+
+$role-admin:             #ffd100;            // Admin Role Color
+$role-badass:            #c053ff;            // Badass Role Color
+$roleColors : (                                // Role Color Definition List
+  badass:                $role-badass,
+  admin:                 $role-admin
+);
 
 /*** Functions ***/
 // Default Transition Timing
@@ -53,7 +65,11 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
     navbar: 100,
     sidebar: 101,
     popup: 102,
-    banner: 103
+    layer: 103,
+    dropdownMenuPanel: 103,
+    dropdownMenuToggle: 104,
+    banner: 105,
+    max: 999
     );
 
   @return map-get($stackingOrder, $type);
@@ -76,7 +92,7 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @return rgba(255, 255, 255, $opacity);
 }
 // Default Box-Shadow / Text-Shadow Properties
-@function shadow($color: currentcolor, $radius: 1em) {
+@function shadow($color: currentcolor, $radius: 10px) {
   @return 0 0 $radius $color;
 }
 // Default Drop-Shadow Properties
@@ -136,7 +152,8 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   // Direction
   @if $direction != default { flex-direction: map-get($directions, $direction); }
   // Wrap
-  @if $wrap == true { flex-wrap: wrap; }
+  @if $wrap == true  { flex-wrap: wrap; }
+  @if $wrap == false { flex-wrap: nowrap; }
 }
 // Absolutely Fill Parent Container
 @mixin fill($pseudo: false, $background: false, $deprecatedParameterAnimated: false) {
@@ -263,7 +280,33 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
 
   @each $type in $types {
     @each $colorN, $colorV in $themeColors {
-      body[data-theme="#{$colorN}"] & { #{map-get($typeNames, $type)}: $colorV; }
+      body[data-theme="#{$colorN}"] & { 
+        #{map-get($typeNames, $type)}: $colorV; 
+        transition-property: opacity, transition, #{map-get($typeNames, $type)};
+      }
+    }
+  }
+}
+// Class Theme Colors
+@mixin classTheme($types, $placement: base) {
+  $typeNames: (
+    c: color,
+    bg: background-color,
+    bc: border-color
+  );
+  
+  @each $type in $types {
+    @each $colorN, $colorV in $themeColors {
+      $selectors: (
+        base: "#{$colorN}",
+        before: "#{$colorN}::before",
+        after: "#{$colorN}::after"
+      );
+
+      &.#{map-get($selectors, $placement)} {
+        #{map-get($typeNames, $type)}: $colorV;
+        transition-property: opacity, transition, #{map-get($typeNames, $type)};
+      }
     }
   }
 }
@@ -275,12 +318,12 @@ $badge-exp:              #ff8c00;              // Expiring! Badge Color
   @if $imgURL != false { background-image: url(#{$imgURL}); }
 }
 // Icon with maintained aspect ratio
-@mixin boxIcon {
-  @include flexbox;
+@mixin boxIcon ($inline: false) {
+  @include flexbox($type: $inline);
   @include multiProp(1em, sizing);
 }
 // Progress Bar Shadow
 @mixin progressBarShadow($radius: 0.25em, $color: currentcolor) {
   box-shadow: 0 0 $radius $color;
-  transform: translateX(-#{$radius});
+  // transform: translateX(-#{$radius});
 }

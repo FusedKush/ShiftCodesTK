@@ -42,7 +42,7 @@
       );
 
     @each $child in $children {
-      &.dot#{$child} {
+      &:nth-child(#{$child}) {
         left: map-get($childPos, $child);
         animation-name: #{'animateSpinner' + map-get($childAnm, $child)};
       }

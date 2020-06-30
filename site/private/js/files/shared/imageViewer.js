@@ -1,29 +1,29 @@
 function imgViewClick (e) {
   let target = e.target;
 
-  if (target.tagName == 'IMG' && hasClass(target, 'fullscreen')) {
+  if (target.tagName == 'IMG' && dom.has(target, 'class', 'fullscreen')) {
     let viewer = document.getElementById('image_viewer');
     let v = {};
       (function () {
         for (let e of ['header', 'title', 'close']) {
-          v[e] = getClass(viewer, e);
+          v[e] = dom.find.child(viewer, 'class', e);
         }
       })();
     let title = target.getAttribute('data-fullscreen');
-    let copy = copyElm(target);
+    let copy = edit.copy(target);
 
-    delClass(copy, 'fullscreen');
-    addClass(copy, 'img');
+    edit.class(copy, 'remove', 'fullscreen');
+    edit.class(copy, 'add', 'img');
     viewer.insertBefore(copy, v.header);
 
     if (title) {
       v.title.innerHTML = title;
     }
 
-    vishidden(viewer, false);
+    isHidden(viewer, false);
 
     setTimeout(function () {
-      delClass(viewer, 'inactive');
+      edit.class(viewer, 'remove', 'inactive');
       v.close.focus();
       toggleBodyScroll(false);
       focusLock.set([v.header, copy], imgViewClose);
@@ -35,16 +35,16 @@ function imgViewClose () {
   let v = {};
     (function () {
       for (let e of ['img', 'title']) {
-        v[e] = getClass(viewer, e);
+        v[e] = dom.find.child(viewer, 'class', e);
       }
     })();
 
-    addClass(viewer, 'inactive');
+    edit.class(viewer, 'add', 'inactive');
     toggleBodyScroll(true);
     focusLock.clear();
 
     setTimeout(function () {
-      vishidden(viewer, true);
+      isHidden(viewer, true);
       viewer.removeChild(v.img);
       v.title.innerHTML = '';
     }, 450);
@@ -55,7 +55,7 @@ function imgViewClose () {
     if (globalFunctionsReady) {
       clearInterval(t);
       window.addEventListener('click', imgViewClick);
-      getClass(document.getElementById('image_viewer'), 'close').addEventListener('click', imgViewClose);
+      dom.find.child(document.getElementById('image_viewer'), 'class',  'close').addEventListener('click', imgViewClose);
     }
   }, 250);
 })();

@@ -123,7 +123,7 @@ Sidebar Styles
           text-shadow: dropShadow(tpb(0.15));
 
           &.new::before { background-color: $badge-new; }
-          &.exp::before { background-color: $badge-exp; }
+          &.expiring::before { background-color: $badge-expiring; }
         }
 
         @at-root %idleLink {

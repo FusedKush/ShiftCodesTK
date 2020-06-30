@@ -1,21 +1,15 @@
+<!-- External Scripts -->
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js" integrity="sha256-ZsWP0vT+akWmvEMkNYgZrPHKU9Ke8nYBPC3dqONp1mY=" crossorigin="anonymous"></script>
+
+<!-- Local Scripts -->
 <?php
-  // Server Version Number
-  require_once(dirname($_SERVER['DOCUMENT_ROOT']) . '/private/php/scripts/serverVersion.php');
+    $files = ['shared-scripts'];
+    $urls = [];
 
-  // Configuration
-  $dir = '/assets/js//'; // Assets Directory
-  $ext = '.js';        // Script Extension
-
-  // Stylesheets to Load
-  $load = array(
-    'functions',
-    'shared-scripts'
-  );
-
-  // Load all Stylesheets
-  for ($i = 0; $i < count($load); $i++) {
-    $link = $dir . $load[$i] . $ext . $svQueryString;
-
-    echo '<script async src="' . $link .'"></script>';
-  }
+    foreach($files as $file) {
+      $urls[] = "/assets/js/$file.js" . TK_VERSION_STR;
+    }
 ?>
+<?php foreach($urls as $url) : ?>
+  <script async src="<?= $url; ?>"></script>
+<?php endforeach; ?>

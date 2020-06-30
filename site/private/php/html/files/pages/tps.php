@@ -1,4 +1,17 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'Borderlands: TPS - ShiftCodesTK',
+    'description' => 'SHiFT Codes for Borderlands: The Pre-Sequel',
+    'canonical'   => '/tps',
+    'image'       => 'tps/1',
+    'theme'       => 'tps'
+  ];
+  $page['shift'] = [
+    'game'  => 'tps'
+  ];
+
+  include_once('initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +20,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="assets/css/local/shift.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>Borderlands: The Pre-Sequel - ShiftCodesTK</title>
-    <meta name="title" content="Borderlands: TPS - ShiftCodesTK">
-    <meta property="og:title" content="Borderlands: The Pre-Sequel - ShiftCodesTK">
-    <meta property="twitter:title" content="Borderlands: The Pre-Sequel - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
-    <meta property="og:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
-    <meta property="twitter:description" content="SHiFT Codes for Borderlands: The Pre-Sequel">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/tps">
-    <meta property="og:url" content="https://shiftcodestk.com/tps">
-    <!-- Page Images -->
-    <meta name="header:image" content="tps_1">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/1.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/1.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/tps.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#1e90ff">
-    <!--// Shared Head Markup \\-->
+    <link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="tps">
@@ -38,13 +31,14 @@
     <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
     <!-- SHiFT -->
-    <?php include_once("local/shift.php"); ?>
+    <?php include_once('local/shift.php'); ?>
     <!--// After-Content Imports \\-->
     <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/shift.js<?php echo $svQueryString; ?>"></script>
+    <script async src="/assets/js/global/libs/moment.js<?php echo TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/shift.js<?php echo TK_VERSION_STR; ?>"></script>
   </body>
 </html>

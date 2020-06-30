@@ -34,7 +34,6 @@ const plugins = (function () {
 
   return plugins;
 })();
-
 /** Directories & File Paths/Globs */
 const files = (function () {
   let files = {};
@@ -145,11 +144,7 @@ const sync = {
       logUpdateEvent();
     }
     else if ([ 'unlink', 'unlinkDir' ].indexOf(event) != -1 && [ 'delete', 'sync' ].indexOf(mode) != -1) {
-      console.group();
-      console.log('!!');
-      console.log(`Files "${eventDest}" need to be manually removed.`);
-      console.log('!!');
-      console.groupEnd();
+      logEvent(`[!] Files "${eventDest}" need to be manually removed.`);
       logUpdateEvent();
     }
 
@@ -311,7 +306,7 @@ const tasks = (function () {
               },
               proxy: "localhost:2600",
               // Watcher
-              file: [
+              files: [
                 files.root.public,
                 `${files.root.private}/php/**/*`
               ],

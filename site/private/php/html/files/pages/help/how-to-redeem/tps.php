@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'How to Redeem: TPS - ShiftCodesTK',
+    'description' => 'How to redeem SHiFT Codes in Borderlands: The Pre-Sequel',
+    'canonical'   => '/help/how-to-redeem/tps',
+    'image'       => 'tps/6',
+    'theme'       => 'tps'
+  ];
+
+  require_once('../../initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +17,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link rel="stylesheet" href="assets/css/local/help/how-to-redeem/instructions.css">
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>How to Redeem: Borderlands: TPS - ShiftCodesTK</title>
-    <meta name="title" content="How to Redeem: TPS - ShiftCodesTK">
-    <meta property="og:title" content="How to Redeem: Borderlands: TPS - ShiftCodesTK">
-    <meta property="twitter:title" content="How to Redeem: Borderlands: TPS - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="How to redeem SHiFT Codes in Borderlands: The Pre-Sequel">
-    <meta property="og:description" content="How to redeem SHiFT Codes in Borderlands: The Pre-Sequel">
-    <meta property="twitter:description" content="How to redeem SHiFT Codes in Borderlands: The Pre-Sequel">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/help/how-to-redeem/tps">
-    <meta property="og:url" content="https://shiftcodestk.com/help/how-to-redeem/tps">
-    <!-- Page Images -->
-    <meta name="header:image" content="tps_6">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/6.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/6.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/tps.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#1e90ff">
-    <!--// Shared Head Markup \\-->
+    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= TK_VERSION_STR; ?>">
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="tps">
@@ -62,6 +52,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- local Scripts -->
-    <script async src="/assets/js/local/help/how-to-redeem/instructions.js?v=<?php echo $svQueryString; ?>"></script>
+    <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= TK_VERSION_STR; ?>"></script>
   </body>
 </html>

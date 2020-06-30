@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'How to Redeem: Bl2 - ShiftCodesTK',
+    'description' => 'How to redeem SHiFT Codes in Borderlands 2',
+    'canonical'   => '/help/how-to-redeem/bl2',
+    'image'       => 'bl2/6',
+    'theme'       => 'bl2'
+  ];
+
+  require_once('../../initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,28 +17,8 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link rel="stylesheet" href="assets/css/local/help/how-to-redeem/instructions.css">
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>How to Redeem: Borderlands 2 - ShiftCodesTK</title>
-    <meta name="title" content="How to Redeem: BL2 - ShiftCodesTK">
-    <meta property="og:title" content="How to Redeem: Borderlands 2 - ShiftCodesTK">
-    <meta property="twitter:title" content="How to Redeem: Borderlands 2 - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="How to redeem SHiFT Codes in Borderlands 2">
-    <meta property="og:description" content="How to redeem SHiFT Codes in Borderlands 2">
-    <meta property="twitter:description" content="How to redeem SHiFT Codes in Borderlands 2">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/help/how-to-redeem/bl2">
-    <meta property="og:url" content="https://shiftcodestk.com/help/how-to-redeem/bl2">
-    <!-- Page Images -->
-    <meta name="header:image" content="bl2_6">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/6.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/bl2/6.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/bl2.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#ff4500">
-    <!--// Shared Head Markup \\-->
+    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= TK_VERSION_STR; ?>">
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="bl2">
@@ -59,6 +49,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- local Scripts -->
-    <script async src="/assets/js/local/help/how-to-redeem/instructions.js?v=<?php echo $svQueryString; ?>"></script>
+    <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= TK_VERSION_STR; ?>"></script>
   </body>
 </html>

@@ -10,30 +10,39 @@
       </a>
     </div>
     <ul role="menu">
-      <li>
-        <a class="use-badge" href="/bl3">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands 3</span>
-        </a>
-      </li>
-      <li>
-        <a class="use-badge" href="/bl1">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands: GOTY</span>
-        </a>
-      </li>
-      <li>
-        <a class="use-badge" href="/bl2">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands 2</span>
-        </a>
-      </li>
-      <li>
-        <a class="use-badge" href="/tps">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands: TPS</span>
-        </a>
-      </li>
+    <!-- SHiFT Links -->
+      <?php
+        $links = [
+          'bl3' => 'Borderlands 3',
+          'bl1' => 'Borderlands: GOTY',
+          'bl2' => 'Borderlands 2',
+          'tps' => 'Borderlands: TPS'
+        ];
+      ?>
+      <?php foreach($links as $link => $name) : ?>
+        <?php
+          $counts = [
+            'new' => SHIFT_STATS[$link]['new'],
+            'expiring' => SHIFT_STATS[$link]['expiring']
+          ];
+        ?>
+        <li>
+          <a class="use-badge" href="/<?= $link; ?>">
+            <span class="fas fa-gamepad"></span>
+            <span class="name"><?= $name; ?></span>
+            <?php if ($counts['new'] > 0 || $counts['expiring'] > 0) : ?>
+              <span class="badges">
+                <?php if ($counts['new'] > 0) : ?>
+                  <span class="badge new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!"><strong>New!</strong></span>
+                <?php endif; ?>
+                <?php if ($counts['expiring'] > 0) : ?>
+                  <span class="badge expiring" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!"><strong>Expiring!</strong></span>
+                <?php endif; ?>
+              </span>
+            <?php endif; ?>
+          </a>
+        </li>
+      <?php endforeach; ?>
       <div class="separator"></div>
       <li>
         <a href="/about-us">
@@ -55,9 +64,4 @@
       </li>
     </ul>
   </nav>
-  <template id="sidebar_template_badges">
-    <span class="badges"></span>
-    <span class="badge new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!"><strong>New!</strong></span>
-    <span class="badge exp" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!"><strong>Expiring!</strong></span>
-  </template>
 </aside>

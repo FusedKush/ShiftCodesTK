@@ -1,0 +1,36 @@
+@import "../partials/_globals";
+
+main.content-wrapper {
+  padding: 16px;
+
+  #account > .views > .view > .section {
+    padding: 16px;
+    border: bd(1.5px, tpw(0.75));
+    border-radius: 4px;
+    background-color: tpb(0.05);
+    margin: 32px 0;
+
+    &.danger-zone {
+      border-color: #c90000;
+    }
+  } 
+  .profile-card:not(:first-child) {
+    margin-top: 16px;
+  }
+  .profile-card .view {
+    font-size: 1.15em;
+  }
+  h3 {
+    font-size: 1.35em;
+    font-weight: normal;
+    margin-bottom: 8px;
+  }
+  #update_password_view {
+    @include flexbox(s, sb, $wrap: true);
+
+    p {
+      opacity: 0.75;
+      margin-bottom: 8px;
+    }
+  }
+}

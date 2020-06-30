@@ -1,1 +1,7 @@
-<?php include_once("files/afterContent/footer.php"); ?><?php include_once("files/afterContent/toasts.php"); ?><?php include_once("files/afterContent/templates.php"); ?><?php include_once("files/afterContent/noscript-markup.php"); ?>
+<?php
+  $files = ['footer', 'containers/containers', 'noscript-markup'];
+
+  foreach ($files as $file) {
+    include_once(HTML_INCLUDES_PATH . "global/files/afterContent/$file.php");
+  }
+?>

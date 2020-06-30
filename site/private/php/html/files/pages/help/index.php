@@ -1,4 +1,14 @@
-<?php include_once(dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/php/html/min/includes/importPath.php'); ?>
+<?php
+  $page['meta'] = [
+    'title'       => 'Help Center - ShiftCodesTK',
+    'description' => 'ShiftCodesTK Help and Support Hub',
+    'canonical'   => '/help/',
+    'image'       => 'tps/5',
+    'theme'       => 'main'
+  ];
+
+  require_once('../initialize.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -7,31 +17,37 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="assets/css/local/help/index.css<?php echo $svQueryString; ?>" rel="stylesheet"></link>
-    <!--// Page-Specific Metadata \\-->
-    <!-- Page Title -->
-    <title>Help Center - ShiftCodesTK</title>
-    <meta name="title" content="Help Center - ShiftCodesTK">
-    <meta property="og:title" content="Help Center - ShiftCodesTK">
-    <meta property="twitter:title" content="Help Center - ShiftCodesTK">
-    <!-- Page Description -->
-    <meta name="description" content="ShiftCodesTK Help and Support Hub">
-    <meta property="og:description" content="ShiftCodesTK Help and Support Hub">
-    <meta property="twitter:description" content="ShiftCodesTK Help and Support Hub">
-    <!-- Canonical Page Location -->
-    <meta name="canonical" href="https://shiftcodestk.com/help">
-    <meta property="og:url" content="https://shiftcodestk.com/help">
-    <!-- Page Images -->
-    <meta name="header:image" content="tps_5">
-    <meta property="og:image" content="https://shiftcodestk.com/assets/img/metadata/tps/5.png">
-    <meta property="twitter:image" content="https://shiftcodestk.com/assets/img/metadata/tps/5.png">
-    <!-- Page-Specific Browser Properties -->
-    <link rel="manifest" href="/assets/manifests/main.webmanifest">
-    <meta name="theme-color-tm" id="theme_color_tm" content="#f00">
-    <!--// Shared Head Markup \\-->
+    <link href="/assets/css/local/help/index.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="main">
+    <?php
+      $articles = [
+        [
+          'title'       => 'Clearing your System Cache',
+          'description' => 'How to clear your system cache on PC, Xbox, and Playstation',
+          'link'        => 'clearing-your-system-cache'
+        ],
+        [
+          'title'       => 'How to Redeem',
+          'description' => 'How to redeem SHiFT Codes in Borderlands',
+          'link'        => 'how-to-redeem'
+        ],
+        [
+          'title'       => 'FAQ',
+          'description' => 'Answers to some frequently asked questions',
+          'link'        => 'faq'
+        ]
+      ];
+
+      // Default icon
+      foreach ($articles as &$article) {
+        if (!isset($article['icon'])) {
+          $article['icon'] = 'fas fa-file-alt';
+        }
+      }
+    ?>
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->
@@ -42,6 +58,17 @@
       <section class="articles">
         <h2>Help Articles</h2>
         <div class="wrapper" id="article_container">
+          <?php foreach ($articles as &$article) : ?>
+            <a class="resource" href="<?= $article['link']; ?>">
+              <div class="icon">
+                <span class="<?= $article['icon']; ?>"></span>
+              </div>
+              <div class="content">
+                <strong class="title"><?= $article['title']; ?></strong>
+                <div class="description"><?= $article['description']; ?></div>
+              </div>
+            </a>
+          <?php endforeach; ?>
         </div>
       </section>
       <section class="links">
@@ -106,23 +133,10 @@
         </p>
       </section>
     </main>
-    <template id="article_template">
-      <a class="resource">
-        <div class="icon">
-          <span></span>
-        </div>
-        <div class="content">
-          <strong class="title"></strong>
-          <div class="description"></div>
-        </div>
-      </a>
-    </template>
     <!--// After-Content Imports \\-->
     <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/js/local/help/index.js<?php echo $svQueryString; ?>"></script>
   </body>
 </html>

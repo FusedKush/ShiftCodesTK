@@ -6,7 +6,7 @@
 @import "../partials/_globals";
 
 /*** Style Declarations ***/
-main { @include ready; }
+main.content-wrapper { @include ready; }
 .banner {
   @include flexbox($direction: c);
   margin-bottom: 32px;

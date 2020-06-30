@@ -4,10 +4,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php [NC,L]
 
-ErrorDocument 400 /errorDocument.php?statusCode=400
-ErrorDocument 401 /errorDocument.php?statusCode=401
-ErrorDocument 403 /errorDocument.php?statusCode=403
-ErrorDocument 404 /errorDocument.php?statusCode=404
-ErrorDocument 408 /errorDocument.php?statusCode=408
-ErrorDocument 500 /errorDocument.php?statusCode=500
-ErrorDocument 503 /errorDocument.php?statusCode=503
+ErrorDocument 400 /error-document.php?code=400
+ErrorDocument 401 /error-document.php?code=401
+ErrorDocument 403 /error-document.php?code=403
+ErrorDocument 404 /error-document.php?code=404
+ErrorDocument 408 /error-document.php?code=408
+ErrorDocument 500 /error-document.php?code=500
+ErrorDocument 503 /error-document.php?code=503

@@ -25,14 +25,14 @@ function getChangelogs () {
 
     return str.replace('&', '?');
   })();
-  let jump = getElement('updates_header_jump');
-  let list = document.getElementById('changelog_list');
+  let jump = dom.find.id('updates_header_jump');
+  let list = dom.find.id('changelog_list');
 
   function toggleOverlay (overlayIsHidden) {
-    let overlay = getElement('changelog_overlay');
+    let overlay = dom.find.id('changelog_overlay');
 
     if (overlayIsHidden) {
-      addClass(overlay, 'inactive');
+      edit.class(overlay, 'add', 'inactive');
 
       setTimeout(function () {
         isHidden(overlay, true);
@@ -42,7 +42,7 @@ function getChangelogs () {
       isHidden(overlay, false);
 
       setTimeout(function () {
-        delClass(overlay, 'inactive');
+        edit.class(overlay, 'remove', 'inactive');
       }, 50);
     }
   }
@@ -50,13 +50,13 @@ function getChangelogs () {
     list.innerHTML = '';
   }
   function addChangelog(cl) {
-    let changelog = getTemplate('changelog_template');
+    let changelog = edit.copy(dom.find.id('changelog_template'));
     let e = {
-      icon: getClass(changelog, 'icon').childNodes[0],
-      version: getClass(changelog, 'version'),
-      date: getClass(changelog, 'date'),
-      type: getClass(changelog, 'type'),
-      body: getClass(changelog, 'body')
+      icon: dom.find.child(changelog, 'class', 'icon').childNodes[0],
+      version: dom.find.child(changelog, 'class', 'version'),
+      date: dom.find.child(changelog, 'class', 'date'),
+      type: dom.find.child(changelog, 'class', 'type'),
+      body: dom.find.child(changelog, 'class', 'body')
     };
     let ver = cl.version;
 
@@ -79,7 +79,7 @@ function getChangelogs () {
         else                 { return `${cl.type} Update`; }
       })();
 
-      addClass(e.icon, icons[type]);
+      edit.class(e.icon, 'add', icons[type]);
       updateLabel(e.icon, typeStr);
 
       e.version.innerHTML = `Version ${ver}`;
@@ -166,7 +166,7 @@ function getChangelogs () {
 
         // Setup pager
         (function () {
-          let pager = getElement('changelog_pager');
+          let pager = dom.find.id('changelog_pager');
 
           pager.setAttribute('data-max', Math.ceil((vers.length / changelogProps.limit)));
           pager = configurePager(pager);
@@ -182,31 +182,31 @@ function getChangelogs () {
         // Setup Jump dropdown
         (function () {
           let jump, dropdown;
-          let template = document.getElementById('changelog_jump_template');
+          let template = dom.find.id('changelog_jump_template');
 
           tryToRun({
             function: function () {
-              jump = document.getElementById('updates_header_jump');
-              dropdown = document.getElementById('updates_header_jump_dropdown');
+              jump = dom.find.id('updates_header_jump');
+              dropdown = dom.find.id('updates_header_jump_dropdown');
 
               return true;
             }
           });
 
           for (let ver of vers) {
-            let choice = getTemplate(template);
-            let link = getTag(choice, 'a');
+            let choice = edit.copy(template);
+            let link = dom.find.child(choice, 'tag', 'a');
 
             link.href += idPrefix + ver;
             updateLabel(link, link.href.replace('[\\d\\.]+', ver));
             link.childNodes[0].innerHTML = `Version ${ver}`;
 
-            getClass(dropdown, 'choice-list').appendChild(choice);
+            dom.find.child(dropdown, 'class', 'choice-list').appendChild(choice);
           }
 
           setupDropdownMenu(dropdown);
           isDisabled(jump, false);
-          deleteElm(template);
+          deleteElement(template);
         })();
       }
     }
@@ -228,10 +228,10 @@ function getChangelogs () {
 
   lpbUpdate(90, true, {start: 20});
   isDisabled(jump, true);
-  newAjaxRequest({
-    file: `assets/php/scripts/getChangelogs${query}`,
-    callback: handleResponse
-  });
+  // newAjaxRequest({
+  //   file: `assets/php/get/changelogs${query}`,
+  //   callback: handleResponse
+  // });
 }
 
 (function () {

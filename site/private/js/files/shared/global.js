@@ -1,3 +1,6 @@
+/** ShiftCodesTK global methods and properties */
+var ShiftCodesTK = {};
+
 /*********************************
   Global (Shared) Scripts
 *********************************/
@@ -27,9 +30,9 @@ var focusLock = {
         let arr = [];
 
         // Global matches
-        arr.push(document.getElementById('alert_popup_feed'));
+        arr.push(ShiftCodesTK.toasts.containers.activeToasts);
         // Specified matches
-        if (elms.constructor === Array) {
+        if (elms.constructor.name == 'Array') {
           for (let match of elms) {
             arr.push(match);
           }
@@ -45,7 +48,7 @@ var focusLock = {
         do {
           for (let match of matches) {
             if (target == match) {
-              return;
+              return true;
             }
           }
 
@@ -61,11 +64,11 @@ var focusLock = {
 
           if (elms.constructor === Array) {
             for (let e of elms) {
-              arr = arr.concat(getElements(e, 'focusables'));
+              arr = arr.concat(dom.find.children(e, 'group', 'focusables'));
             }
           }
           else {
-            arr = arr.concat(getElements(elms, 'focusables'));
+            arr = arr.concat(dom.find.children(elms, 'group', 'focusables'));
           }
 
           return arr;
@@ -92,128 +95,71 @@ var focusLock = {
 var lastFocus;
 var shiftStats = false;
 var hashListeners = {};
+/**
+ * Variables and Methods related to Request Tokens
+ */
+var requestToken = {
+  /**
+   * The name of the Meta Tag that holds the request token
+   */
+  tagName: 'tk-request-token',
+  /**
+   * Check for updates to the request token
+   * 
+   * @param {function} callback An optional callback to be executed when the AJAX request has completed. The request token is passed to the first parameter.
+   */
+  check: function (callback) {
+    newAjaxRequest({
+      file: '/assets/requests/get/token',
+      'callback': function (responseString) {
+        let token = requestToken.get();
+        let response = tryJSONParse(responseString);
+
+        if (response && response.statusCode == 200) {
+          let payloadToken = response.payload.token;
+
+          if (payloadToken != 'unchanged') {
+            let fields = dom.find.children(document.body, 'attr', 'name', 'auth_token');
+            
+            token = payloadToken;
+            edit.attr(getMetaTag(requestToken.tagName), 'add', 'content', token);
+
+            for (let field of fields) {
+              edit.attr(field, 'add', 'value', token);
+            }
+
+            if (typeof callback == 'function') {
+              callback(token);
+            }
+          }
+        }
+        else {
+          newToast({
+            settings: {
+              template: 'exception'
+            },
+            content: {
+              body: 'Your request token could not be updated due to an error. This may affect the site until refreshed.'
+            }
+          });
+        }
+      }
+    });
+  },
+  /**
+   * Retrieve an active request token
+   * 
+   * @returns {string} Returns the active request token
+   */
+  get: function () {
+    return getMetaTag(requestToken.tagName).content;
+  }
+};
 var shiftNames = {
   bl1: 'Borderlands: GOTY',
   bl2: 'Borderlands 2',
   bl3: 'Borderlands 3',
   tps: 'Borderlands: The Pre-Sequel'
-};
-var shiftUpdates = {
-  creation_time: '',
-  update_time: '',
-  interval: {
-    id: 0,
-    frequency: 60000 * 2, // 1 Minute * Multiplier
-    set: function () {
-      shiftUpdates.interval.id = setInterval(shiftUpdates.interval.check, shiftUpdates.interval.frequency);
-    },
-    clear: function () {
-      clearInterval(shiftUpdates.interval.id);
-    },
-    check: function (firstRun) {
-      let file = '/assets/php/scripts/shift/checkForUpdates';
-
-      newAjaxRequest({
-      file: `${file}?getDetails=false`,
-      callback: function (serverResponse) {
-        let times = ['creation', 'update'];
-        let response = tryJSONParse(serverResponse);
-
-        if (response) {
-          response = response.payload;
-
-          for (let time of times) {
-            let t = `${time}_time`; // creation_time
-            let r = response[t].timestamp; // Server Timestamp
-            let l = shiftUpdates[t]; // Last Timestamp
-
-            if (r > l && !firstRun) {
-              shiftUpdates.interval.clear();
-              newAjaxRequest({
-                file: `${file}?getDetails=true`,
-                callback: function (detailedResponse) {
-                      response = tryJSONParse(detailedResponse).payload;
-                  let id = response[t].id; // Code ID
-                  let g = response[t].game_id; // Game ID
-                  let name = shiftNames[g];
-                  let url = `/${g}` == window.location.pathname;
-                  let hash = `#shift_code_${id}`;
-
-                  if (time == 'creation' || url) {
-                    newToast({
-                      settings: {
-                        id: 'shift_update_notice',
-                        duration: 'infinite'
-                      },
-                      content: {
-                        icon: 'fas fa-key',
-                        title: (function () {
-                          if (time == 'creation') { return `New SHiFT Code for ${name}!`; }
-                          else                    { return `SHiFT Code Update for ${name}!`; }
-                        })(),
-                        body: (function () {
-                          let str = '';
-
-                          if (time == 'creation') {
-                            str += `A new SHiFT Code has just been added to ShiftCodesTK! `;
-
-                            if (url) { str += 'Refresh the list to access the new code.'; }
-                            else     { str += 'Do you want to go there now?'; }
-                          }
-                          else {
-                            str += `A SHiFT Code has just been updated. Refresh the list for changes to take effect.`;
-                          }
-
-                          return str;
-                        })()
-                      },
-                      action: {
-                        use: true,
-                        type: 'link',
-                        close: url,
-                        action: (function () {
-                          if (url) {
-                            return function () {
-                              if (window.location.hash == hash) {
-                                window.location.hash = '#0';
-                              }
-                              shiftUpdates.interval.set();
-                            }
-                          }
-                          else {
-                            return false;
-                          }
-                        })(),
-                        link: (function () {
-                          if (url) { return hash; }
-                          else     { return `/${g}${hash}`; }
-                        })(),
-                        name: (function () {
-                          if (url) { return 'Refresh'; }
-                          else     { return 'View code'; }
-                        })(),
-                        label: (function () {
-                          if (url) { return 'Refresh the list of SHiFT Codes.'; }
-                          else     { return `Visit the ${name} SHiFT Code page`; }
-                        })()
-                      }
-                    });
-                  }
-                }
-              });
-              return;
-            }
-
-            shiftUpdates[t] = r;
-          }
-        }
-        else {
-          shiftUpdates.interval.clear();
-        }
-      }
-    });
-    }
-  },
 };
 
 // *** Functions ***
@@ -280,7 +226,7 @@ function addFocusScrollListeners (parent) {
 }
 // Update scroll position to push focused element into viewport
 function updateScroll (element) {
-  if (hasClass(element, 'clipboard-copy') === false && hasClass(element, 'hidden') === false) {
+  if (!dom.has(element, 'class', 'clipboard-copy') && !dom.has(element, 'class', 'hidden')) {
     let scroll = [
       document.documentElement,
       document.body
@@ -348,15 +294,18 @@ function toggleBodyScroll (allowScroll = 'toggle') {
   let body = document.body;
   let classname = 'scroll-disabled';
   let attr = 'data-last-scroll';
-  let state = hasClass(body, classname);
+  let state = dom.has(body, 'class', classname);
 
   if (body.scrollHeight > window.innerHeight) {
+    if (allowScroll == !state) {
+      return false;
+    }
     if (allowScroll == 'toggle') {
       allowScroll = state;
     }
 
     if (allowScroll) {
-      delClass(body, classname);
+      edit.class(body, 'remove', classname);
       body.style.removeProperty('top');
 
       setTimeout(function () {
@@ -371,7 +320,7 @@ function toggleBodyScroll (allowScroll = 'toggle') {
 
       setTimeout(function () {
         body.style.top = `-${scroll}px`;
-        addClass(body, classname);
+        edit.class(body, 'add', classname);
       }, 50);
     }
 
@@ -468,7 +417,7 @@ function copyToClipboard (event) {
       pos = pos.parentNode;
     }
 
-    return getClass(pos, 'clipboard-copy');
+    return dom.find.child(pos, 'class', 'clipboard-copy');
   })();
 
   target.select();
@@ -512,16 +461,7 @@ function fixClickableContent (e) {
 function btnPressToggle (button) {
   button.addEventListener('click', function (e) {
     let t = e.currentTarget;
-    let state = (function () {
-      let attr = t.getAttribute('aria-pressed');
-
-      if (attr) {
-        return attr == 'true';
-      }
-      else {
-        return false;
-      }
-    })();
+    let state = dom.has(t, 'attr', 'aria-pressed', 'true');
 
     setTimeout(function () {
       t.setAttribute('aria-pressed', !state);
@@ -543,6 +483,14 @@ function globalListenerHashTargetHover (event) {
     e.removeEventListener('mouseout', globalListenerHashTargetAway);
     e.removeEventListener('focusin', globalListenerHashTargetHover);
     e.removeEventListener('focusout', globalListenerHashTargetAway);
+
+    // Remove hash when seen
+    if (history.pushState) {
+      history.pushState(null, null, window.location.href.split('#')[0]);
+    }
+    else {
+      window.location.hash = '##';
+    }
   }, 750);
 }
 function globalListenerHashTargetAway () {
@@ -567,108 +515,9 @@ function execGlobalScripts () {
     })();
     // Check for hash-targeted elements
     hashUpdate();
-    // Update Breadcrumbs
-    (function () {
-      let header = document.getElementById('primary_header');
-
-      if (header) {
-        // Breadcrumb Definitions
-        let pages = {
-          'bl1': 'Borderlands: GOTY',
-          'bl2': 'Borderlands 2',
-          'tps': 'Borderlands: The Pre-Sequel',
-          'bl3': 'Borderlands 3',
-          'about-us': 'About us',
-          'credits': 'Credits',
-          'updates': 'Updates',
-          'help': 'Help Center',
-          'clearing-your-system-cache': 'Clearing your System Cache',
-          'faq': 'FAQ',
-          'how-to-redeem': 'How to Redeem',
-          'borderlands-website': 'Borderlands Website',
-          'shift-website': 'SHiFT Website'
-        }
-        let url = (function () {
-          let str = window.location.pathname;
-
-          if (str[str.length - 1] == '/') {
-            str = str.slice(0, -1);
-          }
-
-          return str;
-        })(); // URL
-        let urlF = url.slice(1); // Formatted URL
-        let container = document.getElementById('breadcrumb_container');
-        let tmps = {
-          separator: 'breadcrumb_separator_template',
-          crumb: 'breadcrumb_crumb_template',
-          here: 'breadcrumb_crumb_here_template'
-        };
-        let tmpsNames = Object.keys(tmps);
-
-        function newBreadcrumb(props) {
-          let s = getTemplate(tmps[props.type]);
-
-          if (props.type != 'separator') {
-            if (props.type == 'crumb') {
-              s.href = props.link;
-              updateLabel(s, props.title);
-            }
-
-            if (props.icon) { addClass(s, props.icon); }
-            else            { s.innerHTML = props.title; }
-          }
-
-          container.appendChild(s);
-        }
-
-        // Home
-        (function () {
-          newBreadcrumb({
-            type: 'crumb',
-            title: 'Home',
-            icon: 'fas fa-home',
-            link: '/'
-          });
-          newBreadcrumb({ type: 'separator' });
-        })();
-        // Links
-        (function () {
-          let regex = new RegExp('(\\/)|([\\w-]+)', 'g');
-
-          for (let oMatch of regexMatchAll(regex, urlF)) {
-            let match = oMatch[0];
-
-            if (match == '/') {
-              newBreadcrumb({ type: 'separator' });
-            }
-            else {
-              let baseURL = `/${match}`;
-              let titleRegex = new RegExp('\\/', 'g');
-              let linkRegex = new RegExp(`${baseURL}(.*)`);
-              let options = {
-                title: pages[match.replace(titleRegex, '')],
-                link: url.replace(linkRegex, baseURL)
-              };
-
-              if (options.link != url) { options.type = 'crumb'; }
-              else                     { options.type = 'here'; }
-
-              newBreadcrumb(options);
-
-            }
-          }
-        })();
-        // Cleanup
-        addClass(container.parentNode, 'ready')
-        for (let t of tmpsNames) {
-          document.getElementById(tmps[t]).remove();
-        }
-      }
-    })();
     // Get SHiFT stats
     newAjaxRequest({
-      file: '/assets/php/scripts/shift/getStats.php',
+      file: '/assets/requests/get/shift/stats',
       callback: function (response) {
         let res = tryJSONParse(response);
 
@@ -689,7 +538,7 @@ function execGlobalScripts () {
     });
     // Add inner span to buttons and links
     (function () {
-      let clickables = getElements(document, 'clickables');
+      let clickables = dom.find.children(document, 'group', 'clickables');
 
       for (let i = 0; i < clickables.length; i++) {
         fixClickableContent(clickables[i]);
@@ -697,13 +546,37 @@ function execGlobalScripts () {
     })();
     // Add Press Toggle Listener to buttons
     (function () {
-      let buttons = getTags(document, 'button');
+      let buttons = dom.find.children(document, 'tag', 'button');
 
       for (let i = 0; i < buttons.length; i++) {
         let btn = buttons[i];
 
-        if (hasClass(btn, 'o-pressed')) {
+        if (dom.has(btn, 'class', 'o-pressed')) {
           btnPressToggle(btn);
+        }
+      }
+    })();
+    // Move present Modals & Templates to container
+    (function () {
+      let containers = {};
+        (function () {
+          containers.main = dom.find.id('containers');
+          containers.modals = dom.find.id('modals');
+          containers.templates = dom.find.id('templates');
+        })();
+      let elements = {
+        modals: dom.find.children(document.body, 'class', 'modal'),
+        templates: dom.find.children(document.body, 'tag', 'template')
+      };
+
+      for (let type in elements) {
+        let container = containers[type];
+        let elementList = elements[type];
+
+        for (let element of elementList) {
+          if (element.parentNode != container) {
+            container.appendChild(element);
+          }
         }
       }
     })();
@@ -750,7 +623,18 @@ function execGlobalScripts () {
     // Manage focus lock
     window.addEventListener('click', focusLock.handle);
     window.addEventListener('keydown', focusLock.handle);
+    // Cursor Properties
+    (function () {
+      ShiftCodesTK.cursor = {};
 
+      window.addEventListener('mousemove', function (event) {
+        ShiftCodesTK.cursor = {
+          x: event.clientX,
+          y: event.clientY,
+          target: event.target
+        }
+      });
+    })();
   }
   else {
     setTimeout(execGlobalScripts, 250);
@@ -760,18 +644,4 @@ execGlobalScripts();
 
 window.addEventListener('load', function () {
   loadEventFired = true;
-
-  setTimeout(function () {
-    // Remove startup styles
-    (function () {
-      let styles = document.getElementById('startup');
-
-      styles.parentNode.removeChild(styles);
-    })();
-    // SHiFT Code update checker
-    (function () {
-      shiftUpdates.interval.check(true);
-      shiftUpdates.interval.set();
-    })();
-  }, 2500);
 });

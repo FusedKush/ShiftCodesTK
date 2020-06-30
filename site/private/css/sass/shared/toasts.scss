@@ -2,91 +2,94 @@
 
 $listPadding: 16px;
 
-.toast-list {
+#containers #toasts .active-toasts {
   position: fixed;
   @include pull(b, r);
   @include flexbox($hAlign: e, $direction: c);
   padding: $listPadding;
   z-index: zOrder(popup);
-}
-.toast {
-  $baseline: 320px;
-  $padding: 8px;
-
-  @mixin alertPopupAnimationProps ($opacity, $translation) {
-    opacity: $opacity;
-    transform: translateY($translation);
-  }
-  @mixin alertPopupAnimation ($start, $end) {
-    #{$start} { @include alertPopupAnimationProps(0, 100%); }
-    #{$end}   { @include alertPopupAnimationProps(1, 0); }
-  }
-
-  @keyframes alertPopupIn {
-    @include alertPopupAnimation(0%, 100%);
-  }
-  @keyframes alertPopupOut {
-    @include alertPopupAnimation(100%, 0%);
-  }
-
-  @include theme(bg);
-  display: block;
-  border: bd(1.5px, tpw(0.25));
-  border-radius: 8px;
-  box-shadow: shadow(tpb(0.5));
-  min-width: calc(#{$baseline} - #{$listPadding * 2});
-  max-width: calc(#{$baseline * 2} - #{$listPadding * 2});
-  overflow: hidden;
-  @include animation(0.25s, linear, $fill: forwards);
-  @include alertPopupAnimationProps(0, 100%);
-  transition: none;
-
-  &:not(:first-child) {
-    margin-top: 8px;
-  }
-  &:not([hidden])  {
-    animation-name: alertPopupIn;
-  }
-  &[hidden] {
+  
+  .toast {
+    $baseline: 320px;
+    $padding: 8px;
+  
+    @mixin alertPopupAnimationProps ($opacity, $translation) {
+      opacity: $opacity;
+      transform: translateY($translation);
+    }
+    @mixin alertPopupAnimation ($start, $end) {
+      #{$start} { @include alertPopupAnimationProps(0, 100%); }
+      #{$end}   { @include alertPopupAnimationProps(1, 0); }
+    }
+  
+    @keyframes alertPopupIn {
+      @include alertPopupAnimation(0%, 100%);
+    }
+    @keyframes alertPopupOut {
+      @include alertPopupAnimation(100%, 0%);
+    }
+  
+    @include theme(bg);
     display: block;
-    animation-name: alertPopupOut;
-  }
-  &::before {
-    @include fill(true, tpb(0.25));
-  }
-
-  .progress-bar {
-    position: absolute;
-    background-color: transparent;
-    height: 100%;
-
-    .progress {
-      @keyframes alertPopupProgress {
-        from { transform: translateX(0); }
-        to   { transform: translateX(100%); }
-      }
-
-      @include animation($timing: linear, $fill: forwards);
-      background-color: tpw(0.25);
-      border-radius: 0;
-
-      @at-root .toast {
-        &.expiring .progress-bar .progress {
-          animation-name: alertPopupProgress;
+    border: bd(1.5px, tpw(0.25));
+    border-radius: 8px;
+    box-shadow: shadow(tpb(0.5));
+    min-width: calc(#{$baseline} - #{$listPadding * 2});
+    max-width: calc(#{$baseline * 2} - #{$listPadding * 2});
+    overflow: hidden;
+    @include animation(0.25s, linear, $fill: forwards);
+    @include alertPopupAnimationProps(0, 100%);
+    transition: none;
+    text-shadow: dropShadow(tpb(0.25));
+    pointer-events: all;
+  
+    &:not(:first-child) {
+      margin-top: 8px;
+    }
+    &:not([hidden])  {
+      animation-name: alertPopupIn;
+    }
+    &[hidden] {
+      display: block;
+      animation-name: alertPopupOut;
+    }
+    &::before {
+      @include fill(true, tpb(0.5));
+    }
+  
+    .progress-bar {
+      position: absolute;
+      background-color: transparent;
+      height: 100%;
+  
+      .progress {
+        @keyframes alertPopupProgress {
+          from { transform: translateX(-100%); }
+          to   { transform: translateX(0); }
+        }
+  
+        @include animation($timing: linear, $fill: forwards);
+        background-color: tpb(0.25);
+        border-radius: 0;
+        @include multiProp(100%, sizing);
+        transform: translateX(-100%);
+  
+        @at-root .toast {
+          &.expiring .progress-bar .progress {
+            animation-name: alertPopupProgress;
+          }
         }
       }
     }
-  }
-  .content-container {
-    @include flexbox($hAlign: none, $wrap: true);
-    font-size: 0.85em;
-  }
-  .content {
-    display: inline-flex;
-    flex: 1;
-    padding: $padding;
-    min-width: 65%;
-  }
+    .content-container {
+      @include flexbox($hAlign: none, $vAlign: s, $wrap: true);
+      font-size: 0.85em;
+    }
+    .content {
+      display: inline-flex;
+      flex: 1;
+      padding: $padding;
+    }
     .icon {
       @include flexbox($hAlign: none);
       margin-right: $padding;
@@ -101,11 +104,19 @@ $listPadding: 16px;
       color: tpw(0.75);
       margin-top: 0;
     }
-  .actions {
-    @include flexbox(none, e);
-    align-self: flex-end;
-    padding: $padding;
-    margin-left: auto;
-    font-size: 1.15em;
+    .action.dedicated {
+      border-radius: 50%;
+      margin: $padding;
+    }
+    .actions {
+      @include flexbox(none, e);
+      align-self: flex-end;
+      padding: $padding;
+      font-size: 1.15em;
+      width: 100%;
+    }
   }
+}
+.toast-session-toasts {
+  display: none;
 }

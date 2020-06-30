@@ -1,0 +1,190 @@
+.profile-card {
+  $padding: 1em;
+  $margins: 0.75em;
+
+  background-color: $site-color-light;
+  border-color: tpw(0.75);
+  border-radius: 8px;
+  padding: $padding;
+  text-shadow: 2px 2px 4px tpb(0.5);
+
+  &.show-border {
+    border: bd(2px);
+  }
+  &::before {
+    @include fill(true, tpb(0.25));
+    box-shadow: inset shadow(tpb(0.5));
+  }
+  
+  .view {
+    @include flexbox($hAlign: sb, $vAlign: none, $wrap: true);
+    
+    > .section {
+      $widths: (
+        user: 75%,
+        roles: 75%,
+        stats: 75%,
+        actions: 25%
+      );
+  
+      @each $role, $width in $widths {
+        &.#{$role} {
+          flex: 1 1 calc(#{$width} - (#{$margins} * 2));
+          
+          @if $role != roles {
+            margin: $margins;
+          }
+        }
+
+      }
+    }
+    form {
+      padding: 8px;
+      font-size: 0.9em;
+    }
+  }
+  .user {
+    @include flexbox($hAlign: s);
+
+    .profile-picture {
+      $radius: 50%;
+  
+      @include flexbox();
+      @include multiProp(3em, sizing);
+      margin-right: $margins * 1.5;
+      background-color: tpw(0.1);
+      border: bd(1.5px);
+      border-color: tpw(0.75);
+      border-radius: $radius;
+      overflow: hidden;
+  
+      &::after {
+        @include fill(true);
+        box-shadow: inset shadow(tpb(0.5));
+      }
+  
+      img {
+        @include boxIcon;
+        @include multiProp(100%, sizing);
+        border-radius: $radius;
+        cursor: help;
+      }
+      .placeholder {
+        font-size: 1.5em;
+      }
+    }
+    .info {
+      cursor: help;
+      &:not([data-show-terms="1"]) {
+        dt {
+          position: absolute;
+          opacity: 0;
+          z-index: zOrder(hidden);
+        }
+      }
+    
+      .user-name {
+        color: #fff;
+        font-size: 1.4em;
+        font-weight: bold;
+      }
+      .user-id {
+        font-size: 1em;
+        opacity: 0.5;
+      }
+    }
+  }
+  .roles {
+    @include flexbox($hAlign: none, $wrap: true);
+    margin: 0.5em;
+
+    .role {
+      font-size: 0.85em;
+      padding: 0.35em 1.25em;
+      border: bd(1.5px);
+      border-radius: 20px;
+      margin: 0.25em;
+      cursor: help;
+
+      &::before {
+        @include fill(true, #000);
+        box-shadow: 0 0 0.5em;
+        opacity: 0.65;
+      }
+
+      @each $role, $color in $roleColors {  
+        @at-root .profile-card.#{$role} {
+          border-color: $color;
+
+          &.show-border {
+            box-shadow: 0 0 1em -4px $color;
+          }
+
+          .profile-picture {
+            border-color: $color;
+          }
+          .info .user-name {
+            color: $color;
+          }
+          .stats {
+            border-color: $color;
+          }
+        }
+
+        &.#{$role} {
+          @include multiProp($color, color, background-color);
+
+          &::before {
+            color: $color;
+          }
+        }
+      }
+
+      > span {
+        color: #fff;
+      }
+    } 
+  }
+  .stats {
+    @include flexbox($hAlign: s, $direction: c);
+    color: tpw(0.75);
+    padding: $padding;
+    border: bd(1.5px);
+    border-color: tpw(0.75);
+    border-radius: 8px;
+    background-color: tpw(0.1);
+    box-shadow: inset shadow(tpb(0.5));
+
+    .definition {
+      @include flexbox($hAlign: s);
+      padding: 2px 0;
+      cursor: help;
+
+      &:not(:last-child) {
+        margin-bottom: $padding;
+      }
+    }
+    .icon {
+      color: #fff;
+      font-size: 1.1em;
+      border: bd(1.5px, tpw(0.75));
+      padding: 1em;
+      border-radius: 4px;
+      margin-right: 6px;
+    }
+    dt {
+      font-size: 0.85em;
+      
+      &::after {
+        content: ":";
+      }
+    }
+    dd {
+      color: #fff;
+      font-size: 1em;
+    }
+  }
+  .actions {
+    @include flexbox(e, e);
+  }
+}

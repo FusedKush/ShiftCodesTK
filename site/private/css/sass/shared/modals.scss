@@ -1,0 +1,82 @@
+@import "../partials/_globals";
+
+.modal {
+  position: fixed;
+  @include pull(all);
+  
+  background-color: tpb(0.75);
+  z-index: zOrder(popup);
+  transition: opacity 0.4s ease-out;
+
+  &[hidden], &:not(.configured) {
+    display: none;
+  }
+  &.inactive {
+    opacity: 0;
+  }
+
+  .content-wrapper {
+    @include flexbox;
+    @include multiProp(100%, sizing);
+    padding: 32px 16px;
+  }
+  .panel {
+    @keyframes modalPopIn {
+      // 0%   { transform: scale(0.75); }
+      // 33%  { transform: scale(1); }
+      // 66%  { transform: scale(1.1); }
+      // 100% { transform: scale(1); }
+      0%   { transform: scale(0.75); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes modalPopOut {
+      // 0%   { transform: scale(1); }
+      // 33%  { transform: scale(1.1); }
+      // 66%  { transform: scale(1); }
+      // 100% { transform: scale(0.75); }
+      0%   { transform: scale(1); opacity: 1; }
+      100% { transform: scale(0.75); opacity: 0; }
+    }
+
+    @include flexbox(none, none, $direction: c);
+    background-color: $site-color-light;
+    border: bd(1.5px, tpw(0.75));
+    border-radius: 4px;
+    box-shadow: shadow(tpb(0.75));
+    min-width: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    @include animation($duration: 0.2s, $timing: ease-out, $fill: forwards);
+
+    @at-root .modal {
+      &.inactive .panel       { animation-name: modalPopOut; }
+      &:not(.inactive) .panel { animation-name: modalPopIn; }
+    }
+  }
+  .header {
+    @include flexbox($hAlign: sb);
+    padding: 8px;
+    background-color: tpb(0.25);
+    font-size: 1.25em;
+
+    .title {
+      padding: 16px;
+    }
+    .close {
+      font-size: inherit;
+      padding: 16px;
+      margin-left: auto;
+
+      @include mouseState(noHover) {
+        opacity: 0.75;
+      }
+    }
+  }
+  .body {
+    overflow: auto;
+    
+    > .content-container {
+      padding: 24px;
+    }
+  }
+}
