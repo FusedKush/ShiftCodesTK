@@ -2,8 +2,6 @@
 .*
 .*/**/*
 node_modules/
-**/dbConfig.php
 
 # Allow
 !.htaccess
-public/.htaccess
