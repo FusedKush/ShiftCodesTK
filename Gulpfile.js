@@ -395,5 +395,5 @@ const tasks = (function () {
     exports[taskName] = task.mainTask;
   }
 
-  exports.default = exports.startup;
+  exports.default = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask, tasks.startup.mainTask);
 })();
