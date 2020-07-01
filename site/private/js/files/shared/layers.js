@@ -1042,8 +1042,8 @@ ShiftCodesTK.layers = {
                     if (!listWrapper) {
                       listWrapper = document.createElement('li');
     
+                      listWrapper = choice.insertAdjacentElement('afterend', listWrapper);
                       listWrapper.appendChild(choice);
-                      listWrapper = choiceList.appendChild(listWrapper);
                     }
   
                     return listWrapper;
