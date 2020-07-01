@@ -26,8 +26,6 @@
     <!--// Styles \\-->
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
-    <!-- Local Styles -->
-    <link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
@@ -44,8 +42,5 @@
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/js/global/libs/moment.js<?= TK_VERSION_STR; ?>"></script>
-    <script async src="/assets/js/local/shift.js<?= TK_VERSION_STR; ?>"></script>
   </body>
 </html>
