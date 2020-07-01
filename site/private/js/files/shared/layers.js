@@ -897,7 +897,7 @@ ShiftCodesTK.layers = {
             }
           }
           // Click Events
-          if (layersObject.layerEvents.click.indexOf(type) != -1) {
+          if (type == 'click') {
             if (!layerProps || layerProps.type != 'dropdown') {
               layersObject.layerListenerEvent(layerAction, layer, type);
             }
