@@ -213,19 +213,12 @@
               'disabled' => false,
               'hidden'   => false
             ]);
-
-            if (isset($_GET['game']) && is_array($_GET['game'])) {
-              $filter->updateProperty('inputProperties->value', implode(', ', $_GET['game']));
-            }
           }
         })(); 
         // Filter by Code Status
         (function () use (&$form_shiftSortFilter) {
           $filter = $form_shiftSortFilter->getChild('status_filter');
-
-          if (isset($_GET['status']) && is_array($_GET['status'])) {
-            $filter->updateProperty('inputProperties->value', implode(', ', $_GET['status']));
-          }
+          
           if (isset(PAGE_SETTINGS['shift']['owner']) && PAGE_SETTINGS['shift']['owner'] == auth_user_id()) {
             $filter->updateProperty('inputProperties->options', [ 'hidden' => 'Hidden' ]);
           }

@@ -1431,3 +1431,47 @@ function ucWords (string) {
 
   return pieces.join(' ');
 }
+/**
+ * Retrieve the query parameters from a query string
+ * 
+ * @param {string} queryString The query string to parse. If omitted, the current URL will be used.
+ * @returns {object} Returns an object made up of the query parameters.
+ */
+function getQueryParameters (queryString = window.location.search) {
+  let parameters = {};
+
+  if (queryString.indexOf('?') == 0) {
+    queryString = queryString.slice(1);
+  }
+
+  for (let parameter of queryString.split('&')) {
+    let isArray = false;
+    const pieces = (function () {
+      const slices = parameter.split('=');
+      let pieces = {
+        key: slices[0],
+        value: decodeURIComponent(slices[1])
+      };
+
+      if (pieces.key.indexOf('[]') == pieces.key.length - 2) {
+        isArray = true;
+        pieces.key = pieces.key.slice(0, -2);
+      }
+
+      return pieces;
+    })();
+
+    if (isArray) {
+      if (!parameters[pieces.key]) {
+        parameters[pieces.key] = [];
+      }
+
+      parameters[pieces.key].push(pieces.value);
+    }
+    else {
+      parameters[pieces.key] = pieces.value;
+    }
+  }
+
+  return parameters;
+}

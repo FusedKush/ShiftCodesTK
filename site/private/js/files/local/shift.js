@@ -1149,6 +1149,7 @@ function shiftCodeFormGameChangeEvent () {
 
       // Get page-specific SHiFT Props
       (function () {
+        // Get page properties
         props = tryJSONParse(dom.get(dom.find.id('shift_code_list'), 'attr', 'data-shift'));
 
         if (props) {
