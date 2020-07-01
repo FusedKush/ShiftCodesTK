@@ -29,7 +29,7 @@
   /**
    * Path to the PHP HTML Includes folder
    */
-  define('HTML_INCLUDES_PATH', PHP_PATH . 'html/min/includes/');
+  define('HTML_INCLUDES_PATH', PHP_PATH . 'html/.min/includes/');
   /**
    * The type of script that is currently executing
    * @var int The type of script [ 0 = script | 1 = page ]
