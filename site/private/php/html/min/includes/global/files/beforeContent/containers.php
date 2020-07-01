@@ -1,1 +1,0 @@
-<div class=dropdown-menu-container id=dropdown_menu_container aria-live=polite></div><div class=layers id=layers></div>

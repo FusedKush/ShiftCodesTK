@@ -81,7 +81,7 @@ const files = (function () {
         files.html.files = `${files.html.root}files/`;
         files.html.filesGlob = `${files.html.files}**/*.php`;
         
-        files.html.min = `${files.html.root}min/`;
+        files.html.min = `${files.html.root}.min/`;
         files.html.minGlob = `${files.html.min}**/*.php`;
       })();
 

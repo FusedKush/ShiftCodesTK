@@ -1,1 +1,0 @@
-<div id=containers><div id=layers class=layers></div><?php include_once('modals.php'); ?><?php include_once('toasts.php'); ?><?php include_once('templates.php'); ?></div>
