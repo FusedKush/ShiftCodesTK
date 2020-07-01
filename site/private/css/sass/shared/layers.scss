@@ -159,7 +159,7 @@
             }
       
             li {
-              margin: 8px;
+              @include flexbox();
             }
             .separator {
               border-bottom: bd(tpw(0.25));
@@ -172,6 +172,7 @@
             font-size: 1.1em;
             cursor: pointer;
             border-radius: 4px;
+            margin: 8px;
       
             &.styled, &.button {
               &::after {
