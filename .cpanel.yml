@@ -1,0 +1,8 @@
+---
+deployment:
+  tasks:
+    - export PUBLIC=/home/shiftcodetk/public_html/
+    - /site -R public $PUBLIC
+
+    - export PRIVATE=/home/shiftcodetk/private/
+    - /site -R private $PRIVATE
