@@ -556,15 +556,27 @@ function execGlobalScripts () {
         }
       }
     })();
-    // Move present Modals & Templates to container
+    // Group related stylesheets, scripts, modals, & templates together
     (function () {
       let containers = {};
         (function () {
           containers.main = dom.find.id('containers');
+          containers.stylesheets = (function () {
+            let stylesheets = dom.find.children(document.head, 'attr', 'rel', 'stylesheet');
+
+            return stylesheets[stylesheets.length - 1];
+          })();
+          containers.scripts = (function () {
+            let scripts = dom.find.children(document.body, 'tag', 'script');
+
+            return scripts[scripts.length - 1];
+          })();
           containers.modals = dom.find.id('modals');
           containers.templates = dom.find.id('templates');
         })();
       let elements = {
+        stylesheets: dom.find.children(document.body, 'attr', 'rel', 'stylesheet'),
+        scripts: dom.find.children(document.body, 'tag', 'script'),
         modals: dom.find.children(document.body, 'class', 'modal'),
         templates: dom.find.children(document.body, 'tag', 'template')
       };
@@ -573,9 +585,16 @@ function execGlobalScripts () {
         let container = containers[type];
         let elementList = elements[type];
 
-        for (let element of elementList) {
-          if (element.parentNode != container) {
-            container.appendChild(element);
+        for (let i = elementList.length - 1; i >= 0; i--) {
+          let element = elementList[i];
+          
+          if (element != container && element.parentNode != container) {
+            if (['stylesheets', 'scripts'].indexOf(type) != -1) {
+              container.insertAdjacentElement('afterend', element);
+            }
+            else {
+              container.appendChild(element);
+            }
           }
         }
       }
