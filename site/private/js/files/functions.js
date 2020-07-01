@@ -1066,16 +1066,17 @@ function isHidden (element, state = 'toggle', setTabIndex = false) {
  * @param {array} pieces An array of label pieces to be added to the element.
  * - Valid pieces: `title`, `aria`, `tooltip`
  * - If omitted, only the `title` and `aria` pieces will be added.
+ * @returns {boolean} Returns **true** on success, or **false** if an error occurred.
  */
-function updateLabel(element, label, pieces = [ 'title', 'aria' ]) {
+function updateLabel (element, label, pieces = [ 'title', 'aria' ]) {
   let components = {
-    title: function () {
+    title () {
       element.title = label;
     },
-    aria: function () {
-      edit.attr(element, 'update', 'aria-label', 'label')
+    aria () {
+      edit.attr(element, 'update', 'aria-label', 'label');
     },
-    tooltip: function () {
+    tooltip () {
       let tooltip = (function () {
         let attrName = 'data-layer-target';
         let tooltipAttr = dom.get(element, 'attr', attrName);
@@ -1096,7 +1097,7 @@ function updateLabel(element, label, pieces = [ 'title', 'aria' ]) {
           }
         }
 
-        for (let sibling of [ element.nextElementSibling, element.previousElementSibling ]) {
+        for (let sibling of [element.nextElementSibling, element.previousElementSibling]) {
           if (sibling && dom.has(sibling, 'class', 'tooltip')) {
             return sibling;
           }
@@ -1112,7 +1113,6 @@ function updateLabel(element, label, pieces = [ 'title', 'aria' ]) {
   
         return false;
       })();
-      let contentID = `${tooltip.id}_content`;
 
       // Create new tooltip
       if (!tooltip) {
@@ -1133,15 +1133,16 @@ function updateLabel(element, label, pieces = [ 'title', 'aria' ]) {
       }
       
       dom.find.child(tooltip, 'class', 'content-container').innerHTML = label;
-      return true;
     }
   };
-  
+
   for (component in components) {
     if (pieces.indexOf(component) != -1) {
       components[component]();
     }
   }
+
+  return true;
 }
 function updateProgressBar (progressBar = null, value = 100, options = {}) {
   let defaultOptions = {

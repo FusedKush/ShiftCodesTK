@@ -238,9 +238,8 @@ const tasks = (function () {
               const fileName = 'shared-scripts.js';
     
               gulp.src([
-                        `${files.js.min}functions.js`,
                         `${files.js.min}shared/global.js`,
-                        `${files.js.min}shared/**/*.js`,
+                        `${files.js.min}shared/**/*.js`
                       ])
                       .pipe(plugins.newer(`${files.js.min}${fileName}`))
                       .pipe(plugins.concat(fileName))

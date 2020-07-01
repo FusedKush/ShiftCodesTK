@@ -1433,7 +1433,7 @@ function shiftCodeFormGameChangeEvent () {
                     : 'add',
                   'hidden'
                 );
-                dom.find.child(dom.find.child(shiftCode, 'class', 'last-update'), 'tag', 'dd').innerHTML = moment().fromNow();
+                updateShiftCodeTimestamp(shiftCode);
 
                 // Update SHiFT Code
                 (function () {

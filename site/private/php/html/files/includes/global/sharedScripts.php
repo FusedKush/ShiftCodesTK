@@ -1,5 +1,5 @@
 <?php
-    $files = ['shared-scripts'];
+    $files = ['functions', 'shared-scripts'];
     $urls = [];
 
     foreach($files as $file) {
