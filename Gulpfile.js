@@ -102,7 +102,7 @@ const sync = {
    * @param {"sync"|"add"|"update"|"delete"} mode The type of activity that will cause the files to sync.
    */
   addWatcher (src, dest, mode = 'sync') {
-    return gulp.watch(src, { ignoreInitial: false })
+    return gulp.watch(src, { ignoreInitial: true })
              .on('all', function (event, file) {
                sync.update(src, dest, mode, event, file);
            });
@@ -137,7 +137,7 @@ const sync = {
       file = file.replace(new RegExp('\\\\', 'g'), '/');
     }
 
-    if ([ 'add', 'addDir', 'change' ].indexOf(event) != -1 && [ 'update', 'sync'].indexOf(mode) != -1) {
+    if ([ 'add', 'addDir', 'change' ].indexOf(event) != -1 && [ 'add', 'update', 'sync'].indexOf(mode) != -1) {
       gulp.src(src)
           .pipe(plugins.newer(dest))
           .pipe(gulp.dest(dest));
