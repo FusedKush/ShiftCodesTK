@@ -5,4 +5,5 @@ deployment:
     - /site -R public $PUBLIC
 
     - export PRIVATE=/home/shiftcodetk/private/
-    - /site -R private $PRIVATE
+    - /site/private -R img $PRIVATE
+    - /site/private -R php $PRIVATE
