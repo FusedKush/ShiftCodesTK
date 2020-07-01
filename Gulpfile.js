@@ -222,18 +222,30 @@ const tasks = (function () {
                        .pipe(plugins.js.uglify())
                        .pipe(gulp.dest(files.js.min));
           },
-          /** Concatenate shared scripts */
-          concat () {
-            const fileName = 'shared-scripts.js';
-  
-            return gulp.src([
-                         `${files.js.min}functions.js`,
-                         `${files.js.min}shared/global.js`,
-                         `${files.js.min}shared/**/*.js`,
-                        ])
-                        .pipe(plugins.newer(`${files.js.min}${fileName}`))
-                        .pipe(plugins.concat(fileName))
-                        .pipe(gulp.dest(files.js.min));
+          /** Concatenate scripts */
+          async concat () {
+            // Moment
+            (function () {
+              const fileName = 'moment.js';
+    
+              gulp.src([`${files.js.min}global/libs/moment.js/files/moment.js`, `${files.js.min}global/libs/moment.js/files/moment-timezone-with-data-10-year-range.js`])
+                      .pipe(plugins.newer(`${files.js.min}global/libs/moment.js/${fileName}`))
+                      .pipe(plugins.concat(fileName))
+                      .pipe(gulp.dest(`${files.js.min}global/libs/moment.js`));
+            })();
+            // Shared Scripts
+            (function () {
+              const fileName = 'shared-scripts.js';
+    
+              gulp.src([
+                        `${files.js.min}functions.js`,
+                        `${files.js.min}shared/global.js`,
+                        `${files.js.min}shared/**/*.js`,
+                      ])
+                      .pipe(plugins.newer(`${files.js.min}${fileName}`))
+                      .pipe(plugins.concat(fileName))
+                      .pipe(gulp.dest(files.js.min));
+            })();
           }
         };
 

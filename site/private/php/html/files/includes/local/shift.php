@@ -14,8 +14,9 @@
 <!-- SHiFT Resources -->
 <link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
 <script async src="/assets/js/local/shift.js<?php echo TK_VERSION_STR; ?>"></script>
-<header class="shift-header" id="shift_header">
+<script async src="/assets/js/global/libs/moment.js/moment.js<?php echo TK_VERSION_STR; ?>"></script>
 
+<header class="shift-header" id="shift_header">
   <div class="primary">
     <div class="content-wrapper">
       <div class="section badges">
