@@ -28,7 +28,7 @@
     "autoprefixer": "^9.6.1",
     "cssnano": "^4.1.10",
     "gulp-uglify": "^3.0.2",
-    "lodash": "^4.17.14"
+    "lodash": "^4.17.19"
   },
   "bugs": {
     "url": "https://github.com/FusedKush/ShiftCodesTK/issues"
