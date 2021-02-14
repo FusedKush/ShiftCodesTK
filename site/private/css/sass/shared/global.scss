@@ -55,154 +55,65 @@ a {
   }
   &:not(.themed) { color: inherit; }
 }
-p:not(:first-child) { margin-top: $df-elm-spacing; }
+// Interactables
+$buttonLinkColors: (
+  'info': #4c00ff,
+  'success': #01d001,
+  'warning': #ff6c00,
+  'danger': #eb0c0c
+);
+$buttonLinkColorsSelector: '';
+
+@each $name, $color in $buttonLinkColors {
+  $buttonLinkColorsSelector: $buttonLinkColorsSelector + "&.#{$name}";
+
+  @if ($name != 'danger') {
+    $buttonLinkColorsSelector: $buttonLinkColorsSelector + ", ";
+  }
+}
+
+$buttonLinkColorsSelector: unquote($buttonLinkColorsSelector);
+
+
 button {
   background: transparent;
   border: none;
   @include multiProp(inherit, color, font-family);
 }
-button.styled, a.button {
-  $buttonColors: (
-    'info': #6beaff,
-    'warning': #ff6c00,
-    'danger': #ff0000
-  );
-
-  @at-root %noHover {
-    &:not(.color-on-hover):not(.color-text) {
-      &:not(.color)::before              { opacity: 0.1; }
-      &.color {
-        &.light::before, &.dark::before  { opacity: 0.4; }
-        &:not(.light):not(.dark)::before { opacity: 0.4; }
-      }
-    }
-    &.color-on-hover,
-    &.color-text {
-      &::before                          { opacity: 0; }
-    }           
-    &.color-text {
-      &.light                            { color: $site-color-lighter; }
-      &.dark                             { color: $site-color-darker; }
-      &.theme                            { @include theme(c); }
-      &.class-theme                      { @include classTheme((c)); }
-
-      @each $name, $color in $buttonColors {
-        &.#{$name}                       { color: $color; }
-      }
-    }
-
-    &::after                             { opacity: 0.5; }
-    span                                 { opacity: 0.85; }
-  }
-  @at-root %hover {
-    &:not(.color) {
-      &::before                        { opacity: 0.25 }
-    }
-    &.color {
-      &.light::before, &.dark::before  { opacity: 1; }
-      &:not(.light):not(.dark)::before { opacity: 0.75; }
-
-      @each $name, $color in $buttonColors {
-        &.#{$name}::before             { opacity: 0.75; }
-      }
-    }
-
-    &::after                           { opacity: 0.75; }
-    span                               { opacity: 1; }
-  }
-
-  @include flexbox;
-  text-align: center;
-  text-shadow: dropShadow(tpb(0.5));
-  padding: 12px;
-  border-radius: 4px;
-  font-size: 1em;
-  line-height: 1;
-  transition: color $trd;
-  
-  @include pshared {
-    @include fill(true);
+a {
+  text-decoration: none;
+}
+a.styled, button.link {
+  &:not(.no-color) {
+    color: $site-color-lighter;
+    text-shadow: dropShadow(tpb(0.5));
   }
   
-  &::after {
-    border: bd(1.5px, #fff);
-    border-radius: inherit;
-  }
-  &:not(:first-child) {
-    margin-left: 8px;
-  }
+  @each $name, $color in $buttonLinkColors {  
+    &.#{$name} {
+      $adjustedColor: adjust-color($color, $saturation: 20%, $lightness: 20%);
+      // $adjustedColor: $color;
 
-  &:not(.color) {
-    &::before {
-      background-color: #fff;
-    }
-  }
-  &.color {
-    &.light::before       { background-color: $site-color-lighter; }
-    &.dark::before        { background-color: $site-color-darker; }
-    &.theme::before       { @include theme(bg); }
-    &.class-theme         { @include classTheme((bg), before); }
-
-    @each $name, $color in $buttonColors {
-      &.#{$name}::before  { background-color: $color; }
-    }
-  }
-  &:not([aria-pressed="true"]) {
-    &:not([disabled]) {
-      @include mouseState(noHover) {
-        @extend %noHover;
-      }
-      @include mouseState(hover) {
-        @extend %hover;
-      }
-      @include mouseState(click) {
-        &:not(.color) {
-          &::before                        { opacity: 0.15 }
-        }
-        &.color {
-          &.light::before, &.dark::before  { opacity: 0.75; }
-          &:not(.light):not(.dark)::before { opacity: 0.5; }
-        }
-      }
-    }
-    &[disabled] {
-      @extend %noHover;
-    }
-  }
-  &[aria-pressed="true"] {
-    &:not([disabled]) {
-      @include mouseState(noHover) {
-        @extend %hover;
-      }
-      @include mouseState(hover) {
-        &:not(.color) {
-          &::before                        { opacity: 0.1 }
-        }
-        &.color {
-          &.light::before, &.dark::before  { opacity: 0.85; }
-          &:not(.light):not(.dark)::before { opacity: 0.6; }
-        }
-    
-        // &::after                           { opacity: 0.75; }
-        // span                               { opacity: 1; }
-      }
-      @include mouseState(click) {
-        &:not(.color) {
-          &::before                        { opacity: 0.15 }
-        }
-        &.color {
-          &.light::before, &.dark::before  { opacity: 0.65; }
-          &:not(.light):not(.dark)::before { opacity: 0.4; }
-        }
-      }
-    }
-    &[disabled] {
-      @extend %hover;
+      color: $adjustedColor;
+      text-shadow: dropShadow(adjust-color($adjustedColor, $lightness: -50%, $alpha: -0.5));
+      // color: $color;
     }
   }
 
-  span {
-    white-space: nowrap;
+  // Effects
+  // Default Underline Effect
+  &:not(.appear) {
+    @include mouseState(hover)   { text-decoration: underline; }
+    @include mouseState(click)   { opacity: 0.75; }
+  }
+  // Appear effect
+  &.appear {
+    @include mouseState(noHover) { opacity: 0.65; }
+    @include mouseState(hover)   { opacity: 1; }
+    @include mouseState(click)   { text-decoration: underline; }
+  }
+  &.bold {
+    font-weight: bold;
   }
 }
 button, a {
@@ -210,10 +121,242 @@ button, a {
     cursor: pointer;
   }
 }
+button.styled, a.button {
+  @include flexbox($hAlign: s, $type: inline);
+  font-size: 1rem;
+  line-height: 0.75;
+  padding: 12px;
+  border-radius: 8px;
+  text-shadow: dropShadow(tpb(0.5));
+  overflow: hidden;
+  
+  @include pshared {
+    @include fill(true);
+  }
+  &::before {
+    border-radius: 0;
+  }
+  &::after {
+    border: bd(1.5px, #fff);
+    opacity: 0;
+  }
+    }           
+  }
+
+  // Alignment
+  &:not(.start):not(.end) {
+    text-align: center;
+    justify-content: center;
+  }
+  &.end { 
+    text-align: right; 
+    justify-content: flex-end;
+  }
+
+  // Button Groups
+  @at-root .button-group {
+    $buttonGroupMargins: 4px;
+
+    margin: -#{$buttonGroupMargins};
+
+    button.styled, a.button {
+      margin: $buttonGroupMargins;
+    }
+  }
+
+  // Colors
+  // Primary Colors
+  &.button-effect {
+    color: tpw(0.85);
+    transition: opacity $trd, transform $trd, color $trd;
+
+    &:not(.hover) {
+      &.light            { color: $site-color-lighter; }
+      &.dark             { color: $site-color-light; }
+      &.theme            { @include theme(c); }
+      &.class-theme      { @include classTheme((c)); }
+  
+      @each $name, $color in $buttonLinkColors {
+        &.#{$name} { color: adjust-color($color, $saturation: 20%, $lightness: 20%); }
+      }
+
+      &.outline::after   { border-color: inherit; }
+    }
+  }
+  // Background Colors
+  & {
+    &::before                  { background-color: #fff; }
+
+    &.light, &.dark {
+      // &::before                { background-color: $site-color-light; }
+    }
+    &.light::before            { background-color: $site-color-light; }
+    &.dark::before             { background-color: $site-color-dark; }
+    &.theme::before            { @include theme(bg); }
+    &.class-theme              { @include classTheme((bg), before); }
+  
+    @each $name, $color in $buttonLinkColors {
+      &.#{$name}::before { background-color: $color; }
+    }
+  }
+
+  @at-root %buttonShadow {
+    &:not(.no-shadow) {
+      box-shadow: shadow(tpb(0.15));
+    }
+  }
+  // Mouse States
+  @at-root %idleColors {
+    // @extend %buttonShadow;
+
+    &::before       { opacity: 0.15; }
+
+    &.light::before { opacity: 1; }
+    &.dark::before  { opacity: 1; }
+    &.theme, 
+    &.class-theme, 
+    #{$buttonLinkColorsSelector} {
+      &::before     { opacity: 0.75; }
+    }
+  }
+  @at-root %idleEffects {
+    &::before           { opacity: 0; }
+    &:not(.text)::after { opacity: 0.5; } 
+  }
+  @at-root %idle {
+    &:not(.button-effect) {
+      @extend %idleColors;
+    }
+    &.button-effect {
+      @extend %idleEffects;
+    }
+
+    > span                { opacity: 1; }
+  }
+  @at-root %hoverColors {
+    // @extend %buttonShadow;
+
+    &::before       { opacity: 0.4; }
+
+    &.light::before { opacity: 0.65; }
+    &.dark::before  { opacity: 0.5; }
+    &.theme, 
+    &.class-theme, 
+    #{$buttonLinkColorsSelector} {
+      &::before     { opacity: 0.5; }
+    }
+  }
+  @at-root %hoverEffects {
+    // @extend %buttonShadow;
+    @extend %idleColors;
+
+    &:not(.hover) { color: #fff; }
+  }
+  @at-root %hover {
+    &:not(.button-effect) {
+      @extend %hoverColors;
+    }
+    &.button-effect {
+      @extend %hoverEffects;
+    }
+
+    > span            { opacity: 1; }
+  }
+  @at-root %click {
+    &:not(.button-effect) {
+      &::before       { opacity: 0.15; }
+
+      &.light::before { opacity: 0.4; }
+      &.dark::before  { opacity: 0.75; }
+      &.theme, 
+      &.class-theme, 
+      #{$buttonLinkColorsSelector} {
+        &::before     { opacity: 0.35; }
+      }
+    }
+    &.button-effect {
+      @extend %hoverColors;
+
+      // &:not(.hover)   { color: #fff; }
+    }
+
+    // > span            { opacity: 1; }
+  }
+
+  &:not([aria-pressed="true"]) {
+    &:not([disabled]) {
+      @include mouseState(noHover) {
+        @extend %idle;
+      }
+      @include mouseState(hover) {
+        @extend %hover;
+      }
+      @include mouseState(click) {
+        @extend %click;
+      }
+    }
+    &[disabled] {
+      // @extend %buttonShadow;
+
+      @extend %idle;
+    }
+  }
+  &[aria-pressed="true"] {
+    // transform: translateY(10%);
+
+    // box-shadow: inset 0 0 4px 1px;
+    &::before {
+      // color: adjust-color($site-color-main, $alpha: -0.5);
+      // border: 3px solid;
+      // box-shadow: inset 0 0 2px 2px;
+      border-bottom: 3px solid adjust-color($site-color-main, $alpha: -0.5);
+      // box-shadow: inset shadow(#fff, 5px);
+    }
+
+    > span {
+      transform: scale(0.85) translateY(10%);
+    }
+
+    &:not([disabled]) {
+      @extend %buttonShadow;
+
+      @include mouseState(noHover) {
+        &:not(.button-effect) {
+          @extend %hoverColors;
+        }
+        &.button-effect {
+          @extend %idleEffects;
+        }
+      }
+      @include mouseState(hover) {
+        &:not(.button-effect) {
+          @extend %idleColors;
+        }
+        &.button-effect {
+          @extend %hoverEffects;
+        }
+      }
+      @include mouseState(click) {
+        @extend %click;
+      }
+    }
+    &[disabled] {
+      @extend %idle;
+    }
+  }
+
+  &:focus:not([disabled])::after {
+    opacity: 0.75;
+  }
+
+  span {
+    white-space: nowrap;
+  }
+}
 button, a, input, select, textarea {
-  &[disabled], &[readonly] {
+  &[disabled] {
     &:not(.checkbox):not(.radio) {
-      opacity: 0.5 !important;
+      opacity: 0.35 !important;
     }
     
     cursor: not-allowed !important;
