@@ -1514,9 +1514,214 @@ ShiftCodesTK.layers = {
       return false;
     }
   },
-      console.error(`layers.toggleLayer Error: ${error}`);
+  /**
+   * Add, update, or remove the tooltip for a given element
+   * 
+   * @param {Element} tooltipTarget The target element.
+   * @param {string} tooltipContent The content of the tooltip. 
+   * @param {object} tooltipOptions Options used to configure and customize the tooltip. See the return value for `getLayerProps()` for more information on these options. Passing **null** for any property will remove the property from the layer, returning it to its default value. 
+   * - *delay* `null|"none"|"short"|"medium"|"long"|int` - Indicates how long the tooltip will be delayed before appearing after the user hovers over the `tooltipTarget`. Only valid for the *hover* `trigger`.
+   * - *name* `null|string|false` - If applicable, this is the custom name of the tooltip.
+   * - *position* `object` - Properties related to the positioning of the tooltip:
+   * - - *align* `null|"top"|"right"|"bottom"|"left" - Indicates how the tooltip is aligned relative to the `tooltipTarget`. Some values may be incompatible with `pos`.
+   * - - *followCursor* `boolean` - If **true**, the tooltip will follow the cursor while active. Required `useCursor` to be **true** to have any effect.
+   * - - *isSticky* `boolean` - If **true**, the tooltip will be *fixed* to the screen. Useful when the `tooltipTarget` is fixed.
+   * - - *lazyFollow* `boolean` - If **true**, the tooltip will only follow the cursor on the axis it's positioned on. Required `useCursor` & `followCurso` to be **true** to have any effect.
+   * - - *pos* `null|"top"|"right"|"bottom"|"left" - Indicates how the tooltip is positioned relative to the `tooltipTarget`. Some values may be incompatible with `align`.
+   * - - *useCursor* `boolean` - If **true**, the tooltip will use the *mouse cursor's position* (while inside of the `tooltipContent`) to position the tooltip. 
+   * - *triggers* `array` - A list of triggers for the tooltip. Valid options include *focus*, *primary-click* & *secondary-click*. 
+   * @return boolean Returns **true** on success, or **false** if an error occurred.
+   */
+  updateTooltip (tooltipTarget, tooltipContent = null, tooltipOptions = {}) {
+    let tooltip = (function () {
+      const tooltipAttrName = 'data-layer-target';
+      const searches = {
+        searchByElementAttr () {
+          const attr = dom.get(tooltipTarget, 'attr', 'data-layer-targets');
+
+          if (attr !== false) {
+            const targets = attr.split(', ');
+
+            for (let target of targets) {
+              const search = dom.find.id(target);
+              
+              if (search && dom.has(search, 'class', 'tooltip')) {
+                return search;
+              }
+            }
+          }
+
+          return false;
+        },
+        searchByTooltipAttr () {
+          if (tooltipTarget.id != "") {
+            const search = dom.find.child(document.body, 'attr', tooltipAttrName, tooltipTarget.id);
+
+            if (search && dom.has(search, 'class', 'tooltip')) {
+              return search;
+            }
+          }
+
+          return false;
+        },
+        searchForCloseSiblings () {
+          const siblings = [
+            tooltipTarget.nextElementSibling,
+            tooltipTarget.previousElementSibling
+          ];
+
+          for (const sibling of siblings) {
+            if (sibling && dom.has(sibling, 'class', 'layer tooltip')) {
+              const attr = dom.get(sibling, 'attr', tooltipAttrName);
+              const matchingSibling = (!dom.has(sibling, 'class', 'configured') 
+                                        && !dom.has(sibling, 'class', 'no-auto-config') 
+                                        && attr === false) 
+                                      || (tooltipTarget.id 
+                                        && attr == tooltipTarget.id);
+
+              if (matchingSibling) {
+                return sibling;
+              }
+            }
+          }
+
+          return false;
+        },
+        searchForAllSiblings () {
+          if (tooltipTarget.parentNode !== undefined) {
+            const search = dom.find.children(tooltipTarget.parentNode, 'class', 'layer tooltip');
+
+            for (const searchElement of search) {
+              const attr = dom.get(searchElement, 'attr', tooltipAttrName);
+              const matchingElement = searchElement.parentNode == tooltipTarget.parentNode
+                                      && ((!dom.has(searchElement, 'class', 'configured') 
+                                          && !dom.has(searchElement, 'class', 'no-auto-config') 
+                                          && attr === false) 
+                                        || (tooltipTarget.id 
+                                          && attr == tooltipTarget.id));
+
+              if (matchingElement) {
+                return searchElement;
+              }
+            }
+          }
+
+          return false;
+        }
+      };
+
+      for (const searchMethod in searches) {
+        const searchResult = searches[searchMethod](); 
+
+        if (searchResult !== false) {
+          return searchResult;
+        }
+      }
+
       return false;
+    })();
+
+    if (tooltipContent !== null) {
+      // Create new tooltip
+      if (!tooltip) {
+        let newTooltip = (function () {
+          let newTooltip = document.createElement('div');
+
+          edit.class(newTooltip, 'add', 'layer tooltip');
+          edit.attr(newTooltip, 'add', 'data-layer-delay', 'medium');
+
+          return newTooltip;
+        })();
+        
+        tooltip = tooltipTarget.insertAdjacentElement('afterend', newTooltip);
+        edit.class(tooltipTarget, 'add', 'layer-target');
+      }
+      // Configure Tooltip
+      if (!dom.has(tooltip, 'class', 'configured')) {
+        ShiftCodesTK.layers.setupLayer(tooltip);
+      }
+      // Configure Options
+      (function () {
+        const validOptions = {
+          delay: 'data-layer-delay',
+          name: 'data-layer-name',
+          position: {
+            align: 'data-layer-align',
+            followCursor: 'follow-cursor',
+            isSticky: 'sticky',
+            lazyFollow: 'lazy-follow',
+            pos: 'data-layer-pos',
+            useCursor: 'use-cursor'
+          },
+          triggers: 'data-layer-triggers'
+        };
+
+        function checkOptionList (optionList, tooltipOptionList) {
+          for (let optionName in optionList) {
+            let htmlName = optionList[optionName];
+
+            if (typeof htmlName == 'object') {
+              if (tooltipOptionList[optionName] !== undefined) {
+                checkOptionList(htmlName, tooltipOptionList[optionName]);
+              }
+
+              continue;
+            }
+            if (tooltipOptionList[optionName] === undefined) {
+              continue;
+            }
+            
+            let htmlDataType = htmlName.indexOf('data-layer') != -1
+                               ? 'attr'
+                               : 'class';
+            let targetHasHtmlData = dom.has(tooltip, htmlDataType, htmlName);
+            let tooltipOptionValue = (function () {
+              let value = tooltipOptionList[optionName];
+
+              if (Array.isArray(value)) {
+                value = value.join(', ');
+              }
+              
+              return value;
+            })();
+
+            if (tooltipOptionValue !== null) {
+              edit[htmlDataType](tooltip, 'add', htmlName, tooltipOptionValue);
+            }
+            else if (targetHasHtmlData) {
+              edit[htmlDataType](tooltip, 'remove', htmlName);
+            }
+          }
+        }
+
+        checkOptionList(validOptions, tooltipOptions);
+      })();
+      
+      dom.find.child(tooltip, 'class', 'content-container').innerHTML = tooltipContent;
+      return true;
     }
+    // Delete Tooltip
+    else {
+      if (tooltip) {
+        const updatedAttrs = [
+          'aria-describedby',
+          'data-layer-targets',
+          'aria-owns'
+        ];
+
+        for (let attr of updatedAttrs) {
+          edit.attr(tooltipTarget, 'list', attr, tooltip.id);
+        }
+
+        deleteElement(tooltip);
+        return true;
+      }
+      else {
+        throw 'A tooltip is not currently attached to the provided target.';
+      }
+    }
+
+    return false;
   }
 };
 

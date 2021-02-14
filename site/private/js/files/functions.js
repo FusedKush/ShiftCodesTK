@@ -1414,6 +1414,7 @@ function isDisabled (element, state = 'toggle', setTabIndex = false) {
 function isHidden (element, state = 'toggle', setTabIndex = false) {
   return setElementState('hidden', element, state, setTabIndex);
 }
+
 /**
  * Update the label of an element
  * 
@@ -1430,65 +1431,114 @@ function updateLabel (element, label, pieces = [ 'title', 'aria' ]) {
       element.title = label;
     },
     aria () {
-      edit.attr(element, 'update', 'aria-label', 'label');
+      edit.attr(element, 'update', 'aria-label', label);
     },
     tooltip () {
-      let tooltip = (function () {
-        let attrName = 'data-layer-target';
-        let tooltipAttr = dom.get(element, 'attr', attrName);
+      ShiftCodesTK.layers.updateTooltip(element, label);
+      // let tooltip = (function () {
+      //   const tooltipAttrName = 'data-layer-target';
+      //   const searches = {
+      //     searchByElementAttr () {
+      //       const attr = dom.get(element, 'attr', 'data-layer-targets');
+
+      //       if (attr !== false) {
+      //         const search = dom.find.id(attr);
+              
+      //         if (search) {
+      //           return search;
+      //         }
+      //       }
+
+      //       return false;
+      //     },
+      //     searchByTooltipAttr () {
+      //       if (element.id != "") {
+      //         const search = dom.find.child(document.body, 'attr', tooltipAttrName, element.id);
+  
+      //         if (search) {
+      //           return search;
+      //         }
+      //       }
+
+      //       return false;
+      //     },
+      //     searchForCloseSiblings () {
+      //       const siblings = [
+      //         element.nextElementSibling,
+      //         element.previousElementSibling
+      //       ];
+
+      //       for (const sibling of siblings) {
+      //         if (sibling && dom.has(sibling, 'class', 'layer tooltip')) {
+      //           const attr = dom.get(sibling, 'attr', tooltipAttrName);
+      //           const matchingSibling = (!dom.has(sibling, 'class', 'configured') 
+      //                                     && !dom.has(sibling, 'class', 'no-auto-config') 
+      //                                     && attr === false) 
+      //                                   || (element.id 
+      //                                     && attr == element.id);
+
+      //           if (matchingSibling) {
+      //             return sibling;
+      //           }
+      //         }
+      //       }
+
+      //       return false;
+      //     },
+      //     searchForAllSiblings () {
+      //       if (element.parentNode !== undefined) {
+      //         const search = dom.find.children(element.parentNode, 'class', 'layer tooltip');
+
+      //         for (const searchElement of search) {
+      //           const attr = dom.get(searchElement, 'attr', tooltipAttrName);
+      //           const matchingElement = searchElement.parentNode == element.parentNode
+      //                                   && ((!dom.has(searchElement, 'class', 'configured') 
+      //                                       && !dom.has(searchElement, 'class', 'no-auto-config') 
+      //                                       && attr === false) 
+      //                                     || (element.id 
+      //                                       && attr == element.id));
+
+      //           if (matchingElement) {
+      //             return searchElement;
+      //           }
+      //         }
+      //       }
+
+      //       return false;
+      //     }
+      //   };
+
+      //   for (const searchMethod in searches) {
+      //     const searchResult = searches[searchMethod](); 
+
+      //     if (searchResult !== false) {
+      //       return searchResult;
+      //     }
+      //   }
+  
+      //   return false;
+      // })();
+
+      // // Create new tooltip
+      // if (!tooltip) {
+      //   let newTooltip = (function () {
+      //     let newTooltip = document.createElement('div');
+
+      //     edit.class(newTooltip, 'add', 'layer tooltip');
+      //     edit.attr(newTooltip, 'add', 'data-layer-delay', 'medium');
+
+      //     return newTooltip;
+      //   })();
         
-        if (tooltipAttr) {
-          let attrSearch = dom.find.id(tooltipAttr);
-
-          if (attrSearch) {
-            return attrSearch;
-          }
-        }
-
-        if (element.id) {
-          let targetAttrSearch = dom.find.child(document.body, 'attr', attrName, element.id);
-    
-          if (targetAttrSearch) {
-            return targetAttrSearch;
-          }
-        }
-
-        for (let sibling of [element.nextElementSibling, element.previousElementSibling]) {
-          if (sibling && dom.has(sibling, 'class', 'tooltip')) {
-            return sibling;
-          }
-        }
-
-        let classSearch = element.parentNode
-                          ? dom.find.child(element.parentNode, 'class', 'tooltip')
-                          : false;
-
-        if (classSearch) {
-          return classSearch;
-        }
-  
-        return false;
-      })();
-
-      // Create new tooltip
-      if (!tooltip) {
-        (function () {
-          let newTooltip = (function () {
-            let newTooltip = document.createElement('div');
-  
-            edit.class(newTooltip, 'add', 'layer tooltip');
-            edit.attr(newTooltip, 'add', 'data-layer-delay', 'medium');
-
-            return newTooltip;
-          })();
-          
-          tooltip = element.insertAdjacentElement('afterend', newTooltip);
-          edit.class(element, 'add', 'layer-target');
-          ShiftCodesTK.layers.setupLayer(tooltip);
-        })();
-      }
+      //   tooltip = element.insertAdjacentElement('afterend', newTooltip);
+      //   edit.class(element, 'add', 'layer-target');
+      // }
+      // // Configure Tooltip
+      // if (!dom.has(tooltip, 'class', 'configured')) {
+      //   ShiftCodesTK.layers.setupLayer(tooltip);
+      // }
       
-      dom.find.child(tooltip, 'class', 'content-container').innerHTML = label;
+      // dom.find.child(tooltip, 'class', 'content-container').innerHTML = label;
     }
   };
 
