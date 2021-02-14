@@ -1,45 +1,62 @@
 <?php
-  require_once(SCRIPTS_INCLUDES_PATH . 'shift_constants.php');
+  require_once(PRIVATE_PATHS['script_includes'] . 'shift_constants.php');
 
-  $form_shiftSortFilter = new FormBase([
-    'properties'     => [
-      'name'            => 'shift_header_sort_filter_form'
-    ],
-    'content'        => [
-      'title'           => 'Sort & Filter SHiFT Codes' 
-    ],
-    'inputProperties' => [
-      'validations'      => [
-        'required'          => true
-      ]
-    ],
-    'formProperties' => [
-      // 'action'          => '#',
-      'spacing'         => 'vertical'
-    ],
-    'formFooter'     => [
-      'actions'         => [
-        'reset'            => [
-          'enabled'           => true,
-          'content'           => 'Clear',
-          'title'             => 'Reset all options to their default values'
+  /**
+   * Generate the SHiFT Sort/Filter Form
+   * 
+   * @param string $game - The *Game ID* of the game, or **"all"** for all games. 
+   * @param bool $showOwnedCodes - Indicates if owned SHiFT Codes are being displayed.
+   */
+  function getForm_shiftSortFilter ($game = 'all', $showOwnedCodes = true) {
+    $form_shiftSortFilter = new FormBase([
+      'properties'     => [
+        'name'            => 'shift_header_sort_filter_form'
+      ],
+      'content'        => [
+        // 'title'           => 'Sort & Filter'
+      ],
+      'formProperties' => [
+        // 'action'          => '#',
+        'action'          => [
+          'type'             => 'js',
+          'path'             => '/assets/requests/post/js/shift-sort-filter'
         ],
-        'detailsToggle'    => [
-          'hideByDefault'     => true
-        ],
-        'submit'           => [
-          'content'           => 'Update',
-          'title'             => 'Update the sorting & filtering options'
+        'spacing'         => 'vertical'
+      ],
+      'formFooter'     => [
+        'actions'         => [
+          'reset'            => [
+            'enabled'           => true,
+            'content'           => 'Clear',
+            'requiresModify'    => false,
+            'tooltip'           => [
+              'content'            => 'Reset the Sorting and Filtering options'
+            ],
+            'confirmation'      => [
+              'required'           => false
+            ]
+          ],
+          'detailsToggle'    => [
+            'hideByDefault'     => true
+          ],
+          'submit'           => [
+            'content'           => 'Apply',
+            'requiresModify'    => false,
+            'tooltip'           => [
+              'content'            => 'Apply the Sorting and Filtering options'
+            ]
+          ]
         ]
+      ],
+      'formResult'     => [
+        'formState'       => 'enabled'
       ]
-    ]
-  ]);
+    ]);
 
-  (function () use (&$form_shiftSortFilter) {
     // Sort by Release Date
     $form_shiftSortFilter->addChild('field', [
       'properties' => [
-        'name'        => 'sort',
+        'name'        => 'order',
         'size'        => 'half'
       ],
       'content'    => [
@@ -52,13 +69,16 @@
           'default'           => 'Default',
           'newest'            => 'Newest',
           'oldest'            => 'Oldest'
+        ],
+        'validations' => [
+          'required'     => true
         ]
       ]
     ]);
     // Filter by Code Status
     $form_shiftSortFilter->addChild('field', [
       'properties' => [
-        'name'        => 'status_filter',
+        'name'        => 'status',
         'size'        => 'half'
       ],
       'content'    => [
@@ -67,38 +87,82 @@
       'inputProperties' => [
         'type'             => 'checkbox',
         'value'            => 'active',
-        'options'          => [
-          'active'            => 'Active',
-          'expired'           => 'Expired'
+        'options'          => (function () use ($showOwnedCodes) {
+          $options = [
+            'active'            => 'Active',
+            'expired'           => 'Expired'
+          ];
+
+          if ($showOwnedCodes) {
+            $options['hidden'] = 'Hidden';
+          }
+
+          return $options;
+        })(),
+        'validations' => [
+          'required'     => true
         ]
+      ]
+    ]);
+    // Filter by Platform
+    $form_shiftSortFilter->addChild('field', [
+      'properties' => [
+        'name'        => 'platform',
+        'size'        => 'half',
+        // 'disabled'    => true,
+        // 'hidden'      => true
+      ],
+      'content'    => [
+        'title'       => 'Filter by Platform'
+      ],
+      'inputProperties' => [
+        'type'             => 'select',
+        'value'            => '',
+        'options'          => (function () use ($game) {
+          $options = [
+            '' => 'Show All'
+          ];
+
+          foreach (SHIFT_CODE_PLATFORMS as $familyID => $familyProps) {
+            foreach ($familyProps['platforms'] as $platformID => $platformProps) {
+              if ($game === false || array_search($game, $platformProps['supported_games']) !== false) {
+                $options[$platformID] = $platformProps['display_name'];
+              }
+            }
+          }
+  
+          return $options;
+        })()
       ]
     ]);
     // Filter by Game
     $form_shiftSortFilter->addChild('field', [
       'properties' => [
-        'name'        => 'game_filter',
+        'name'        => 'game',
         'size'        => 'half',
-        'disabled'    => true,
-        'hidden'      => true
+        'disabled'    => $game != false,
+        'hidden'      => $game != false
       ],
       'content'    => [
         'title'       => 'Filter by Game'
       ],
       'inputProperties' => [
-        'type'             => 'radio',
-        'value'            => 'all',
+        'type'             => 'select',
+        'value'            => '',
         'options'          => (function () {
           $options = [
-            'all' => 'Show All'
+            '' => 'Show All'
           ];
-
+  
           foreach (SHIFT_GAMES as $gameID => $gameNames) {
             $options[$gameID] = $gameNames['name'];
           }
-
+  
           return $options;
         })()
       ]
     ]);
-  })();
+
+    return $form_shiftSortFilter;
+  }
 ?>

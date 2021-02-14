@@ -1,21 +1,21 @@
 <?php
-  $form_authLogout = new FormBase([
+  use ShiftCodesTK\Users\CurrentUser;
+
+  $form_authLogout = new \FormBase([
     'properties'     => [
-      'name'            => 'auth_logout_form'
+      'name'            => 'auth_logout_form',
+      'templates'       => [ 'SINGLE_BUTTON' ]
     ],
     'formProperties' => [
-      'action'          => '/assets/requests/post/auth/logout',
-      'showAlerts'      => false,
-      'spacing'         => 'none'
+      'action'          => [
+        'path'             => '/assets/requests/post/auth/logout'
+      ]
     ],
     'formResult'     => [
       'redirect'        => [
         'enabled'          => true,
         'location'         => ''
       ]
-    ],
-    'formFooter'     => [
-      'enabled'         => false
     ]
   ]);
   // User ID
@@ -26,7 +26,7 @@
     ],
     'inputProperties' => [
       'type'             => 'text',
-      'value'            => auth_user_id(),
+      'value'            => CurrentUser::get_current_user()->user_id,
       'validations'      => [
         'required'          => true,
         'readonly'          => true
@@ -46,6 +46,7 @@
     'inputProperties' => [
       'type'             => 'submit',
       'content'          => '<span class="box-icon fas fa-sign-out-alt" aria-hidden="true"></span><span class="label">Logout</span>',
+      'title'            => 'Logout of your ShiftCodesTK Account',
       'tooltip'          => [
         'content'           => 'Logout of your ShiftCodesTK Account',
         'pos'               => 'left'

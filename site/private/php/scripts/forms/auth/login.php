@@ -8,13 +8,18 @@
       'subtitle'          => 'If you have an account for ShiftCodesTK, you can log in here.'
     ],
     'formProperties'   => [
-      'action'            => '/assets/requests/post/auth/login'
+      'action'            => [
+        'path'               => '/assets/requests/post/auth/login'
+      ],
+      'spacing'           => 'standard'
     ],
     'formFooter'       => [
       'actions'           => [
         'submit'             => [
           'content'             => 'Login',
-          'title'               => 'Login to your ShiftCodesTK Account'
+          'tooltip'               => [
+            'content'                => 'Login to your ShiftCodesTK Account'
+          ]
         ]
       ]
     ],
@@ -32,10 +37,12 @@
       'name'            => 'email'
     ],
     'content'        => [
-      'title'           => 'Email Address'
+      'title'           => 'Email Address',
+      'innerTitle'      => true
     ],
     'inputProperties' => [
       'type'            => 'email',
+      'autocomplete'    => 'email',
       'validations'     => [
         'required'         => true
       ]
@@ -47,10 +54,15 @@
       'name'            => 'password'
     ],
     'content'        => [
-      'title'           => 'Password'
+      'title'           => 'Password',
+      'innerTitle'      => true
     ],
     'inputProperties' => [
       'type'            => 'password',
+      'autocomplete'    => 'current-password',
+      'toolbar'         => [
+        'passwordVisibilityToggle' => true
+      ],
       'validations'     => [
         'required'         => true
       ]
@@ -66,7 +78,7 @@
       'subtitle'        => 'Stayed signed in on <em>this device</em>.'
     ],
     'inputProperties' => [
-      'type'            => 'toggle-box',
+      'type'            => 'toggle-button',
       'value'           => 'Remember Me'
     ]
   ]);
