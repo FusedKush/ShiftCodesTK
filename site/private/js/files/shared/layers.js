@@ -1515,6 +1515,44 @@ ShiftCodesTK.layers = {
     }
   },
   /**
+   * Update & Configure any viable children of an element for use as a layer
+   * - Unlike `layers.setupLayer()`, layers with the `no-auto-config` flag will not be configured. Neither function will configure a layer with the `configured` flag.
+   * 
+   * @param {Element} parent The parent element.
+   * @returns {Array|false} Returns an `array` of configured Layers on success, or **false** if an error occurred.
+   */
+  setupChildLayers (parent) {
+    try {
+      if (parent === undefined || !parent) {
+        throw "Provided parent is not a valid element.";
+      }
+
+      const layers = dom.find.children(parent, 'class', 'layer');
+      let configuredLayers = [];
+
+      for (let layer of layers) {
+        if (dom.has(layer, 'class', 'configured') || dom.has(layer, 'class', 'no-auto-config')) {
+          continue;
+        }
+
+        layerSetupResult = this.setupLayer(layer);
+
+        if (layerSetupResult) {
+          configuredLayers.push(layerSetupResult);
+        }
+        else {
+          console.warning(`layers.setupChildLayers Warning: Failed to setup layer: `, layer);
+        }
+      }
+
+      return configuredLayers;
+    }
+    catch (error) {
+      console.error(`layers.setupChildLayers Error: ${error}`);
+      return false;
+    }
+  },
+  /**
    * Add, update, or remove the tooltip for a given element
    * 
    * @param {Element} tooltipTarget The target element.

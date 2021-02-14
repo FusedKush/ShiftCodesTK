@@ -1361,12 +1361,51 @@
             }
           });
         },
- * @param {string} name The name of the field. 
- * @returns {Element|false} Returns the requested field on success, or **false** if an error occurred.
- */
-function formGetField (form, name) {
-  try {
-    let field;
+        /**
+         * Update & Configure any viable children of an element for use as a form
+         * - Unlike `forms.setupForm()`, Forms with the `no-auto-setup` flag will not be configured. Neither function will configure a form with the `configured` flag.
+         * 
+         * @param {Element} parent The parent element.
+         * @returns {Array|false} Returns an `array` of configured forms on success, or **false** if an error occurred.
+         */
+        setupChildForms (parent) {
+          return this.handleMethod(function (form) {
+            try {
+              const forms = dom.find.children(parent, 'tag', 'form');
+              let configuredForms = [];
+  
+              for (let form of forms) {
+                if (dom.has(form, 'class', 'configured') || dom.has(form, 'class', 'no-auto-setup')) {
+                  continue;
+                }
+  
+                formSetupResult = this.setupForm(form);
+  
+                if (formSetupResult) {
+                  configuredForms.push(formSetupResult);
+                }
+                else {
+                  console.warn(`form.setupChildForms Warning: Failed to setup form: `, form);
+                }
+              }
+  
+              return configuredForms;
+            }
+            catch (error) {
+              console.error(`layers.setupChildLayers Error: ${error}`);
+              return false;
+            }
+          }.bind(this),
+          arguments,
+          {
+            parent: {
+              condition: function (parent) {
+                return parent !== undefined && parent;
+              },
+              message: "Provided parent is not a valid element."
+            }
+          });
+        },
         /**
         * Update the active state of all controls in a form
         * - This only effects controls that are not already disabled.
