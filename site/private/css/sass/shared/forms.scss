@@ -1,7 +1,6 @@
 @import "../partials/_globals";
 @import "../partials/fontAwesome";
 
-
 form {
   $formCorners: 4px;
   $formInputs: (
@@ -11,27 +10,91 @@ form {
     "not-multi":        unquote(":not(.radio):not(.checkbox):not(.toggle-box):not(.toggle-button)"),
     "not-multi-parent": unquote("&:not(.radio):not(.checkbox):not(.toggle-box):not(.toggle-button)")
   );
-
-  @keyframes formFadeIn {
-    0%   { opacity: 0; }
-    100% { opacity: 1;}
-  }
+  // $formTextFieldBackground: #173653;
+  $formTextFieldBackground: adjust-color($site-color-main, $lightness: 5%, $saturation: 5%);
+  $backgroundFormTextFieldBackground: #152b40;
+  $formAlertColor: #ffbb00;
 
   width: 100%;
   border-radius: $formCorners;
-  animation: formFadeIn 0.5s linear;
+  // animation: fadeIn 0.4s ease;
 
-  &:not(.configured) {
-    display: none;
-  }
+  // *, *::before, *::after {
+  //   transition: opacity $trd, transform $trd, color $trd, background-color $trd, border-color $trd, box-shadow $trd, text-shadow $trd;
+  // }
+  // &.configured {
+  //   opacity: 0;
+  //   animation: 0.4s fadeIn forwards;
+  // }
 
   // Containers & Wrappers
   .content-container {
-    @include flexbox(none, none, $wrap: true);
+    @include flexbox(none, c, $wrap: true);
   }
   fieldset {
     flex: 1 1 100%;
     border: none;
+
+    &.invalid {
+      .input-container::after, .input-container .tool.character-counter::before {
+        border-color: $formAlertColor;
+      }
+    }
+    &.confirmation-overlay {
+      $confirmationPadding: 12px;
+
+      position: absolute;
+      width: 100%;
+      bottom: 0;
+      z-index: zOrder(higher);
+      transition-timing-function: ease-in-out;
+
+      &::before {
+        position: absolute;
+        @include multiProp(calc(100% + (#{$confirmationPadding} * 2)), sizing);
+        @include multiProp(-#{$confirmationPadding}, top, left);
+        @include multiProp($confirmationPadding, right, bottom);
+        background-color: tpb(0.65);
+        border: bd(1.5px, tpw(0.75));
+        box-shadow: 0 0 10px calc(#{$confirmationPadding} / 2) tpb(0.5);
+        content: "";
+      }
+
+      &.left {
+        left: 0;
+
+        .field {
+          justify-content: start;
+          text-align: start;
+        }
+        button {
+          margin-right: $confirmationPadding;
+        }
+      }
+      &.right {
+        right: 0;
+
+        .field {
+          justify-content: end;
+          text-align: end;
+        }
+        button {
+          margin-left: $confirmationPadding;
+        }
+      }
+
+      &.inactive {
+        opacity: 0;
+        transform: translateY(25%);
+      }
+
+      button {
+        margin-top: $confirmationPadding;
+      }
+    }
+    &[hidden] {
+      display: flex;
+    }
 
     fieldset {
       .fieldset-wrapper {
@@ -44,20 +107,35 @@ form {
   }
   .section {
     @include flexbox(none, none, $wrap: true);
-    overflow: hidden;
+    width: 100%;
 
     &[hidden] {
       display: none;
     }
   }
   .field {
+    $fieldDim: 0.35;
+    $fieldLit: 0.75;
+
+    @keyframes fieldFade {
+      0%   { opacity: $fieldDim; }
+      100% { opacity: $fieldLit;}
+    }
+
     @include flexbox($hAlign: s, $wrap: true);
 
-    // @media screen and (max-width: 599px) {
-    //   min-width: 200px;
+    // &:not(.disabled):not(.readonly) > .input-container {
+    //   opacity: $fieldDim;
+    //   animation: fieldFade 0.4s ease-out;
+    // }
+    // &.disabled, &.readonly {
+    //   > .input-container {
+    //     opacity: $fieldLit;
+    //     animation: fieldFade 0.2s ease-out reverse; 
+    //   }
     // }
 
-    &[hidden] {
+    &.hidden {
       display: none;
     }
 
@@ -66,45 +144,122 @@ form {
         width: 100%;
       }
     }
+    .children.options .field {
+      flex-wrap: nowrap;
+
+      @at-root form fieldset {
+        $selector: unquote(".children.options .field");
+
+        &:not(.toggle-button) #{$selector} {
+          // align-items: flex-start;
+
+          .input-container {
+            margin-top: 1.25px;
+          }
+        }
+        #{$selector} {
+          align-items: start;
+        }
+        &.toggle-button, &.toggle-box {
+        } 
+      }
+
+      label {
+        flex: 1;
+      }
+    }
   }
   .children { 
-    @include flexbox($hAlign: s, $wrap: true);
+    @include flexbox(s, s, $wrap: true);
     width: 100%;
 
-    @at-root form {
-      .checkbox,
-      .radio,
-      .toggle-box,
-      .toggle-button {
-        .children {
-          @include flexbox($hAlign: s, $wrap: true, $direction: c);
-        }
-      }
+    &.options {
+      @include flexbox($hAlign: s, $wrap: true, $direction: c);
     }
   }
   .footer {
     @include flexbox(c, sb, $wrap: true);
     width: 100%;
 
-    fieldset {
-      @media screen and (min-width: 425px) {
-        flex: 0;
-      }
-      @media screen and (max-width: 424px) {
-        flex: 1 1;
-
-        button {
-          width: 100%;
-        }
-      }
-
-      &.submit {
-        margin-left: auto;
-      }
+    @at-root form.sticky-footer.focused .footer {
+      @include animation(0.4s, ease-out, $fill: forwards);
 
       &[hidden] {
-        display: none;
+        display: flex;
+        opacity: 0;
+        visibility: hidden;
+        z-index: zOrder(hidden);
       }
+      &:not([hidden]) {
+        &.sticky {
+          box-shadow: shadow(tpb(0.75));
+
+          &::before {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    &.sticky {
+      position: fixed;
+      width: calc(100% - 32px);
+      bottom: 16px;
+      padding: 8px;
+      z-index: zOrder(aboveNormal);
+      border-radius: 8px;
+      
+      &::before {
+        @include fill(true, $site-color-main);
+        border: bd(1.5px, tpw(0.75));
+        border-radius: inherit;
+        opacity: 0;
+      }
+    }
+
+    .progress-bar {
+      .progress {
+        @include theme(c, bg);
+      }
+      .cursor {
+        cursor: default;
+      }
+    }
+
+    .actions {
+      @include flexbox($wrap: true);
+      width: 100%;
+
+      fieldset {
+        @media screen and (min-width: 425px) {
+          flex: 0;
+        }
+        @media screen and (max-width: 424px) {
+          flex: 1 1;
+  
+          button {
+            width: 100%;
+          }
+        }
+  
+        &.reset {
+          margin-right: auto;
+        }
+        &.submit {
+          margin-left: auto;
+        }
+  
+        &[hidden] {
+          display: none;
+        }
+      }
+    }
+    .change-count {
+      font-size: 0.85em;
+      margin-left: auto;
+      color: tpw(0.5);
+      opacity: 0;
+      animation: fadeIn 0.4s ease forwards;
     }
   }
 
@@ -112,32 +267,39 @@ form {
   .title, label, legend {
     @include flexbox($hAlign: s);
 
+    &[hidden] {
+      display: none;
+    }
+
     .required {
       @include flexbox;
-      @include multiProp(0.85em, sizing);
+      @include multiProp(1em, sizing);
       color: $site-color-main;
-      background-color: #fff;
+      // background-color: #fff;
+      background-color: tpw(0.75);
+      // border: bd(1.5px, tpw(0.5));
       cursor: help;
-      border-radius: $formCorners;
+      border-radius: 4px;
       margin-right: 4px;
       opacity: 0.75;
+      // transform: translate(-15%, -50%) rotate(45deg);
+      // transform: scale(0.85);
+      // color: rgb(255, 74, 67);
+      transition: opacity $trd, transform $trd, background-color $trd;
   
       &[hidden] {
         display: none;
       }
-  
+
       .fas {
-        font-size: 0.55em;
+        color: inherit;
+        // transform: rotate(-45deg);
       }
     }
   }
-  .subtitle {
-    
-  }
   .description {
     display: inline-block;
-    background-color: tpw(0.25);
-    border: bd(1.5px, tpw(0.25));
+    border: bd(1.5px, tpw(0.35));
     border-radius: $formCorners;
     text-shadow: dropShadow(tpb(0.5));
 
@@ -150,7 +312,7 @@ form {
     @include animation(0.8s, ease-out, $fill: forwards);
 
     @at-root form.hide-details {
-      .section .title, .subtitle, .description, .details, span.required {
+      .section .title, .subtitle, .description, .details, span.required, .section > .title-container {
         position: absolute;
         @include pull(t, l);
         z-index: zOrder(hidden);
@@ -162,29 +324,55 @@ form {
   .title-container {
     width: 100%;
 
-    .subtitle {
-      opacity: 0.75;
+    @at-root form > .content-container > .title-container > .subtitle {
+      color: tpw(0.75);
     }
+  }
+  .invalid-icon {
+    display: none;
+    color: $formAlertColor;
+    margin-right: 8px;
+    cursor: help;
+
+    @at-root form .input.invalid > .fieldset-wrapper > .field {
+      >, > .input-container
+      label, legend {
+        .invalid-icon {
+          display: block;
+        }
+      }
+    }
+  }
+
+  .field.inner-title > .input-container label:not([hidden]) {
+    position: absolute;
+    padding: 0 8px;
+    display: inline-flex;
+    background: linear-gradient(transparent calc(50% - 0.5px), $formTextFieldBackground calc(50% - 0.5px));
+    z-index: 1;
+    width: auto;
+    left: 6.5px;
+    transition: color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
   }
 
   // Inputs
   .input-container {
-    @include flexbox;
+    @include flexbox();
     border-radius: $formCorners;
-    box-shadow: inset shadow(tpb(0.5), 5px);
-    overflow: hidden;
+    z-index: zOrder(higher);
 
     @include pshared {
       @include fill(true);
     }
     &::after {
       border: bd(1.5px);
+      transition: opacity $trd, transform $trd, border-color $trd;
     }
 
     // Text/Number/URL/Password/Date/Time/Select/Textarea
     &:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
        &::before {
-         background-color: tpw(0.2);
+        background-color: $formTextFieldBackground;
        }
        &::after {
          color: tpw(0.75);
@@ -193,44 +381,36 @@ form {
        &:not(.button):not(.reset):not(.submit) {
          width: 100%;
        }
-       &.has-char-counter input {
-         padding-right: 0;
-       } 
 
        // Select Field
        &.select {
         &::after {
           @include flexbox($hAlign: e);
           @include faIcon(caret-down);
-          font-size: 1.25em;
           padding: 8px;
         }
 
-        select {
-          cursor: pointer;
-        }
         option[value=""] {
           color: tpb(0.5);
         }
        }
        // Textarea Field
        &.textarea {
-        flex-wrap: wrap;
-  
-        .toolbox {
-          display: flex;
-          width: 100%;
-          border-top: 1.5px dotted tpw(0.5);
-          z-index: zOrder(higher);
-    
-          &[hidden] {
-            display: none;
-          }
-        }
+         flex-wrap: wrap;   
 
+         .toolbar {
+           display: flex;
+           width: 100%;
+           z-index: zOrder(higher);   
+           cursor: text;
+         
+           &[hidden] {
+             display: none;
+           }
+         }  
          textarea {
-          resize: vertical;
-          min-height: 6em;
+           resize: vertical;
+           min-height: 4.5em;
          }
        }
 
@@ -238,37 +418,16 @@ form {
         @include multiProp(100%, sizing);
        }
        input, textarea {
-        cursor: text;
-      }
-     }
-    // Checkbox/Radio/Toggle Box/Toggle Button
-    &.checkbox, &.radio, &.toggle-box, &.toggle-button {
-      display: inline-flex;
-      @include multiProp(1.25em, sizing);
-      font-size: 1em;
-      margin-right: 8px;
-
-      @at-root form .field {
-        @include mouseState(click) {
-          > .input-container {
-            &.checkbox, &.radio, &.toggle-box {
-              > input::before {
-                transform: scale(0.75);
-              }
-            }
-            &.toggle-button {
-              > input {
-                &:not(:checked)::after {
-                  transform: scale(0.75);
-                }
-                &:checked::after {
-                  transform: translateX(100%) scale(0.75);
-                }
-              }
-            }
-          }
+        &::placeholder {
+          opacity: 0.25;
         }
       }
+    }
+    // Checkbox/Radio/Toggle Box/Toggle Button
+    #{map-get($formInputs, 'multi-parent')} {
+      display: inline-flex;
+      @include multiProp(1.25em, sizing);
+      margin-right: 8px;
 
       // Radio Fields
       &.radio {
@@ -303,8 +462,14 @@ form {
               opacity: 0.35;
             }
             &::after { 
+              @include faIcon(check);
               opacity: 1;
               transform: translateX(100%); 
+            }
+          }
+          &:not(:checked) {
+            &::after {
+              @include faIcon(times);
             }
           }
 
@@ -315,8 +480,11 @@ form {
           }
           &::after {
             position: absolute;
-            width: 1.25em;
-            height: calc(100% - 0.5em);
+            @include flexbox;
+            font-size: 0.85em;
+            width: 1.5em;
+            height: calc(100% - 0.45em);
+            color: adjust-color($site-color-main, $alpha: -0.15);
             background-color: #fff;
             border-radius: 20px;
             content: "";
@@ -326,21 +494,22 @@ form {
       }
       // Checkbox & Toggle-Box Fields
       &.checkbox, &.toggle-box {
+        border-radius: 4px;
+        padding: 8px;
+        
         input {
           @include flexbox;
-  
+          
           &::before {
             @include faIcon(check);
-            font-size: 0.85em;
           }
         }
       }
 
-      + label {
-        width: auto;
-      }
-      input, + label {
-        cursor: pointer;
+      + {
+        label, .title-container {
+          width: auto;
+        }
       }
     }
 
@@ -352,16 +521,93 @@ form {
       background: none;
       @include multiProp(inherit, font-size, font-family);
       z-index: zOrder(higher);
-  
+
       &:invalid {
         box-shadow: none;
       }
     }
+
+    .toolbar {
+      @include flexbox(none, e);
+      z-index: zOrder(higher);
+
+      @at-root form .textarea > .toolbar {
+        width: 100%;
+      }
+  
+      .tool {
+        @include flexbox;
+        
+        margin: 4px;
+
+        &:not(.icon):not(.character-counter) {
+          border-radius: 4px;
+
+          &::before {
+            @include fill(true, tpw(0.15));
+          }
+        }
+
+        @include mouseState(noHover) {
+          &::before { opacity: 0; }
+        }
+        @include mouseState(hover) {
+          &::before { opacity: 1; }
+        }
+
+        &.toggle-password-visibility {
+          @at-root form .input-container.password input {
+            $toolSel: unquote("+ .toolbar .toggle-password-visibility");
+  
+            &[type="password"] #{$toolSel} .hide { display: none; }
+            &[type="text"] #{$toolSel} .show     { display: none; }
+          }
+        }
+        &.clear-field {
+          color: tpw(0.75);
+          // background-color: tpw(0.25);
+          border-radius: 20px;
+          font-size: 0.8em;
+          padding: 6px;
+          transform: scale(0.9);
+        }
+        &.character-counter {
+          margin-left: auto;
+          // right: 0;
+          white-space: nowrap;
+          cursor: help;
+          background: linear-gradient($formTextFieldBackground calc(50% - 0.5px), transparent calc(50% - 0.5px));
+
+          // &::before {
+          //   background: none;
+          //   border: bd(1.5px, tpw(0.5));
+          // }
+
+          @at-root form .input-container {
+            &:not(.textarea) > .toolbar .character-counter {
+              position: absolute;
+              transform: translate(-10%, calc(100% + 1.5px)) scale(0.85);
+              // bottom: 4.5px;
+            }
+          }
+      
+          .now, .threshold {
+            opacity: 0.5;
+          }
+          &.max .separator {
+            opacity: 0.5;
+          }
+          &.underflow .threshold, &:not(.underflow):not(.max) .now { 
+            opacity: 1; 
+          }
+        }
+      }
+    }
   }
   a, button {
-    &.submit {
-      &.disabled-by-submit {
-        > span   { opacity: 0 !important; }
+    &.reset, &.submit {
+      &.resetter[disabled], &.submitter[disabled] {
+        > span   { opacity: 0; }
         .spinner { opacity: 1; }
       }
 
@@ -376,77 +622,170 @@ form {
   // Alerts
   .alerts {
     $alertPadding: 12px;
-    $alertColor: #ff4500;
+
+    @keyframes alertFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
 
     @include flexbox(none, none, $direction: c);
     flex: 1 1 100%;
 
     .alert {
       @include flexbox(none, none);
-      border: 1.5px solid $alertColor;
+      border: 1.5px solid $formAlertColor;
       border-radius: 4px;
       background-color: tpw(0.1);
       flex: 1 1 100%;
+      animation: alertFadeIn 0.4s ease-out;
 
       .icon {
         @include flexbox;
         padding: $alertPadding;
-        font-size: 1.5em;
-        background-color: $alertColor;
+        background-color: $formAlertColor;
       }
       .message {
-        @include flexbox(c, s);
+        // @include flexbox(c, s);
         padding: $alertPadding;
 
         a.themed {
-          color: $alertColor;
+          color: $formAlertColor;
         }
       }
     }
   }
 
+  // Data
+  .alert-messages, .confirmation-properties {
+    display: none;
+  }
+
   // Spacing
+  $baseFormSpacing: 12px;                   // The amount of spacing used as the base of all form spacing
+  $outerFormPadding: 8px;                   // The amount of spacing used to separate the form from other elements
+
+  $fieldSpacing: $baseFormSpacing * 0.75 ;  // The amount of spacing used to separate fields and their components
+  $contentSpacing: $fieldSpacing * 2.0;     // The amount of spacing used to separate subtitles and descriptions
+  $sectionSpacing: $baseFormSpacing * 1.75; // The amount of spacing used to separate sections
   & {
-    $baseSpacing: 12px;                   // The amount of spacing used as the base of all form spacing
-    $outerPadding: 16px;                  // The amount of spacing used to separate the form from other elements
-
-    $fieldSpacing: $baseSpacing * 0.5;    // The amount of spacing used to separate fields and their components
-    $contentSpacing: $fieldSpacing * 2.0; // The amount of spacing used to separate subtitles and descriptions
-    $sectionSpacing: $baseSpacing * 1.75; // The amount of spacing used to separate sections
-
     // Default Spacing
     &:not(.no-spacing):not(.vertical-spacing):not(.double-spacing) {
       > .content-container {
-        padding: $outerPadding;
+        padding: $outerFormPadding;
+
+        > .title-container {
+          padding: $contentSpacing;
+        }
+      }
+      .section {
+        > .title-container {
+          padding: $contentSpacing;
+        }
+        &.footer .actions .fieldset-wrapper {
+          // padding: 0;
+        }
+      }
+      fieldset:not([hidden]):not(.hidden) .fieldset-wrapper {
+        padding: $fieldSpacing;
+
+        .children .fieldset-wrapper {
+          padding: 0;
+
+          // .children .fieldset-wrapper {
+          //   padding: $fieldSpacing;
+          // }
+        }
       }
     }
     &.vertical-spacing > .content-container {
       margin: -#{$fieldSpacing};
     }
     &.double-spacing > .content-container {
-      padding: $outerPadding * 2;
+      padding: $outerFormPadding * 2;
     }
 
     // Internal Spacing
     &:not(.no-spacing) {
+      > .content-container > .title-container {
+        // margin-bottom: $sectionSpacing;
+      }
+      > .content-container > .title-container, .section > .title-container {
+        padding: $baseFormSpacing $fieldSpacing;
+      }
       .title-container {
-        padding: 0 $fieldSpacing;
-        margin-bottom: $sectionSpacing;
-  
+        @at-root form:not(.no-spacing) fieldset.input {
+          #{map-get($formInputs, 'multi-parent')} {
+            .options .title-container {
+              padding-left: 0;
+            }
+          }
+        }
+        
+        .title, label, legend {
+          &:not(:last-child) {
+            // margin-bottom: 4px;
+          }
+        }
+        .title, .subtitle, .description {
+          .title, label, legend {
+            &:last-child {
+              margin-bottom: $sectionSpacing;
+            }
+          }
+          @at-root form fieldset.input {
+            #{map-get($formInputs, 'multi-parent')} {
+              
+              .options {
+                .subtitle {
+                  margin-top: 4px;
+                  margin-bottom: 0;
+                }
+              }
+            }
+          }
+        }
         .description:not(:first-child) {
           margin-top: #{$fieldSpacing * 2}; 
         }
       }
-      .section:not(:last-child):not(.footer) { 
-        margin-bottom: $sectionSpacing;
-      } 
+      .section {
+        &.footer {
+          padding: $fieldSpacing;
+          // margin-top: -#{$sectionSpacing};
+
+          .progress-bar {
+            margin-bottom: $fieldSpacing * 2.5;
+            // width: calc(100% - #{$fieldSpacing});
+            // margin: $fieldSpacing * 2 auto;
+          }
+          .actions {
+            margin: -#{$fieldSpacing};
+            width: calc(100% + #{$fieldSpacing * 2})
+          }
+          .change-count {
+            margin-top: $fieldSpacing;
+          }
+
+          @at-root form.show-background .section.footer {
+            padding: (($outerFormPadding + ($fieldSpacing * 2))) (($fieldSpacing * 2) + 2);
+          }
+        }
+        
+        &:not(:last-child):not(.footer) { 
+          margin-bottom: $sectionSpacing;
+          
+          > .title-container {
+            padding-top: $sectionSpacing * 1;
+          }
+        } 
+      }
       .field {
-        margin: $fieldSpacing $fieldSpacing #{$fieldSpacing * 2};
+        margin: $fieldSpacing;
   
         .children .field { 
-          margin-bottom: $fieldSpacing;
+          margin: ($fieldSpacing / 2) $fieldSpacing $fieldSpacing;
         }
-        @at-root form .footer .field {
+        @at-root form:not(.no-spacing) .footer .field {
           margin-bottom: $fieldSpacing;
         }
       }
@@ -454,37 +793,89 @@ form {
         margin: #{$fieldSpacing} -#{$fieldSpacing};
         width: calc(100% + #{$contentSpacing}); 
         
+        &:first-child {
+          margin-top: #{-$fieldSpacing};
+        }
+
         .field .input-container {
-          margin-top: 0;
           margin-bottom: 0;
+        }
+        &.group {
+          margin-top: $fieldSpacing / 2;
         }
       }
       .input-container {
         &:not(:first-child) { 
           margin-top: $contentSpacing;
-         }
-        &:not(:last-child) { 
           margin-bottom: $contentSpacing;
-         }
+        }
+        @at-root form fieldset {
+          .title, label, legend {
+            &[hidden] + .input-container:not(:first-child) {
+              margin-top: 0;
+            }
+          }
+        }
+        .toolbar {
+          min-height: calc(1em + #{$baseFormSpacing * 2} + 6px);
+          min-width: 1px;
+
+          .tool {
+            &.character-counter {
+              right: $fieldSpacing / 2;
+            }
+          }
+        }
       }
       .alerts {
         .alert {
           @include multiProp($fieldSpacing, margin-top, margin-bottom);
         }
-
-        @at-root form .title-container + .alerts .alert {
-          @include multiProp($fieldSpacing, margin-left, margin-right);
-         
-          &:last-child {
-            margin-bottom: $sectionSpacing;
+        &:not(:first-child) {
+          .alert:first-child {
+            margin-top: 12px;
           }
+        }
+
+        @at-root form > .content-container > .alerts {
+          @include multiProp($contentSpacing, margin-left, margin-right);
+         
+          .alert {
+            &:last-child {
+              margin-bottom: $sectionSpacing;
+            }
+          }
+        }
+      }
+      .field.inner-title {
+        > .input-container label {
+          top: calc(#{$baseFormSpacing} + 1px);
+        }
+        > .subtitle {
+          margin-top: $baseFormSpacing / 2;
         }
       }
     }
 
-    .description, 
-    .input-container:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) #{map-get($formInputs, 'tags')} {
-      padding: $baseSpacing;
+    .input-container:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
+      #{map-get($formInputs, 'tags')} {
+        padding: $baseFormSpacing;
+      }
+    }
+    .description {
+      padding: $baseFormSpacing;
+    }
+    .input-container .toolbar .tool {
+      padding: #{$baseFormSpacing / 2} #{$outerFormPadding};
+      margin: #{$baseFormSpacing / 2};
+
+      &:nth-last-child(2) {
+        margin-right: $outerFormPadding / 2;
+      }
+      
+      &.character-counter {
+        padding: 3px #{$baseFormSpacing / 2};
+      }
     }
   }
 
@@ -501,125 +892,716 @@ form {
       @each $sizeName, $sizeVal in $sizes {
         &.#{$sizeName} {
           flex-basis: $sizeVal;
+
+          @if $sizeName != full {
+            @media screen and (max-width: 359px) {
+              flex-basis: 100%;
+            }
+            @media screen and (min-width: 360px) {
+              min-width: 320px;
+            }
+          }
         }
       }
     }
-
-    @at-root form .footer {
+  }
+  .footer {
+    fieldset, .field {
+      &.size {
+        @media screen and (min-width: 425px) {
+          flex-basis: 0;
+        }
+        @media screen and (max-width: 424px) {
+          flex-basis: 50%;
+        }
+      }
+    }
+  }
+  .children {
+    // Prevent nested fields from extending over
+    &:not(.wrap) {
       fieldset, .field {
-        &.size {
-          @media screen and (min-width: 425px) {
-            flex-basis: 0;
-          }
-          @media screen and (max-width: 424px) {
-            flex-basis: 50%;
+        &.size:not(.full) {
+          min-width: auto;
+        }
+      }
+    }
+    &.options.wrap {
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: flex-start;
+
+      > .field:not(.hidden) {
+        display: inline-flex;
+        flex: 0 0;
+
+        @at-root form .children.options.wrap {
+          $sizes: (
+            full:       100%,
+            half:       50%,
+            third:      33.3%,
+            quarter:    25%
+          );
+          
+          @each $sizeName, $sizeVal in $sizes {
+            &.#{$sizeName} > .field {
+              flex-basis: calc(#{$sizeVal} - #{$fieldSpacing * 2});
+    
+              @if $sizeName != full {
+                @media screen and (max-width: 359px) {
+                  min-width: 100%;
+                }
+                @media screen and (min-width: 360px) {
+                  min-width: 200px;
+                }
+              }
+            }
           }
         }
       }
+
     }
   }
 
   // Mouse States
   .field {
-    @at-root %noHover {
-      .input-container {
-        &                             { opacity: 0.75; }
+    $fieldShades: (
+      'disabled': 0.35,
+      'readonly': 0.5,
+      'idle':     1
+    );
 
-        &::before                     { opacity: 0.65; }
-        &::after                      { opacity: 0.5; }
+    @mixin formFieldToolbarToolHoverEffects {
+      @include mouseState(hover) {
+        opacity: 1;
+      }
+      @include mouseState(click) {
+        opacity: 0.5;
+      }
+    }
+    @mixin innerLabelActive {
+      transform: translate(-5%, calc(-100% - 4px)) scale(0.85);
+    }
 
-        &.radio,
-        &.checkbox,
-        &.toggle-box {
+    // Default Styles
+    & {
+      $fieldAnimations: (
+        'fieldFadeIn':         ('disabled', 'idle'),
+        'fieldFadeToDisabled': ('idle', 'disabled'),
+        'fieldFadeToReadonly': ('idle', 'readonly')
+      );
+  
+      @each $name, $shades in $fieldAnimations {
+        @keyframes #{$name} {
+          0%   { opacity: map-get($fieldShades, nth($shades, 1)); }
+          100% { opacity: map-get($fieldShades, nth($shades, 2)); }
+        }
+      }
+
+      opacity: map-get($fieldShades, 'idle');
+      animation: fieldFadeIn 0.4s ease-out;
+    }
+    &.inner-title {
+      &:not(.has-value) {
+        > .input-container {
+          input, textarea {
+            &:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
+              &::placeholder {
+                opacity: 0;
+              }
+            }
+          }
+        }
+      }
+
+      > .input-container {
+        $innerTitleOpacity: 0.35;
+  
+        input, textarea {
+          opacity: $innerTitleOpacity;
+        }
+        label {
+          color: tpw($innerTitleOpacity);
+          cursor: text;
+  
+          // .required {
+          //   background-color: tpw(0.75);
+          // }
+          .required, .invalid-icon {
+            // color: tpw($innerTitleOpacity);
+            // background-color: tpw(0.5);
+            opacity: $innerTitleOpacity;
+          }
+        }
+      }
+    }
+    > .input-container {
+      &::after  { 
+        opacity: 0.25; 
+      }
+
+      input {
+        &.radio, &.checkbox, &.toggle-box {
+          &:not(:checked)::before {
+            opacity: 0;
+          }
+        }
+      }
+      #{map-get($formInputs, 'tags')} {
+        opacity: 0.5;
+      }
+
+      // Cursors
+      #{map-get($formInputs, 'not-multi-parent')} {
+        input {
+          cursor: text;
+        }
+      }
+      #{map-get($formInputs, 'multi-parent')} {
+        input {
+          cursor: pointer;
+        }
+        + {
+          label, legend {
+            cursor: pointer;
+          }
+          .title-container {
+            &, label, .subtitle {
+              cursor: pointer;
+            }
+          }
+        }
+      }
+      textarea {
+        cursor: text;
+      }
+      select {
+        cursor: pointer;
+      }
+
+      .toolbar {
+        // display: none;
+      }
+      .toolbar .tool {
+        opacity: 0.25;
+        pointer-events: none;
+
+        &:not(.character-counter) {
+          display: none;
+        }
+      }
+      &:not(.textarea) .toolbar {
+        .tool {
+          &.character-counter {
+            @keyframes hideCharCounter {
+              0% { 
+                left: 0;
+              }
+              100% { 
+                right: 100vw;
+              }
+            }
+            
+            transition: opacity $trd, transform $trd, color $trd;
+            opacity: 0;
+            animation: hideCharCounter 0s 0.25s forwards;
+            z-index: zOrder(hidden);
+          }
+        }
+      }
+    }
+    &.inner-title.has-value > .input-container label {
+      @include innerLabelActive;
+    }
+    option[disabled] {
+      opacity: 0.25;
+    }
+    & .options .field {
+      @include mouseState(click) {
+        &:not(.disabled):not(.readonly) {
+          > {
+            .input-container {
+              &.radio,
+              &.checkbox,
+              &.toggle-box {
+                opacity: 0.65;
+    
+                input::before {
+                  transform: scale(0.75);
+                }
+              }
+              &.toggle-button {
+                input {
+                  &:not(:checked)::after {
+                    transform: scale(0.75);
+                  }
+                  &:checked::after {
+                    transform: translateX(100%) scale(0.75);
+                  }
+                }
+              }
+            }
+    
+            label, 
+            legend, 
+            .subtitle {
+              opacity: 0.65;
+            }
+            .title-container {
+              label, 
+              legend, 
+              .subtitle {
+                opacity: 0.65;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    @mixin idleStyles {
+      &:not(.disabled) {
+        &:not(.readonly) {
+          > .input-container {
+            &:not(.textarea) .toolbar .tool {
+              opacity: 0.25;
+
+              // &.character-counter {
+              //   opacity: 0.5;
+              // }
+            }
+          }
+        }
+
+        > {
+          label, legend {
+            opacity: 0.5;
+          }
+          .title-container {
+            label, legend {
+              opacity: 0.5;
+            }
+          }
+        }
+      }
+      &.readonly {
+        opacity: map-get($fieldShades, 'readonly');
+        animation: fieldFadeToReadonly 0.2s ease-out;
+
+        > {
+          .input-container {
+            
+            #{map-get($formInputs, 'not-multi-parent')} {
+              input {
+                cursor: default;
+              }
+            }
+            #{map-get($formInputs, 'multi-parent')} {
+              input {
+                cursor: default;
+              }
+              + {
+                label, legend {
+                  cursor: default;
+                }
+                .title-container {
+                  &, label, .subtitle {
+                    cursor: default;
+                  }
+                }
+              }
+            }
+            textarea {
+              cursor: default;
+            }
+            select {
+              cursor: default;
+            }
+            #{map-get($formInputs, 'tags')} {
+              opacity: map-get($fieldShades, 'readonly');
+            }
+          }
+        }
+      }
+      &.disabled {
+        opacity: map-get($fieldShades, 'disabled');
+        animation: fieldFadeToDisabled 0.2s ease-out;
+
+        > {
+          .input-container {
+            #{map-get($formInputs, 'tags')} {
+              opacity: map-get($fieldShades, 'disabled');
+            }
+          }
+          label, legend {
+            opacity: 0.35;
+          }
+          input, 
+          label, 
+          legend, 
+          .subtitle, 
+          .description,
+          .title-container label, 
+          .title-container .subtitle { 
+            cursor: not-allowed; 
+          }
+        }
+      }
+
+      > {
+        .input-container {
+          // &::after  { 
+          //   opacity: 0.25; 
+          // }
+          #{map-get($formInputs, 'multi-parent')} {
+            &::after {
+              opacity: 0.5;
+            }
+          }
+
           input {
-            &:checked::before         { opacity: 0.75; }
-            &:not(:checked)::before   { opacity: 0; }
-          }
-        }
-
-        .char-counter,
-        .toolbox                      { opacity: 0; }
-      }
-      .alert,           
-      .description, 
-      #{map-get($formInputs, 'tags')} { opacity: 0.65; }
-      label, 
-      legend                          { opacity: 0.65; }
-      .subtitle                       { opacity: 0.5; }
-    }
-
-    &:not(.disabled):not(.readonly) {
-      &:not(.hover):not(.focus) {
-        @extend %noHover;
-      }
-      &.hover {
-        .input-container {
-          &                             { opacity: 0.85; }
-
-          &::before                     { opacity: 0.65; }
-          &::after                      { opacity: 1; }
-
-          &.radio,
-          &.checkbox,
-          &.toggle-box {
-            input {
-              &:checked::before         { opacity: 1; }
-              &:not(:checked)::before   { opacity: 0; }
+            &.radio,
+            &.checkbox,
+            &.toggle-box {
+              &:checked::before {
+                opacity: 0.75;
+              }
             }
           }
 
-          .char-counter,
-          .toolbox                      { opacity: 0.75; }
-        }
-        .alert,           
-        .description, 
-        #{map-get($formInputs, 'tags')} { opacity: 1; }
-        label, 
-        legend                          { opacity: 0.75; }
-        .subtitle                       { opacity: 0.75; }
-      }
-      &.focus {
-        .input-container {
-          &                             { opacity: 1; }
-
-          &::before                     { opacity: 1; }
-          &::after                      { opacity: 1; }
-
-          &.radio,
-          &.checkbox,
-          &.toggle-box {
-            input {
-              &:checked::before         { opacity: 1; }
-              &:not(:checked)::before   { opacity: 0; }
-            }
+          &:not(.textarea) .toolbar .tool {
+            opacity: 0;
           }
-
-          .char-counter,
-          .toolbox                      { opacity: 1; }
         }
-        .alert,           
-        .description, 
-        #{map-get($formInputs, 'tags')} { opacity: 1; }
-        label, 
-        legend                          { opacity: 1; }
-        .subtitle                       { opacity: 0.75; }
+        .alerts .alert {
+          opacity: 0.75;
+        }
+        .subtitle,
+        .description {
+          opacity: 0.35;
+        }
+        .title-container {
+          .subtitle, 
+          .description {
+            opacity: 0.35;
+          }
+        }
+      }
+      &.inner-title {
+        > .input-container label {
+          color: tpw(0.5);
+
+          .required, .invalid-icon {
+            // background-color: tpw(0.5);
+            opacity: 0.75;
+          }
+        }
+      }
+      &.invalid > .input-container {
+        &::after {
+          opacity: 1;
+        }
       }
     }
+
     &.disabled, &.readonly {
-      @extend %noHover;
+      > {
+        .input-container {
+          // &::after  { 
+          //   opacity: 0.2; 
+          // }
+
+          &.radio,
+          &.checkbox,
+          &.toggle-box,
+          &.toggle-button {
+            + {
+              input, 
+              label, 
+              legend             { opacity: 0.35; }
+              .subtitle, 
+              .description       { opacity: 0.35;  }
+              // input, 
+              // label, 
+              // legend, 
+              // .subtitle, 
+              // .description       { cursor: not-allowed; }
+              .title-container {
+                label            { opacity: 0.5; }
+                .subtitle        { opacity: 0.35; }
+              }
+            }
+          }
+        }
+      }
+      &.inner-title:not(.has-value) > .input-container {
+        input:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box), textarea {
+          // opacity: 0 !important; // Overrides global [disabled] styles
+          &::placeholder {
+            opacity: 0;
+          }
+        }
+      }
+
+      .children.options {
+        .field {
+          opacity: 1;
+        }
+      }
+    }
+    &:not(.hover):not(.focus), &.disabled, &.readonly {
+      @include idleStyles;
+    }
+    &.hover {
+      &:not(.disabled) {
+        &:not(.readonly) {
+          &:not(.focus) > {
+            .input-container {
+              // & {
+              //   opacity: map-get($fieldShades, 'idle');
+              // }
+              &::after {
+                opacity: 0.65;
+              }
+              #{map-get($formInputs, 'multi-parent')} {
+                &::after {
+                  opacity: 0.75;
+                }
+              }
+
+              #{map-get($formInputs, 'tags')} {
+                // opacity: 0.5;
+                // opacity: map-get($fieldShades, 'idle');
+              }
+
+              &:not(.textarea) .toolbar .tool {
+                opacity: 0.25;
+
+                // &.character-counter {
+                //   opacity: 0.5;
+                // }
+                .password-visibility-toggle {
+                  @include formFieldToolbarToolHoverEffects;
+                }
+              }
+            }
+            label, 
+            legend {
+              opacity: 0.65;
+            }
+            .subtitle,
+            .description {
+              opacity: 0.5;
+
+              // @include mouseState(hover) {
+              //   opacity: 1;
+              // }
+            }
+            .title-container {
+              label, 
+              legend {
+                opacity: 0.65;
+              }
+              .subtitle, 
+              .description {
+                opacity: 0.5;
+
+                // @include mouseState(hover) {
+                //   opacity: 1;
+                // }
+              }
+            }
+          }
+          // &.inner-title > .input-container {
+          //   $innerTitleOpacity: 0.5;
+
+          //   input, textarea {
+          //     opacity: $innerTitleOpacity;
+          //   }
+          //   label {
+          //     color: tpw($innerTitleOpacity);
+          //     cursor: text;
+
+          //     // .required {
+          //     //   background-color: tpw(0.75);
+          //     // }
+          //     .required, .invalid-icon {
+          //       // background-color: tpw(0.5);
+          //       opacity: $innerTitleOpacity;
+          //     }
+          //   }
+          // }
+          &.invalid > .input-container {
+            &::after {
+              opacity: 1;
+            }
+          }
+        }
+        &.readonly {
+          > .input-container {
+            &::after {
+              // opacity: 0.75;
+            }
+           
+            label, 
+            legend {
+              opacity: 0.65;
+            }
+            .title-container {
+              label, 
+              legend {
+                opacity: 0.65;
+              }
+            }
+          }
+        }
+
+        // > .input-container {
+        //   &.radio,
+        //   &.checkbox,
+        //   &.toggle-box,
+        //   &.toggle-button,
+        //   &.select {
+        //     input, select {
+        //       cursor: pointer;
+        //     }
+        //     + {
+        //       label, legend {
+        //         cursor: pointer;
+        //       }
+        //       .title-container {
+        //         &, label, .subtitle {
+        //           cursor: pointer;
+        //         }
+        //       }
+        //     }
+        //   }
+        // }
+      }
+
+      &.disabled, &.readonly {
+        > .input-container {
+          #{map-get($formInputs, 'tags')} {
+            opacity: 1;
+          }
+        }
+      }
+    }
+    &.focus {
+      &:not(.disabled):not(.readonly) {
+        opacity: 1;
+
+        > {
+          .input-container {
+            &, 
+            &::after,
+            #{map-get($formInputs, 'tags')} {
+              opacity: 1;
+            }
+            
+
+            #{map-get($formInputs, 'tags')} {
+              outline: 0px transparent;
+            }
+            
+            .toolbar {
+              // display: flex; 
+            }
+            .toolbar .tool {
+              @include formFieldToolbarToolHoverEffects;
+              pointer-events: all;
+              
+
+              &:not(.character-counter) {
+                display: flex;
+              }
+              &.character-counter.visible {
+                animation-name: unset;
+                opacity: 1;
+              }
+            }
+            &:not(.textarea) .toolbar .tool {
+              &:not(.character-counter) {
+                @include mouseState(noHover) {
+                  opacity: 0.5;
+                } 
+              }
+              &.character-counter {
+                @include mouseState(noHover) {
+                  color: tpw(0.75);
+                } 
+              }
+            }
+            &.textarea .toolbar .tool {
+              @include mouseState(noHover) {
+                opacity: 0.75;
+              } 
+            }
+          }
+          .subtitle,
+          .title-container .subtitle {
+            opacity: 0.75;
+          }
+        }
+        &:not(.disabled), &:not(.readonly), &.disabled, &.readonly {
+          > .input-container {
+            #{map-get($formInputs, 'tags')} {
+              opacity: 1;
+            }
+          }
+        }
+        &.inner-title > .input-container {
+          &:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
+            input, textarea {
+              opacity: 1;
+            }
+          }
+          label {
+            color: #fff;
+            @include innerLabelActive;
+
+            // .required {
+            //   background-color: #fff;
+            // }
+            .required, .invalid-icon {
+              // background-color: tpw(0.5);
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+    &.hover, &.focus {
+      > {
+        .input-container {
+          input {
+            &.radio,
+            &.checkbox,
+            &.toggle-box {
+              &:checked::before {
+                opacity: 1;
+              }
+            }
+          }
+        }
+        .alerts .alert {
+          opacity: 1;
+        }
+      }
+      &:not(.has-value) > div.input-container#{map-get($formInputs, 'not-multi')} div.toolbar .tool.clear-field {
+        opacity: 0;
+      }
     }
   }
 
   // Font Sizes
   & {
-    .description                    { font-size: 0.9em; }
-    #{map-get($formInputs, 'tags')} { font-size: 1em; }
     // Form Base
     > .content-container {
       font-size: 1em;
 
       .title       { font-size: 1.5em; }
-      .subtitle    { font-size: 1.1em; }
+      .subtitle    { font-size: 1em; }
     }
     // Section
     .section > {
@@ -627,625 +1609,158 @@ form {
       .subtitle    { font-size: 1.1em; }
     }
     .field > {
-      label, 
-      legend       { font-size: 1.15em; }
-      .subtitle    { font-size: 1em; }
-    }
+      label, legend {
+        &, .title-container & { font-size: 1.15em; }
+      }
+      .subtitle               { font-size: 1em; }
 
+      @at-root form fieldset {
+        #{map-get($formInputs, 'multi-parent')} {
+          .title-container {
+            label     { font-size: 1.15em; }
+            .subtitle { font-size: 0.9em; }
+          }
+        }
+      }
+      
+      .input-container {
+        #{map-get($formInputs, 'multi-parent')} { font-size: 1em; }
+        &.checkbox, &.toggle-box {
+          input::before                          { font-size: 0.85em; }
+        }
+  
+        #{map-get($formInputs, 'tags')}         { font-size: 1em; }
+        
+        .toolbar .tool {
+          &.icon                { font-size: 1.15em; }
+          &:not(.icon)          { font-size: 0.9em; }
+          &.character-counter   { font-size: 1em; }
+        }
+      }
+      .alert {
+        font-size: 0.9em; 
+
+        .icon {
+          font-size: 1.25em;
+        }
+      }
+      .children:not(.options):not(.group) {
+        font-size: 0.9em;
+      }
+    }
+    .description                    { font-size: 0.9em; }
+    .title, label, legend {
+      .required .fas { font-size: 0.55em; }
+      .invalid-icon  { font-size: 0.8em; }
+    }
+  }
+
+  // Form Background
+  &.show-background {
+    $formBackgrounds: (
+      1: tpb(0.4),
+      2: tpb(0.35),
+      3: tpb(0.65),
+      4: tpb(0.45),
+      5: tpb(0.5),
+      6: tpb(0.6),
+    );
+
+    background-color: $site-color-darker;
+    border: bd(2px, tpw(0.5));
+    box-shadow: inset shadow($site-color-light);
+
+    > .content-container {
+      &:not(.no-spacing):not(.vertical-spacing):not(.double-spacing) {
+        padding: 0;
+      }
+
+      > fieldset,
+      > .section > fieldset,
+      .footer:not(.sticky) {
+        @each $i, $background in $formBackgrounds  {
+          &:nth-child(6n + #{$i}) {
+            background-color: $background;
+          }
+        }
+      }
+      > .section > .title-container {
+        background-color: tpb(0.15);
+      }
+    }
+    .field {
+      > .input-container:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
+        &::before {
+          background-color: $backgroundFormTextFieldBackground;
+        }
+        .toolbar .tool.character-counter {
+          background: linear-gradient($backgroundFormTextFieldBackground calc(50% - 0.5px), transparent calc(50% - 0.5px));
+        }
+      }
+      
+      &.inner-title > .input-container {
+        label:not([hidden]) {
+          background: linear-gradient(transparent calc(50% - 0.5px), $backgroundFormTextFieldBackground calc(50% - 0.5px));
+        }
+      }
+    }
   }
 }
+body:not(.forms-ready) form:not(.configured) {
+  @keyframes formBorderSkeleton {
+    0%  { opacity: 1; }
+    25% { opacity: 0.75; }
+    50% { opacity: 0.33; }
+    75% { opacity: 0.5; }
+  }
 
-// $inputs: unquote("input, select, textarea");
-// $padding: 4px;
-// $wallPadding: 16px;
-// $formCorners: 4px;
-// $labelSize: 1.15em;
+  pointer-events: none !important;
+  animation: formBorderSkeleton 2.8s linear infinite;
 
-// form {
-//   @keyframes formFadeIn {
-//     from { opacity: 0; }
-//     to   { opacity: 1; }
-//   }
+  // #{map-get($formInputs, 'tags')} {
+  //   opacity: 0 !important;
+  // }
+  // *, *::before, *::after {
+  //   @include multiProp(transparent !important, color, background, background-color, border-color);
+  //   @include multiProp(none !important, box-shadow, text-shadow);
+  // }
+  * {
+    visibility: hidden;
+  }
+  .field {
+    // border: 1.5px solid tpw(0.25) !important;
+    background-color: tpw(0.05);
+    border-radius: 8px;
+    visibility: visible;
+    // animation: formBorderSkeleton 2s linear infinite;
 
-//   border-radius: 4px;
-//   width: 100%;
-//   animation: formFadeIn 0.5s linear;
-
-//   // &:not(.configured) {
-//   //   display: none;
-//   // }
-//   // Field backgrounds
-//   // &.show-field-walls .content-container {
-//   //   > .title {
-//   //     @include theme(bg);
-//   //     text-shadow: dropShadow(tpb(0.5));
-//   //     border-radius: 4px 4px 0 0;
-//   //     padding: #{$padding + $wallPadding};
-  
-//   //     &::before {
-//   //       @include fill(true, tpb(0.25));
-//   //     }
-//   //   }
-//   //   .section > .title {
-//   //     background-color: tpw(0.15);
-//   //   }
-//   //   > .alerts .alert {
-//   //     margin: $wallPadding + $padding;
-//   //   }
-//   //   > .alerts, & > fieldset, .section > fieldset {
-//   //     // Background walls
-//   //     & {
-//   //       $bgs: (
-//   //         1: 0.1,
-//   //         2: 0.05,
-//   //         3: 0.075,
-//   //         4: 0.125
-//   //       );
-
-//   //       @each $nth, $bg in $bgs {
-//   //         &:nth-of-type(4n + #{$nth}) {
-//   //           background-color: tpw($bg);
-//   //         }
-//   //       }
-//   //     }
-
-//   //     > .fieldset-wrapper {
-//   //       padding: $wallPadding;
-//   //     }
-//   //   }
-//   //   .field {
-//   //     padding: $padding;
-//   //   }
-//   // }
-//   // &:not(.show-field-walls) .content-container {
-//   //   // margin: -#{$padding * 2};
-//   //   padding: 0; // #{$padding * 2} 0;    
-//   //   margin: 0; // -16px;
+    .field {
+      visibility: hidden;
+    }
+  }
+  .title, .subtitle, .description, label, legend {
+    opacity: 1 !important;
     
-//   //   margin-top: 0;
-//   //   @at-root form:first-child {
-//   //   }
-//   //   &, > .section:not(.footer), > fieldset.group > .fieldset-wrapper > .field {
-//   //     > fieldset:not(.group) > .fieldset-wrapper {
-//   //       padding: $padding #{$padding * 2};
-         
-//   //       .field {
-//   //         padding: #{$padding * 2};
-//   //       }
-//   //     }
-//   //     > fieldset {
-//   //       &.checkbox, &.radio {
-//   //         > .fieldset-wrapper {
-//   //           .field {
-//   //             padding: 0 #{$padding * 2};
-//   //           }
-//   //         }
-//   //       }
-//   //     }
-//   //   }
-//   //   .section.footer {
-//   //     padding: #{$padding * 2} #{$padding * 4};
-//   //   }
-//   //   > .title, .section > .title {
-//   //     padding: #{$padding * 2} #{$padding * 4};
-//   //   }
-//   //   > .alerts .alert {
-//   //     margin: 8px 0;
-//   //   }
-//   // }
-//   .subtitle {
-//     margin-top: 4px;
-//     width: 100%;
-//   }
-//   .description {
-//     display: inline-block;
-//     // max-width: 50%;
-//     background-color: tpw(0.25);
-//     border: bd(1.5px, tpw(0.75));
-//     border-radius: $formCorners;
-//     margin-top: #{$padding * 2};
-//     padding: #{$padding * 3};
-//     text-shadow: dropShadow(tpb(0.5));
+    &::after {
+      @include fill(true, tpw(0.15));
+      // animation: formBorderSkeleton 2.8s linear infinite;
+      border-radius: 4px;
+      max-height: 50%;
+      visibility: visible;
+    }
+  }
+  .subtitle::after {
+    background-color: tpw(0.1);
+    // max-height: 75%;
+    max-height: 33%;
+  }
+  .description::after {
+    background-color: tpw(0.05);
+    max-height: 100%;
+  }
 
-//     > ul, > ol {
-//       margin-left: 0;
-//     }
-//   }
-//   .subtitle, .description {
-//     font-size: 0.9rem;
-//     // font-style: italic;
-//     width: 100%;
-//     // min-width: 50%;
-//     // opacity: 0.85;
-//     // margin-top: 4px;
-//     @include animation(0.8s, ease-out, $fill: forwards);
-
-//     @at-root form {
-//       &.hide-details {
-//         .title, .subtitle, .description, .details {
-//           display: none;
-//         }
-//       }
-//       fieldset {
-//         &.radio, &.checkbox, &.toggle-box, &.toggle-button {
-//           .subtitle {
-//             padding: $padding 0;
-//             margin-top: 0;
-//           }
-//           .description {
-//             margin: $padding 0;
-//             width: calc(100% - #{$padding * 2});
-//           }
-//         }
-//       }
-//     }
-//   }
-//   // Title & Subtitles
-//   & .content-container, .section, .field {
-//     > .title {
-//       font-size: 1.35em;
-//       width: 100%;
-//     }
-//   }
-//   .alerts {
-//     $alertPadding: 12px;
-//     $alertColor: #ff4500;
-
-//     @include flexbox(none, none, $direction: c);
-//     flex: 1 1 100%;
-
-//     .alert {
-//       @include flexbox(none, none);
-//       border: 1.5px solid $alertColor;
-//       border-radius: 4px;
-//       background-color: tpw(0.1);
-//       margin-top: $alertPadding;
-//       flex: 1 1 100%;
-//       font-size: 0.9em;
-
-//       .icon {
-//         @include flexbox;
-//         padding: $alertPadding;
-//         font-size: 1.5em;
-//         background-color: $alertColor;
-//       }
-//       .message {
-//         padding: $alertPadding;
-
-//         a.themed {
-//           color: $alertColor;
-//         }
-//       }
-//     }
-//   }
-//   .section {
-//     @include flexbox(none, none, $wrap: true);
-//     // border-radius: 4px;
-//     overflow: hidden;
-
-//     &:not(:last-of-type) {
-//       margin-bottom: #{$padding * 4};
-//     }
-    
-//     &[hidden] {
-//       display: none;
-//     }
-//     &.size {
-//       $sel: unquote("fieldset:not(.size)");
-  
-//       &.two-thirds #{$sel} { flex-basis: 66.6%; }
-//       &.half #{$sel}       { flex-basis: 50%; }
-//       &.third #{$sel}      { flex-basis: 33.3%; }
-//     }
-//   }
-//   fieldset {
-//     flex: 1 1 100%;
-//     border: none;
-  
-//     &:not(.hover):not(.focus) {
-//       legend {
-//         opacity: 0.7;
-//       }
-//     }
-  
-//     &.size {
-//       &.two-thirds { flex-basis: 66.6%; }
-//       &.half       { flex-basis: 50%; }
-//       &.third      { flex-basis: 33.3%; }
-//     }
-//     &.inline {
-//       .fieldset-wrapper {
-//         @include flexbox($hAlign: s, $wrap: true);
-//       }
-//       .field {
-//         flex: 1 1 50%;
-//       }
-//       legend        { font-size: $labelSize; }
-//       label         { font-size: 1em; }
-//     }
-//     &.tz, &.datetime, &.datetimetz {
-//       fieldset {
-//         &.date, &.time, &.select {
-//           flex: 1 1 calc(50% - 8px);
-
-//           &:first-of-type:not(:last-of-type) {
-//             margin-right: 8px;
-//           }
-
-//           .field {
-//             padding: 0;
-//           }
-
-//           // &.date, &.time { flex: 1 1; }
-//           // &.tz           { flex: 1 1 100%; }
-//         }
-//       }
-//     }
-  
-//     &:not(.group) fieldset:not(:first-child) {
-//       &:not(.date):not(.time):not(.tz) {
-//         margin-top: #{$padding * 2};
-//       }
-//     }
-//   }
-//   .section > fieldset, fieldset {
-//     $legend: unquote(".fieldset-wrapper > legend");
-  
-//     &:not(.inline) {
-//       > #{$legend}          { font-size: 1.25em; }
-//       fieldset > #{$legend} { font-size: $labelSize; }
-//     }
-//   }
-//   .field {
-//     @include flexbox($hAlign: s, $wrap: true);
-  
-//     @media screen and (max-width: 599px) {
-//       min-width: 200px;
-//     }
-
-//     @at-root form fieldset {
-//       &.radio, &.checkbox {
-//         .field {
-
-//           margin-top: $padding;
-//           margin-bottom: $padding;
-//         }
-//       }
-//       &:not(.group) .field .field {
-//         $innerPadding: $padding * 2;
-  
-//         padding: $innerPadding 0 $innerPadding 0 !important;
-//         width: 100%;
-
-//         .input-container {
-//           margin-top: 0;
-//         }
-//       }
-//     }
-//     &[hidden] {
-//       display: none;
-//     }
-  
-//     // Hover/Focus
-//     &:not(.focus):not(.disabled):not(.readonly) {
-//       &:not(.hover) {
-//         @at-root %components {
-//           &:not([type="radio"]):not([type="checkbox"]) {
-//             opacity: 0.7;
-//           }
-//         }
-
-//         > {
-//           .subtitle, .description { opacity: 0.6; }
-  
-//           .input-container {
-//             &                 { opacity: 0.75; }
-//             &::after          { opacity: 0.5; }
-    
-//             .char-counter     { opacity: 0.25; }
-//             .toolbox {
-//               opacity: 0.25;
-
-//               .char-counter {
-//                 opacity: 0.75;
-//               }
-//             }
-//           }
-//           #{$inputs}, .alert {
-//             @extend %components;
-//           }
-//         }
-//         label {
-//           @extend %components;
-//         }
-//       }
-  
-//       .input-container {
-//         &::before               { opacity: 0.5; }
-//         &::after                { opacity: 0.75; }
-//       }
-//     }
-//     &.disabled, &.readonly {
-//       .input, label             { cursor: not-allowed !important; }
-//       .subtitle, .description   { opacity: 0.5; }
-//       .input-container {
-//         opacity: 0.5;
-
-//         &::after                { opacity: 0.25; }
-
-//         .char-counter           { opacity: 0; }
-//         .toolbox                { opacity: 0; }
-//       }
-//       label, #{$inputs}, .alert { opacity: 0.5; }
-//     }
-//   }
-//   legend {
-//     width: 100%;
-//     padding: $padding 0;
-//   }
-//   // label {
-//   //   font-size: $labelSize;
-//   // }
-//   legend, label {
-//     @include flexbox($hAlign: s);
-//     font-size: $labelSize;
-//     width: 100%;
-  
-//     .required {
-//       @include flexbox;
-//       @include multiProp(0.85em, sizing);
-//       color: $site-color-main;
-//       background-color: #fff;
-//       cursor: help;
-//       border-radius: $formCorners;
-//       margin-right: 4px;
-//       opacity: 0.75;
-  
-//       &[hidden] {
-//         display: none;
-//       }
-  
-//       .fas {
-//         font-size: 0.55em;
-//       }
-//     }
-//   }
-//   .input-container {
-//     @include flexbox;
-//     border-radius: $formCorners;
-//     box-shadow: inset shadow(tpb(0.5), 5px);
-//     font-size: 1em;
-//     overflow: hidden;
-  
-//     @include pshared {
-//       @include fill(true);
-//     }
-//     &::after {
-//       border: bd(1.5px);
-//     }
-  
-//     // Text/Number/URL/Password/Date/Time/Select/Textarea
-//     &:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box) {
-//       margin-top: 8px;
-  
-//       &::before { background-color: tpw(0.15); }
-//       &::after  { color: tpw(0.75); }
-  
-//       &.select {
-//         &::after {
-//           @include flexbox($hAlign: e);
-//           @include faIcon(caret-down);
-//           font-size: 1.25em;
-//           padding: 8px;
-//         }
-  
-//         select {
-//           cursor: pointer;
-//         }
-//         option[value=""] {
-//           color: tpb(0.5);
-//         }
-//       }
-//       &.has-char-counter input {
-//         padding-right: 0;
-//       }
-  
-//       #{$inputs} {
-//         @include multiProp(100%, sizing);
-//         padding: #{$padding * 2};
-//       }
-//       input, textarea {
-//         cursor: text;
-//       }
-//     }
-//     &:not(.checkbox):not(.radio):not(.toggle-button):not(.toggle-box):not(.button):not(.submit) {
-//       width: 100%;
-//     }
-//     &.textarea {
-//       flex-wrap: wrap;
-  
-//       .toolbox {
-//         display: flex;
-//         width: 100%;
-//         border-top: 1.5px dotted tpw(0.5);
-//         z-index: zOrder(higher);
-  
-//         &[hidden] {
-//           display: none;
-//         }
-//       }
-//     }
-//     // Checbox/Radio/Toggle
-//     &.checkbox, &.radio, &.toggle-button, &.toggle-box {
-//       display: inline-flex;
-//       @include multiProp(1.25em, sizing);
-//       margin-right: 8px;
-//       font-size: 1em;
-  
-//       &.checkbox input, &.toggle-box input {
-//         @include flexbox;
-  
-//         &::before {
-//           @include faIcon(check);
-//           font-size: 0.85em;
-//         }
-//       }
-//       &.radio {
-//         input {
-//           @include multiProp(1.25em, sizing);
-  
-//           &::before {
-//             @include fill(true, #fff);
-//             margin: 0.15em;
-//           }
-//         }
-//         &, input {
-//           border-radius: 50%;
-//         }
-//       }
-//       &.toggle-button {
-//         $padding: 0.5em;
-
-//         width: 3.25em;
-//         height: 1.75em;
-//         border-radius: 20px;
-
-//         input {
-//           @include flexbox($hAlign: none);
-//           @include multiProp(100%, sizing);
-//           justify-content: normal;
-//           padding: 0.25em;
-
-//           &::before {
-//             @include fill(true, #fff);
-//             opacity: 0.15;
-
-//             @at-root form .input-container.toggle-button input {
-//               &:not(:checked)::before {
-//                 opacity: 0;
-//               }
-//             }
-//           }
-//           &::after {
-//             position: absolute;
-//             width: 1.25em;
-//             height: calc(100% - 0.5em);
-//             background-color: #fff;
-//             border-radius: 20px;
-//             content: "";
-
-//             @at-root form .input-container.toggle-button input {
-//               &:checked {
-//                 &::after {
-//                   transform: translateX(100%);
-//                 }
-//               }
-//               &:not(:checked)::after {
-//                 opacity: 0.5;
-//               }
-//             }
-//           }
-//         }
-//       }
-  
-//       &:not(.toggle-button) {
-//         input:not(:checked) {
-//           opacity: 0;
-//         }
-//       }
-//       input, + label {
-//         cursor: pointer;
-//       }
-//       + label {
-//         width: auto;
-//         font-size: 1.05em;
-//       }
-//     }
-//     // Buttons
-//     &.button, &.reset, &.submit {
-//       @include pshared {
-//         display: none;
-//       }
-
-//       // button {
-//       //   padding: 16px 32px;
-//       // }
-      
-//       // cursor: pointer;
-//     }
-  
-//     .char-counter {
-//       padding: #{$padding * 2};
-//       opacity: 0.5;
-//       cursor: help;
-//       margin-left: auto;
-//       z-index: zOrder(higher);
-//     }
-//   }
-//   // Inputs
-//   textarea {
-//     resize: vertical;
-//     min-height: 6em;
-//   }
-//   #{$inputs} {
-//     @include multiProp(none, appearance, -moz-appearance, -webkit-appearance);
-//     border: bd(1.5px, transparent);
-//     border-radius: $formCorners;
-//     color: #fff;
-//     background: none;
-//     @include multiProp(inherit, font-size, font-family);
-//     z-index: zOrder(higher);
-
-//     &:invalid {
-//       box-shadow: none;
-//     }
-//   }
-//   .footer {
-//     display: grid;
-//     grid-template-columns: auto auto 1fr auto;
-
-//     fieldset {
-//       &.reset {
-//         @include flexbox($hAlign: s);
-//         grid-column: 1;
-//         margin-right: 16px;
-//       }
-//       &.details-toggle {
-//         @include flexbox($hAlign: s);
-//         grid-column: 2;
-//         margin-right: 16px;
-//       }
-//       &.progress {
-//         @include flexbox;
-//         grid-column: 3;
-//         width: 100%;
-//         overflow: hidden;
-    
-//         .progress-bar {
-//           @include flexbox($hAlign: none);
-//           border-radius: 4px;
-//           height: 10px;
-//           background-color: tpw(0.15);
-          
-//           .progress {
-//             @include flexbox($hAlign: e);
-//           }
-//           .progress-count {
-//             position: absolute;
-//             background-color: tpb(0.75);
-//             box-shadow: shadow(tpb(0.5));
-//             border: bd(tpw(0.75), 1px);
-//             border-radius: 4px;
-//             padding: 4px 8px;
-//             transform: translateX(100%);
-//           }
-//         }
-//       }
-//       &.submit {
-//         @include flexbox($hAlign: e);
-//         grid-column: 5;
-//         margin-left: 16px;
-//       }
-//     }
-//   }
-// }
+  // border: bd(1.5px, tpw(0.5));
+}
+body.forms-ready form:not(.configured) {
+  display: none;
+}
