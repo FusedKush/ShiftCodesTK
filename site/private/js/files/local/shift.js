@@ -1,334 +1,639 @@
-/**
- * Statistics regarding the retrieved list of SHiFT Codes
- */
-var shiftStats = {
-  'total': 0,
-  'new': 0,
-  'expiring': 0
-};
-/**
- * Properties regarding which SHiFT Codes are to be retrieved
- */
-var shiftProps = {
-  'game'  : 'all',
-  'owner' : false,
-  'code'  : false,
-  'filter': [ 'active' ],
-  'order' : 'default',
-  'limit' : 10,
-  'offset': 0
-};
-/**
- * SHiFT Code update poller
- */
-var shiftUpdates = {
-  /**
-   * Interval properties and methods
-   */
-  interval: {
-    id: 0,
-    /**
-     * Start the SHiFT Code update poller
-     */
-    set: function () {
-      shiftUpdates.interval.id = setInterval(shiftUpdates.check, 60000 * 2);
-    },
-    /**
-     * Stop the SHiFT Code update poller
-     */
-    clear: function () {
-      clearInterval(shiftUpdates.interval.id);
-    },
-    /**
-     * Stop and Restart the SHiFT Code update poller
-     */
-    restart: function () {
-      shiftUpdates.clear();
-      shiftUpdates.set();
-    }
-  },
-  /**
-   * First and last update check
-   */
-  stats: {},
-  /**
-   * Toggle the SHiFT Code update indicator
-   * 
-   * @param {boolean} newState True to display the indicator, or false to hide it
-   * @param {int} count The new update count 
-   */
-  toggleIndicator: function (newState, count = 0) {
-    let indicator = dom.find.id('shift_update_indicator');
-  
-    dom.find.child(indicator, 'class', 'counter').innerHTML = count;
-    updateLabel(indicator, indicator.title.replace(new RegExp('\\d+'), count));
+// Initialization
+(function () {
+  const interval = setInterval(() => {
+    const isReady = typeof ShiftCodesTK != 'undefined' 
+                    && ShiftCodesTK.forms.isLoaded
+                    && ShiftCodesTK.requests.isLoaded
+                    && pagers.isLoaded;
+    
+    if (isReady) {
+      clearInterval(interval);
 
-    if (newState) {
-      indicator.addEventListener('click', shiftUpdates.fetch, { once: true });
-      isHidden(indicator, false);
-      edit.class(indicator, 'remove', 'hidden');
-    }
-    else {
-      edit.class(indicator, 'add', 'hidden');
-      
-      setTimeout(function () {
-        isHidden(indicator, true);
-      }, 250);
-    }
-  },
-  /**
-   * Poll for SHiFT Code updates
-   */
-  check: function () {
-    newAjaxRequest({
-      file: '/assets/requests/get/shift/updates',
-      params: {
-        'last_check': moment.utc(shiftUpdates.stats.last_check).format(),
-        'game_id': shiftProps.game
-      },
-      callback: function (responseText) {
-        let response = tryJSONParse(responseText);
+      const currentTimestamp = moment.utc().valueOf();
+      const formsObj = ShiftCodesTK.forms;
+      const layersObj = ShiftCodesTK.layers;
+      const modalsObj = ShiftCodesTK.modals;
+      const requestsObj = ShiftCodesTK.requests;
+      const request = requestsObj.request;
+      const toastsObj = ShiftCodesTK.toasts;
 
-        if (response && response.statusCode == 200) {
-          let count = response.payload.count;
+      /** Properties & Methods related to using SHiFT Codes */
+      ShiftCodesTK.local.shift = {
+        /** @property Counts of *Total*, *New*, and *Expiring* SHiFT Codes from the current result set */
+        stats: {
+          total: 0,
+          new: 0,
+          expiring: 0
+        },
+        /** 
+         * @property Properties that control the returned result set 
+         * - Properties are stored in the following format: 
+         * - - `any value` - The current value of the property.
+         * - - `any defaultValue` - The default value of the property before applying the query string parameters.
+         * - - `boolean isLocked` - Indicates if the property is locked and cannot be changed from `defaultValue`.
+         **/
+        props: (function () {
+          const props = {
+            /** @property `false|string` The *GameID* of a specific game to filter by, or **false** to not filter by game. */
+            game: false,
+            /** 
+             * @property `array` The list of *Code Status Filters*
+             * - Possible values include *"active"*, *"expired"*, & *"hidden"*
+             **/
+            status: [ 'active' ],
+            /** @property `false|string` The *Platform ID* of the platform to filter by, or **false** to not filter by platform. */
+            platform: false,
+            /** @property `false|string` The *User ID* of the user to filter by, or **false** to not filter by platform. */
+            owner: false,
+            /** @property `false|string` The *Code ID* of the SHiFT Code to search for, or **false** to not search for a particular SHiFT Code. */
+            code: false,
+            /** @property `"default"|"newest"|"oldest"` Indicates how the returned SHiFT Codes are to be ordered. */
+            order: 'default',
+            /** @property `int` Indicates how many SHiFT Codes are to be returned per result set. */
+            limit: 10,
+            /** @property `int` Indicates the current page number of results. */
+            page: 1
+          };
+          for (let prop in props) {
+            let propValue = props[prop];
 
-          if (count > 0) {
-            shiftUpdates.toggleIndicator(true, count);
+            props[prop] = {
+              value: propValue,
+              defaultValue: propValue,
+              isLocked: false
+            };
           }
-          else {
-            shiftUpdates.stats.last_check = moment.utc().valueOf();
-          }
-        }
-      }
-    })
-  },
-  /**
-   * Retrieve the recently updated SHiFT Codes
-   */
-  fetch: function () {
-    getCodes();
-    shiftUpdates.toggleIndicator(false);
-    shiftUpdates.stats.last_check = moment.utc().valueOf();
-  }
-};
 
-/**
- * Sync the SHiFT Control and Display components with the most recent information
- */
-function syncShiftComponents () {
-  let header = dom.find.id('shift_header');
+          return props;
+        })(),
+        /** @property The `XMLHTTPRequestObject` of the current or previous AJAX Request. */
+        request: null,
+        /** @property Properties & Methods regarding the SHiFT Code Update Poller */
+        updateCheck: {
+          /** @property `int` The Interval ID of the update interval */
+          intervalID: 0,
+          /** @property `int` Indicates in *minutes* how long between update polls */
+          intervalDuration: 2,
+          /** @property `object` Stores the first and last update check timestamps */
+          updateStats: {
+            /** @property `int` The timestamp of the first update check */
+            first: currentTimestamp,
+            /** @property `int` The timestamp of the last update check */
+            last: currentTimestamp
+          },
+          /**
+           * Toggle the SHiFT Code update indicator
+           * 
+           * @param {boolean} state Indicates the new visibility state of the update indicator
+           * - **True** displays the indicator
+           * - **False** hides the indicator
+           * @param {int} count The total number of updates
+           * @returns {boolean} Returns **true** on success, or **false** on failure
+           */
+          toggleIndicator (state, count = 0) {
+            try {
+              const indicator = dom.find.id('shift_update_indicator');
+
+              if (indicator) {
+                const counter = dom.find.child(indicator, 'class', 'counter');
+                const title = dom.get(indicator, 'attr', 'aria-label');
+                
+                counter.innerHTML = count;
+                updateLabel(indicator, title.replace(new RegExp('\\d+'), count), [ 'aria', 'tooltip' ]);
   
-  // Update Badges
-  (function () {
-    let badges = dom.find.child(header, 'class', 'section badges');
-
-    for (let badge of dom.find.children(badges, 'class', 'badge')) {
-      let type = dom.get(badge, 'attr', 'data-value');
-      let displayType = ucWords(type);
-      let count = shiftStats[type];
-      let title = '';
+                // Show Indicator
+                if (state) {
+                  isHidden(indicator, false);
+                  edit.class(indicator, 'remove', 'hidden');
+                }
+                // Hide Indicator
+                else {
+                  edit.class(indicator, 'add', 'hidden');
   
-      if (count > 0) {
-        title += `${count} `;
+                  setTimeout(() => {
+                    isHidden(indicator, true);
+                  }, 250);
+                }
   
-        if (type == 'total') {
-          title += 'SHiFT Codes Available'; 
-        }
-        else {
-          let active = shiftProps.filter.indexOf(type) != -1;
-  
-          title += `${displayType} SHiFT Codes ${active ? '(Click to clear Filter)' : '(Click to Filter)'}`;
-          edit.attr(badge, 'update', 'aria-pressed', active);
-        }
-      }
-      else {
-        if (type == 'total') { title = 'No SHiFT Codes Available'; }
-        else                 { title = `No ${displayType} SHiFT Codes`; }
-      }
-  
-      if (type != 'total') {
-        isDisabled(badge, !(count > 0));
-      }
-  
-      edit.class(badge, count > 0 ? 'remove' : 'add', 'inactive');
-      dom.find.child(badge, 'class', 'count').innerHTML = count;
-      updateLabel(badge, title, [ 'tooltip' ]);
-    }
-  })();
-  // Update Sort/Filter
-  (function () {
-    let form = dom.find.id('shift_header_sort_filter_form');
-    let bindings = {
-      sort: shiftProps.order,
-      status_filter: shiftProps.filter,
-      game_filter: shiftProps.game
-    };
-
-    if (!dom.has(form, 'class', 'updated')) {
-      for (let binding in bindings) {
-        formUpdateField(form, binding, bindings[binding]);
-      }
-
-      edit.class(form, 'add', 'updated');
-    }
-  })();
-  // Update Pager
-  (function () {
-    /**
-     * SHiFT Code statistics and properties
-     */
-    let stats = {
-      limit: shiftProps.limit,
-      offset: shiftProps.offset,
-      total: shiftStats.total
-    };
-    /**
-     * Pager properties
-     */
-    let pagerProps = {
-      now: (stats.offset / stats.limit) + 1,
-      max: stats.total > 0 ? Math.ceil(stats.total / stats.limit) : 1
-    };
-
-    // Verify and Update the Pager
-    (function () {
-      function checkAndUpdatePager () {
-        /**
-         * The SHiFT Code pager
-         */
-        let pager = dom.find.id('shift_code_pager');
-
-        if (pager && dom.has(pager, 'class', 'configured')) {
-          return updatePagerProps(pager, pagerProps);
-        }
-
-        return false;
-      }
-
-      if (!checkAndUpdatePager()) {
-        tryToRun({
-          function: checkAndUpdatePager
-        });
-      }
-    })();
-
-  })();
-}
-/**
- * Redeem or Un-Redeem a given SHiFT Code
- * 
- * @param {Element|string} shiftCode The SHiFT Code that is to be redeemed. 
- * - Providing the *Code Hash* of the SHiFT Code will redeem the SHiFT Code server-side, and update the appearance of all present, matching SHiFT Code Dropdown Panels.
- * - Providing a *SHiFT Code Dropdown Panel* will not redeem the SHiFT Code server-side, and only update the apperance of the provided dropdown.
- * @param {boolean} redemptionState Indicates the new *rdemption state* of the SHiFT Code. 
- * - Passing **true** indicates that the SHiFT Code is to be *redeemed*.
- * - Passing **false** indicates that the SHiFT Code is to be *un-redeemed*.
- * @returns {boolean} Returns **true** on success and **false** on failure.
- */
-function redeemShiftCode (shiftCode, redemptionState = true) {
-  /** Indicates the type of SHiFT Code that was provided for the first argument. */
-  let shiftCodeType = (function () {
-    if (typeof shiftCode == 'string' && shiftCode.length == 12) {
-      return 'code_hash';
-    }
-    else if (typeof shiftCode == 'object' && shiftCode.constructor.name.indexOf('Element') != -1 && dom.has(shiftCode, 'class', 'shift-code')) {
-      return 'panel';
-    }
-    else {
-      return false;
-    }
-  })();
-
-  /**
-   * Update the components of a SHiFT Code Dropdown Panel to reflect its new Redemption State 
-   * 
-   * @param {Element} panel The SHiFT Code Dropdown Panel that is being updated.
-   */
-  function updateComponents (panel) {
-    let redeemButton = dom.find.child(panel, 'class', 'action redeem');
-
-    edit.class(panel, redemptionState ? 'add' : 'remove', 'redeemed');
-
-    if (redeemButton) {
-      edit.attr(redeemButton, 'update', 'aria-pressed', redemptionState);
-      redeemButton.innerHTML = redeemButton.innerHTML.replace(redemptionState ? 'fa-bookmark' : 'fa-check', redemptionState ? 'fa-check' : 'fa-bookmark');
-      redeemButton.innerHTML = redeemButton.innerHTML.replace(redemptionState ? 'Redeem' : 'Redeemed', redemptionState ? 'Redeemed' : 'Redeem');
-      updateLabel(redeemButton, redeemButton.title.replace(redemptionState ? 'Mark' : 'Un-mark', redemptionState ? 'Un-mark' : 'Mark'));
-    }
-  }
-  /**
-   * Toggle the active state of the Redemption Button for all applicable SHiFT Code Dropdown Panels
-   * 
-   * @param {array} panels An array of SHiFT Code Dropdown Panels to be updated.
-   * @param {boolean} newState The new Redemption State of the dropdown panel.
-   * - Passing **true** indicates that the redemption buttons are to be *enabled*.
-   * - Passing **false** indicates that the redemption buttons are to be *disabled*
-   */
-  function updateRedemptionButtons (panels, newState) {
-    for (let panel of panels) {
-      let redeemButton = dom.find.child(panel, 'class', 'action redeem');
-
-      if (redeemButton) {
-        isDisabled(redeemButton, !newState);
-        edit.class(redeemButton, newState ? 'remove' : 'add', 'in-progress');
-      }
-    }
-  }
-
-  // Parameter Issues
-  if (!shiftCodeType) {
-    console.error(`redeemShiftCode Error: Provided SHiFT Code is not a valid Code Hash or SHiFT Code Dropdown Panel.`);
-    return false;
-  }
-
-  if (shiftCodeType == 'panel') {
-    updateComponents(shiftCode);
-  }
-  else if (shiftCodeType == 'code_hash') {
-    let matchingShiftCodes = dom.find.children(dom.find.id('shift_code_list'), 'attr', 'data-code-hash', shiftCode);
-
-    if (!matchingShiftCodes) {
-      console.error(`redeemShiftCode Error: No present SHiFT Code Dropdown Panels were found with a Code Hash of "${shiftCode}". This indicates an invalid Code Hash or illegal redemption operation.`);
-      return false;
-    }
-
-    // Disable the Redemption Buttons
-    updateRedemptionButtons(matchingShiftCodes, false);
-    // Perform the POST Request
-    newAjaxRequest({
-      type: "POST",
-      file: '/assets/requests/post/shift/redeem',
-      params: {
-        'code': shiftCode,
-        'action': redemptionState ? 'add' : 'delete'
-      },
-      requestHeader: 'form',
-      callback: function (responseText) {
-        let response = tryJSONParse(responseText);
-
-        /** Trigger a response error toast */
-        function responseError () {
-          return newToast({
-            settings: {
-              template: 'exception'
-            },
-            content: {
-              title: 'Failed to redeem SHiFT Code',
-              body: 'We could not redeem this SHiFT Code due to an error. Please refresh the page and try again.'
+                return true;
+              }
+              else {
+                throw 'Indicator is missing';
+              }
             }
-          });
-        }
+            catch (error) {
+              console.error(`local.shift.updateCheck.toggleIndicator Error: ${error}`);
+              return false;
+            }
+          },
+          /**
+           * Update the *last update* timestamp
+           * 
+           * @returns {int|false} Returns the *new timestamp* on success, or **false** if an error occurred.
+           */
+          updateLastTimestamp () {
+            try {
+              const newTimestamp = moment.utc().valueOf();
+  
+              this.updateStats.last = newTimestamp;
+  
+              return newTimestamp;
+            }
+            catch (error) {
+              console.error(`local.shift.updateCheck.updateLastTimestamp Error: ${error}.`);
+              return false;
+            }
+          },
+          /**
+           * Start the SHiFT Code Update Poller
+           * 
+           * @returns {boolean} Returns **true** on success, or **false** on failure
+           */
+          start () {
+            try {
+              this.intervalID = setInterval(this.poll, this.intervalDuration * 60000);
+              return true;
+            }
+            catch (error) {
+              console.error(`local.shift.updateCheck.start Error: ${error}`);
+              return false;
+            }
+          },
+          /**
+           * Shut down the SHiFT Code Update Poller
+           * 
+           * @return {boolean} Returns **true** on success, or **false** on failure
+           */
+          stop () {
+            try {
+              clearInterval(this.intervalID);
+              return true;
+            }
+            catch (error) {
+              console.error(`local.shift.updateCheck.stop Error: ${error}`);
+              return false;
+            }
+          },
+          /**
+           * Restart the SHiFT Code Update Poller
+           * 
+           * @returns {boolean} Returns **true** on success, or **false** on failure
+           */
+          restart () {
+            try {
+              this.stop();
+              this.start();
+              return true;
+            }
+            catch (error) {
+              console.error(`local.shift.updateCheck.restart Error: ${error}`);
+              return false;
+            }
+          },
+          /**
+           * Poll for SHiFT Code updates
+           * 
+           * @returns {boolean} Returns the **true** if polling was successful, or **false** if an error occurred.
+           */
+          poll () {
+            const shiftObj = ShiftCodesTK.local.shift;
+            const updateCheck = shiftObj.updateCheck;
 
-        if (response) {
-          if (response.statusCode == 200 || response.statusCode == 201) {
-            setTimeout(function () {
+            function handleUpdateData (responseText) {
+              const updateData = tryJSONParse(responseText);
+
+              if (updateData) {
+                const count = updateData.payload.count;
+
+                if (count > 0) {
+                  updateCheck.toggleIndicator(true, count);
+                }
+
+                updateCheck.updateLastTimestamp();
+              }
+            }
+
+            return newAjaxRequest({
+              file: '/assets/requests/get/shift/updates',
+              params: {
+                'last_check': moment.utc(updateCheck.updateStats.last).format(),
+                'game_id': shiftObj.getResultProp('game')
+              },
+              callback: handleUpdateData
+            });
+          },
+          /**
+           * Refresh the SHiFT Code List with the most recently updated data
+           */
+          update () {
+            ShiftCodesTK.local.shift.getCodes();
+            this.toggleIndicator(false);
+            // this.updateLastTimestamp();
+          }
+        },
+        /** @property Locations related to the SHiFT Codes */
+        locations: {
+          shiftHeader: dom.find.id('shift_header'),
+          /** @property The SHiFT Code Display List */
+          shiftCodeList: dom.find.id('shift_code_list'),
+        },
+        /** @property SHiFT Code Templates */
+        templates: {
+          shiftCode: dom.find.id('shift_code_template'),
+
+        },
+
+        /**
+         * Retrieve a SHiFT Code result set property
+         * 
+         * @param {string} property The property to be retrieved
+         * @returns {any} Returns the *property value* on success. Will return **NULL** if an error occurred.
+         */
+        getResultProp (property) {
+          try {
+            const prop = this.props[property];
+
+            if (prop) {
+              return prop.value;
+            }
+            else {
+              throw `"${property}" is not a valid property name`;
+            }
+
+            return false;
+          }
+          catch (error) {
+            console.error(`local.shift.getResultProp Error: ${error}`);
+            return NULL;
+          }
+        },
+        /**
+         * Update a SHiFT Code result set property
+         * 
+         * @param {string} property The property to be updated.
+         * @param {any} value The new value of the property.
+         * @returns {boolean} Returns the **true** on success, or **false** on failure.
+         */
+        setResultProp (property, value) {
+          try {
+            const prop = this.props[property];
+
+            if (prop && !prop.isLocked) {
+              prop.value = value;
+              return true;
+            }
+            else if (!prop) {
+              throw `"${property}" is not a valid property name`;
+            }
+
+            return false;
+          }
+          catch (error) {
+            console.error(`local.shift.setResultProp Error: ${error}`);
+            return NULL;
+          }
+        },
+
+        /**
+         * Synchronize the SHiFT Control and Display Components with those in `stats`
+         * 
+         * @returns {boolean} Returns **true** on success, or **false** on failure
+         */
+        syncShiftComponents () {
+          try {
+            const shiftObj = ShiftCodesTK.local.shift;
+            const header = dom.find.id('shift_header');
+  
+            if (header) {
+              const props = shiftObj.props;
+
+              // Badges
+              (function () {
+                const badgeContainer = dom.find.child(header, 'class', 'section badges');
+
+                if (badgeContainer) {
+                  const badges = dom.find.children(badgeContainer, 'class', 'badge');
+
+                  for (let badge of badges) {
+                    let type = dom.get(badge, 'attr', 'data-value');
+                    let displayType = ucWords(type);
+                    let count = shiftObj.stats[type];
+                    let countDisplay = dom.find.child(badge, 'class', 'count');
+                    let title = '';
+
+                    if (count > 0) {
+                      if (type == 'total') { title = `${count} SHiFT Code${checkPlural(count)} Available`; }
+                      else                 { title = `${count} ${displayType} SHiFT Code${checkPlural(count)}`; }
+                    }
+                    else {
+                      if (type == 'total') { title = 'No SHiFT Codes Available'; }
+                      else                 { title = `No ${displayType} SHiFT Codes`; }
+                    }
+
+                    edit.class(badge, count == 0 ? 'add' : 'remove', 'inactive');
+                    countDisplay.innerHTML = count;
+                    updateLabel(badge, title, [ 'aria', 'tooltip' ]);
+                  }
+                }
+                else {
+                  console.warn('local.shift.syncShiftComponents Warning: Badges are missing');
+                }
+              })();
+              // Update Sort & Filter
+              (function () {
+                const form = dom.find.id('shift_header_sort_filter_form');
+           
+                if (form) {
+                  const bindings = {
+                    sort: shiftObj.getResultProp('order'),
+                    status_filter: shiftObj.getResultProp('status'),
+                    platform_filter: shiftObj.getResultProp('platform'),
+                    game_filter: shiftObj.getResultProp('game')
+                  };
+
+                  // Update Platform Filter
+                  // if (!shiftObj.props.game.isLocked) {
+                  //   const platforms = formsObj.getField(form, 'platform_filter');
+                  //   const game = bindings.game_filter;
+
+                  //   for (let platform of platforms) {
+                  //     if (game === false || ShiftCodesTK.shift.games[game].support.unsupported.platforms.indexOf(platform.value) != -1) {
+                  //       isHidden(platform, game !== false);
+                  //     }
+                  //   }
+                  // }
+
+                  if (!dom.has(form, 'class', 'updated')) {
+                    for (let binding in bindings) {
+                      let bindingField = formsObj.getField(form, binding);
+                      let bindingValue = bindings[binding];
+
+                      if (bindingField && bindingValue) {
+                        formsObj.updateField(
+                          Array.isArray(bindingField)
+                            ? bindingField[0]
+                            : bindingField,
+                          bindingValue,
+                          // {
+                          //   updateDefault: true
+                          // }
+                        );
+                      }
+                    }
+
+                    edit.class(form, 'add', 'updated');
+                  }
+                }
+                else {
+                  console.warn('local.shift.syncShiftComponents Warning: Sorting & Filtering Form is missing.');
+                }
+              })();
+              // Pager
+              (function () {
+                /** The SHiFT Code List Pager */
+                const pager = dom.find.id('shift_code_pager');
+                /** SHiFT Code Stats */
+                const pagerStats = {
+                  limit: shiftObj.getResultProp('limit'),
+                  offset: shiftObj.getResultProp('page'),
+                  total: shiftObj.stats.total
+                };
+                /** Pager Properties */
+                const pagerProps = {
+                  now: pagerStats.offset,
+                  max: pagerStats.total > 0 
+                       ? Math.ceil(pagerStats.total / pagerStats.limit) 
+                       : 1
+                };
+
+                return updatePagerProps(pager, pagerProps);
+              })();
+
+              return true;
+            }
+            else {
+              throw 'SHiFT Header is missing.';
+            }
+          }
+          catch (error) {
+            console.error(`local.shift.syncShiftComponents Error: ${error}.`);
+            return false;
+          }
+        },
+        /**
+         * Sync `props` to and from the *query parameters*
+         * 
+         * @param {"query"|"var"} syncTo Indicates which direction to sync
+         * - **"query"**: Syncs `props` to the *query parameters*
+         * - **"var"** Syncs the *query parameters* to `props`
+         * @returns {object|false} Returns the *synced properties* on success, or **false** if an error occurred.
+         */
+        syncQueryParams (syncTo = 'query') {
+          const shiftObj = this;
+
+          if (syncTo == 'query') {
+            let queryParameters = {};
+
+            // Existing Query Parameters
+            queryParameters = mergeObj(queryParameters, getQueryParameters());
+            // `Props`
+            for (let propName in shiftObj.props) {
+              let propData = shiftObj.props[propName];
+              let canUpdateProp = (function () {
+                if (!propData.isLocked) {
+                  const hasSameValueAsDefault = (function () {
+                    if (!Array.isArray(propData.value)) {
+                      return propData.value != propData.defaultValue;
+                    }
+                    else {
+                      const hasSameArrays = (function () {
+                        for (let item of propData.value) {
+                          if (propData.defaultValue.indexOf(item) == -1) {
+                            return false;
+                          }
+                        }
+                        for (let item of propData.defaultValue) {
+                          if (propData.value.indexOf(item) == -1) {
+                            return false;
+                          }
+                        }
+
+                        return true;
+                      })();
+  
+                      return !hasSameArrays;
+                    }
+                  })();
+
+                  if (hasSameValueAsDefault) {
+                    return true
+                  }
+                }
+
+                return false;
+              })();
+
+              if (canUpdateProp) {
+                queryParameters[propName] = propData.value;
+              }
+              else if (queryParameters[propName] !== undefined) {
+                delete queryParameters[propName];
+              }
+            }
+
+            // window.history.pushState({}, '', encodeQueryParameters(queryParameters));
+            updateQueryParameters(queryParameters, 'new');
+
+            return queryParameters;
+          }
+          else if (syncTo == 'var') {
+            const queryParameters = getQueryParameters();
+
+            for (let propName in shiftObj.props) {
+              let propValue = shiftObj.props[propName];
+              let queryValue = (function () {
+                const queryValue = queryParameters[propName];
+                const intProps = [ 'limit', 'page' ];
+
+                if (queryValue && intProps.indexOf(propName) != -1) {
+                  return tryParseInt(queryValue);
+                }
+                else {
+                  return queryValue;
+                }
+              })();
+
+              if (queryValue !== undefined && queryParameters[propName] != propValue) {
+                shiftObj.setResultProp(propName, queryValue);
+              }
+              else if (queryValue === undefined) {
+                shiftObj.setResultProp(propName, shiftObj.props[propName].defaultValue);
+              }
+            }
+
+            return shiftObj.props;
+          }
+
+          return false;
+        },
+
+        /**
+         * Update the *redemption status* of a SHiFT Code
+         * 
+         * @param {Element|string} shiftCode The SHiFT Code being updated.
+         * - Using the *SHiFT Code Dropdown Panel* will update the appearance to match the new `redemptionState`.
+         * - Using the *Code Hash* of the SHiFT Code will update the appearance of all currently matching *SHiFT Code Dropdown Panels*
+         * @param {boolean} redemptionState Indicates if the SHiFT Code is being *redeemed* or *unredeemed*:
+         * - **True**: Marks the SHiFT Code as *Redeemed*
+         * - **False**: Marks the SHiFT Code as *Un-redeemed*
+         * @returns {boolean} Returns **true** on success, and **false** on failure.
+         */
+        redeemShiftCode (shiftCode, redemptionState = true) {
+          try {
+            /** `"codeHash"|"panel"|false` The type of argument provided for `shiftCode` */
+            const shiftCodeType = (function () {
+              if (typeof shiftCode == 'string' && shiftCode.length == 12) {
+                return 'codeHash';
+              }
+              else if (typeof shiftCode == 'object' && shiftCode.constructor.name.indexOf('Element') != -1 && dom.has(shiftCode, 'class', 'shift-code')) {
+                return 'panel';
+              }
+  
+              return false;
+            })();
+  
+            /**
+             * Update the redemption controls and content for a given *SHiFT Code Dropdown Panel*
+             * 
+             * @param {Element} shiftCodePanel The SHiFT Code to be updated
+             */
+            function updateRedemptionComponents (shiftCodePanel) {
+              const redemptionButtonContainer = dom.find.child(shiftCodePanel, 'class', 'action redeem');
+              const redemptionButton = dom.find.child(redemptionButtonContainer, 'class', 'redeem');
+  
+              edit.class(shiftCodePanel, redemptionState ? 'add' : 'remove', 'redeemed');
+  
+              if (redemptionButton) {
+                /** String replacement bindings */
+                const bindings = {
+                  icon: [
+                    redemptionState 
+                     ? 'fa-bookmark' 
+                     : 'fa-check', 
+                    redemptionState 
+                     ? 'fa-check' 
+                     : 'fa-bookmark'
+                  ],
+                  title: [
+                    redemptionState 
+                      ? 'redeemed' 
+                      : 'unredeemed', 
+                    redemptionState 
+                      ? 'unredeemed' 
+                      : 'redeemed'
+                  ]
+                };
+                /** Base title and tooltip strings */
+                const baseTitles = {
+                  aria: 'Mark this SHiFT Code as redeemed', 
+                  tooltip: `Mark this SHiFT Code as&nbsp;<em>redeemed</em>
+                            <br>
+                            <br><button class="link no-color modal-toggle" data-modal="shift_code_redeeming_codes_info_modal"><strong>Learn More</strong></button>`
+                };
+  
+                // Button Content
+                redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.icon);
+                // redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.title);
+
+                if (!redemptionButton.disabled) {
+                  // Aria
+                  edit.attr(redemptionButton, 'update', 'aria-pressed', redemptionState);
+                  updateLabel(redemptionButton, baseTitles.aria.replace(...bindings.title), [ 'aria' ]);
+                  // Tooltip
+                  updateLabel(redemptionButton, baseTitles.tooltip.replace(...bindings.title), [ 'tooltip' ]);
+                }
+              }
+            }
+            /**
+             * Toggle the active state of Redemption Buttons for all applicable SHiFT Code Dropdown Panels.
+             * 
+             * @param {array} shiftCodePanels An array of SHiFT Codes to be updated.
+             * @param {boolean} state The new *Redemption State* of the SHiFT Code.
+             * - **True**: Enables the Redemption Buttons
+             * - **False**: Disables the Redemption Buttons
+             */
+            function updateRedemptionButtons (shiftCodePanels, state) {
+              for (let shiftCodePanel of shiftCodePanels) {
+                const redemptionButton = dom.find.child(shiftCodePanel, 'class', 'action redeem');
+  
+                if (redemptionButton) {
+                  isDisabled(redemptionButton, !state);
+                  edit.class(redemptionButton, !state ? 'add' : 'remove', 'in-progress');
+                }
+              }
+            }
+
+            if (!shiftCodeType) {
+              throw 'Provided SHiFT Code is not a valid SHiFT Code Dropdown Panel or Code Hash ID';
+            }
+
+            if (shiftCodeType == 'panel') {
+              updateRedemptionComponents(shiftCode);
+            }
+            else if (shiftCodeType == 'codeHash') {
+              const matchingShiftCodes = dom.find.children(this.locations.shiftCodeList, 'attr', 'data-code-hash', shiftCode);
+
+              if (!matchingShiftCodes) {
+                throw `No present SHiFT Codes match the provided code hash: "${shiftCode}".`;
+              }
+
               updateRedemptionButtons(matchingShiftCodes, true);
 
               for (let matchingShiftCode of matchingShiftCodes) {
-                updateComponents(matchingShiftCode);
+                updateRedemptionComponents(matchingShiftCode);
               }
 
-              if (redemptionState && response.payload.displayToast) {
+              if (redemptionState && responseData.payload.form_response) {
                 let toastContent = (function () {
                   let type = response.payload.toastType;
 
@@ -340,7 +645,7 @@ function redeemShiftCode (shiftCode, redemptionState = true) {
                   }
                 })();
 
-                newToast({
+                ShiftCodesTK.toasts.newToast({
                   settings: {
                     id: 'redeemed_code_toast',
                     duration: 'infinite'
@@ -349,1159 +654,1682 @@ function redeemShiftCode (shiftCode, redemptionState = true) {
                     icon: 'fas fa-key',
                     title: 'SHiFT Code Redeemed!',
                     body: toastContent
-                  }
+                  },
+                  actions: [
+                    {
+                      content: 'Learn More',
+                      link: '#/help/redeeming-shift-codes'
+                    }
+                  ]
                 });
               }
-
-              return true;
-            }, 500);
+            }
           }
-          else {
-            responseError();
+          catch (error) {
+            console.error(`local.shift.redeemShiftCode Error: ${error}`);
             return false;
           }
-        }
-        else {
-          responseError();
-          return false;
-        }
-      }
-    });
-  }
-
-  return true;
-}
-function updateShiftCodeTimestamp (shiftCode, timestamp = undefined) {
-  let lastUpdate = dom.find.child(
-                    dom.find.child(
-                      dom.find.child(
-                        shiftCode, 
-                        'class', 
-                        'code-info'
-                      ), 
-                      'class', 
-                      'last-update'
-                    ), 
-                    'tag', 
-                    'dd'
-                    );
-  let tsMoment = moment.utc(timestamp);
-
-  lastUpdate.innerHTML = tsMoment.fromNow();
-  updateLabel(lastUpdate, tsMoment.format('MMMM DD, YYYY hh:mm A [UTC]'), [ 'tooltip' ]);
-}
-/**
- * Retrieve a list of SHiFT Codes
- */
-function retrieveCodes () {
-  /** Various SHiFT Code Components */
-  let shiftComps = {}
-      /** The SHiFT Code Header */
-      shiftComps.header = dom.find.id('shift_header');
-      /** SHiFT Code Count Badges & Filter Controls */
-      shiftComps.badges = {};
-      shiftComps.badges.container = dom.find.child(shiftComps.header, 'class', 'section badges');
-      shiftComps.badges.active = dom.find.child(shiftComps.badges.container, 'class', 'active');
-      shiftComps.badges.new = dom.find.child(shiftComps.badges.container, 'class', 'new');
-      shiftComps.badges.expiring = dom.find.child(shiftComps.badges.container, 'class', 'expiring');
-      /** The *Add SHiFT Code* button */
-      shiftComps.addCodeButton = dom.find.id('shift_header_add');
-      /** The SHiFT Code Filter & Sort button */
-      shiftComps.sortFilterButton = dom.find.id('shift_header_sort_filter');
-      /** The SHiFT Code Result List */
-      shiftComps.list = dom.find.id('shift_code_list');
-      /** The SHiFT Code Result List Pager */
-      shiftComps.pager = dom.find.id('shift_code_pager');
-
-  /**
-   * Toggle the state of the SHiFT Code Controls
-   * 
-   * @param {boolean} isActive Indicates if the SHiFT Code Controls are *enabled* or *disabled*.
-   * - **True** indicates that the controls are to be *enabled*.
-   * - **False** indicates that the controls are to be *disabled*.
-   */
-  function toggleControls (isActive) {
-    /** The SHiFT Code Controls to be updated */
-    let controls = [
-      shiftComps.badges.new,
-      shiftComps.badges.expiring,
-      shiftComps.addCodeButton,
-      shiftComps.sortFilterButton,
-      shiftComps.pager
-    ];
-
-    for (let control of controls) {
-      if (control && !dom.has(control, 'class', 'inactive')) {
-        isDisabled(control, !isActive);
-      }
-    }
-  }
-  /**
-   * Update various components of the SHiFT Code List Overlay
-   * 
-   * @param {object} settings The components that are to be updated and a **boolean** indication of if they are to be *visible* or not.
-   * - `overlay` — The SHiFT Code List Overlay container
-   * - `spinner` — The Loading Spinner
-   * - `error` — The error message to be displayed when no SHiFT Codes were retrieved
-   */
-  function updateOverlay (settings) {
-    /** The SHiFT Code List Overlay Components */
-    let comps = {};
-        comps.overlay = dom.find.id('shift_overlay');
-        comps.spinner = dom.find.child(comps.overlay, 'class', 'spinner');
-        comps.error = dom.find.child(comps.overlay, 'class', 'error');
-
-    for (let comp in settings) {
-      let isVisible = settings[comp];
-
-      isHidden(comps[comp], !isVisible);
-    }
-  }
-  /**
-   * Clear the current SHiFT Code Result List
-   */
-  function clearList () {
-    let shiftCodes = dom.find.children(shiftComps.list, 'class', 'shift-code');
-
-    for (let i = shiftCodes.length - 1; i >= 0; i--) {
-      deleteElement(shiftCodes[i]);
-    }
-  }
-    /**
-   * Generate a Dropdown Panel for a given SHiFT Code
-   * 
-   * @param {object} code The SHiFT Code properties object.
-   * @returns {Element|false} Returns the SHiFT Code Dropdown Panel element on success, or **false** on failure.
-   */
-  function getShiftCodePanel (code) {
-    try {
-      /** The SHiFT Code Dropdown Panel */
-      let panel = edit.copy(dom.find.id('shift_code_template'));
-      /** Sections of the SHiFT Code Dropdown Panel */
-      let panelSections = {};
-          panelSections.header = dom.find.child(panel, 'class', 'header');
-          panelSections.body = dom.find.child(panel, 'class', 'body active');
-          panelSections.deletedBody = dom.find.child(panel, 'class', 'body deleted');
-      /** The base of the SHiFT Code ID */
-      let baseID = 'shift_code';
-      /** The ID of the SHiFT Code */
-      let codeID = `${baseID}_${code.properties.code_id}`;
-
-      // SHiFT Code Properties
-      (function () {
-        let attributes = [
-          'id',
-          'for',
-          'data-view',
-          'data-target',
-          'data-layer-target',
-          'data-layer-targets',
-          'aria-labelledby',
-          'aria-describedby',
-        ];
-        let children = panel.querySelectorAll(`[${attributes.join('], [')}]`);
-        
+        },
         /**
-         * Retrieve the updated ID of a child element
+         * Update the `Last Updated` timestamp on a given *SHiFT Code Dropdown Panel*.
          * 
-         * @param {string} originalID The original ID to be updated.
-         * @returns {string} Returns the updated ID.
+         * @param {Element} shiftCode The SHiFT Code to update
+         * @param {string} timestampString A datetime string used to construct the timestamp. If ommitted, the current timestamp will be used.
+         * @returns {string} Returns the *new timestamp* on success, or **false** on failure.
          */
-        function getUpdatedID (originalID) {
-          let IDs = originalID.split(', ');
+        updateShiftCodeTimestamp (shiftCode, timestampString = undefined) {
+          const field = (function () {
+            const codeInfo = dom.find.child(shiftCode, 'class', 'code-info');
 
-          for (let id in IDs) {
-            IDs[id] = `${codeID}_${IDs[id]}`;
-          }
+            if (codeInfo) {
+              const lastUpdate = dom.find.child(codeInfo, 'class', 'last-update');
 
-          return IDs.join(', ');
-        }
+              if (lastUpdate) {
+                const content = dom.find.child(lastUpdate, 'tag', 'dd');
 
-        // IDs and Hashes
-        panel.id = codeID;
-        edit.attr(panel, 'add', 'data-code-id', code.properties.code_id);
-
-        if (code.properties.code_hash !== null) {
-          edit.attr(panel, 'add', 'data-code-hash', code.properties.code_hash);
-        }
-
-        for (let child of children) {
-          for (let attribute of attributes) {
-            let value = dom.get(child, 'attr', attribute);
-  
-            if (value !== false && value != "") {
-              edit.attr(child, 'update', attribute, getUpdatedID(value));
-            }
-          }
-        }
-
-        // Redeemed SHiFT Code
-        if (code.states.userHasRedeemed) {
-          redeemShiftCode(panel, true);
-        }
-      })();
-
-      if (code.properties.code_state != 'deleted') {
-        deleteElement(panelSections.deletedBody);
-
-        // Header
-        (function () {
-          // Reward
-          dom.find.child(panelSections.header, 'class', 'reward').innerHTML = code.info.reward;
-          // Labels
-          (function () {
-            /** SHiFT Code States */
-            let states = code.states;
-  
-            // Basic SHiFT Code, Rare SHiFT Code, New, Rare Labels
-            if (states.codeIsActive && code.properties.code_state == 'active') {
-              // Basic SHiFT Code Label
-              if (code.info.reward.trim().search('\\d{1} Golden Key(s){0,1}$') == 0) {
-                edit.class(panel, 'add', 'basic');
-              }
-              // Rare SHiFT Code Label
-              else {
-                edit.class(panel, 'add', 'rare');
-              }
-              // New! Label
-              if (states.codeIsNew) {
-                edit.class(panel, 'add', 'new');
-              }
-              // Expiring! Label
-              if (states.codeIsExpiring) {
-                edit.class(panel, 'add', 'expiring');
-              }
-            }
-            else if (code.properties.code_state == 'hidden') {
-              edit.class(panel, 'add', 'hidden');
-            }
-            // Expired SHiFT Code Label
-            else if (!states.codeIsActive) {
-              edit.class(panel, 'add', 'expired');
-            }
-            // Game Label
-            if (shiftProps.game == 'all') {
-              (function () {
-                /** The Game Label */
-                let label = dom.find.child(panelSections.header, 'class', 'label game-label');
-                /** The Game ID of the SHiFT Code */
-                let gameID = code.properties.game_id;
-                /** The Game Name of the SHiFT Code */
-                let gameName = shiftNames[gameID];
-                
-                // Display the label
-                edit.class(panel, 'add', 'game-label');
-                // Update the label
-                edit.class(label, 'add', gameID);
-                label.innerHTML = label.innerHTML.replace('Borderlands', gameName);
-                updateLabel(label, `SHiFT Code for ${gameName}`, [ 'tooltip' ]);
-              })();
-            }
-            // Recently Added Label
-            if (states.codeWasRecentlyAdded) {
-              edit.class(panel, 'add', 'recently-added');
-            }
-            // Recently Updated Label
-            else if (states.codeWasRecentlyUpdated) {
-              edit.class(panel, 'add', 'recently-updated');
-            }
-            // Owner Label
-            if (states.userIsOwner) {
-              edit.class(panel, 'add', 'owned');
-            }
-          })();
-          // Progress Bar
-          (function () {
-            /** The header Progress Bar */
-            let progressBar = dom.find.child(panelSections.header, 'class', 'progress-bar');
-            /** The inside bar of the Progress Bar */
-            let innerProgressBar = dom.find.child(progressBar, 'class', 'progress');
-            /** The progress value of the Progress Bar */
-            let progressValue = 0;
-            /** The label of the Progress Bar */
-            let progressTitle = '';
-  
-            // SHiFT Code has an Expiration Date
-            if (code.info.expiration_date) {
-              /** The Expiration Date Moment of the SHiFT Code */
-              let expiration = moment.utc(code.info.expiration_date);
-              /** The total duration of the SHiFT Code */
-              let duration = expiration.diff(code.info.release_date, 'hours');
-              /** The total number of hours remaining before the SHiFT Code is set to expire */
-              let timeLeft = expiration.diff(moment.utc(), 'hours');
-              /** The time-from-now string for the Expiration Date */
-              let timeAgo = expiration.fromNow(true);
-  
-              // Active SHiFT Code
-              if (code.states.codeIsActive) {
-                progressValue = 100 - Math.round((timeLeft / duration) * 100);
-                progressTitle = ucWords(`${timeAgo} Remaining`);
-              }
-              // Expired SHiFT Code
-              else {
-                progressValue = 100;
-                progressTitle = ucWords(`Expired ${timeAgo} Ago`);
-              }
-            }
-            // SHiFT Code does not expire
-            else {
-              edit.class(progressBar, 'add', 'inactive');
-              progressValue = 0;
-              progressTitle = 'No Expiration Date';
-            }
-  
-            edit.attr(progressBar, 'add', 'aria-valuenow', progressValue);
-            updateLabel(progressBar, progressTitle, [ 'tooltip' ]);
-            edit.class(innerProgressBar, 'add', code.properties.game_id);
-            innerProgressBar.style.width = `${progressValue}%`;
-          })();
-        })();
-        // Body
-        (function () {
-          /**
-           * Retrieve the content block of a given field
-           * 
-           * @param {string} name The name of the field.
-           * @returns {Element} Returns the content block of the field.
-           */
-          function getField(name) {
-            return dom.find.child(dom.find.child(panelSections.body, 'class', `section ${name}`), 'class', 'content');
-          }
-  
-          // Code Info
-          (function () {
-            // Release & Expiration Date
-            (function () {
-              /** Date Formats */
-              let formats = {};
-                  /** Display Date Formats */
-                  formats.dates = {};
-                  formats.dates.date = 'MMM DD, YYYY';
-                  formats.dates.expandedDate = 'dddd, MMMM DD, YYYY';
-                  formats.dates.time = 'h:mm A zz';
-                  formats.dates.full = `${formats.dates.date} ${formats.dates.time}`;
-                  formats.dates.expanded = `${formats.dates.expandedDate} ${formats.dates.time}`;
-                  /** Calendar Date Formats */
-                  formats.calendars = {
-                    sameDay: '[Today]',
-                    nextDay: '[Tomorrow]',
-                    nextWeek: 'dddd',
-                    lastDay: '[Yesterday]',
-                    lastWeek: '[Last] dddd',
-                  };
-              /** Specific Release & Expiration Formats & Dates */
-              let dates = {};
-                  /** Release Date Formats & Dates */
-                  dates.release = {};
-                  dates.release.formats = (function () {
-                    let f = {
-                      simple: {},
-                      full: {},
-                      expanded: {}
-                    };
-                    let dates = formats.dates
-                    let calendars = formats.calendars;
-          
-                    for (let calendar in calendars) {
-                      f.simple[calendar] = `${calendars[calendar]}`;
-                      f.full[calendar] = `${calendars[calendar]}, ${dates.date}`;
-                      f.expanded[calendar] = `${calendars[calendar]}, ${dates.expandedDate}`;
-                    }
-          
-                    f.simple.sameElse = f.full.sameElse = dates.date;
-                    f.expanded.sameElse = dates.expandedDate;
-          
-                    return f;
-                  })();
-                  dates.release.dates = (function () {
-                    let release = code.info.release_date;
-  
-                    if (release) {
-                      /** The SHiFT Code Release Date Moment */
-                      let releaseMoment = moment(release);
-  
-                      return {
-                        simple: releaseMoment.calendar(null, dates.release.formats.simple),
-                        full: releaseMoment.calendar(null, dates.release.formats.full),
-                        expanded: releaseMoment.calendar(null, dates.release.formats.expanded),
-                      };
-                    }
-                    else {
-                      return false;
-                    }
-                  })();
-                  /** Expiration Date Formats & Dates */
-                  dates.expiration = {};
-                  dates.expiration.formats = (function () {
-                    let f = {
-                      simple: {},
-                      full: {},
-                      expanded: {}
-                    };
-                    let dates = formats.dates
-                    let calendars = formats.calendars;
-          
-                    for (let calendar in calendars) {
-                      f.simple[calendar] = `${calendars[calendar]}, ${dates.time}`;
-                      f.full[calendar] = `${calendars[calendar]}, ${dates.full}`;
-                      f.expanded[calendar] = `${calendars[calendar]}, ${dates.expanded}`;
-                    }
-          
-                    f.simple.sameElse = f.full.sameElse = dates.full;
-                    f.expanded.sameElse = dates.expanded;
-          
-                    return f;
-                  })();
-                  dates.expiration.dates = (function () {
-                    let expiration = code.info.expiration_date;
-  
-                    if (expiration) {
-                      /** The SHiFT Code Release Date Moment */
-                      let expirationMoment = moment.tz(expiration, code.info.timezone);
-  
-                      return {
-                        simple: expirationMoment.calendar(null, dates.expiration.formats.simple),
-                        full: expirationMoment.calendar(null, dates.expiration.formats.full),
-                        expanded: expirationMoment.calendar(null, dates.expiration.formats.expanded),
-                      };
-                    }
-                    else {
-                      return false;
-                    }
-                  })();
-  
-              for (let date in dates) {
-                let dateDates = dates[date].dates;
-                /** The Date Field Components */
-                let comps = {};
-                    comps.main = getField(date);
-                    comps.simple = dom.find.child(comps.main, 'class', 'simple');
-                    comps.full = dom.find.child(comps.main, 'tag', 'dd');
-  
-                // Date is not NULL
-                if (dateDates) {
-                  // Display Relative Date
-                  if (dateDates.simple != dateDates.full) {
-                    comps.simple.firstChild.innerHTML = dateDates.simple;
-                  }
-                  // Only display Actual Date
-                  else {
-                    deleteElement(comps.simple);
-                  }
-  
-                  comps.full.innerHTML = dateDates.full;
-                  updateLabel(comps.full, dateDates.expanded, [ 'tooltip' ]);
-                }
-                // Date is NULL
-                else {
-                  edit.class(comps.main, 'add', 'inactive');
-                  updateLabel(comps.full, `No ${ucWords(date)} Date`, [ 'tooltip' ]);
-                  deleteElement(comps.simple);
-                  comps.full.innerHTML = 'N/A';
+                if (content) {
+                  return content;
                 }
               }
-            })();
-            // Source
-            (function () {
-              /** The SHiFT Code Source Field */
-              let field = getField('src');
-              /** The Source Link Component */
-              let linkComp = dom.find.child(field, 'class', 'link');
-              /** The Source Static Text Component */
-              let staticComp = dom.find.child(field, 'class', 'no-link');
-              /** The SHiFT Code Source */
-              let source = code.info.source;
-  
-              if (source) {
-                linkComp.href = source;
-                linkComp.innerHTML += source;
-                deleteElement(staticComp);
-              }
-              else {
-                edit.class(field, 'add', 'inactive');
-                deleteElement(linkComp);
-              }
-            })();
-            // Notes
-            (function () {
-              /** The SHiFT Code Notes Field */
-              let field = getField('notes');
-              /** The SHiFT Code Notes */
-              let notes = code.info.notes;
-  
-              if (notes !== null) {
-                /** The Notes Field list */
-                let list = dom.find.child(field, 'tag', 'ul');
-                /** The converted notes markup */
-                let markup = (function () {
-                  // One or more specified line-items
-                  if (notes.indexOf('-') != -1) {
-                    // Convert "-" to line items
-                    return notes.replace(new RegExp('-.*', 'g'), function (match) {
-                      return `${match.replace(new RegExp('-\\s{1}', 'g'), '<li>')}</li>`;
-                    });
-                  }
-                  // No specified line items
-                  else {
-                    return `<li>${notes}</li>`;
-                  }
-                })();
-  
-                list.innerHTML = markup;
-              }
-              else {
-                deleteElement(field.parentNode);
-              }
-            })();
+            }
+
+            return false;
           })();
-          // SHiFT Codes
-          (function () {
-            /** The supported platform groups */
-            let groups = [ 'pc', 'xbox', 'ps' ];
-            /** The SHiFT Codes and their supported Platforms */
-            let shiftCodes = code.codes;
-  
-            for (let group of groups) {
-              /** The SHiFT Code Platform Group Field */
-              let field = dom.find.child(panelSections.body, 'class', group);
-              /** The platforms of the platform group that are supported by the SHiFT Code */
-              let platforms = Object.values(shiftCodes[`platforms_${group}`]).join(' / ');
-              /** The platform-group-specific SHiFT Code */
-              let shiftCode = shiftCodes[`code_${group}`];
-  
-              // Platform Component
-              dom.find.child(field, 'class', 'title').innerHTML = platforms;
-              // SHiFT Code Display Component
-              dom.find.child(field, 'class', 'display').innerHTML = shiftCode;
-              updateLabel(dom.find.child(field, 'class', 'display'), `${platforms} SHiFT Code`, [ 'tooltip' ]);
-              // SHiFT Code Clipboard-Copy Input Component
-              dom.find.child(field, 'class', 'value').value = shiftCode;
-            }
-          })();
-        })();
-        // Footer
-        (function () {
-          let footer = dom.find.child(panelSections.body, 'class', 'footer');
-  
-          // Actions
-          (function () {
-            let actions = {};
-                actions.container = dom.find.child(footer, 'class', 'actions');
-                actions.redeem = dom.find.child(actions.container, 'class', 'redeem');
-                actions.optionsMenu = dom.find.child(actions.container, 'class', 'options-menu');
-  
-            // Inactive SHiFT Codes cannot be redeemed
-            if (!code.states.codeIsActive) {
-              isDisabled(actions.redeem, true);
-            }
-          })();
-          // Info
-          (function () {
-            let info = {};
-                info.container = dom.find.child(footer, 'class', 'code-info');
-                info.id = dom.find.child(info.container, 'class', 'id');
-                info.lastUpdate = dom.find.child(info.container, 'class', 'last-update');
-                info.owner = dom.find.child(info.container, 'class', 'owner');
-            
-            /** 
-             * Update the value of a given Info Field
-             * 
-             * @param {string} infoName The name of the field that is to be updated.
-             * @param {string} infoValue The new value of the field.
-             * @param {string} infoLabel The alternative text label of the field.
-             */
-            function updateInfoValue (infoName, infoValue, infoLabel = false) {
-              let value = dom.find.child(info[infoName], 'tag', 'dd');
 
-              value.innerHTML = infoValue;
-  
-              if (infoLabel) {
-                updateLabel(value, infoLabel, [ 'tooltip' ]);
-              }
-            }
-  
-            // SHiFT Code ID
-            (function () {
-              let ID = code.properties.code_id;
-  
-              updateInfoValue('id', ID, `SHiFT Code #${ID}`);
-            })();
-            // SHiFT Code Last Update
-            (function () {
-              updateShiftCodeTimestamp(panel, code.info.last_update);
-            })();
-            // The SHiFT Code Owner
-            (function () {
-              // At this time, don't display username unless the user has Edit Permission
-              if (!code.states.userCanEdit) {
-                deleteElement(info.owner);
-              }
-              else {
-                let username = code.properties.owner_username;
-                let userID = code.properties.owner_id;
-  
-                updateInfoValue('owner', username, `${username} #${userID}`);
-              }
-            })();
-          })();
-        })();
-        // SHiFT Code Options Menu
-        (function () {
-          let menus = dom.find.children(panel, 'class', 'shift-code-options-menu');
+          if (field) {
+            const timestamp = moment.utc(timestampString);
 
-          for (let menu of menus) {
-            let pieces = {};
-              (function () {
-                pieces.codeID = dom.find.child(menu, 'class', 'code-id');
-                pieces.share = dom.find.child(menu, 'attr', 'data-value', 'share');
-                pieces.report = dom.find.child(menu, 'attr', 'data-value', 'report');
-                pieces.editActions = dom.find.child(menu, 'class', 'edit-actions');
-                pieces.makePublic = dom.find.child(pieces.editActions, 'attr', 'data-value', 'make_public');
-                pieces.makePrivate = dom.find.child(pieces.editActions, 'attr', 'data-value', 'make_private');
-              })();
-
-            edit.attr(menu, 'add', 'data-code-id', code.properties.code_id);
-            pieces.codeID.innerHTML = code.properties.code_id;
-  
-            // User does not have Edit Permission
-            if (!code.states.userCanEdit) {
-              deleteElement(pieces.editActions);
-            }
-            // User has Edit Permission
-            else {
-              isDisabled(pieces.report);
-
-              (function () {
-                let inactiveButton = code.properties.code_state == 'active'
-                                  ? pieces.makePublic
-                                  : pieces.makePrivate;
-                                  
-                isHidden(inactiveButton, true);
-                isDisabled(inactiveButton, true);
-              })();
-            }
-          }
-        })();
-        // Configuration
-        (function () {
-          // Dropdown Panel Configuration
-          dropdownPanelSetup(panel);
-          // options Menu Configuration
-          // configureDropdownMenu(dom.find.child(panelSections.body, 'class', 'shift-code-options-dropdown'));
-          // setupDropdownMenu(dom.find.child(dom.find.child(dom.find.child(panelSections.body, 'class', 'footer'), 'class', 'actions'), 'class', 'dropdown-menu'));
-          // MultiView Configuration
-          multiView_setup(dom.find.child(panelSections.body, 'class', 'multi-view'));
-          // Copy to Clipboard Listeners
-          // TODO: Change to single Event Listener, Update Copy to Clipboard Functionality
-          // (function () {
-          //   let buttons = dom.find.children(panelSections.body, 'class', 'copy');
-  
-          //   for (let button of buttons) {
-          //     button.addEventListener('click', copyToClipboard);
-          //   }
-          // })();
-        })();
-      }
-      // Deleted SHiFT Code
-      else {
-        deleteElement(panelSections.body);
-
-        let timestamp = dom.find.child(panelSections.deletedBody, 'class', 'timestamp');
-        let lastUpdate = moment.utc(code.info.last_update);
-
-        edit.class(panel, 'add', 'deleted');
-        dom.find.child(panelSections.header, 'class', 'reward').innerHTML = `SHiFT Code ${code.properties.code_id}`;
-
-        timestamp.innerHTML = lastUpdate.fromNow();
-        updateLabel(timestamp, lastUpdate.format('MMMM DD, YYYY, hh:mm A [UTC]'), [ 'tooltip' ]);
-      }
-
-      return panel;
-    }
-    catch (e) {
-      console.error(`getShiftCodePanel Error: ${e}`);
-      return false;
-    }
-  }
-
-  // Retrieve the list of SHiFT Codes
-  (function () {
-    // Clear the Update Poller interval
-    shiftUpdates.interval.clear();
-    // Disable the SHiFT Controls
-    toggleControls(false);
-    // Display the Loading Spinner
-    updateOverlay({
-      overlay: true,
-      spinner: true,
-      error: false
-    });
-    // Clear the current result list
-    clearList();
-    // Update the Loader Progress Bar
-    lpbUpdate(50, true, { start: 15 });
-    // Retrieve the list of SHiFT Codes
-    newAjaxRequest({
-      file: '/assets/requests/get/shift/codes',
-      params: shiftProps,
-      callback: function (responseText) {
-        let response = tryJSONParse(responseText);
-
-        if (response && response.statusCode == 200) {
-          lpbUpdate(75);
-  
-          let totals = response.payload.counts;
-          let shiftCodes = response.payload.shift_codes;
-
-          // Update SHiFT Components if totals have been adjusted
-          if (totals && shiftStats != totals) {
-            shiftStats = totals;
-            syncShiftComponents();
-          }
-          // Update Result List
-          if (shiftCodes.length > 0) {
-            for (let i = 0; i < shiftCodes.length; i++) {
-              let panel = getShiftCodePanel(shiftCodes[i]);
-
-              if (!panel) {
-                continue;
-              }
-
-              panel.style.animationDelay = `${i * 0.2}s`;
-              shiftComps.list.appendChild(panel);
-              // setupDropdownMenu(dom.find.child(dom.find.child(dom.find.child(panel, 'class', 'footer'), 'class', 'actions'), 'class', 'dropdown-menu'));
-            }
-
-            hashUpdate();
-            lpbUpdate(100);
-            updateOverlay({
-              overlay: false,
-              spinner: false,
-              error: false
-            });
-          }
-          else {
-            lpbUpdate(100);
-            updateOverlay({
-              overlay: true,
-              spinner: false,
-              error: true
-            });
-          }
-
-          shiftUpdates.interval.set();
-          
-          setTimeout(function () {
-            toggleControls(true);
-          }, 500);
-        }
-        else {
-          lpbUpdate(100);
-          updateOverlay({
-            overlay: true,
-            spinner: false,
-            error: true
-          });
-          ShiftCodesTK.toasts.newToast({
-            settings: {
-              template: 'fatalException'
-            },
-            content: {
-              title: 'SHiFT Code Retrieval Error',
-              body: 'We could not retrieve any SHiFT Codes due to an error. Please refresh the page and try again.'
-            }
-          });
-        }   
-      }
-    });
-  })();
-}
-
-function shiftCodeFormGameChangeEvent () {
-  let form = dom.find.id('shift_code_form');
-  let gameID = dom.find.child(form, 'attr', 'name', 'general_game_id').value;
-  let platformFields = dom.find.children(form, 'attr', 'data-supported-games');
-
-  for (let field of platformFields) {
-    let supportedPlatforms = tryJSONParse(dom.get(field, 'attr', 'data-supported-games'));
-
-    for (let platform in supportedPlatforms) {
-      let supportedGames = supportedPlatforms[platform];
-      let child = dom.find.child(field, 'attr', 'value', platform);
-      let parent = dom.find.parent(child, 'class', 'field');
-      let isActive = supportedGames.indexOf(gameID) != -1;
-
-      isDisabled(child, !isActive);
-      edit.class(parent, !isActive ? 'add' : 'remove', 'disabled');
-      edit.attr(child, isActive ? 'add' : 'remove', 'checked');
-    }
-  }
-}
-
-// Startup Functions
-(function () {
-  let interval = setInterval(function () {
-    let isReady = typeof globalFunctionsReady != 'undefined'
-                  && typeof moment != 'undefined';
-
-    if (isReady) {
-      clearInterval(interval);
-
-      // Get page-specific SHiFT Props
-      (function () {
-        // Get page properties
-        props = tryJSONParse(dom.get(dom.find.id('shift_code_list'), 'attr', 'data-shift'));
-
-        if (props) {
-          for (let prop in props) {
-            if (shiftProps[prop] !== undefined) {
-              shiftProps[prop] = props[prop];
-            }
-          }
-        }
-      })();
-      // Configure layers
-      (function () { 
-        let template = dom.find.id('shift_code_template').content.children[0];
-        let layers = dom.find.children(template, 'class', 'layer');
-        
-        for (let i = 0; i < layers.length; i++) {
-          let layer = layers[i];
-
-          layer.id = `shift_code_layer_${i}`;
-          ShiftCodesTK.layers.setupLayer(layer);
-        }
-      })();
-      // Get initial SHiFT Code Listing
-      (function () {
-        hashState = addHashListener('shift_code_', function (hash) {
-          shiftProps.offset = 0;
-          shiftProps.code = hash.replace('#shift_code_', '');
-          retrieveCodes();
-          shiftProps.code = false;
-        });
+            if (timestamp) {
+              const formattedTimestamp = timestamp.format('MMMM DD, YYYY hh:mm A [UTC]');
     
-        if (!hashState) {
-         retrieveCodes();
-        }
-      })();
-      // Set SHiFT Code Update Timestamps
-      (function () {
-        let now = moment.utc().valueOf();
+              field.innerHTML = timestamp.fromNow();
+              updateLabel(field, formattedTimestamp, [ 'aria', 'tooltip' ]);
 
-        shiftUpdates.stats = {
-          first_check: now,
-          last_check: now
-        };
-      })();
-      // Event Listeners
-      (function () {
-        // Click Listeners (Sort/Filter, Redeem)
-        window.addEventListener('click', function (event) {
-          let target = event.target;
-
-          // Filter
-          if (target.id.indexOf('shift_header_count') != -1) {
-            let pressed = dom.has(target, 'attr', 'aria-pressed', 'true');
-            let filter = dom.get(target, 'attr', 'data-value');
-            let props = shiftProps.filter;
-
-            if (!pressed) { props.push(filter); }
-            else          { props.splice(props.indexOf(filter), 1); }
-
-            // updateLabel(target, target.title.replace(!pressed ? 'Filter' : 'clear Filter', !pressed ? 'clear Filter' : 'Filter'));
-      
-            shiftProps.offset = 0;
-            retrieveCodes();
-          }
-          // Redeem
-          else if (dom.has(target, 'class', 'redeem')) {
-            let shiftCode = dom.find.parent(target, 'class', 'shift-code');
-            let hash = shiftCode ? dom.get(shiftCode, 'attr', 'data-code-hash') : false;
-            let isRedeemed = shiftCode ? dom.has(shiftCode, 'class', 'redeemed') : false;
-    
-            if (shiftCode && hash && !dom.has(shiftCode, 'class', 'expired')) {
-              redeemShiftCode(hash, !isRedeemed);
+              return formattedTimestamp;
             }
           }
-        });
-        
-        // Add SHiFT Code
-        if (dom.find.id('shift_header_add')) {
-          dom.find.id('shift_header_add').addEventListener('click', function (e) {
-            let modal = dom.find.id('shift_code_modal');
-            let form = dom.find.child(modal, 'tag', 'form');
-            let fields = dom.find.children(form, 'class', 'input');
+
+          return false;
+        },
+
+        /**
+         * Toggle the active state of the SHiFT Code interface controls
+         * 
+         * @param {boolean} isActive Indicates the new active state of the SHiFT Code
+         * - **True** indicates that the controls are to be *enabled*.
+         * - **False** indicates that the controls are to be *disabled*.
+         * @returns {boolean} Returns **true** on success, or **false** on failure
+         */
+        toggleControls (state) {
+          try {
+            const shiftObj = this;
+            const controls = (function () {
+              let badges = dom.find.child(shiftObj.locations.shiftHeader, 'class', 'section badges');
+              let controls = [
+                dom.find.child(badges, 'class', 'new'),
+                dom.find.child(badges, 'class', 'expiring'),
+                dom.find.id('shift_header_add'),
+                dom.find.id('shift_header_sort_filter'),
+                dom.find.id('shift_code_pager')
+              ];
+              
+              return controls;
+            })();
+            let controlsUpdated = 0;
   
-            form.reset();
-  
-            for (let field of fields) {
-              let name = dom.get(field, 'attr', 'name');
-  
-              if (name.indexOf('auth') == -1) {
-                formUpdateField(form, name, '');
+            for (let control of controls) {
+              if (control && !dom.has(control, 'class', 'inactive')) {
+                isDisabled(control, !state);
+                controlsUpdated++;
               }
             }
-            
-            formUpdateField(form, 'general_game_id', shiftProps.game != 'all' ? shiftProps.game : '');
-            shiftCodeFormGameChangeEvent();
-            toggleModal(modal, true);
-          });
-        }
-        // Sort/Filter
-        (function () {
-          let slideout = dom.find.child(dom.find.id('shift_header'), 'class', 'slideout');
-          let toggleButton = dom.find.id('shift_header_sort_filter');
 
-          toggleButton.addEventListener('click', function (e) {
-            edit.attr(toggleButton, 'toggle', 'aria-pressed');
-            isHidden(slideout);
-          });
-
-          // Slideout Buttons
-          (function () {
-            let form = dom.find.child(slideout, 'tag', 'form');
-
-            dom.find.child(form, 'class', 'submit').addEventListener('click', function (e) {
-              let formData = ShiftCodesTK.forms.getFormData(form);
-              let bindings = {
-                game: formData.game_filter,
-                filter: formData['status_filter[]'],
-                order: formData.sort 
-              }
-
-              event.preventDefault();
-
-              for (let binding in bindings) {
-                let formValue = bindings[binding];
-
-                if (formValue !== undefined) {
-                  shiftProps[binding] = formValue;
-                }
-              }
-
-              if (bindings.game) {
-                edit.attr(document.body, 'update', 'data-theme', bindings.game != 'all' ? bindings.game : 'main');
-              }
-              edit.attr(toggleButton, 'update', 'aria-pressed', 'false');
-              isHidden(slideout, true);
-
-              setTimeout(retrieveCodes, 100);
-            });
-          })();
-        })();
-
-        // Dropdowns
-        (function () {
-          let layerObject = ShiftCodesTK.layers;
-
-          // Options Actions
-          layerObject.addLayerListener('shift_code_options_menu', function (option, layer) {
-            let value = dom.get(option, 'attr', 'data-value');
-            /** The code_id of the SHiFT Code */
-            let codeID = dom.get(layer, 'attr', 'data-code-id');
-
-            if (codeID) {
-              if (value == 'edit') {
-                /** The SHiFT Code */
-                let shiftCode = dom.find.id(`shift_code_${codeID}`);
-                /** The editing view */
-                let view = dom.find.child(shiftCode, 'class', 'view edit');
-                
-                newAjaxRequest({
-                  file: '/assets/requests/get/shift/codes',
-                  type: 'GET',
-                  params: {
-                    code: codeID,
-                    filter: [ 'inactive', 'active' ],
-                    game: 'all',
-                    limit: 1,
-                    offset: 0,
-                    order: 'default',
-                    owner: true
-                  },
-                  callback: function (responseText) {
-                    let response = tryJSONParse(responseText);
-
-                    function onError (errorMessage = 'This SHiFT Code could not be edited due to an error while downloading the SHiFT Code. Please try again later.') {
-                      newToast({
-                        settings: {
-                          template: 'exception'
-                        },
-                        content: {
-                          title: 'Failed to edit SHiFT Code',
-                          body: errorMessage
-                        }
-                      });
-                      isDisabled(target, false);
-                    }
-
-                    if (response && response.statusCode == 200) {
-                      let code = response.payload.shift_codes[0];
-
-                      if (code) {
-                        let canEdit = code.states.userCanEdit;
-
-                        if (canEdit) {
-                          let form = dom.find.child(view, 'tag', 'form');
-                          let moments = {
-                            release: code.info.release_date 
-                                    ? moment(code.info.release_date)
-                                    : false,
-                            expiration: code.info.expiration_date
-                                        ? moment.tz(code.info.expiration_date, code.info.timezone)
-                                        : false
-                          };
-
-                          if (!dom.has(form, 'class', 'configured')) {
-                            formSetup(form);
-                          }
-                          /** Form -> SHiFT Code bindings */
-                          let bindings = {
-                            general_code_id: code.properties.code_id,
-                            general_reward: code.info.reward,
-                            // general_game_id: shiftCode.properties.game_id,
-                            // general_source: shiftCode.info.source,
-                            // general_release_date: moments.release
-                            //                       ? moments.release.format('Y-MM-DD')
-                            //                       : '',
-                            // general_expiration_date_date: moments.expiration
-                            //                               ? moments.expiration.format('Y-MM-DD')
-                            //                               : '',
-                            // general_expiration_date_time: moments.expiration 
-                            //                               ? moments.expiration.format('HH:mm:SS')
-                            //                               : '',
-                            // general_expiration_date_tz: shiftCode.info.timezone,
-                            // general_notes: shiftCode.info.notes,
-                            // codes_pc: shiftCode.codes.code_pc,
-                            // platforms_pc: Object.keys(shiftCode.codes.platforms_pc),
-                            // codes_xbox: shiftCode.codes.code_xbox,
-                            // platforms_xbox: Object.keys(shiftCode.codes.platforms_xbox),
-                            // codes_ps: shiftCode.codes.code_ps,
-                            // platforms_ps: Object.keys(shiftCode.codes.platforms_ps),
-                          };
-
-                          form.reset();
-
-                          for (let field in bindings) {
-                            let binding = bindings[field];
-
-                            formUpdateField(form, field, binding);
-                          }
-
-                          // shiftCodeFormGameChangeEvent ();
-                          // toggleModal(modal, true);
-                          multiView_update(view);
-                          ShiftCodesTK.layers.toggleLayer(layer, false);
-                          setTimeout(function () {
-                            // isDisabled(target, false);
-                          }, 500);
-                        }
-                        else {
-                          newToast({
-                            settings: {
-                              duration: 'infinite'
-                            },
-                            content: {
-                              title: 'Failed to edit SHiFT Code',
-                              body: 'You do not have permission to edit this SHiFT Code.'
-                            }
-                          });
-                          // isDisabled(option, false);
-                        }
-                      }
-                      else {
-                        onError();
-                      }
-                    }
-                    else {
-                      onError();
-                      return false;
-                    }
-                  }
-                });
-              }
-              else if (value == 'make_public' || value == 'make_private') {
-                let shiftCode = dom.find.id(`shift_code_${codeID}`);
-                
-                ShiftCodesTK.layers.toggleLayer(layer, false);
-                
-                edit.class(
-                  shiftCode,
-                  value == 'make_public'
-                    ? 'remove'
-                    : 'add',
-                  'hidden'
-                );
-                updateShiftCodeTimestamp(shiftCode);
-
-                // Update SHiFT Code
-                (function () {
-
-                })();
-                // Update Dropdowns
-                (function () {
-                  let dropdowns = dom.find.children(shiftCode, 'class', 'shift-code-options-menu');
-
-                  for (let dropdown of dropdowns) {
-                    let options = dom.find.children(dropdown, 'class', 'visibility-toggle');
-
-                    for (let option of options) {
-                      let isSelectedOption = dom.get(option, 'attr', 'data-value') == value;
-
-                      isHidden(option, isSelectedOption);
-                      isDisabled(option, isSelectedOption);
-                    }
-                  }
-                })();
-              }
-              else if (value == 'delete') {
-                /** The confirmation modal */
-                let modal = dom.find.id('shift_code_deletion_confirmation_modal');
-                let form = dom.find.child(modal, 'tag', 'form');
-                
-                form.reset();
-                formUpdateField(form, 'code_id', codeID);
-                toggleDropdownMenu(layer, false);
-                toggleModal(modal, true);
-              }
+            if (controlsUpdated == 0) {
+              throw 'No controls were found on this page';
             }
-          });
-        })();
-        // Pager
-        tryToRun({
-          function: function () {
-            let pager = dom.find.id('shift_code_pager');
-
-            if (!pager || !dom.has(pager, 'class', 'configured')) {
-              return false;
-            }
-
-            addPagerListener(dom.find.id('shift_code_pager'), function (offset) {
-              shiftProps.offset = offset;
-              retrieveCodes();
-              return true;
-            });
 
             return true;
           }
-        });
-        // SHiFT Code Form Game ID Change
-        // tryToRun({
-        //   // function: function () {
-        //   //   let modal = dom.find.id('shift_code_modal');
-        //   //   let form = dom.find.id('shift_code_form');
-        //   //   let field = form ? dom.find.child(form, 'attr', 'name', 'general_game_id') : false;
-            
-        //   //   if (!modal || !dom.has(modal, 'class', 'configured')) {
-        //   //     return false;
-        //   //   }
+          catch (error) {
+            console.error(`local.shift.toggleControls Error: ${error}`);
+            return false;
+          }
+        },
+        /**
+         * Update various components of the SHiFT Code List Overlay
+         * 
+         * @param {object} settings The components that are to be updated and a **boolean** indication of if they are to be *visible* or not.
+         * - `overlay` — The SHiFT Code List Overlay container
+         * - `spinner` — The Loading Spinner
+         * - `error` — The error message to be displayed when no SHiFT Codes were found
+         * @returns {boolean} Returns **true** on success, and **false** on failure.
+         */
+        updateOverlay (settings) {
+          const pieces = {};
+                pieces.overlay = dom.find.id('shift_overlay');
+                pieces.spinner = dom.find.child(pieces.overlay, 'class', 'spinner');
+                pieces.error = dom.find.child(pieces.overlay, 'class', 'error');
+
+          for (let piece in pieces) {
+            const isVisible = settings[piece];
+
+            isHidden(pieces[piece], !isVisible);
+          }
+
+          return true;
+        },
+        /**
+         * Clear all present SHiFT Codes from the SHiFT Code list
+         * 
+         * @returns {int|false} Returns the *number of cleared SHiFT Codes* on success, or **false** if an error occurred.
+         */
+        clearShiftCodes () {
+          const shiftCodes = dom.find.children(this.locations.shiftCodeList, 'class', 'shift-code');
+          const removedCodes = shiftCodes.length;
+
+          for (let i = shiftCodes.length - 1; i >= 0; i--) {
+            deleteElement(shiftCodes[i]);
+          }
+
+          return removedCodes;
+        },
+
+        /**
+         * Create a new SHiFT Code Dropdown Panel for a given SHiFT Code
+         * 
+         * @param {object} shiftCodeData The *SHiFT Code Data `object`*
+         * @returns {Element|false} Returns the new *SHiFT Code Dropdown Panel* on success, or **false** if an error occurred.
+         */
+        createShiftCodePanel (shiftCodeData) {
+          try {
+            /** The SHiFT Codes Object */
+            const shiftObj = this;
+            /** The new SHiFT Code Dropdown Panel */
+            const shiftCodePanel = edit.copy(shiftObj.templates.shiftCode);
+            /** Sections of the `shiftCodePanel` */
+            const shiftCodeSections = {
+              header: dom.find.child(shiftCodePanel, 'class', 'header'),
+              body: dom.find.child(shiftCodePanel, 'class', 'body')
+            };
+            /** Different formats of the SHiFT Code ID */  
+            const shiftCodeIDs = {};
+                  shiftCodeIDs.baseElementID = 'shift_code';
+                  shiftCodeIDs.codeID = shiftCodeData.properties.code.id;
+                  shiftCodeIDs.elementID = `${shiftCodeIDs.baseElementID}_${shiftCodeIDs.codeID}`;
+
+            // Properties
+            (function () {
+              /**
+               * Converts IDs to their updated equivalents
+               * 
+               * @param {string} originalIDs A comma-separated list of IDs to update
+               * @returns {string} Returns the updated string
+               */
+              function getUpdatedID (originalIDs) {
+                const idList = originalIDs.split(', ');
+
+                for (let id in idList) {
+                  idList[id] = `${shiftCodeIDs.elementID}_${idList[id]}`;
+                }
+
+                return idList.join(', ');
+              }
+
+              shiftCodePanel.id = shiftCodeIDs.elementID;
+              edit.attr(shiftCodePanel, 'add', 'data-code-id', shiftCodeIDs.codeID);
+
+              if (codeHash = shiftCodeData.properties.code.hash) {
+                edit.attr(shiftCodePanel, 'add', 'data-code-hash', codeHash);
+              }
+
+              // Update Properties
+              (function () {
+                const updatedProperties = [
+                  'id',
+                  'for',
+                  'data-view',
+                  'data-target',
+                  'data-layer-target',
+                  'data-layer-targets',
+                  'aria-labelledby',
+                  'aria-describedby',
+                ];
+                const childrenToUpdate = shiftCodePanel.querySelectorAll(`[${updatedProperties.join('], [')}]`);
+                
+                for (let child of childrenToUpdate) {
+                  for (let property of updatedProperties) {
+                    const childValue = dom.get(child, 'attr', property);
+
+                    if (childValue !== false && childValue != '') {
+                      edit.attr(child, 'update', property, getUpdatedID(childValue));
+                    }
+                  }
+                }
+              })();
+
+            })(); 
+            // Configuration
+            (function () {
+              // Dropdown Panel Setup
+              dropdownPanelSetup(shiftCodePanel);
+              // Multi-View Configuration
+              multiView_setup(shiftCodeSections.body);
+              // Forms
+              formsObj.setupChildForms(shiftCodePanel);
+            })();
+            // Header
+            (function () {
+              // Reward
+              dom.find.child(shiftCodeSections.header, 'class', 'reward').innerHTML = shiftCodeData.info.reward;
+              
+              // Labels
+              (function () {
+                const codeState = shiftCodeData.properties.code.state;
+                const states = shiftCodeData.states;
+                
+                // Basic, Rare, New, Expiring 
+                (function () {
+                  const isBasicShiftCode = shiftCodeData.info.reward.trim().search(new RegExp('\\d{1} Golden Key(s){0,1}$')) == 0;
   
-        //   //   field.addEventListener('change', shiftCodeFormGameChangeEvent);
-        //   // }
-        // });
+                  // Basic SHiFT Code
+                  if (isBasicShiftCode) {
+                    edit.class(shiftCodePanel, 'add', 'basic');
+                  }
+                  // Rare SHiFT Code
+                  else {
+                    edit.class(shiftCodePanel, 'add', 'rare');
+                  }
+                  if (states.code.isActive && codeState == 'active') {
+  
+                    // New SHiFT Code
+                    if (states.code.isNew) {
+                      edit.class(shiftCodePanel, 'add', 'new');
+                    }
+                    // Expiring SHiFT Code
+                    if (states.code.isExpiring) {
+                      edit.class(shiftCodePanel, 'add', 'expiring');
+                    }
+                  }
+                  // Hidden
+                  else if (codeState == 'hidden') {
+                    edit.class(shiftCodePanel, 'add', 'hidden');
+                  }
+                  // Expired
+                  if (!states.code.isActive) {
+                    edit.class(shiftCodePanel, 'add', 'expired');
+                  }
+                })();
+
+                // Game Label
+                if (!requestsObj.savedRequests.getRequestParameter('FetchShiftCodes', 'game')) {
+                  /** The Game Label */
+                  let label = dom.find.child(shiftCodeSections.header, 'class', 'label game-label');
+                  /** The Game ID of the SHiFT Code */
+                  let gameID = shiftCodeData.properties.game_id;
+                  /** The Game Name of the SHiFT Code */
+                  let gameName = shiftNames[gameID];
+                  
+                  // Display the label
+                  edit.class(shiftCodePanel, 'add', 'game-label');
+                  // Update the label
+                  edit.class(label, 'add', gameID);
+                  label.innerHTML = label.innerHTML.replace('Borderlands', gameName);
+                  updateLabel(label, `This SHiFT Code is redeemable for ${gameName}`, [ 'aria', 'tooltip' ]);
+                }
+
+                // Recently Submitted
+                if (states.code.wasRecentlySubmitted) {
+                  edit.class(shiftCodePanel, 'add', 'recently-submitted');
+                }
+                // Recently Updated
+                else if (states.code.wasRecentlyUpdated) {
+                  edit.class(shiftCodePanel, 'add', 'recently-updated');
+                }
+                // Owner
+                if (states.user.isOwner) {
+                  edit.class(shiftCodePanel, 'add', 'owned');
+                }
+              })();
+
+              // Progress Bar
+              (function () {
+                /** The header Progress Bar */
+                const progressBar = dom.find.child(shiftCodeSections.header, 'class', 'progress-bar');
+                /** The inside bar of the Progress Bar */
+                const innerProgressBar = dom.find.child(progressBar, 'class', 'progress');
+                /** The progress value of the Progress Bar */
+                let progressValue = 0;
+                /** The label of the Progress Bar */
+                let progressTitle = '';
+
+                // SHiFT Code has an Expiration Date
+                if (shiftCodeData.info.release_date.type == 'date' && [ 'through', 'until' ].indexOf(shiftCodeData.info.expiration_date.type) != -1) {
+                  /** The Expiration Date Moment of the SHiFT Code */
+                  let expiration = moment.utc(shiftCodeData.info.expiration_date.value);
+                  /** The total duration of the SHiFT Code */
+                  let duration = expiration.diff(shiftCodeData.info.release_date.value, 'hours');
+                  /** The total number of hours remaining before the SHiFT Code is set to expire */
+                  let timeLeft = expiration.diff(moment.utc(), 'hours');
+                  /** The time-from-now string for the Expiration Date */
+                  let timeAgo = expiration.fromNow(true);
+
+                  // Active SHiFT Code
+                  if (shiftCodeData.states.code.isActive) {
+                    progressValue = 100 - Math.round((timeLeft / duration) * 100);
+                    progressTitle = ucWords(`${timeAgo} Remaining`);
+                  }
+                  // Expired SHiFT Code
+                  else {
+                    progressValue = 100;
+                    progressTitle = ucWords(`Expired ${timeAgo} Ago`);
+                  }
+                }
+                // SHiFT Code does have a Release or Expiration Date, or does not expire
+                else {
+                  edit.class(progressBar, 'add', 'inactive');
+                  progressValue = 0;
+
+                  if (shiftCodeData.info.expiration_date.type == 'infinite') {
+                    progressTitle = 'No Expiration Date';
+                  }
+                  else {
+                    progressTitle = 'No Provided Release/Expiration Date';
+                  }
+                }
+
+                // edit.attr(progressBar, 'add', 'aria-valuenow', progressValue);
+                updateProgressBar(progressBar, progressValue, { useWidth: true });
+                updateLabel(progressBar, progressTitle, [ 'tooltip' ]);
+                edit.class(innerProgressBar, 'add', shiftCodeData.properties.game_id);
+                // innerProgressBar.style.width = `${progressValue}%`;
+              })();
+            })();
+            // Body
+            (function () {
+              /**
+               * Retrieve the content block of a given field
+               * 
+               * @param {string} name The name of the field.
+               * @returns {Element} Returns the content block of the field
+               */
+              function getShiftCodeField (name) {
+                const section = dom.find.child(shiftCodeSections.body, 'class', `section ${name}`);
+                const content = dom.find.child(section, 'class', 'content');
+
+                return content;
+              }
+
+              // Code Information
+              (function () {
+                // Release & Expiration Date
+                (function () {
+                  /** Date Formats */
+                  let formats = {};
+                      /** Display Date Formats */
+                      formats.dates = {};
+                      formats.dates.date = 'MMM DD, YYYY';
+                      formats.dates.expandedDate = 'MMMM DD, YYYY';
+                      formats.dates.time = 'h:mm A zz';
+                      formats.dates.full = `${formats.dates.date} ${formats.dates.time}`;
+                      formats.dates.expanded = `${formats.dates.expandedDate} ${formats.dates.time}`;
+                      /** Calendar Date Formats */
+                      formats.calendars = {
+                        sameDay: '[Today]',
+                        nextDay: '[Tomorrow]',
+                        nextWeek: 'dddd',
+                        lastDay: '[Yesterday]',
+                        lastWeek: '[Last] dddd',
+                      };
+                  /** Specific Release & Expiration Formats & Dates */
+                  let dates = {};
+                      /** Release Date Formats & Dates */
+                      dates.release = {};
+                      dates.release.formats = (function () {
+                        let f = {
+                          simple: {},
+                          full: {},
+                          expanded: {}
+                        };
+                        let dates = formats.dates
+                        let calendars = formats.calendars;
+
+                        for (let calendar in calendars) {
+                          f.simple[calendar] = `${calendars[calendar]}`;
+                          f.full[calendar] = `${calendars[calendar]}, ${dates.date}`;
+                          f.expanded[calendar] = `${calendars[calendar]}, ${dates.expandedDate}`;
+                        }
+
+                        f.simple.sameElse = f.full.sameElse = dates.date;
+                        f.expanded.sameElse = `dddd, ${dates.expandedDate}`;
+
+                        return f;
+                      })();
+                      dates.release.type = shiftCodeData.info.release_date.type;
+                      dates.release.dates = (function () {
+                        let release = shiftCodeData.info.release_date.value;
+
+                        if (dates.release.type == 'date') {
+                          /** The SHiFT Code Release Date Moment */
+                          let releaseMoment = moment(release);
+
+                          return {
+                            simple: releaseMoment.calendar(null, dates.release.formats.simple),
+                            full: releaseMoment.calendar(null, dates.release.formats.full),
+                            expanded: releaseMoment.calendar(null, dates.release.formats.expanded),
+                          };
+                        }
+                        else {
+                          return false;
+                        }
+                      })();
+                      /** Expiration Date Formats & Dates */
+                      dates.expiration = {};
+                      dates.expiration.formats = (function () {
+                        let f = {
+                          simple: {},
+                          full: {},
+                          expanded: {}
+                        };
+                        let dates = formats.dates
+                        let calendars = formats.calendars;
+
+                        for (let calendar in calendars) {
+                          f.simple[calendar] = `${calendars[calendar]}, ${dates.time}`;
+                          f.full[calendar] = `${calendars[calendar]}, ${dates.full}`;
+                          f.expanded[calendar] = `${calendars[calendar]}, ${dates.expanded}`;
+                        }
+
+                        f.simple.sameElse = f.full.sameElse = dates.full;
+                        f.expanded.sameElse = `dddd, ${dates.expanded}`;
+
+                        return f;
+                      })();
+                      dates.expiration.type = shiftCodeData.info.expiration_date.type;
+                      dates.expiration.dates = (function () {
+                        let expiration = shiftCodeData.info.expiration_date.value;
+
+                        if ([ 'through', 'until' ].indexOf(dates.expiration.type) != -1) {
+                          /** The SHiFT Code Release Date Moment */
+                          let expirationMoment = moment.tz(expiration, shiftCodeData.info.timezone);
+
+                          return {
+                            simple: expirationMoment.calendar(null, dates.expiration.formats.simple),
+                            full: expirationMoment.calendar(null, dates.expiration.formats.full),
+                            expanded: expirationMoment.calendar(null, dates.expiration.formats.expanded),
+                          };
+                        }
+                        else {
+                          return false;
+                        }
+                      })();
+
+                  for (let date in dates) {
+                    let dateType = dates[date].type;
+                    let dateDates = dates[date].dates;
+                    /** The Date Field Components */
+                    let comps = {};
+                        comps.main = getShiftCodeField(date);
+                        comps.simple = dom.find.child(comps.main, 'class', 'simple');
+                        comps.full = dom.find.child(comps.main, 'tag', 'dd');
+
+                    // Valid Date
+                    if (dateDates) {
+                      // Display Relative Date
+                      if (dateDates.simple != dateDates.full) {
+                        comps.simple.firstChild.innerHTML = dateDates.simple;
+                      }
+                      // Only display Actual Date
+                      else {
+                        deleteElement(comps.simple);
+                      }
+
+                      comps.full.innerHTML = dateDates.full;
+                      updateLabel(comps.full, dateDates.expanded, [ 'tooltip' ]);
+                    }
+                    // Date was not provided or never expires
+                    else {
+                      edit.class(comps.main, 'add', 'inactive');
+                      deleteElement(comps.simple);
+
+                      // No date provided
+                      if (dateType == 'none') {
+                        comps.full.innerHTML = `N/A`;
+                        updateLabel(comps.full, `No ${ucWords(date)} Date was provided`, [ 'tooltip' ]);
+                      }
+                      else if (dateType == 'infinite') {
+                        comps.full.innerHTML = `Never Expires`;
+                        updateLabel(comps.full, `This SHiFT Code is set to never expire`, [ 'tooltip' ]);
+                      }
+                    }
+                  }
+                })();
+                // Source
+                (function () {
+                  /** The SHiFT Code Source Field */
+                  let field = getShiftCodeField('source');
+                  /** The Source Link Component */
+                  let onlineComp = dom.find.child(field, 'class', 'online-source');
+                  /** The Source Static Text Component */
+                  let physicalComp = dom.find.child(field, 'class', 'physical-source');
+                  /** The SHiFT Code Source Type */
+                  let sourceType = shiftCodeData.info.source.type;
+                  /** The SHiFT Code Source */
+                  let source = shiftCodeData.info.source.value;
+
+                  if (sourceType != 'none') {
+                    if (sourceType == 'online') {
+                      onlineComp.href = source;
+                      onlineComp.innerHTML += source;
+                      deleteElement(physicalComp.nextElementSibling);
+                      deleteElement(physicalComp);
+                    }
+                    else if (sourceType == 'physical') {
+                      physicalComp.innerHTML = source;
+                      deleteElement(onlineComp.nextElementSibling);
+                      deleteElement(onlineComp);
+                    }
+                  }
+                  else {
+                    edit.class(field, 'add', 'inactive');
+                    physicalComp.innerHTML = 'N/A';
+                    updateLabel(physicalComp, 'A source was not provided for this SHiFT Code', [ 'title', 'tooltip' ]);
+                    deleteElement(onlineComp.nextElementSibling);
+                    deleteElement(onlineComp);
+                  }
+                })();
+                // Notes
+                (function () {
+                  /** The SHiFT Code Notes Field */
+                  let field = getShiftCodeField('notes');
+                  /** The SHiFT Code Notes */
+                  let notes = shiftCodeData.info.notes;
+
+                  if (notes !== null) {
+                    /** The Notes Field list */
+                    let list = dom.find.child(field, 'tag', 'ul');
+                    /** The converted notes markup */
+                    let markup = (function () {
+                      // One or more specified line-items
+                      if (notes.indexOf('-') != -1) {
+                        // Convert "-" to line items
+                        return notes.replace(new RegExp('-.*', 'g'), function (match) {
+                          return `${match.replace(new RegExp('-\\s{1}', 'g'), '<li>')}</li>`;
+                        });
+                      }
+                      // No specified line items
+                      else {
+                        return `<li>${notes}</li>`;
+                      }
+                    })();
+
+                    list.innerHTML = markup;
+                  }
+                  else {
+                    deleteElement(field.parentNode);
+                  }
+                })();
+              })();
+              // SHiFT Codes
+              (function () {
+                /** SHiFT Code Platform Data */
+                const platformData = ShiftCodesTK.shift.platforms;
+                /** The SHiFT Codes*/
+                const shiftCodes = shiftCodeData.codes.shift_codes;
+                /** The supported platforms*/
+                const platforms = shiftCodeData.codes.platforms;
+                /** The SHiFT Code Section Template */
+                const codeSectionTemplate = dom.find.child(shiftCodeSections.body, 'class', 'shift-code');
+
+                for (let familyID in shiftCodes) {
+                  let familyCode = shiftCodes[familyID];
+                  let familyPlatforms = platforms[familyID];
+
+                  if (familyCode && familyPlatforms) {
+                    let section = edit.copy(codeSectionTemplate);
+
+                    // SHiFT Code Family
+                    (function () {
+                      const content = (function () {
+                        // Universal SHiFT Codes
+                        if (familyID == 'universal') {
+                          return {
+                            title: 'Universal SHiFT Code',
+                            tooltip: 'This SHiFT Code can be redeemed for all supported platforms'
+                          };
+                        }
+                        // Individual SHiFT Codes
+                        else {
+                          let familyData = platformData[familyID];
+
+                          if (familyData) {
+                            let displayName = familyData.display_name;
+
+                            if (displayName) {
+                              return {
+                                title: `${displayName} SHiFT Code`,
+                                tooltip: `This SHiFT Code can be redeemed for <strong>${displayName}</strong> platforms`
+                              };
+                            }
+                          }
+                        }
+                      })();
+                      const field = dom.find.child(section, 'class', 'platform-family');
+                      const tooltip = field.nextElementSibling;
+
+                      field.innerHTML = content.title;
+                      updateLabel(field, content.tooltip.replace(new RegExp('\\<strong(?:\\/){0,1}\\>', 'g'), ''), [ 'aria' ]);
+                      tooltip.innerHTML = content.tooltip;
+                      // layersObj.setupLayer(tooltip);
+                    })();
+                    // SHiFT Code Platform List
+                    (function () {
+                      const platforms = (function () {
+                        let platformList = [];
+
+                        // Universal SHiFT Codes
+                        if (familyID == 'universal') {
+                          // Loop through all supported platform families
+                          let platformFamilyIDList = Object.keys(platformData);
+
+                          for (let platformListFamilyID of platformFamilyIDList) {
+                            let platformListFamilyData = platformData[platformListFamilyID];
+
+                            if (platformListFamilyData) {
+                              // Loop through supported platforms
+                              let platformListFamilyPlatforms = platformListFamilyData.platforms
+
+                              if (platformListFamilyPlatforms) {
+                                for (let platformListPlatformID in platformListFamilyPlatforms) {
+                                  // Platform is supported
+                                  if (familyPlatforms.indexOf(platformListPlatformID) != -1) {
+                                    let platformListPlatformData = platformListFamilyPlatforms[platformListPlatformID];
         
+                                    if (platformListPlatformData) {
+                                      let platformListPlatformDisplayName = platformListPlatformData.display_name;
+        
+                                      if (platformListPlatformDisplayName) {
+                                        platformList.push(platformListPlatformDisplayName);
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                        // Individual SHiFT Codes
+                        else {
+                          // Loop through provided platforms
+                          for (let platform of familyPlatforms) {
+                            let familyData = platformData[familyID];
+
+                            if (familyData) {
+                              let familyPlatforms = familyData.platforms;
+
+                              if (familyPlatforms) {
+                                let familyPlatformData = familyPlatforms[platform];
+
+                                if (familyPlatformData) {
+                                  let familyPlatformDisplayName = familyPlatformData.display_name;
+
+                                  if (familyPlatformDisplayName) {
+                                    platformList.push(familyPlatformDisplayName);
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+
+                        return platformList;
+                      })();
+                      const platformList = dom.find.child(section, 'class', 'platform-list');
+                      const platformLabelTemplate = dom.find.child(platformList, 'tag', 'li');
+
+                      for (let platform of platforms) {
+                        const platformLabel = edit.copy(platformLabelTemplate);
+                        const platformLabelContainer = dom.find.child(platformLabel, 'class', 'platform');
+                        const platformLabelContent = dom.find.child(platformLabelContainer, 'tag', 'span');
+                        const platformLabelTooltip = dom.find.child(platformLabel, 'class', 'tooltip');
+                        const tooltipText = `This SHiFT Code can be redeemed for <strong>${platform}</strong>.`;
+                        
+                        updateLabel(platformLabel, tooltipText.replace(new RegExp('\\<(?:\\/){0,1}strong\\>', 'g'), ''), [ 'aria' ]);
+                        edit.class(platformLabelContainer, 'add', shiftCodeData.properties.game_id);
+                        platformLabelContent.innerHTML = platform;
+                        platformLabelTooltip.innerHTML = tooltipText;
+
+                        platformLabel = platformList.appendChild(platformLabel);
+                        // layersObj.setupLayer(dom.find.child(platformLabel, 'class', 'layer'));
+                      }
+
+                      deleteElement(platformLabelTemplate);
+                    })();
+                    // SHiFT Code
+                    (function () {
+                      const field = dom.find.child(section, 'class', 'code');
+
+                      field.innerHTML = familyCode;
+                      edit.class(dom.find.parent(field, 'class', 'content'), 'add', shiftCodeData.properties.game_id);
+                    })();
+                    // Copy to Clipboard Button
+                    (function () {
+                      const button = dom.find.child(section, 'class', 'copy-to-clipboard');
+
+                      edit.class(button, 'add', shiftCodeData.properties.game_id);
+                    })();
+
+                    codeSectionTemplate.insertAdjacentElement('beforebegin', section);
+                  }
+                }
+
+                // SHiFT Code Usage Link
+                (function () {
+                  const codeUsage = dom.find.child(shiftCodeSections.body, 'class', 'shift-code-usage');
+                  const inGame = dom.find.child(codeUsage, 'class', 'in-game');
+
+                  inGame.href += `/${shiftCodeData.properties.game_id}`;
+                })();
+
+                deleteElement(codeSectionTemplate);
+              })();
+            })();
+            // Footer
+            (function () {
+              const footer = dom.find.child(shiftCodeSections.body, 'class', 'footer');
+
+              // Actions 
+              (function () {
+                let actions = {};
+                    actions.container = dom.find.child(footer, 'class', 'actions');
+                    actions.share = dom.find.child(actions.container, 'class', 'share');
+                    actions.redeem = dom.find.child(actions.container, 'class', 'redeem');
+                    actions.optionsMenu = dom.find.child(actions.container, 'class', 'options-menu');
+      
+                // Active SHiFT Code
+                if (shiftCodeData.states.code.isActive) {
+                  // Share Form
+                  (function () {
+                    const shareForm = dom.find.child(actions.share, 'tag', 'form');
+                    const codeIDField = formsObj.getField(shareForm, 'share_link');
+
+                    formsObj.updateField(codeIDField, `https://${window.location.host}/${shiftCodeData.properties.game_id}?code=${shiftCodeData.properties.code.id}`, { updateDefault: true });
+                  })(); 
+                  // Redeem Form
+                  (function () {
+                    const redeemForm = dom.find.child(actions.redeem, 'tag', 'form');
+                    const bindings = {
+                      code: shiftCodeData.properties.code.hash,
+                      action: shiftCodeData.states.user.hasRedeemed ? 'remove' : 'redeem'
+                    };
+  
+                    for (let binding in bindings) {
+                      let bindingValue = bindings[binding];
+                      let field = formsObj.getField(redeemForm, binding);
+  
+                      if (field) {
+                        if (Array.isArray(field)){
+                          formsObj.updateField(field[0], bindingValue);
+                        }
+                        else {
+                          formsObj.updateField(field, bindingValue);
+                        }
+                      }
+                    }
+                  })();
+                }
+                // Inactive SHiFT Code
+                else {
+                  isDisabled(dom.find.child(actions.share, 'tag', 'button'), true);
+                  isDisabled(dom.find.child(actions.redeem, 'tag', 'button'), true);
+                  // updateLabel(actions.redeem, 'This SHiFT Code has Expired.', [ 'aria', 'tooltip' ]);
+                }
+              })();
+              // Info
+              (function () {
+                let info = {};
+                    info.container = dom.find.child(footer, 'class', 'code-info');
+                    info.id = dom.find.child(info.container, 'class', 'id');
+                    info.lastUpdate = dom.find.child(info.container, 'class', 'last-update');
+                    info.owner = dom.find.child(info.container, 'class', 'owner');
+                
+                /** 
+                 * Update the value of a given Info Field
+                 * 
+                 * @param {string} infoName The name of the field that is to be updated.
+                 * @param {string} infoValue The new value of the field.
+                 * @param {string} infoLabel The alternative text label of the field.
+                 */
+                function updateInfoValue (infoName, infoValue, infoLabel = false) {
+                  let value = dom.find.child(info[infoName], 'tag', 'dd');
+
+                  value.innerHTML = infoValue;
+
+                  if (infoLabel) {
+                    updateLabel(value, infoLabel, [ 'tooltip' ]);
+                  }
+                }
+
+                // SHiFT Code ID
+                (function () {
+                  const ID = shiftCodeData.properties.code.id;
+
+                  updateInfoValue('id', ID, `SHiFT Code<br><i>#${ID}</i>`);
+                })();
+                // SHiFT Code Last Update
+                (function () {
+                  shiftObj.updateShiftCodeTimestamp(shiftCodePanel, shiftCodeData.info.last_update);
+                })();
+                // The SHiFT Code Owner
+                (function () {
+                  // At this time, don't display username unless the user has Edit Permission
+                  if (!shiftCodeData.states.user.canEdit) {
+                    deleteElement(info.owner);
+                  }
+                  else {
+                    let username = shiftCodeData.properties.owner.username;
+                    let userID = shiftCodeData.properties.owner.id;
+
+                    updateInfoValue('owner', username, `${username}<br><i>#${userID}</i>`);
+                  }
+                })();
+              })();
+            })();
+            // Options Menu
+            (function () {
+              const menus = dom.find.children(shiftCodePanel, 'class', 'shift-code-options-menu');
+
+              for (let menu of menus) {
+                let pieces = {};
+                  (function () {
+                    pieces.codeID = dom.find.child(menu, 'class', 'code-id');
+                    pieces.share = dom.find.child(menu, 'attr', 'data-value', 'share');
+                    pieces.report = dom.find.child(menu, 'attr', 'data-value', 'report');
+                    pieces.editActions = dom.find.child(menu, 'class', 'edit-actions');
+                    pieces.visibilityForm = dom.find.child(pieces.editActions, 'attr', 'data-form-name', 'toggle_shift_code_visibility_form');
+                    pieces.makePublic = dom.find.child(pieces.visibilityForm, 'attr', 'data-value', 'make_public');
+                    pieces.makePrivate = dom.find.child(pieces.visibilityForm, 'attr', 'data-value', 'make_private');
+                    pieces.deleteForm = dom.find.child(pieces.editActions, 'attr', 'data-form-name', 'delete_shift_code_form');
+                  })();
+
+                edit.attr(menu, 'add', 'data-code-id', shiftCodeIDs.codeID);
+                pieces.codeID.innerHTML = shiftCodeIDs.codeID;
+
+                if (shiftCodeData.states.user.isOwner) {
+                  isDisabled(pieces.report);
+                  updateLabel(pieces.report, 'You cannot report your own SHiFT Code.', [ 'aria', 'tooltip' ]);
+                }
+                // User has Edit Permission
+                if (shiftCodeData.states.user.canEdit) {
+                  // Update Visibility Buttons
+                  (function () {
+                    const inactiveButton = shiftCodeData.properties.code.state == 'active'
+                                      ? pieces.makePublic
+                                      : pieces.makePrivate;
+                    const field = formsObj.getField(pieces.visibilityForm, 'code_id');
+  
+                    formsObj.updateField(field, shiftCodeIDs.codeID);
+                    // formsObj.toggleField(inactiveButton, { hidden: true, disabled: true });
+                                      
+                    isHidden(inactiveButton, true);
+                    isDisabled(inactiveButton, true);
+                  })();
+                  // Update Delete Button
+                  (function () {
+                    const field = formsObj.getField(pieces.deleteForm, 'code_id');
+
+                    formsObj.updateField(field, shiftCodeIDs.codeID, { updateDefault: true });
+                  })(); 
+                }
+                // User does not have Edit Permission
+                else {
+                  deleteElement(pieces.editActions);
+                }
+              }
+            })();
+            // Final Configuration
+            (function () {
+              // Layers
+              ShiftCodesTK.layers.setupChildLayers(shiftCodePanel);
+              // Redeemed SHiFT Code
+              if (shiftCodeData.states.user.hasRedeemed) {
+                shiftObj.redeemShiftCode(shiftCodePanel, true);
+              }
+            })();
+
+            return shiftCodePanel;
+          }
+          catch (error) {
+            console.error(`local.shift.createShiftCodePanel Error: ${error}`);
+            return false;
+          }
+        },
+        /**
+         * Retrieves the SHiFT Codes Result Set
+         * 
+         * @returns {boolean} Returns **true** if the request has been sent, or **false** if an error occurred.
+         */
+        fetchShiftCodes () {
+          const shiftObj = this;
+          
+          shiftObj.toggleControls(false);
+          shiftObj.updateOverlay({
+            overlay: true,
+            spinner: true,
+            error: false
+          });
+          lpbUpdate(50, true, { start: 15 });
+
+          shiftObj.updateCheck.stop();
+          shiftObj.clearShiftCodes();
+
+          // Dispatch the request
+          // setTimeout(() => {
+          //   // if (shiftObj.request && shiftObj.request.readyState != 4) {
+          //   //   console.warn('Aborted SHiFT Code Request.');
+          //   //   shiftObj.request.abort();
+          //   // }
+  
+          //   // const requestObject = newAjaxRequest({
+          //   //   file: '/assets/requests/get/shift/codes',
+          //   //   params: shiftCodeParams,
+          //   //   callback: handleFetchShiftCodesResponse
+          //   // });
+          //   requestID = request('FetchShiftCodes');
+          //   shiftObj.request = requestID;
+          // }, 50);
+
+          return true;
+        }
+      };
+
+      // Startup
+      (function () {
+        const shiftObj = ShiftCodesTK.local.shift;
+        const requestsObj = ShiftCodesTK.requests;
+
+        // Sync SHiFT Properties
+        (function () {
+          // Page Properties
+          (function () {
+            const shiftCodeList = shiftObj.locations.shiftCodeList;
+            const pageProps = tryJSONParse(dom.get(shiftCodeList, 'attr', 'data-shift'));
+  
+            if (pageProps) {
+              for (let prop in shiftObj.props) {
+                let pageProp = pageProps[prop];
+                let storedProp = shiftObj.props[prop];
+
+                if (pageProp !== undefined) {
+                  if (pageProp != storedProp) {
+                    shiftObj.setResultProp(prop, pageProp);
+                    storedProp.defaultValue = pageProp;
+                  }
+                  if (pageProps.lockedProperties && pageProps.lockedProperties.indexOf(prop) != -1) {
+                    shiftObj.props[prop].isLocked = true;
+                  }
+                }
+              }
+
+              // edit.attr(shiftCodeList, 'remove', 'data-shift');
+            }
+          })();
+
+          // Query Properties
+          // shiftObj.syncQueryParams('var');
+          // requestsObj.savedRequests.syncQueryParams('FetchShiftCodes', 'params');
+        })(); 
+        // Setup Requests
+        (function () {
+          // FetchShiftCodes
+          (function () {
+            function handleFetchShiftCodesResponse (responseData, requestData) {
+              if (responseData && responseData.statusCode == 200) {
+                lpbUpdate(85, true, { start: 50 });
+  
+                setTimeout(() => {
+                  const shiftCodes = responseData.payload.shift_codes;
+  
+                  if (shiftCodes) {
+                    const flagCounts = shiftCodes.flag_counts;
+    
+                    // Update SHiFT Components
+                    if (flagCounts && shiftObj.stats != flagCounts) {
+                      shiftObj.stats = flagCounts;
+                      shiftObj.syncShiftComponents();
+                    }
+  
+                    // Update Result List
+                    if (shiftCodes && shiftCodes.length > 0) {
+                      // Create and Push SHiFT Code Dropdown Panels
+                      for (let shiftCodeIndex = 0; shiftCodeIndex < shiftCodes.length; shiftCodeIndex++) {
+                        const shiftCode = shiftCodes[shiftCodeIndex];
+                        const shiftCodePanel = shiftObj.createShiftCodePanel(shiftCode);
+  
+                        if (shiftCodePanel) {
+                          shiftCodePanel.style.animationDelay = `${shiftCodeIndex * 0.2}s`;
+                          shiftObj.locations.shiftCodeList.appendChild(shiftCodePanel);
+                        }
+                      }
+    
+                      shiftObj.updateOverlay({
+                        overlay: false
+                      });
+                    }
+                    // No SHiFT Codes Found
+                    else {
+                      shiftObj.updateOverlay({
+                        overlay: true,
+                        spinner: false,
+                        error: true
+                      });
+                    }
+    
+                    shiftObj.updateCheck.start();
+                    
+                    setTimeout(function () {
+                      shiftObj.toggleControls(true);
+                      lpbUpdate(100);
+                    }, 500);
+                  }
+                }, 50);
+              }
+              else {
+                lpbUpdate(100);
+                shiftObj.updateOverlay({
+                  overlay: true,
+                  spinner: false,
+                  error: true
+                });
+                ShiftCodesTK.toasts.newToast({
+                  settings: {
+                    template: 'fatalException'
+                  },
+                  content: {
+                    title: 'SHiFT Code Downloading Error',
+                    body: 'We could not retrieve any SHiFT Codes due to an error. Please refresh the page and try again.'
+                  }
+                });
+              }
+              // if (requestID == shiftObj.request) {
+              // }
+              // else {
+              //   console.warn('Expired Request ID. Ignoring.');
+              // }
+            }
+  
+            const requestName = 'FetchShiftCodes';
+            const requestConfiguration = {
+              type: 'pagination',
+              request: {
+                path: '/assets/requests/get/shift/codes',
+                callback: handleFetchShiftCodesResponse,
+                params: {
+                  get_result_set_data: true,
+                  get_flag_counts: true,
+                },
+              },
+              controls: {
+                sortAndFilter: dom.find.id('shift_header_sort_filter_form'),
+                pager: dom.find.id('shift_code_pager'),
+                controlsState: [
+                  dom.find.id('shift_header_add'),
+                  dom.find.id('shift_header_sort_filter'),
+                  dom.find.id('shift_code_pager')
+                ]
+              },
+              syncParameters: 'replace'
+            };
+            const shiftCodeList = shiftObj.locations.shiftCodeList;
+            const pageProps = tryJSONParse(dom.get(shiftCodeList, 'attr', 'data-shift'));
+            const requestParameters = (function () {
+              const properties = {
+                /** @property `null|string` The *GameID* of a specific game to filter by, or **null** to not filter by game. */
+                game: null,
+                /** 
+                 * @property `array` The list of *Code Status Filters*
+                 * - Possible values include *"active"*, *"expired"*, & *"hidden"*
+                 **/
+                status: [ 'active' ],
+                /** @property `null|string` The *Platform ID* of the platform to filter by, or **null** to not filter by platform. */
+                platform: null,
+                /** @property `null|string` The *User ID* of the user to filter by, or **null** to not filter by platform. */
+                owner: null,
+                /** @property `null|string` The *Code ID* of the SHiFT Code to search for, or **null** to not search for a particular SHiFT Code. */
+                code: null,
+                /** @property `"default"|"newest"|"oldest"` Indicates how the returned SHiFT Codes are to be ordered. */
+                order: 'default',
+                /** @property `int` Indicates how many SHiFT Codes are to be returned per result set. */
+                limit: 10,
+                /** @property `int` Indicates the current page number of results. */
+                page: 1
+              };
+  
+              // Page Properties
+              (function () {
+                const pageProps = tryJSONParse(dom.get(shiftCodeList, 'attr', 'data-shift'));
+      
+                if (pageProps) {
+                  for (let prop in properties) {
+                    let pageProp = pageProps[prop];
+                    let storedProp = shiftObj.props[prop];
+  
+                    if (pageProp !== undefined) {
+                      if (pageProp != storedProp) {
+                        properties[prop] = pageProp;
+                      }
+                    }
+                  }
+  
+                  edit.attr(shiftCodeList, 'remove', 'data-shift');
+                }
+              })();
+  
+              return properties;
+            })();
+    
+            requestsObj.savedRequests.saveRequest(requestName, requestConfiguration, requestParameters, pageProps.readOnlyProperties ? pageProps.readOnlyProperties : []);
+            // requestsObject.request(requestName);
+          })();
+          // GetShiftCode
+          (function () {
+            const requestName = 'GetShiftCode';
+            const requestConfiguration = {
+              request: {
+                path: '/assets/requests/get/shift/codes',
+                params: {
+                  game: null,
+                  status: [ 'active', 'expired', 'hidden' ],
+                  limit: 1,
+                  page: 1
+                }
+              }
+            };
+            const requestParameters = {
+              /** 
+               * @property `array` The list of *Code Status Filters*
+               * - Possible values include *"active"*, *"expired"*, & *"hidden"*
+               **/
+              status: [ 'active', 'expired', 'hidden' ],
+              /** @property `null|string` The *User ID* of the user to filter by, or **null** to not filter by platform. */
+              owner: null,
+              /** @property `null|string` The *Code ID* of the SHiFT Code to search for. */
+              code: null
+            }
+            
+            requestsObj.savedRequests.saveRequest(requestName, requestConfiguration, requestParameters);
+            // requestsObject.request(requestName);
+          })();
+        })();
+        // Initial SHiFT Code Listing
+        (function () {
+          const requestName = 'FetchShiftCodes';
+          const hasMatchingHash = addHashListener('shift_code_\d{12}$', function (hash) {
+            requestsObj.savedRequests.setRequestParameter(requestName, 'page', 1);
+            requestsObj.savedRequests.setRequestParameter(requestName, 'code', hash.replace('#shift_code_', ''));
+            requestsObj.request(requestName);
+            requestsObj.savedRequests.setRequestParameter(requestName, 'code', null);
+          });
+
+          if (!hasMatchingHash) {
+            // shiftObj.fetchShiftCodes();
+            requestsObj.request(requestName);
+          }
+        })();
+        // Initial SHiFT Code Update Timestamps
+        (function () {
+          let now = moment.utc().valueOf();
+
+          shiftObj.updateCheck.updateStats = {
+            first: now,
+            last: now
+          };
+        })();
+        // Event Listeners
+        (function () {
+          // Request Dispatch
+          window.addEventListener('tkRequestsRequestDispatched', (event) => {
+            const requiredRequestPath = ShiftCodesTK.requests.savedRequests.getRequest('FetchShiftCodes').configuration.request.path;
+            const eventRequestPath = event.requestEventData.request.requestEventData.requestProperties.path;
+
+            if (eventRequestPath.indexOf(requiredRequestPath) != -1) {
+              shiftObj.toggleControls(false);
+              shiftObj.updateOverlay({
+                overlay: true,
+                spinner: true,
+                error: false
+              });
+              lpbUpdate(50, true, { start: 15 });
+
+              shiftObj.updateCheck.stop();
+              shiftObj.clearShiftCodes();
+            }
+          });
+          // Sort/Filter Slideout
+          (function () {
+            const slideout = dom.find.child(shiftObj.locations.shiftHeader, 'class', 'slideout');
+
+            // Toggle
+            (function () {
+            const button = dom.find.id('shift_header_sort_filter');
+
+            if (button) {
+              button.addEventListener('click', (event) => {
+                isHidden(slideout);
+              });
+
+              // Form
+              (function () {
+                const form = dom.find.child(slideout, 'tag', 'form');
+    
+                if (form) {
+                  formsObj.getField(form, 'game').addEventListener('tkFormsFieldCommit', (event) => {
+                    const formEventData = event.formEventData;
+                    const newValue = formEventData.fieldValue;
+                    const platforms = formsObj.getField(form, 'platform_filter');
+
+                    for (let platform of platforms) {
+                      if (newValue === "" || ShiftCodesTK.shift.games[newValue].support.unsupported.platforms.indexOf(platform.value) != -1) {
+                        isDisabled(platform, newValue !== "");
+                      }
+                    }
+
+                  });
+                  form.addEventListener('tkFormsFormAfterSubmit', (event) => {
+                    const formEventData = event.formEventData;
+                    console.log(formEventData);
+                  });
+                }
+                else {
+                  console.warn('local.shift Setup Warning: Sort/Filter Form is missing');
+                }
+              })();
+            }
+            else {
+              console.warn('local.shift Setup Warning: Sort/Filter Header Button is missing');
+            }
+            })();
+          })();
+          // Click Listeners (Update Indicator)
+          window.addEventListener('click', (event) => {
+            // Update Indicator
+            if (dom.has(event.target, 'class', 'update-indicator', null, true)) {
+              shiftObj.updateCheck.update();
+            }
+          });
+          // Redeem SHiFT Code Hook
+          window.addEventListener('tkFormsFormAfterSubmit', (event) => {
+            const formEventData = event.formEventData;
+            
+            if (formEventData.formProps.info.name == 'redeem_shift_code_form') {
+              const formData = formEventData.formData;
+  
+              /** Trigger a response error toast */
+              function redemptionErrorToast () {
+                event.preventDefault();
+                return ShiftCodesTK.toasts.newToast({
+                  setting: {
+                    duration: 'long'
+                  },
+                  content: {
+                    title: `Failed to ${formData.action == 'redeem' ? 'Redeem' : 'Unredeem'} SHiFT Code`,
+                    body: `SHiFT Code (${formData.code}) could not be ${formData.action == 'redeem' ? 'redeemed' : 'unredeemed'} due to an error. Please try again.`
+                  }
+                })
+              }
+    
+              if (formEventData.formResponseData) {
+                if (formEventData.formResponseData.statusCode == 200) {
+                  setTimeout(() => {
+                    const matchingShiftCodes = dom.find.children(shiftObj.locations.shiftCodeList, 'class', 'shift-code');
+  
+                    for (let code of matchingShiftCodes) {
+                      if (dom.has(code, 'attr', 'data-hash', formData.code)) {
+                        shiftObj.redeemShiftCode(code);
+                      }
+                    }
+    
+                  }, 500);
+  
+                  return true;
+                }
+              }
+    
+              redemptionErrorToast();
+              return false;
+            }
+          });
+          // SHiFT Code Options Menu Hooks
+          layersObj.addLayerListener('shift_code_options_menu', (action, dropdown) => {
+            const actionValue = dom.get(action, 'attr', 'data-value');
+            const codeID = dom.get(dropdown, 'attr', 'data-code-id');
+
+            /**
+             * Updates the state of the action button
+             * 
+             * @param {boolean} state The new state of the action button
+             * - **true**: Displays the *spinner*, marks the button as *pressed*, and *disables* the button. 
+             * - **false**: Hides the *spinner*, marks the button as *unpressed*, and *enables* the button. 
+             */
+            function updateAction (state) {
+              edit.class(action, state ? 'add' : 'remove', 'spinning');
+              edit.attr(action, 'update', 'aria-pressed', state);
+              isDisabled(action, state);
+            }
+
+            if (codeID) {
+              updateAction(true);
+
+              setTimeout(() => {
+                // Edit SHiFT Code
+                if (actionValue == 'edit') {
+                  function editCodeError (errorMessage = 'This SHiFT Code could not be edited due to an error. Please try again later.') {
+                    lpbUpdate(100);
+                    edit.class(action, state ? 'add' : 'remove', 'spinning');
+                    toastsObj.newToast({
+                      settings: {
+                        duration: 'long',
+                        template: 'fatalException'
+                      },
+                      content: {
+                        title: 'Failed to edit SHiFT Code',
+                        body: errorMessage
+                      }
+                    });
+                  }
+
+                  const shiftCode = (function () {
+                    const lastResult = requestsObj.savedRequests.getResultData('FetchShiftCodes').lastResult;
+  
+                    if (lastResult && lastResult.resultStatusCode == 200 && lastResult.resultResponseObject) {
+                      const shiftCodes = lastResult.resultResponseObject.payload.shift_codes;
+  
+                      for (let shiftCode of shiftCodes) {
+                        let shiftCodeID = shiftCode.properties.code.id;
+  
+                        if (shiftCodeID == codeID) {
+                          return shiftCode;
+                        }
+                      }
+                    }
+  
+                    return false;
+                  })();
+
+                  lpbUpdate(85, true, { start: 50 });
+                  
+                  console.info(shiftCode);
+
+                  if (shiftCode) {
+                    if (shiftCode.states.user.canEdit) {
+                      const shiftCodePanel = dom.find.id(`shift_code_${codeID}`);
+                      const editView = dom.find.child(shiftCodePanel, 'class', 'view edit');
+                      const editForm = dom.find.child(editView, 'tag', 'form');
+                      const formBindings = (function () {
+                        let bindings = {};
+  
+                        bindings.code_id = codeID;
+                        bindings.reward = shiftCode.info.reward;
+                        bindings.game_id = shiftCode.properties.game_id;
+  
+                        // Source
+                        (function () {
+                          const source = shiftCode.info.source;
+  
+                          bindings.source_type = source.type;
+  
+                          if (source.type == 'online') {
+                            bindings.source_url = source.value;
+                            bindings.source_string = '';
+                          }
+                          else if (source.type == 'physical') {
+                            bindings.source_url = '';
+                            bindings.source_string = source.value;
+                          }
+                          else if (source.type == 'none') {
+                            bindings.source_url = '';
+                            bindings.source_string = 'N/A';
+                          }
+                        })();
+                        // Release Date
+                        (function () {
+                          const releaseDate = shiftCode.info.release_date;
+  
+                          if (releaseDate.type == 'date') {
+                            const date = moment(releaseDate.value);
+  
+                            if (date) {
+                              bindings.release_date = date.format('Y-MM-DD');
+                              return true;
+                            }
+                          }
+  
+                          bindings.release_date = '';
+                          return false;
+                        })(); 
+                        // Expiration Date
+                        (function () {
+                          const expirationDate = shiftCode.info.expiration_date;
+                          const timezone = shiftCode.info.timezone;
+  
+                          bindings.expiration_date_type = expirationDate.type;
+  
+                          if ([ 'through', 'until' ].indexOf(expirationDate.type) != -1) {
+                            const date = moment.tz(expirationDate.value, timezone);
+  
+                            if (date) {
+                              bindings.expiration_date_value_date = date.format('Y-MM-DD');
+                              bindings.expiration_date_value_time = date.format('HH:mm:SS');
+                              bindings.expiration_date_value_tz = timezone;
+                              return true;
+                            }
+                          }
+  
+                          bindings.expiration_date_value_date = '';
+                          bindings.expiration_date_value_time = '';
+                          bindings.expiration_date_value_tz = '';
+                          return false;
+                        })(); 
+                        // Notes
+                        bindings.notes = shiftCode.info.notes
+                                         ? shiftCode.info.notes
+                                         : '';
+                        // SHiFT Codes & Platforms
+                        (function () {
+                          const platforms = shiftCode.codes.platforms;
+                          const shiftCodes = shiftCode.codes.shift_codes;
+                          const isUniversalCode = shiftCodes.universal !== undefined && shiftCodes.universal !== null;
+  
+                          bindings.codes_code_type = isUniversalCode
+                                                     ? 'universal'
+                                                     : 'individual';
+                          bindings.codes_universal_platforms = isUniversalCode
+                                                               ? platforms.universal
+                                                               : '';
+                          bindings.codes_universal_code = isUniversalCode
+                                                          ? shiftCodes.universal
+                                                          : '';
+  
+                          for (let familyID of Object.keys(ShiftCodesTK.shift.platforms)) {
+                            bindings[`codes_individual_${familyID}_platforms`] = !isUniversalCode
+                                                                                ? platforms[familyID]
+                                                                                : '';
+                            bindings[`codes_individual_${familyID}_code`] = !isUniversalCode
+                                                                           ? shiftCodes[familyID]
+                                                                           : '';
+                          }
+                        })();
+  
+                        return bindings;
+                      })();
+  
+                      console.log(formBindings);
+                      for (let fieldName in formBindings) {
+                        const field = formsObj.getField(editForm, fieldName);
+                        const bindingValue = formBindings[fieldName];
+  
+                        if (Array.isArray(field)) {
+                          field = field[0];
+                        }
+  
+                        formsObj.updateField(field, bindingValue, { updateDefault: true });
+                      }
+  
+                      formsObj.resetForm(editForm);
+                      multiView_update(editView);
+                      updateAction(false);
+                      layersObj.toggleLayer(dropdown, false);
+                      lpbUpdate(100);
+                      return true;
+                    }
+                    else {
+                      editCodeError('You do not have permission to edit this SHiFT Code. If you had access before, it may have been revoked. Please refresh the page and try again.');
+                      return false;
+                    }
+                  }
+
+                  editCodeError();
+                  return false;
+                }
+              }, 100);
+            }
+          }, [ 'click' ]);
+          // Edit View Reset Button Switch View
+          window.addEventListener('tkFormsFormBeforeReset', (event) => {
+            const formEventData = event.formEventData;
+
+            if (formEventData.form.id.indexOf('update_shift_code_form') != -1) {
+              const shiftCodePanel = dom.find.id(`shift_code_${formEventData.formData.code_id}`);
+              const codeView = dom.find.child(shiftCodePanel, 'class', 'view code');
+  
+              multiView_update(codeView);
+            }
+          });
+          // Delete Button
+          window.addEventListener('tkFormsFormBeforeSubmitConfirmation', (event) => {
+            const formEventData = event.formEventData;
+
+            if (formEventData.formProps.info.name == 'delete_shift_code_form') {
+              const shiftCodeResponseData = formEventData.formResponseData;
+  
+              function deleteCodeError (errorMessage = 'This SHiFT Code could not be deleted due to an error. Please try again later.') {
+                lpbUpdate(100);
+                toastsObj.newToast({
+                  settings: {
+                    duration: 'long',
+                    template: 'fatalException'
+                  },
+                  content: {
+                    title: 'Could not delete SHiFT Code',
+                    body: errorMessage
+                  }
+                });
+              }
+  
+              event.preventDefault();
+              
+              lpbUpdate(75, true);
+  
+              const codeID = formEventData.formData.code_id;
+              const shiftCode = (function () {
+                const lastResult = requestsObj.savedRequests.getResultData('FetchShiftCodes').lastResult;
+  
+                if (lastResult && lastResult.resultStatusCode == 200 && lastResult.resultResponseObject) {
+                  const shiftCodes = lastResult.resultResponseObject.payload.shift_codes;
+  
+                  for (let shiftCode of shiftCodes) {
+                    let shiftCodeID = shiftCode.properties.code.id;
+  
+                    if (shiftCodeID == codeID) {
+                      return shiftCode;
+                    }
+                  }
+                }
+  
+                return false;
+              })();
+  
+              if (shiftCode) {
+                if (shiftCode.states.user.canEdit) {
+                  let modal = formEventData.confirmationModal;
+                  const modalID = 'form_submit_confirmation_modal';
+                  const modalProperties = (function () {
+                    const body = edit.copy(dom.find.id(`delete_shift_code_confirmation_modal_template`));
+  
+                    return {
+                      mode: 'update',
+                      showModal: false,
+                      title: `Delete SHiFT Code: "${shiftCode.info.reward}"?`,
+                      body: body,
+                      id: modalID,
+                      actions: {
+                        approve: {
+                          name: 'Delete SHiFT Code',
+                          tooltip: 'Permanently delete this SHiFT Code. This action is irreversable',
+                          color: 'danger'
+                        }
+                      }
+                    };
+                  })();
+  
+                  modal = modalsObj.addConfirmationModal(modalProperties);
+  
+                  // Update info
+                  (function () {
+                    const dateFormat = 'MMMM DD, YYYY hh:mm A [UTC]';
+                    const bindings = {
+                      id: {
+                        primary: shiftCode.properties.code.id,
+                        secondary: 'SHiFT Code #'
+                      },
+                      owner: {
+                        primary: shiftCode.properties.owner.username,
+                        secondary: `#${shiftCode.properties.owner.id}`
+                      },
+                      created: (function () {
+                        let date = shiftCode.info.creation_date;
+                        let dateMoment = moment(date);
+  
+                        return {
+                          primary: ucWords(dateMoment.fromNow()),
+                          secondary: dateMoment.format(dateFormat)
+                        }
+                      })(),
+                      updated: (function () {
+                        let date = shiftCode.info.last_update;
+                        let dateMoment = moment(date);
+  
+                        return {
+                          primary: ucWords(dateMoment.fromNow()),
+                          secondary: dateMoment.format(dateFormat)
+                        }
+                      })()
+                      // expiration: (function () {
+                      //   let date = shiftCode.info.expiration_date.value;
+                      //   const expType = shiftCode.info.expiration_date.type;
+  
+                      //   if (expType == 'date') {
+                      //     const dateMoment = moment(date);
+  
+                      //     return {
+                      //       primary: ucWords(dateMoment.fromNow()),
+                      //       secondary: dateMoment.format(dateFormat)
+                      //     }
+                      //   }
+                      //   else {
+                      //     return {
+                      //       primary: "N/A",
+                      //       secondary: (function () {
+                      //         if (expType == 'infinite') {
+                      //           return 'Never Expires';
+                      //         }
+                      //         else if (expType == 'none') {
+                      //           return 'None Provided';
+                      //         }
+                      //       })()
+                      //     }
+                      //   }
+                      // })()
+                    };
+                    const info = dom.find.child(modal, 'class', 'info');
+  
+                    for (let binding in bindings) {
+                      const values = bindings[binding];
+                      const group = dom.find.child(info, 'class', `section ${binding}`);
+                      const groupValue = dom.find.child(group, 'tag', 'dd');
+  
+                      for (let sectionName in values) {
+                        const section = dom.find.child(groupValue, 'class', sectionName);
+                        const sectionValue = values[sectionName];
+  
+                        section.innerHTML = sectionValue;
+  
+                        if ([ '', 'N/A' ].indexOf(sectionValue) != -1) {
+                          edit.class(section, 'add', 'inactive');
+                        }
+                        if (sectionName == 'secondary' && [ 'created', 'expiration' ].indexOf(binding) != -1) {
+                          edit.attr(section, 'update', 'aria-label', `(${sectionValue})`);
+                        }
+                      }
+                    }
+                  })();
+  
+                  dropdownPanelSetup(dom.find.child(modal, 'class', 'dropdown-panel'));
+                  edit.attr(modal, 'add', 'data-code-id', codeID);
+                  modalsObj.toggleModal(modal, true);
+                  return true;
+                }
+                else {
+                  editCodeError('You do not have permission to delete this SHiFT Code. If you had access before, it may have been revoked. Please refresh the page and try again.');
+                  return false;
+                }
+              }
+  
+              deleteCodeError();
+              return false;
+            }
+          });
+        })();
       })();
     }
-  }, 250);
+  }, 250); 
 })();
