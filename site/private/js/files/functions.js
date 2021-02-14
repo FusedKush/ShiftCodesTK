@@ -1650,6 +1650,67 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
     throw error;
   }
 }
+
+/**
+ * Dispatch a custom event
+ * 
+ * @param {option} eventConfig An `object` representing the configuration of the custom event.
+ * - **event** `object` - Properties related to the event itself.
+ * - - **target** `Element` - The target the event is dispatched to. Defaults to `document.body`.
+ * - - **name** `DOMString|string` - The Event Name of the event being dispatched. This can be a custom event name, or the DOMString of an [Event](https://developer.mozilla.org/en-US/docs/Web/Events). If ommitted, an error will be thrown.
+ * - - **source** `false|string` - The source of the dispatched event if applicable. Can be retrieved via the `customEventSource` property of the dispatched event.
+ * - **options** `object` - Properties that are used to configure the event.
+ * - - **bubbles** `boolean` - Indicates whether or not the event bubbles. Defaults to `true`.
+ * - - **cancelable** `boolean` - Indicates whether or not the event can be cancelled. Defaults to `false`.
+ * - - **composed** `boolean` - Indicates whether or not the event will trigger listeners outside of a shadow root. Defaults to `false`.
+ * - **customProperties** `object` - Custom properties to be added to the `Event` handler. 
+ * - - _You cannot use the name of any properties already available within the `Event` handler for a *Property Name*._
+ * @returns {boolean|NULL} Returns **true** or **false** if the event was successfully dispatched, or **NULL** if an error occurred.
+ * - Returns **true** if the event was dispatched and *not* cancelled by `Event.preventDefault()`.
+ * - Returns **false** if the event was dispatched, but cancelled by `Event.preventDefault()`.
+ * - Returns **NULL** if an error occurred and the event was not dispatched.
+ */
+function dispatchCustomEvent (eventConfig) {
+  try {
+    const config = (function () {
+      const defaultConfig = {
+        event: {
+          target: document.body,
+          name: '',
+          source: false
+        },
+        options: {
+          bubbles: true,
+          cancelable: false,
+          composed: false
+        },
+        customProperties: {}
+      };
+  
+      return mergeObj(defaultConfig, eventConfig);
+    })();
+    const event = new Event(config.event.name, config.options);
+          event.customEventSource = config.event.source;
+
+    if (config.customProperties) {
+      for (let property in config.customProperties) {
+        if (event[property] !== undefined) {
+          console.warn(`dispatchCustomEvent Warning: "${property}" cannot be overwritten.`);
+          continue;
+        }
+
+        event[property] = config.customProperties[property];
+      }
+    }
+  
+    return config.event.target.dispatchEvent(event);
+  }
+  catch (error) {
+    console.error(`Failed to dispatch custom event: ${error}`);
+    return NULL;
+  }
+}
+
 // String Manipulation
 /**
  * Encodes an html string by converting reserved HTML Characters into their HTML Entity Equivalents.
