@@ -1,21 +1,8 @@
-
+<?php
   <?php 
-    /**
-     * Returns a customized Profile Card
-     * @param array $options An array of customization options
-       * @var string $id The User ID of the User. $user returns the Current User's User ID.
-       * @var boolean $usePicture True if the User's Profile Picture is to be displayed. Otherwise, False.
-       * @var boolean $showBorder True if a border is to be displayed around the card. Otherwise, False.
-       * @var boolean $showRoles True if assigned Roles are to be displayed on the card. Otherwise, False.
-          * This setting does not affect the Role colors 
-       * @var boolean $showInfoTerms True if the Primary Profile Info <dt> terms are to be displayed. Otherwise, False.
-       * @var boolean $showStats True if the User's stats can be displayed. Otherwise, False.
-     * @return string Returns the customized Profile Card
-     */
-    function getProfileCard($options = []) { 
-  ?>
-  <?php
-    GLOBAL $_mysqli;
+<?php
+  use ShiftCodesTK\Users,
+      ShiftCodesTK\Strings;
 
     $defaults = [
       'id'              => '$user',

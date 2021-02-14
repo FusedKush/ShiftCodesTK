@@ -35,18 +35,25 @@
       /**
        * SHiFT Code retrieval settings
        */
-      // 'shift' => [
-      //   'game'   => 'all',
-      //   'owner'  => false,
-      //   'code'   => false,
-      //   'filter' => [ 'active' ],
-      //   'order'  => 'default',
-      //   'limit'  => 10,
-      //   'offset' => 0
-      // ]
+      'shift' => [
+        'game'               => null,
+        'status'             => [ 'active' ],
+        'platform'           => null,
+        'owner'              => null,
+        'code'               => null,
+        'order'              => 'default',
+        'limit'              => 10,
+        'page'               => 1,
+        'readOnlyProperties' => [ 'game', 'owner', 'limit' ]
+      ]
     ];
-    $settings = array_replace_recursive($defaults, $page ?? []);
 
+    
+    $settings = array_replace_recursive($defaults, $page ?? []);
+    
+    if (isset($page['shift']['readOnlyProperties'])) {
+      $settings['shift']['readOnlyProperties'] = $page['shift']['readOnlyProperties'];
+    }
     if (isset($settings['shift']['owner']) && $settings['shift']['owner'] == '$user') {
       $settings['shift']['owner'] = auth_user_id();
     }
@@ -73,7 +80,7 @@
       // Authentication State does not match required state
       if ($required == 'auth' && !$loggedIn || $required == 'no-auth' && $loggedIn) {
         if ($required == 'auth') {
-          $defaultFailRedirect = '/login';
+          $defaultFailRedirect = '/account/login';
           $defaultToastProps['content'] = [
             'title' => 'Currently Logged Out',
             'body' => 'You must be logged in to view this content.'
@@ -91,7 +98,7 @@
           $_SESSION['toasts'][] = array_replace_recursive($defaultToastProps, $onFailToast);
         }
 
-        response_redirect($onFailRedirect !== false ? $onFailRedirect : $defaultFailRedirect . '?redirect=' . clean_url(PAGE_SETTINGS['meta']['path']));
+        response_redirect($onFailRedirect !== false ? $onFailRedirect : $defaultFailRedirect . '?continue=' . clean_url($_SERVER['REQUEST_URI']));
       }
     })();
 

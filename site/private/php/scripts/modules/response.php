@@ -6,11 +6,11 @@
     /**
      * The Status Code to return
      */
-    public $statusCode;
+    public $status_code;
     /**
      * The Status Message to return
      */
-    public $statusMessage;
+    public $status_message;
     /**
      * The response payload
      */
@@ -33,6 +33,22 @@
       else      { $arr[count($arr)] = $value; }
     }
     /**
+     * The `ResponseObject` Constructor
+     * 
+     * @param false|int $code The *Status Code* to set the Response Object to.
+     * - Must be a valid integer from `STATUS_CODES`
+     * - Defaults to **1**.
+     * @return void 
+     */
+    public function __construct ($code = false) {
+      if ($code !== false) {
+        $this->set($code);
+      }
+      else {
+        $this->set(1);
+      }
+    }
+    /**
      * Set the Status Code of the response
      * 
      * @param int $code The new Status Code
@@ -47,9 +63,8 @@
         return;
       }
 
-      response_http($httpCode);
-      $this->statusCode = $httpCode;
-      $this->statusMessage = $statusCode['name'];
+      $this->status_code = $httpCode;
+      $this->status_message = $statusCode['name'];
     }
     /**
      * Add or update a payload
@@ -94,16 +109,22 @@
      * Sends the response
      */
     public function send() {
-      if ($this->statusCode === null) {
-        $this->set(1);
-      }
-
       response_type('application/json');
+      response_http($this->status_code);
       echo json_encode($this);
     }
+    /**
+     * Retrieve the response payloads from the `ResponseObject`
+     * 
+     * @return array Returns the response payloads from the `ResponseObject`. 
+     */
+    public function getPayloads() {
+      $payloads = (array) clone $this;
+
+      unset($payloads['statusCode']);
+      unset($payloads['statusMessage']);
+
+      return $payloads;
+    }
   }
-  /**
-   * Updates and sends a formatted response object
-   */
-  // $response = new ResponseObject;
 ?>

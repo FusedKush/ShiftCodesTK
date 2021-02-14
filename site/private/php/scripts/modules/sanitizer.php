@@ -2,9 +2,10 @@
   /** Sanitization functions */
 
   /**
-   * Sanitize an SQL Statement for querying in a database
-   * @param string $str The SQL Statement to escape
-   * @return string The escaped SQL Statement
+   * An alias of `ShiftCodesTKDatabase::clean_str()`
+   * 
+   * @param string $str The string to be escaped.
+   * @return string Returns the escaped string.
    */
   function clean_sql ($str) {
     GLOBAL $_mysqli;
@@ -22,13 +23,22 @@
    * @return string The sanitized string
    */
   function clean_all_html ($str) {
-    return htmlspecialchars($str);
+    return htmlspecialchars($str, ENT_COMPAT|ENT_HTML5|ENT_QUOTES);
   }
   /**
-   * Convert special, non-whitelisted characters to HTML entities
+   * Convert HTML entities back to their equivalent characters
+   * 
+   * @param string $str The string to decode
+   * @return string The decoded string
+   */
+  function decode_html ($str) {
+    return htmlspecialchars_decode($str, ENT_COMPAT|ENT_HTML5|ENT_QUOTES);
+  }
+  /**
+   * Remove non-whitelisted HTML & PHP tags from a string
    *
    * @param string $str The string to sanitize
-   * @param string $whitelist Whitelisted HTML tags
+   * @param string $whitelist Whitelisted HTML & PHP tags
    * @return string The sanitized string
    */
   function clean_html ($str, $whitelist = '<div><span><p><strong><b><em><i>') {
@@ -42,6 +52,15 @@
    */
   function clean_url ($str) {
     return urlencode(clean_all_html($str));
+  }
+  /**
+   * Decode a string used in a URL
+   *
+   * @param string $str The string to decode
+   * @return string The dirty string
+   */
+  function decode_url ($str) {
+    return urldecode(decode_html($str));
   }
   /**
    * Sanitize a string for use as an ID

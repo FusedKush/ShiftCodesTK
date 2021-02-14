@@ -1,3 +1,7 @@
+<?php
+  use ShiftCodesTK\Strings;
+?>
+
 <div id="templates" hidden>
   <!-- Global Templates -->
   <!-- Toasts -->

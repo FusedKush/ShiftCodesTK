@@ -145,14 +145,14 @@
    * Generate a random integer ID
    * 
    * @param int $length The length of the ID
-   * @return string The generated ID
+   * @return int|string The generated ID
    */
   function auth_randomID($length = 12) {
     $getID = function ($idLength) {
       $min = (int) '1' . str_repeat('0', $idLength - 1);
       $max = (int) ('1' . str_repeat('0', $idLength)) - 1;
       
-      return (string) random_int($min, $max);
+      return random_int($min, $max);
     };
 
     if ($length <= 18) {
@@ -252,7 +252,7 @@
    * @return string Returns the generated hash
    */
   function auth_strHash($string) {
-    return hash_hmac('sha256', $string, TK_SECRETS['hash']);
+    return hash_hmac('sha256', $string, ShiftCodesTKSecrets::getSecret('hash'));
   }
   /**
    * Determine if two string hashes match
@@ -278,7 +278,7 @@
     return password_hash($password, PASSWORD_BCRYPT);
   }
   /**
-   * Determine a given password matches the hash
+   * Determine if a given password matches the hash
    * 
    * @param string $pwStr The password being checked
    * @param string $pwHash The hashed password
@@ -313,16 +313,21 @@
    * Parse a joined validation token
    * 
    * @param string $fullToken The joined validation token to be parsed
-   * @return array Returns an array made up of the key, original token, hashed token, and joined validation token.
+   * @return array|false Returns an array made up of the key, original token, hashed token, and joined validation token on success. Returns **false** on failure.
+   * 
    */
   function auth_valParseToken($fullToken) {
-    $separatorPos = strpos($fullToken, ':');
     $result = [];
 
     $result['key'] = preg_replace('/\:[\w\d]+/', '', $fullToken);
     $result['token'] = preg_replace('/[\w\d]+\:/', '', $fullToken);
     $result['tokenHash'] = auth_strHash($result['token']);
     $result['fullToken'] = $fullToken;
+
+    if ($result['key'] == $fullToken || $result['token'] == $fullToken) {
+      trigger_error("\"{$fullToken}\" is not a valid Joined Validation Token.");
+      return false;
+    }
 
     return $result;
   }
@@ -343,15 +348,13 @@
                 ar.last_auth 
                   as last_auth,
                 ar.last_activity
-                as last_activity,
-                au.role_badass 
-                  as role_badass,
-                au.role_admin
-                  as role_admin,
+                  as last_activity,
+                au.user_roles
+                  as user_roles,
                 au.redemption_id
                   as redemption_id
               FROM auth_users as au
-              LEFT JOIN auth_records as ar
+              LEFT JOIN auth_user_records as ar
                 ON au.user_id = ar.user_id
               WHERE au.user_id = '{$id}'";
     $result = $_mysqli->query($query);
@@ -384,10 +387,11 @@
     $_SESSION['user']['last_activity'] = $lastActivity;
     $_SESSION['user']['last_check'] = time();
     $_SESSION['user']['roles'] = (function () use ($userData) {
+      $dbRoles = isset($userData['user_roles']) ? json_decode($userData['user_roles'], true) : [];
       $roles = [];
-
+      
       foreach (AUTH_ROLES['roles'] as $role) {
-        $roles[$role] = $userData["role_{$role}"] ?? false;
+        $roles[$role] = $dbRoles[$role] ?? false;
       }
       
       return $roles;
@@ -430,7 +434,7 @@
    * 
    * @param string $id The id of the user
    * @param boolean $addSessionToast Whether or not to add a notification via session toast.
-   * @return void
+   * @return boolean Returns **true** if the user was logged in successfully, or **false** if they were not.
    */
   function auth_login($id, $addSessionToast = false) {
     GLOBAL $_mysqli;
@@ -441,7 +445,7 @@
     if ($addSessionToast) {
       $_SESSION['toasts'][] = [
         'settings' => [
-          'id'       => 'login_form_response_toast',
+          'id'       => 'login_toast',
           'duration' => 'medium',
           'template' => 'formSuccess'
         ],
@@ -455,7 +459,7 @@
     // Update last_login record
     (function () use (&$_mysqli) {
       $now = new DateTime();
-      $sql = "UPDATE auth_records
+      $sql = "UPDATE auth_user_records
               SET last_login = ?
               WHERE user_id = ?
               LIMIT 1";
@@ -470,6 +474,8 @@
         error_log("auth_login Error: Failed to record last_login timestamp.");
       }
     })();
+
+    return auth_isLoggedIn();
   }
   /**
    * Logout the current user
@@ -481,21 +487,21 @@
     if ($addSessionToast) {
       $_SESSION['toasts'][] = [
         'settings' => [
-          'id'       => 'login_form_response_toast',
+          'id'       => 'logout_toast',
           'duration' => 'medium',
           'template' => 'formSuccess'
         ],
         'content' => [
           'title'    => 'Goodbye, <b>' . clean_all_html(auth_user_name()) . '</b>',
           'body'     => 'You are no longer logged in to ShiftCodesTK.'
-        ],
-        'actions' => [
-          [
-            'content' => 'Log back in',
-            'title'   => 'Log back in to ShiftCodesTK',
-            'link'    => '/login'
-          ]
         ]
+        // 'actions' => [
+        //   [
+        //     'content' => 'Log back in',
+        //     'title'   => 'Log back in to ShiftCodesTK',
+        //     'link'    => '/account/login'
+        //   ]
+        // ]
       ];
     }
     if (getCookie('rmb')) {
@@ -539,6 +545,86 @@
   function auth_user_roles () {
     return $_SESSION['user']['roles'] ?? array_fill_keys(AUTH_ROLES['roles'], false);
   }
+  /**
+   * Retrieves data related to the last time the user changed their username.
+   * 
+   * @return array|false Returns an `associative array` made up the user's username change date on success:
+   * 
+   * | Key | Value |
+   * | --- | --- |
+   * | `timestamp` | The timestamp of the last time the user changed their username. |
+   * | `count` | The number of times the user has recently changed their username. |
+   */
+  function auth_user_get_username_change_data () {
+    $userID = ShiftCodesTKDatabase::escape_string(auth_user_id());
+    $query = new ShiftCodesTKDatabaseQuery("
+      SELECT last_username_change
+      FROM auth_user_records
+      WHERE user_id = '{$userID}'
+      LIMIT 1", 
+      [ 
+        'collapse_all' => true 
+      ]
+    );
+
+    return $query->query();
+  }
+  /**
+   * Determines if the current user can change their username at this time
+   * 
+   * @param array $usernameChangeData The user's username change data `array`, generated by calling `auth_user_get_username_change_data()`.
+   * @return boolean Returns **true** if the user can change their username at this time, or **false** if they cannot.
+   */
+  function auth_user_can_change_username ($usernameChangeData) {
+    if ($usernameChangeData) {
+      $now = new DateTime('now', new DateTimeZone('utc'));
+      $threshold = new DateTime($usernameChangeData['timestamp']);
+
+      $threshold->add(new DateInterval('PT24H'));
+
+      $changedUsernameRecently = $now->getTimestamp() < $threshold->getTimestamp();
+      $canChangeUsername = !$changedUsernameRecently || $usernameChangeData['count'] < 2;
+
+      // var_dump($changedUsernameRecently, $usernameChangeData['count'] < 2);
+
+      if ($canChangeUsername) {
+        // Reset Change Count in DB
+        if (!$changedUsernameRecently && $usernameChangeData['count'] > 0) {
+          $userID = auth_user_id();
+          $lastUsernameChange = (function () use ($usernameChangeData) {
+            $newData = $usernameChangeData;
+            $newData['count'] = 0;
+
+            $newDataStr = json_encode($newData);
+            $newDataStr = ShiftCodesTKDatabase::escape_string($newDataStr);
+
+            return $newDataStr;
+          })();
+
+          $updateQuery = new ShiftCodesTKDatabaseQuery("
+            UPDATE auth_user_records
+            SET last_username_change = '{$lastUsernameChange}'
+            WHERE user_id = '{$userID}'
+            LIMIT 1",
+            [
+              'collapse_all' => true
+            ]
+          );
+          $updateResult = $updateQuery->query();
+
+          if (!$updateResult) {
+            error_log("An error occurred while updating user \"{$userID}\"'s username change record.");
+          }
+        }
+
+        return true;
+      }
+
+      return $canChangeUsername;
+    }
+
+    return false;
+  }
   
   // "Remember me" token management
   /**
@@ -554,7 +640,7 @@
     $sql = "SELECT val_token, user_id, issue_date
             FROM auth_tokens
             WHERE val_key = ?
-              AND type = ?
+              AND val_type = ?
             LIMIT 1";
     $params = [
       $token['key'],
@@ -582,7 +668,7 @@
       }
     }
     else {
-      auth_rmb_delete();
+      // auth_rmb_delete();
 
       return false;
     }
@@ -637,13 +723,13 @@
       }
 
       $sql = "INSERT INTO auth_tokens
-              (val_key, val_token, user_id, type)
+              (val_key, val_token, val_type, user_id)
               VALUES (?, ?, ?, ?)";
       $params = [
         $token['key'],
         $token['tokenHash'],
-        auth_user_id(),
-        'remember_me'
+        'remember_me',
+        auth_user_id()
       ];
       $result = $_mysqli->prepared_query($sql, 'ssss', $params);
 
@@ -667,7 +753,7 @@
       $token = auth_valParseToken($cookie);
       $sql = "DELETE FROM auth_tokens
               WHERE val_key = ?
-                AND type = ?
+                AND val_type = ?
               LIMIT 1";
       $params = [
         $token['key'],
@@ -707,28 +793,28 @@
     }
     // Ensure user data is up to date
     if (auth_isLoggedIn()) {
-      $threshold = new DateTime('@' . $_SESSION['user']['last_check']);
-      $threshold = $threshold->add(new DateInterval('PT5M'));
-      $threshold = $threshold->getTimestamp();
+      // $threshold = new DateTime('@' . $_SESSION['user']['last_check']);
+      // $threshold = $threshold->add(new DateInterval('PT5M'));
+      // $threshold = $threshold->getTimestamp();
 
-      if (time() > $threshold) {
-        $query = "SELECT last_activity
-                  FROM auth_records
-                  WHERE user_id = ?
-                  LIMIT 1";
-        $result = $_mysqli->prepared_query($query, 's', [ auth_user_id() ], [ 'collapseAll' => true ]);
+      // if (time() > $threshold) {
+      //   $query = "SELECT last_activity
+      //             FROM auth_user_records
+      //             WHERE user_id = ?
+      //             LIMIT 1";
+      //   $result = $_mysqli->prepared_query($query, 's', [ auth_user_id() ], [ 'collapseAll' => true ]);
 
-        if ($result) {
-          $lastActivity = new DateTime($result);
-          $lastActivity = $lastActivity->getTimestamp();
+      //   if ($result) {
+      //     $lastActivity = new DateTime($result);
+      //     $lastActivity = $lastActivity->getTimestamp();
 
-          if ($_SESSION['user']['last_activity'] < $lastActivity) {
-            auth_update_user_data(auth_user_id());
-          }
-        }
+      //     if ($_SESSION['user']['last_activity'] < $lastActivity) {
+      //       auth_update_user_data(auth_user_id());
+      //     }
+      //   }
 
-        $_SESSION['user']['last_check'] = time();
-      }
+      //   $_SESSION['user']['last_check'] = time();
+      // }
     }
     // Session toasts array
     if (!isset($_SESSION['toasts'])) {
@@ -756,6 +842,158 @@
     startSession();
   }
 
+  /* Session Toast Functions */
+  /**
+   * Add a Session Toast to be displayed on the next page load
+   * 
+   * @param array $toastProperties The _Toast Properties `Object`_ of the toast. See the `toasts.newToast` function for more details. 
+   * @return boolean Returns **true** on success, or **false** if an error occurred.
+   */
+  function addSessionToast ($toastProperties) {
+    if (!is_array_associative($toastProperties)) {
+      error_log("addSessionToast Error: Provided properties must be in an associative array.");
+      return false;
+    }
+
+    $defaultProperties = [
+      'settings' => [
+        'id'       => 'session_toast',
+        'duration' => 'medium'
+      ]
+    ];
+
+    $_SESSION['toasts'][] = array_replace_recursive($defaultProperties, $toastProperties);
+
+    return true;
+  }
+  /**
+   * Retrieve a given Session Toast
+   * 
+   * @param array $toast The toast(s) to be retrieved.
+   * - `string`: Passing the _ID_ of a toast will retrieve all matching toasts.
+   * - `array`: Passing an _array of toast IDs_ will retrieve all matching toasts.
+   * - `true`: Passing **true** will retrieve _all_ Session Toasts.
+   * @return array|false Returns the _Toast Properties `Object`_ for the matching toast. 
+   * - If multiple toasts are found, an `array` of toasts are returned.
+   * - If no matching toasts are found, returns **false**.
+   */
+  function getSessionToast ($toast = '') {
+    if (!is_string($toast) && !is_array($toast) && $toast !== true) {
+      error_log("getSessionToasts Error: Toast IDs must be in the form of a string, an array, or the value TRUE.");
+      return false;
+    }
+    
+    $sessionToasts = [];
+
+    if ($toast === true) {
+      $sessionToasts = $_SESSION['toasts'];
+    }
+    else {
+      foreach ($_SESSION['toasts'] as $sessionToast) {
+        $id = $sessionToast['settings']['id'];
+        $isMatchingToast = is_string($toast)
+                              && $id == $toast
+                           || is_array($toast)
+                              && array_search($id, $toast) !== false;
+  
+        if ($isMatchingToast) {
+          $sessionToasts[] = $sessionToast;
+        }
+      }
+    }
+
+
+    if (count($sessionToasts) == 0) {
+      return false;
+    }
+    else if (count($sessionToasts) == 1) {
+      return $sessionToasts[0];
+    }
+    else {
+      return $sessionToasts;
+    }
+  }
+  /**
+   * Remove an given Session Toast
+   * 
+   * @param array $toast The toast to be removed. 
+   * - `string`: Passing the _ID_ of a toast will remove all matching toasts.
+   * - `array`: Passing an _array of toast IDs_ will all matching toasts.
+   * - `true`: Passing **true** will remove _all_ Session Toasts.
+   * @return boolean Returns **true** if one or more Session Toasts were removed, or **false** if not.
+   */
+  function removeSessionToast ($toast = '') {
+    if (!is_string($toast) && !is_array($toast) && $toast !== true) {
+      error_log("removeSessionToast Error: Provided toasts must be in the form of a string, array, or TRUE.");
+      return false;
+    }
+    
+    $removedSessionToast = false;
+
+    foreach ($_SESSION['toasts'] as $index => $sessionToast) {
+      $id = $sessionToast['settings']['id'];
+      $isMatchingToast = $toast === true
+                         || is_string($toast)
+                            && $id == $toast
+                         || is_array($toast)
+                            && array_search($id, $toast) !== false;
+
+      if ($isMatchingToast) {
+        unset($_SESSION['toasts'][$index]);
+        $removedSessionToast = true;
+      }
+    }
+
+    return $removedSessionToast;
+  }
+
+  /** Array Functions */
+  /**
+   * Determine if an array has string keys
+   * 
+   * @param array $array The array to check
+   * @return boolean Returns **true** if `$array` is an array and has at least one string key. Otherwise, returns **false**
+   */
+  function is_array_associative (array $array) {
+    if (is_array($array)) {
+      $keys = array_keys($array);
+
+      for ($i = 0; $i < count($keys); $i++) {
+        if ($keys[$i] !== $i) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+  /**
+   * Get the first value from an array
+   * 
+   * @param array $array The target array. Can be either an `Indexed Array` or an `Associative Array`
+   * @return mixed On success, returns the first value from the `$array`. If `$array` is empty, returns **null**.
+   */
+  function array_value_first (array $array) {
+    foreach ($array as $value) {
+      return $value;
+    }
+
+    return null;
+  }
+  /**
+   * Get the last value from an array
+   * 
+   * @param array $array The target array. Can be either an `Indexed Array` or an `Associative Array`
+   * @return mixed On success, returns the last value from the `$array`. If `$array` is empty, returns **null**.
+   */
+  function array_value_last (array $array) {
+    if (empty($array)) {
+      return null;
+    }
+
+    return current(array_slice($array, -1, 1, true));
+  }
+
   /* Misc Functions */
   /**
    * Display an Error Notice to the user
@@ -765,7 +1003,7 @@
    */
   function errorNotice ($code) {
     define('ERROR_NOTICE_CODE', $code);
-    include_once(HTML_INCLUDES_PATH . 'local/error-notice.php');
+    include_once(PRIVATE_PATHS['html_includes'] . 'local/error-notice.php');
   }
   function errorObject ($type, $parameter = null, $message = null, $providedValue = null, $inheritedValue = null) {
     $keys = [
@@ -879,6 +1117,26 @@
   }
   /* Misc helper functions */
   /**
+   * Retrieve the JSON Data a given file.
+   * 
+   * @param string $file The path to the file that is being retrieved.
+   * @param bool $assoc Indicates if JSON Objects should be returned as an `Associative Array`.
+   * @return mixed Returns the JSON Data of the file on success. If an error occurs in decoding the JSON Data, returns **null**.
+   * @throws Error Throws an error if the provided `$file` was not found.
+   */
+  function getJSONFile ($file, $assoc = false) {
+    $fileContents = file_get_contents($file);
+    $fileData = null;
+
+    if (!$file) {
+      throw new Error("File \"{$file}\" could not be found.");
+    }
+    
+    $fileData = json_decode($fileContents, $assoc);
+
+    return $fileData;
+  }
+  /**
    * Remove extraneous whitespace from a string
    *
    * @param string $str The string to clean
@@ -917,13 +1175,13 @@
   /**
    * Get a formatted DateTime timestamp
    * 
-   * @param string $format A valid date/time format
-   * @param string $time A valid date/time string. 'now' returns the current date/time
-   * @param object $timezone A valid DateTimezone object
+   * @param string $format A date/time format string. See `DateTimeInterface->format()` for more information.
+   * @param string $time A valid date/time string. The keyword **"now"** returns the current date/time
+   * @param string|null $timezone A valid `DateTimeZone Identifier`, or **null** to exclude the timezone.
    * @return string Returns the formatted timestamp
    */
-  function getFormattedTimestamp ($format = DATE_FORMATS['dateTime'], $time = 'now', $timezone = null) {
-    $date = new DateTime($time, $timezone);
+  function getFormattedTimestamp ($format = \ShiftCodesTK\DATE_FORMATS['date_time'], $time = 'now', $timezone = 'UTC') {
+    $date = new DateTime($time, $timezone ? new \DateTimeZone($timezone) : null);
 
     return $date->format($format);
   }
@@ -934,7 +1192,7 @@
    * @param array $formats An array of whitelisted formats. If omitted, the string will just have to be a valid date, regardless of format.
    * @return boolean Returns true if the string is a valid date and matches one of the provided formats. Otherwise, return false.
    */
-  function validateDate ($date, $formats = []) {
+  function validateDate ($date, array $formats = []) {
     if (!is_string($date)) {
       return false;
     }
@@ -956,31 +1214,6 @@
       $parsedDate = date_parse($date);
 
       return checkdate($parsedDate['month'], $parsedDate['day'], $parsedDate['year']);
-    }
-  }
-  /**
-   * Determine if an array has string keys
-   * 
-   * @param array $array The array to check
-   * @return boolean Returns true if the array has at least one string key. Otherwise, returns false
-   */
-  function is_array_associative (array $array) {
-    return count(array_filter(array_keys($array), 'is_string')) > 0;
-  }
-  // array_key_first Polyfill
-  if (!function_exists('array_key_first')) {
-    /**
-     * Get the first key from an array
-     * 
-     * @param array $arr The array 
-     * @return string The first key from the array
-     */
-    function array_key_first(array $arr) {
-      foreach($arr as $key => $unused) {
-        return $key;
-      }
-      
-      return NULL;
     }
   }
 ?>
