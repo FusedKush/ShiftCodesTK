@@ -1932,8 +1932,7 @@ function ucWords (string) {
     pieces[i] = piece.charAt(0).toUpperCase() + piece.substring(1);
   }
 
-  return pieces.join(' ');
-}
+// Query Parameters
 /**
  * Retrieve the query parameters from a query string
  * 
@@ -1943,38 +1942,127 @@ function ucWords (string) {
 function getQueryParameters (queryString = window.location.search) {
   let parameters = {};
 
-  if (queryString.indexOf('?') == 0) {
-    queryString = queryString.slice(1);
-  }
-
-  for (let parameter of queryString.split('&')) {
-    let isArray = false;
-    const pieces = (function () {
-      const slices = parameter.split('=');
-      let pieces = {
-        key: slices[0],
-        value: decodeURIComponent(slices[1])
-      };
-
-      if (pieces.key.indexOf('[]') == pieces.key.length - 2) {
-        isArray = true;
-        pieces.key = pieces.key.slice(0, -2);
-      }
-
-      return pieces;
-    })();
-
-    if (isArray) {
-      if (!parameters[pieces.key]) {
-        parameters[pieces.key] = [];
-      }
-
-      parameters[pieces.key].push(pieces.value);
+  if (queryString.trim() != '') {
+    if (queryString.indexOf('?') == 0) {
+      queryString = queryString.slice(1);
     }
-    else {
-      parameters[pieces.key] = pieces.value;
+  
+    for (let parameter of queryString.split('&')) {
+      let isArray = false;
+      const pieces = (function () {
+        const slices = parameter.split('=');
+        let pieces = {
+          key: slices[0],
+          value: decodeURIComponent(slices[1])
+        };
+  
+        if (pieces.key.indexOf('[]') == pieces.key.length - 2) {
+          isArray = true;
+          pieces.key = pieces.key.slice(0, -2);
+        }
+  
+        return pieces;
+      })();
+  
+      if (isArray) {
+        if (!parameters[pieces.key]) {
+          parameters[pieces.key] = [];
+        }
+  
+        parameters[pieces.key].push(pieces.value);
+      }
+      else {
+        parameters[pieces.key] = pieces.value;
+      }
     }
   }
 
   return parameters;
+}
+/**
+ * Encode a set of parameters for use in a *query string*
+ * 
+ * @param {object} params The parameters to encode in `key`: `value` format.
+ * @param {boolean} includeQueryStringStart Indicates if the start of the query string (`?`) should be included in the returned string.
+ * @returns {string|false} Returns the *encoded query string* on success, or **false** on failure.
+ */
+function encodeQueryParameters (params, includeQueryStringStart = true) {
+  let queryString = includeQueryStringStart
+                    ? '?'
+                    : '';
+
+  for (let param in params) {
+    let value = params[param];
+
+    // Parameter is an Array
+    if (Array.isArray(value)) {
+      for (let arrayValue of value) {
+        if (param.indexOf('[]') == -1) {
+          param += '[]';
+        }
+
+        queryString += `${param}=${encodeURIComponent(arrayValue)}&`;
+      }
+    }
+    // Parameter is a String
+    else {
+      queryString += `${param}=${encodeURIComponent(value)}&`;
+    }
+  }
+
+  // Remove trailing ampersand
+  queryString = queryString.replace(new RegExp('&$'), '');
+
+  return queryString;
+}
+/**
+ * Updates the page's query string
+ * 
+ * @param {object} params The list of parameters to update the query string with.
+ * - If `allowNullValue` is **false**, passing **null** as a parameter's value will remove the parameter from the query string.
+ * - Passing any value besides **null**, unless `allowNullValue` is set to **true**, will add the parameter to the query string if it does not exist, or update the current one if it does.
+ * @param {"new"|"replace"|"window"} method The method used to update the page's query parameters:
+ * - _"new"_ - The query parameters are updated using `history.pushState`.
+ * - _"replace"_ - The query parameters are updated using `history.replaceState`. This is the default behavior.
+ * - _"window"_ - The query parameters are updated using `window.location.search`.
+ * @param {boolean} allowNullValue If **true**, passing **null** as a parameter's value will not remove the parameter, but instead change the parameter's value to **null**.
+ * @returns {object} Returns the new *QueryParameters`Object`*.
+ */
+function updateQueryParameters (params, method = 'replace', allowNullValue = false) {
+  const newParams = getQueryParameters();
+
+  for (let paramName in params) {
+    let param = params[paramName];
+
+    if (param === null && !allowNullValue) {
+      delete newParams[paramName];
+      continue;
+    }
+
+    newParams[paramName] = param;
+  }
+
+  const encodedParams = encodeQueryParameters(newParams, false);
+  const historyArgs = [ 
+    {}, 
+    '', 
+    encodedParams.length > 0
+      ? `?${encodedParams}`
+      : window.location.pathname
+  ];
+
+  if (method == 'new') {
+    window.history.pushState(...historyArgs);
+  }
+  else if (method == 'replace') {
+    window.history.replaceState(...historyArgs);
+  }
+  else if (method == 'window') {
+    window.location.search = encodedParams;
+  }
+  else {
+    throw `updateQueryParameters Error: "${method}" is not a valid method.`;
+  }
+
+  return newParams;
 }
