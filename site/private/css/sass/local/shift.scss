@@ -1,230 +1,220 @@
-/*********************************
-  SHiFT Page Styles
-*********************************/
+// SHiFT Styles
+@import "../partials/_globals.scss";
 
-/*** Imports ***/
-@import "../partials/_globals";
-
-/*** Style Declarations ***/
-.shift-header, .feed { @include ready; }
 .shift-header {
-  background-color: $site-color-lighter;
-  border-bottom: bd(2px, $site-color-darker);
-  width: 100%;
   font-size: 1.25em;
+  width: 100%;
+  background-color: $site-color-dark;
+  border-bottom: bd(2px, $site-color-darker);
 
-  .content-wrapper {
-    @include flexbox(c, sb);
-    padding: 12px 16px;
-  }
-  .section { @include flexbox($vAlign: none); }
-  .badge {
-    display: flex;
-    font-size: 1em;
-    border-radius: 4px;
-    text-shadow: dropShadow(tpb(0.25));
-    margin-right: 6px;
-    min-width: 3.5em;
-    overflow: hidden;
-    cursor: default;
-
-    // Individual Theming
-    & {
-      $colors: (
-        total: #808080,
-        new: $badge-new,
-        expiring: $badge-expiring
-        );
-
-      @each $colorN, $colorV in $colors {
-        &.#{$colorN} { background-color: $colorV; }
-      }
+  .primary {
+    @media screen and (max-width: 359px) {
+      font-size: 0.9em;
     }
-    &.new, &.expiring {
-      &::before { background-color: #000; }
-      &::after {
-        border: bd(2px);
-        border-radius: 4px;
-      }
-      @include pshared { @include fill(true); }
+
+    > .content-wrapper {
+      @include flexbox(c, sb);
+      padding: 12px 16px;
     }
+    .section {
+      @include flexbox($vAlign: none);
+      
+      &.badges {
+        .badge {
+          $badgeColors: (
+            total: #a5bacf,
+            new: $badge-new,
+            expiring: $badge-expiring
+          );
+      
+          @include flexbox;
+          font-size: 1em;
+          min-width: 2.5em;
+          padding: 6px 16px;
+          margin-right: 6px;
+          border-radius: 4px;
+          overflow: hidden;
+      
+          // Colors
+          @each $name, $color in $badgeColors {
+            &.#{$name} {
+              background-color: adjust-color($color, $alpha: -0.75);
+              
+              &::before {
+                border-color: $color;
+              }
+            }
+          }
+      
+          @include pshared {
+            @include fill(true);
+            border: bd(2px);
+            border-radius: 4px;
+          }
+          &::before {
+            z-index: zOrder(higher);
+            transition: box-shadow $trd, opacity $trd, transform $trd;
+          }
+          &::after {
+            z-index: zOrder(aboveNormal);
+            border-color: #fff;
+            opacity: 0;
+          }
+      
+          .fas {
+            position: absolute;
+            opacity: 0.25;
+            font-size: 2.5em;
+          }
+          .count {
+            color: #fff;
+            text-shadow: dropShadow(tpb(0.75));
+          }
+      
+          // Active States
+          &.inactive {
+            opacity: 0.5;
+          }
+          &:not(.inactive) {
+            @include mouseState(hover) {
+              &::after {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+      &.buttons {
+        button, a {
+          @include flexbox;
+          font-size: 1.25em;
+          padding: 6px;
+          line-height: 1;
+          border-radius: 4px;
+          overflow: hidden;
     
-    &:not(.inactive) {
-      &[aria-pressed="false"]::after { opacity: 0; }
-      &[aria-pressed="true"]::after  { opacity: 1; }
-      @include mouseState(noHover) {
-        &::before                    { opacity: 0; }
-      }
-      @include mouseState(hover) {
-        cursor: pointer;
+          &:not(:first-child) {
+            margin-left: 6px;
+          }
 
-        &::before                    { opacity: 0.25; }
-      }
-      @include mouseState(click)     { opacity: 0.75; }
-    }
-    &.inactive {
-      opacity: 0.5;
+          &#shift_header_new {
+            font-size: 0.85em;
+            padding: 6px 12px;
 
-      @include pshared { opacity: 0; }
-    }
-
-    .count { background-color: tpb(0.2); }
-    .fas { font-size: 0.9em; }
-    .count, .fas {
-      @include flexbox;
-      flex: 1;
-      height: inherit;
-      padding: 6px 8px;
-    }
-  }
-  .buttons {
-    button, a {
-      @include flexbox;
-      @include multiProp(1.5em, sizing);
-      font-size: 1.25em;
-      padding: 0.25em;
-      line-height: 1;
-      border-radius: 4px;
-      overflow: hidden;
-  
-      &::before { @include fill(true, #fff); }
-      &:not(:last-child) {
-        margin-right: 6px;
-      }
-  
-      &:not([aria-pressed="true"]) {
-        @include mouseState(noHover) {
-          &::before                { opacity: 0.2; }
+            .fas {}
+          }
         }
-        @include mouseState(hover) {
-          &::before                { opacity: 0.4; }
-        }
-        @include mouseState(click) { opacity: 0.75; }
-      }
-      &[aria-pressed="true"] {
-        opacity: 0.75;
-  
-        &::before { opacity: 0.4; }
       }
     }
   }
+  // TO-DO: Move to multiview
   .slideout {
     font-size: 1rem;
     background-color: tpb(0.35);
     box-shadow: inset shadow(tpb(0.5), 1em);
 
     .content-wrapper {
-      @keyframes slideoutFadeIn {
-        0%   { opacity: 0; }
-        100% { opacity: 1; }
-      }
-
       padding: 32px 16px;
-      animation: slideoutFadeIn 0.1s ease-in-out;
+      animation: fadeIn 0.1s ease-in-out;
     }
   }
 }
-main.content-wrapper {
+main {
   @include flexbox($vAlign: none, $direction: c);
   padding: 16px;
-}
-.overlay {
-  @include flexbox;
-  @include fill;
-  background-color: $site-color-main;
 
-  &[hidden], > [hidden] {
+  .overlay {
+    @include flexbox;
+    @include fill;
+    background-color: $site-color-main;
+
+    &[hidden], > [hidden] {
+      display: flex;
+      opacity: 0;
+      z-index: -1;
+    }
+    &:not([hidden]), > :not([hidden]) {
+      @include multiProp(1, opacity, z-index);
+    }
+
+    .spinner {
+      transform: scale(1.5);
+
+      &:not([hidden]) { opacity: 1; }
+      &[hidden]       { opacity: 0; }
+    }
+    .error {
+      text-align: center;
+
+      &:not([hidden]) { opacity: 0.25; }
+      &[hidden]       { opacity: 0; }
+
+      .fas {
+        font-size: 2em;
+        padding: 16px 0;
+      }
+
+      @media screen and (max-width: 549px) { font-size: 1.75em; }
+      @media screen and (min-width: 550px) { font-size: 2em; }
+    }
+    .spinner, .error {
+      position: absolute;
+    }
+  }
+  .update-indicator {
+    @mixin uiAnim ($transform, $opacity) {
+      transform: translateY($transform);
+      opacity: $opacity;
+    }
+    @keyframes updateIndicatorPopin {
+      0%   { @include uiAnim(-100%, 0); }
+      100% { @include uiAnim(0, 1); }
+    }
+    @keyframes updateIndicatorPopout {
+      0%   { @include uiAnim(0, 1); }
+      100% { @include uiAnim(-100%, 0); }
+    }
+  
+    @include flexbox($hAlign: none);
+    position: absolute;
+    padding: 4px 12px;
+    margin: 16px;
+    @include theme(bg, bc);
+    box-shadow: shadow(tpb(0.5));
+    border: 1.5px solid;
+    border-radius: 20px;
+    z-index: zOrder(higher);
+    cursor: pointer;
+    @include animation($duration: 0.4s, $timing: ease-out, $fill: forwards);
+  
+    &::before {
+      @include fill(true, tpb(0.5));
+    }
+    &[hidden]      { display: none; }
+    &.hidden       { animation-name: updateIndicatorPopout; }
+    &:not(.hidden) { animation-name: updateIndicatorPopin; }
+    &.sticky {
+      position: fixed;
+      top: 64px;
+    }
+  
+    .counter {
+      padding: 12px;
+      margin-right: 6px;
+      background-color: tpb(0.25);
+      border-radius: 50%;
+    }
+  }
+  .shift-code-list {
     display: flex;
-  }
-  &:not([hidden]) {
-    @include multiProp(1, opacity, z-index);
-  }
-  &[hidden] {
-    opacity: 0;
-    z-index: -1;
-  }
+    flex-direction: column;
+    width: 100%;
 
-  .spinner {
-    transform: scale(1.5);
-
-    &:not([hidden]) { opacity: 1; }
-    &[hidden]       { opacity: 0; }
-  }
-  .error {
-    text-align: center;
-
-    &:not([hidden]) { opacity: 0.25; }
-    &[hidden]       { opacity: 0; }
-
-    .fas {
-      font-size: 2em;
-      padding: 16px 0;
+    .search-result {
+      margin: 32px 0;
     }
-
-    @media screen and (max-width: 549px) { font-size: 1.75em; }
-    @media screen and (min-width: 550px) { font-size: 2em; }
   }
-  .spinner, .error { position: absolute; }
-}
-.update-indicator {
-  @mixin uiAnim ($transform, $opacity) {
-    transform: translateY($transform);
-    opacity: $opacity;
-  }
-  @keyframes updateIndicatorPopin {
-    0%   { @include uiAnim(-100%, 0); }
-    // 25%  { @include uiAnim(-100%, 1); }
-    // 50%  { @include uiAnim(-50%, ); }
-    100% { @include uiAnim(0, 1); }
-  }
-  @keyframes updateIndicatorPopout {
-    0%   { @include uiAnim(0, 1); }
-    // 25%  { @include uiAnim(-100%, 1); }
-    // 50%  { @include uiAnim(-50%, ); }
-    100% { @include uiAnim(-100%, 0); }
-  }
-
-  @include flexbox($hAlign: none);
-  position: absolute;
-  z-index: zOrder(higher);
-  padding: 4px 12px;
-  border: 1.5px solid;
-  border-radius: 20px;
-  margin: 16px;
-  @include theme(bg, bc);
-  box-shadow: shadow(tpb(0.5));
-  cursor: pointer;
-  @include animation($duration: 0.4s, $timing: ease-out, $fill: forwards);
-
-  &::before {
-    @include fill(true, tpb(0.5));
-  }
-  &[hidden]      { display: none; }
-  &.hidden       { animation-name: updateIndicatorPopout; }
-  &:not(.hidden) { animation-name: updateIndicatorPopin; }
-  &.sticky {
-    position: fixed;
-    top: 64px;
-  }
-
-  .counter {
-    padding: 12px;
-    background-color: tpb(0.25);
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-}
-.shift-code-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-.shift-code {
-  &.dropdown-panel {
-    @keyframes panelFadeIn {
-      0%    { opacity: 0; }
-      100%  { opacity: 1; }
-    }
+  .shift-code {
     @keyframes panelExpiredFadeIn {
       0%    { opacity: 0; }
       100%  { opacity: 0.5; }
@@ -233,43 +223,45 @@ main.content-wrapper {
       0%    { opacity: 0; }
       100%  { opacity: 0.75; }
     }
-    $redemptionColor: rgb(206, 146, 255);
+
     $labelColors: (
       basic: #fff,
       rare: #fff,
-      expired: tpw(0.75),
+      expired: #fff,
       hidden: rgb(143, 178, 255),
       deleted: #f00,
       game-label: class-theme,
       new: $badge-new,
       expiring: $badge-expiring,
-      recently-added: $theme-main,
+      recently-submitted: $theme-main,
       recently-updated: $theme-main,
       owned: $theme-main,
-      redeemed: $redemptionColor
+      redeemed: rgb(206, 146, 255)
+    );
+    $labelIcons: (
+      basic: none,
+      rare: fa-trophy,
+      expired: fa-archive,
+      hidden: fa-eye-slash,
+      deleted: fa-trash-alt,
+      game-label: none,
+      new: fa-star,
+      expiring: fa-exclamation-triangle,
+      recently-submitted: fa-file-upload,
+      recently-updated: fa-save,
+      owned: fa-user,
+      redeemed: clipboard-check
     );
 
     opacity: 0;
     margin: 8px 0;
-    animation: panelFadeIn 0.4s linear forwards;
+    animation: fadeIn 0.4s linear forwards;
 
     &::before {
       transition: border-color $trd;
     }
 
-    &.expired, &.hidden, &.deleted, &.redeemed {
-      // > .header            { opacity: 0.75; }
-      &.hidden, &.redeemed {
-        > .header            { opacity: 0.75; }
-      }
-      &.expired, &.deleted {
-        > .header            { opacity: 0.5 }
-      } 
-
-      &:hover, &:focus, &[data-expanded="true"] {
-        > .header          { opacity: 1; }
-      }
-    }
+    // Code Border Colors
     &.new::before {
       border-color: $badge-new; 
     }
@@ -282,22 +274,80 @@ main.content-wrapper {
         left: $badge-new,
         bottom: $badge-expiring,
         right: $badge-expiring
-        );
+      );
 
       @each $side, $color in $colors {
         border-#{$side}-color: $color;
       }
     }
     &.redeemed::before {
-      border-color: $redemptionColor;
+      border-color: map-get($labelColors, 'redeemed');
+    }
+
+    // Expired, Hidden, Deleted, & Redeemed Codes
+    &.expired, &.hidden, &.deleted, &.redeemed {
+      $allFeatures: unquote(".icon, .primary, .progress-bar, .labels .label");
+
+      &.hidden, &.redeemed {
+        > .header {
+          #{$allFeatures} {
+            opacity: 0.75;
+          }
+        }
+      }
+      &.expired, &.deleted {
+        > .header {
+          #{$allFeatures} {
+            opacity: 0.5;
+          }
+        }
+      } 
+
+      @include mouseState(hover) {
+        > .header {
+          .icon, .primary {
+            opacity: 1;
+          }
+        }
+      }
+      &[data-expanded="true"] > .header {
+        #{$allFeatures} {
+          opacity: 1;
+        }
+      }
+      > .header {
+        .progress-bar, .labels .label {
+          @include mouseState(hover) {
+            opacity: 1;
+          }
+        }
+      }
+      // @include mouseState(hover) {
+      //   > .header {
+      //     .icon, .primary, .progress-bar, .labels .label {
+      //       opacity: 1;
+      //     }
+      //   }
+      // }
+    }
+
+    &[data-expanded="true"] 
+    .body 
+    .view.code:not([hidden]) >
+    .content-container {
+      display: grid
     }
 
     .header {
       .title {
-        @media screen and (min-width: 435px) { font-size: 1.3em; }
+        @media screen and (min-width: 435px) {
+          font-size: 1.3em;
+        }
       }
-      .icon { font-size: 1.5em; }
-      .labels {
+      .icon {
+        font-size: 1.5em;
+      }
+      .secondary.labels {
         $cMargins: -2px;
 
         @include flexbox(none, none, $wrap: true);
@@ -305,26 +355,16 @@ main.content-wrapper {
         margin: 2px $cMargins $cMargins;
         width: calc(100% + 1.25em + 24px);
         opacity: 1;
-        
 
-        .code, .user {
-          @include flexbox(none, none, $wrap: true);
-          width: 100%;
-        }
         .label {
-          @keyframes labelFadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-          }
-
           @include flexbox;
-          display: none; // Default visibility is hidden
           margin: 2px;
           padding: 4px 8px;
+          line-height: 1;
           border: bd(1.5px);
           border-radius: 4px;
           text-shadow: dropShadow(tpb(0.25));
-          line-height: 1;
+          display: none; // Default visibility is hidden
           animation: labelFadeIn 0.2s ease-out forwards;
 
           &::before {
@@ -333,434 +373,1403 @@ main.content-wrapper {
             opacity: 0.25;
           }
 
-          // Theming
-          & {
-            $bgColors: (       
-              basic: #fff,
-              rare: #fff,
-              expired: tpw(0.75),
-              hidden: rgb(143, 178, 255),
-              deleted: #f00,
-              game-label: class-theme,
-              new: $badge-new,
-              expiring: $badge-expiring,
-              recently-added: $theme-main,
-              recently-updated: $theme-main,
-              owned: $theme-main,
-              redeemed: $redemptionColor
-              );
-
-            @each $label, $color in $bgColors {
-              &.#{$label} {
-                @if $label == game-label { 
-                  @include classTheme(bc); 
-                  @include classTheme((bg), before); 
+          // Label Colors
+          @each $label, $color in $labelColors {
+            &.#{$label} {
+              @if $label == game-label { 
+                @include classTheme(bc); 
+                @include classTheme((bg), before); 
+              }
+              @else { 
+                @if $label == basic or $label == expired {
+                  color: $color;
                 }
-                @else { 
-                  @if $label == basic or $label == expired {
-                    color: $color;
-                  }
 
-                  border-color: $color; 
+                border-color: $color; 
 
-                  &::before {
-                    background-color: $color;
-                  }
-                } 
-              }
+                &::before {
+                  background-color: $color;
+                }
+              } 
+            }
 
-              @at-root .shift-code.#{$label} .header .labels .label.#{$label} {
-                display: inline-flex;
-              }
+            @at-root .shift-code.#{$label} .header .labels .label.#{$label} {
+              display: inline-flex;
             }
           }
         }
+        .code, .user {
+          @include flexbox(none, none, $wrap: true);
+          width: 100%;
+        }
       }
-      .full-width { padding: 8px; }
+      .full-width {
+        padding: 8px;
+      }
       .progress-bar {
         @include sizing(9px, 100%);
-        border: bd(1px);
-        border-radius: 4px;
         @include multiProp(tpb(0.25), background-color, border-color);
-        
+        // border: bd(1.5px, transparent);
+        border-radius: 4px;
         overflow: hidden;
 
-        &.inactive { opacity: 0.5; }
-      }
-      .progress {
-        @keyframes progressClimb {
-          0%    { transform: translateX(-100%); }
-          100%  { transform: translateX(0); }
+        &.inactive {
+          opacity: 0.5;
         }
 
-        // @include theme(c, bg);
-        @include classTheme((c, bg), base);
-        box-shadow: 0 0 2.5em;
-        width: 0;
-        left: 0;
-        transform: translateX(-100%);
-        animation: progressClimb 1.2s 0.4s ease-out forwards;
+        .progress {
+          @keyframes progressClimb {
+            0%    { transform: translateX(-100%); }
+            100%  { transform: translateX(0); }
+          }
+          
+          width: 0;
+          left: 0;
+          transform: translateX(-100%);
+          @include classTheme((c, bg), base);
+          box-shadow: 0 0 2.5em;
+          animation: progressClimb 1.2s 0.4s ease-out forwards;
+        }
       }
     }
     .body {
-      @mixin fullWidth { grid-column: 1 / span 2; }
-      
-      width: 100%;
-      // padding: 8px;
-      
-      @at-root .shift-code.deleted .body {
-        padding: 16px;
+      @mixin fullWidth {
+        grid-column: 1 / span 2;
       }
 
-      .view.code {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 8px;
-        
-        @at-root .dropdown-panel[data-expanded="true"] .body .view.code {
-          display: grid; 
-        }
+      width: 100%;
 
-        .background {
-          @include fill;
-          @include flexbox;
-          color: #000;
-          opacity: 0.1;
-          overflow: hidden;
-  
-          @media screen and (max-width: 499px) { font-size: 16em; }
-          @media screen and (min-width: 500px) { font-size: 22em; }
-        }
-        .section {
+      .view {
+        &.code {
+          $contentBg: adjust-color($site-color-darker, $lightness: -5%);
+          $contentPadding: 8px;
+
           padding: 8px;
-  
-          &:not(.can-split) { @include fullWidth; }
-          &.can-split       { @include flexbox(none, none, $direction: c); }
-  
-          @media screen and (max-width: 380px) { @include fullWidth; }
-        }
-        .title {
-          font-weight: 600;
-  
-          &::after {
-            content: ":";
-          }
-        }
-        .content {
-          $padding: 8px;
-  
-          margin-top: 8px;
-          border-radius: 4px;
-          background-color: tpb(0.2);
-          word-wrap: break-word;
-          overflow: hidden;
-  
-          &.inactive { color: tpw(0.5); }
-          .simple {
-            position: absolute;
-            @include pull(all);
-            @include flexbox(s, s);
-            background-color: $site-color-light;
-            border-radius: 4px;
-            margin-top: 0;
-            transition-duration: 0.35s;
-            pointer-events: none;
-  
-            &::before {
-              @include fill(true, tpb(0.2));
+
+          .content-container {
+            grid-template-columns: repeat(2, 1fr);
+
+            > .separator {
+              @include fullWidth;
+              margin: 8px;
+              height: 4px;
+              background-color: tpb(0.15);
+              border-radius: 4px;
             }
           }
-          &:not(.code) { padding: $padding; }
-          &.code {
-            display: grid;
-            grid-template-columns: 1fr auto;
+          .background {
+            @include flexbox;
+            @include fill;
+            color: #000;
+            opacity: 0.1;
+            overflow: hidden;
+    
+            @media screen and (max-width: 499px) { font-size: 16em; }
+            @media screen and (min-width: 500px) { font-size: 22em; }
           }
-          @at-root .shift-code .body .section.can-split .content {
-            flex: 1;
-          }
-          @include mouseState(noHover) {
-            .simple { opacity: 1; }
-          }
-          @include mouseState(hover) {
-            .simple { opacity: 0; }
-          }
-  
-          a { word-break: break-all; }
-          ul { margin-left: 8px; }
-          input {
-            display: block;
-            position: absolute;
-            transform: translateY(calc(-100% - 8px));
-            width: 100%;
-          }
-          dd, .display {
-            display: inline-block;
-          }
-          .display {
-            padding: $padding;
-          }
-          .copy {
-            position: absolute;
-            @include pull(tb, r);
-            font-size: 1.1em;
-            padding: #{$padding} #{$padding * 4};
-            background-color: scale-color($site-color-lighter, $lightness: -35%);
-  
-            &::before { @include fill(true, #fff); }
-  
-            @at-root .dropdown-panel .section .content {
+          .section {
+            cursor: default;
+            padding: 8px;
+
+            @media screen and (max-width: 380px) {
+              @include fullWidth;
+            }
+            @media screen and (min-width: 381px) {
+              &:not(.can-split) { @include fullWidth; }
+              &.can-split       { @include flexbox(none, none, $direction: c); }
+            }
+
+            &.release, &.expiration {
+              .content .simple {
+                @include pull(all);
+                @include flexbox(s, s);
+                position: absolute;
+                margin-top: 0;
+                background-color: $contentBg;
+                border-radius: 4px;
+                pointer-events: none;
+                transition-duration: 0.35s;
+              }
               @include mouseState(noHover) {
-                .copy:not(:focus) { opacity: 0; }
+                .content .simple { opacity: 1; }
               }
               @include mouseState(hover) {
-                .copy             { opacity: 1; }
+                .content .simple { opacity: 0; }
               }
             }
-            @include mouseState(noHover) {
-              &::before                { opacity: 0.2; }
+            &.source .online-source {
+              word-break: break-all;
             }
-            @include mouseState(hover) {
-              &::before                { opacity: 0.4; }
-            }
-            @include mouseState(click) { opacity: 0.75; }
-  
-            .fas { @include multiProp(1em, sizing); }
-          }
-        }
-        > .separator {
-          @include fullWidth;
-          margin: 8px;
-          height: 4px;
-          background-color: tpb(0.15);
-          border-radius: 4px;
-        }
-        .footer {
-          @include fullWidth;
-          background-color: tpb(0.25);
-          box-shadow: inset shadow(tpb(0.25));
-          margin: 8px -8px -8px;
-  
-          .actions, .info {
-            width: 100%;
-          }
-          .actions {
-            $spacing: 8px;
-  
-            // display: grid;
-            display: flex;
-            padding: $spacing * 2 $spacing;
-            // grid-template-columns: 1fr 2fr 2fr 1fr;
-  
-            // @media screen and (max-width: 499px) {
-            //   .mark-as-redeemed {
-            //     grid-column: 1 / span 4;
-            //     grid-row: 1;
-            //   }
-            //   .redemption-help, .overflow-menu {
-            //     grid-row: 2;
-            //   }
-            //   .redemption-help {
-            //     grid-column: 1 / span 2;
-            //   } 
-            //   .overflow-menu {
-            //     grid-column: 3 / span 2;
-            //   }
-            // }
-            // @media screen and (min-width: 500px) {
-            //   .redemption-help {
-            //     grid-column: 1;
-            //   }
-            //   .mark-as-redeemed {
-            //     grid-column: 2 / span 2;
-            //     grid-row: 1 / span 2;
-            //   }
-            //   .overflow-menu {
-            //     grid-column: 4;
-            //   }
-            // }
-  
-            .action {
-              @include multiProp(#{$spacing * 2}, padding-left, padding-right);
-              margin: $spacing;
-  
-              .icon {
-                // padding-right: 4px;
-                font-size: 1.15em;
+            &.notes {
+              ul {
+                margin-left: 8px;
               }
             }
-            .redeem {
-              flex: 1;
-  
-              &::before {
-                background-color: $redemptionColor;
+            &.shift-code {
+              @include mouseState(noHover) {
+                .platform-list {
+                  opacity: 0.5;
+                }
+                .copy-to-clipboard:not(:focus) { opacity: 0; }
               }
-  
-              &.in-progress {
-                .label   { opacity: 0; }
-                .spinner { opacity: 1; }
+              @include mouseState(hover) {
+                .platform-list li {
+                  transform: translateY(15%);
+                }
+                .copy-to-clipboard             { opacity: 1; }
               }
-              &[aria-pressed="true"] {
-                @include mouseState(noHover) {
-                  & {
-                    opacity: 0.75;
-                  };
+              @include mouseState(click)       { opacity: 0.75; }
+
+              .content {
+                @include classTheme(bc);
+                border: 1.5px solid;
+                // border-radius: 0 4px 4px 0;
+                border-radius: 8px;
+                
+                &::before {
+                  @include fill(true);
                 }
               }
-  
-              .spinner {
+              .platform-list {
+                @include flexbox(c, s, $wrap: true);
+                font-size: 0.75em;
+                margin: 2px -2px 0 -2px;
+
+                li {
+                  margin: 5px 2px;
+                }
+
+                .platform {
+                  padding: 2px 8px;
+                  border: bd(1px, tpw(0.5));
+                  border-radius: 4px;
+                  cursor: help;
+                  background-color: $site-color-lighter;
+
+                  &::before {
+                    @include fill(true, tpb(0.5));
+                  }
+                }
+              }
+              .code {
+                display: inline-block;
+                padding: 4px;
+                cursor: text;
+              }
+              .copy-to-clipboard {
                 position: absolute;
-                opacity: 0;
+                @include pull(tb, r);
+                border-radius: 0;
+                padding: #{$contentPadding} #{$contentPadding * 4};
+
+                .fas {
+                  @include multiProp(1em, sizing);
+                  color: #fff;
+                }
               }
             }
-            .options-menu {
-              @include multiProp(#{$spacing * 3}, padding-left, padding-right);
-  
-              @at-root .shift-code-options-dropdown {
-                .panel .title {
-                  div:not(.code-id) {
-                    opacity: 0.75;
+            &.shift-code-usage {
+              font-size: 0.9em;
+              font-style: italic;
+              padding: 8px;
+              color: tpw(0.75);
+            }
+
+            &.can-split .content {
+              flex: 1;
+            }
+
+            dd:not(.content) {
+              display: inline-block;
+            }
+
+            .title {
+              display: inline-block;
+              font-weight: 600;
+      
+              &::after {
+                content: ":";
+              }
+            }
+            .content {
+              padding: $contentPadding;
+              margin-top: 8px;
+              border-radius: 4px;
+              background-color: $contentBg;
+              word-wrap: break-word;
+              overflow: hidden;
+
+              &.inactive {
+                color: tpw(0.5);
+              }
+            }
+          }
+          
+          .footer {
+            @include fullWidth;
+            background-color: tpb(0.25);
+            box-shadow: inset shadow(tpb(0.25));
+            margin: 8px -8px -8px;
+
+            .actions {
+              $spacing: 8px;
+
+              display: flex;
+              // padding: 0 $spacing * 2;
+              width: 100%;
+
+              .action {
+                // flex: 1 1 calc(33.3% - #{$spacing * 2});
+                // @include multiProp(#{$spacing * 2}, padding-left, padding-right);
+                // margin: $spacing;
+                flex: 1 1;
+
+                // &:first-child button {
+                //   justify-content: start;
+                // }
+                // &:last-child button {
+                //   justify-content: end;
+                // }
+
+                button {
+                  margin: 0;
+                  width: 100%;
+                  padding: 16px;
+                  border-radius: 0;
+                  // transform: none;
+
+                  &::before {
+                    box-shadow: inset shadow(tpb(0.5));
+                  }
+
+                  .icon {
+                    @include flexbox();
+                    padding: 12px;
+                    font-size: 1.15em;
+                    border: bd(1.5px);
+                    border-radius: 50%;
+                    text-shadow: dropShadow(tpb(0.5));
+                  }
+                  // border-radius: 0;
+                }
+                
+                &.redeem button {
+                  color: map-get($labelColors, 'redeemed');
+                  // flex: 1;
+      
+                  &::before {
+                    background-color: map-get($labelColors, 'redeemed');
+                  }
+
+                  @include mouseState (hover) {
+                    &:not([disabled]) {
+                      color: #fff;
+                    }
+                  }
+      
+                  &[aria-pressed="true"] {
+                    @include mouseState(noHover) {
+                      opacity: 0.75;
+                    }
+                  }
+
+                  &.in-progress {
+                    .label   { opacity: 0; }
+                    .spinner { opacity: 1; }
+                  }
+      
+                  .spinner {
+                    position: absolute;
+                    opacity: 0;
                   }
                 }
               }
             }
-          }
-          .code-info {
-            padding: 16px;
-            font-size: 0.85em;
-  
-            dt, dd {
-              display: inline;
-            }
-            dt {
-              opacity: 0.5;
-            }
-            dd {
-              cursor: default;
-
-              @include mouseState(noHover) {
+            .code-info {
+              padding: 16px;
+              font-size: 0.85em;
+    
+              
+              dt {
                 opacity: 0.5;
+
+                &::after {
+                  content: ':';
+                }
               }
-              @include mouseState(hover) {
-                opacity: 0.75;
+              dd {
+                cursor: help;
+  
+                @include mouseState(noHover) {
+                  opacity: 0.5;
+                }
+                @include mouseState(hover) {
+                  opacity: 0.75;
+                }
+              }
+              dt, dd {
+                display: inline;
               }
             }
-            dt::after {
-              content: ':';
+            .separator {
+              border-bottom: 1.5px solid tpw(0.5);
+              margin: 0 16px;
             }
           }
-          .separator {
-            border-bottom: 1.5px solid tpw(0.5);
-            margin: 0 16px;
+          .options-menu {
+            @include multiProp(#{$contentPadding * 3}, padding-left, padding-right);
+
+            // Active Layer
+            @at-root .shift-code-options-dropdown {
+              .panel .title {
+                div:not(.code-id) {
+                  opacity: 0.75;
+                }
+              }
+            }
+          }
+        }
+        &.edit {
+          background-color: tpb(0.15);
+
+          > .content-container {
+            padding: 16px;
           }
         }
       }
-      .view.edit {
-        padding: 16px;
-
-        // form > .content-container {
-        //   margin: 0;
-        // }
-      }
-
     }
   }
-}
-.search-result {
-  margin: 32px 0;
-
-  &.issue {
-
+  .pager {
+    margin-top: auto;
   }
 }
-.pager {
-  margin-top: auto;
-}
+#delete_shift_code_modal, #form_submit_confirmation_modal {
+  .body > .info {
+    margin: 24px 0;
+    // padding: 8px; 
+    // border: bd(1.5px, $bodyLightColor);
+    // border-radius: 8px;
 
+    .section {
+      @include flexbox(c, sb, $wrap: true);
+      padding: 12px;
+      background-color: tpw(0.1);
+      border-radius: 8px;
+      // border: bd(1.5px, tpw(0.5));
+      text-shadow: dropShadow();
 
-@import "../partials/_globals.scss";
-
-.shift-header, .shift-code-list {
-  @include ready;
-}
-.shift-header {
-  font-size: 1.25em;
-  width: 100%;
-  background-color: $site-color-lighter;
-  border-bottom: bd(2px, $site-color-darker);
-
-  .content-wrapper {
-    @include flexbox(c, sb);
-    padding: 12px 16px;
-  }
-  .section {
-    @include flexbox($vAlign: none);
-  }
-  .badge {
-    $badgeColors: (
-      total: #808080,
-      new: $badge-new,
-      expiring: $badge-expiring
-    );
-
-    display: flex;
-    font-size: 1em;
-    min-width: 3.5em;
-    margin-right: 6px;
-    border-radius: 4px;
-    text-shadow: dropShadow(tpb(0.25));
-    overflow: hidden;
-
-    // Colors
-    @each $name, $color in $badgeColors {
-      &.#{$name} {
-        background-color: $color;
-      }
-    }
-
-    // Filter Badges
-    &button {
-      @include pshared {
-        @include fill(true);
-      }
-      &::before {
-        background-color: #000;
-      }
-      &::after {
-        border: bd(2px);
-        border-radius: 4px;
-      }
-    }
-    // Active States
-    &.inactive {
-      opacity: 0.5;
-
-      @include pshared {
-        opacity: 0;
-      }
-    }
-    &:not(.inactive) {
-      &:not([aria-pressed="true"])::after { 
-        opacity: 0; 
-      }
-      &[aria-pressed="true"]::after {
-        opacity: 1; 
+      &:not(:last-child) {
+        margin-bottom: 8px;
       }
 
-
-      &button {
-        @include mouseState(noHover) {
-          &::before {
-            opacity: 0; 
-          }
+      // Shading
+      @include mouseState(noHover) {
+        dt, dd .primary.inactive, dd .secondary {
+          opacity: 0.5;
         }
-        @include mouseState(hover) {
-          &::before {
-            opacity: 0.25; 
-          }
-        }
-        @include mouseState(click) {
+      }
+      @include mouseState(hover) {
+        dt, dd .primary.inactive, dd .secondary {
           opacity: 0.75;
         }
       }
+
+      dt {
+        @include flexbox($hAlign: s);
+        flex: 1 1;
+
+        .icon {
+          margin-right: 8px;
+          font-size: 1.5em;
+        }
+
+        &::after {
+          content: ": ";
+        }
+      }
+      dd {
+        @include flexbox(c, e, $direction: c);
+        flex: 2 1;
+        text-align: end;
+
+        .secondary {
+          font-size: 0.75em;
+          font-style: italic;
+        }
+        .inactive {
+          &.secondary { display: none; }
+        }
+      }
     }
   }
 }
+#shift_code_redeeming_codes_info_modal {
+  .section {
+    margin-top: 32px;
+
+    > .title {
+      font-size: 1.25em;
+    }
+  }
+  .table-wrapper {
+    background-color: tpb(0.25);
+    border: bd(1.5px, tpw(0.5));
+    border-radius: 8px;
+    padding: 8px;
+    margin-top: 16px;
+  }
+  table {
+    caption-side: bottom;
+    border-collapse: collapse;
+    overflow: hidden;
+  }
+  th {
+    &[scope="row"] {
+      width: 50%;
+      text-align: start;
+      font-weight: normal;
+      background-color: tpw(0.1);
+    }
+  }
+  td {
+    width: 25%;
+    background-color: tpw(0.2);
+
+  }
+  th[scope="row"], td {
+    border: bd(1px, tpw(0.35));
+    vertical-align: top;
+    padding: 8px;
+
+    .layer-target {
+      cursor: help;
+      text-decoration: underline dotted;
+    }
+  }
+  th[scope="col"] {
+    padding-bottom: 8px;
+  }
+  caption {
+    font-style: italic;
+    color: tpw(0.75);
+    margin-top: 16px;
+    font-size: 0.9em;
+  }
+}
+.layer.panel[data-layer-name="shift_code_sharing_panel"] {
+  form[data-form-name="share_link_form"] {
+    flex: 1 0;
+  }
+  button.copy-to-clipboard {
+    margin-left: 8px;
+    padding: 12px 16px;
+  }
+}
+
+// Styles Ready
+.shift-header, .shift-code-list {
+  @include ready;
+}
+
+/*********************************
+  SHiFT Page Styles
+*********************************/
+
+// /*** Imports ***/
+// @import "../partials/_globals";
+
+// /*** Style Declarations ***/
+// .shift-header, .feed { @include ready; }
+// .shift-header {
+//   background-color: $site-color-lighter;
+//   border-bottom: bd(2px, $site-color-darker);
+//   width: 100%;
+//   font-size: 1.25em;
+
+//   // .content-wrapper {
+//   //   @include flexbox(c, sb);
+//   //   padding: 12px 16px;
+//   // }
+//   // .section { @include flexbox($vAlign: none); }
+//   // .badge {
+//   //   display: flex;
+//   //   font-size: 1em;
+//   //   border-radius: 4px;
+//   //   text-shadow: dropShadow(tpb(0.25));
+//   //   margin-right: 6px;
+//   //   min-width: 3.5em;
+//   //   overflow: hidden;
+//   //   cursor: default;
+
+//   //   // Individual Theming
+//   //   & {
+//   //     $colors: (
+//   //       total: #808080,
+//   //       new: $badge-new,
+//   //       expiring: $badge-expiring
+//   //       );
+
+//   //     @each $colorN, $colorV in $colors {
+//   //       &.#{$colorN} { background-color: $colorV; }
+//   //     }
+//   //   }
+//   //   &.new, &.expiring {
+//   //     &::before { background-color: #000; }
+//   //     &::after {
+//   //       border: bd(2px);
+//   //       border-radius: 4px;
+//   //     }
+//   //     @include pshared { @include fill(true); }
+//   //   }
+    
+//   //   &:not(.inactive) {
+//   //     &[aria-pressed="false"]::after { opacity: 0; }
+//   //     &[aria-pressed="true"]::after  { opacity: 1; }
+//   //     @include mouseState(noHover) {
+//   //       &::before                    { opacity: 0; }
+//   //     }
+//   //     @include mouseState(hover) {
+//   //       cursor: pointer;
+
+//   //       &::before                    { opacity: 0.25; }
+//   //     }
+//   //     @include mouseState(click)     { opacity: 0.75; }
+//   //   }
+//   //   &.inactive {
+//   //     opacity: 0.5;
+
+//   //     @include pshared { opacity: 0; }
+//   //   }
+
+//   //   .count { background-color: tpb(0.2); }
+//   //   .fas { font-size: 0.9em; }
+//   //   .count, .fas {
+//   //     @include flexbox;
+//   //     flex: 1;
+//   //     height: inherit;
+//   //     padding: 6px 8px;
+//   //   }
+//   // }
+//   .buttons {
+//     button, a {
+//       @include flexbox;
+//       // @include multiProp(1.5em, sizing);
+//       font-size: 1.25em;
+//       padding: 6px;
+//       line-height: 1;
+//       border-radius: 4px;
+//       overflow: hidden;
+  
+//       &::before { @include fill(true, #fff); }
+//       &:not(:first-child) {
+//         margin-left: 6px;
+//       }
+//       // &:not(:last-of-type) {
+//       //   margin-right: 6px;
+//       // }
+  
+//       &:not([aria-pressed="true"]) {
+//         @include mouseState(noHover) {
+//           &::before                { opacity: 0.2; }
+//         }
+//         @include mouseState(hover) {
+//           &::before                { opacity: 0.4; }
+//         }
+//         @include mouseState(click) { opacity: 0.75; }
+//       }
+//       &[aria-pressed="true"] {
+//         opacity: 0.75;
+  
+//         &::before { opacity: 0.4; }
+//       }
+//     }
+//   }
+//   .slideout {
+//     font-size: 1rem;
+//     background-color: tpb(0.35);
+//     box-shadow: inset shadow(tpb(0.5), 1em);
+
+//     .content-wrapper {
+//       @keyframes slideoutFadeIn {
+//         0%   { opacity: 0; }
+//         100% { opacity: 1; }
+//       }
+
+//       padding: 32px 16px;
+//       animation: slideoutFadeIn 0.1s ease-in-out;
+//     }
+//   }
+// }
+// main.content-wrapper {
+//   @include flexbox($vAlign: none, $direction: c);
+//   padding: 16px;
+// }
+// .overlay {
+//   @include flexbox;
+//   @include fill;
+//   background-color: $site-color-main;
+
+//   &[hidden], > [hidden] {
+//     display: flex;
+//   }
+//   &:not([hidden]) {
+//     @include multiProp(1, opacity, z-index);
+//   }
+//   &[hidden] {
+//     opacity: 0;
+//     z-index: -1;
+//   }
+
+//   .spinner {
+//     transform: scale(1.5);
+
+//     &:not([hidden]) { opacity: 1; }
+//     &[hidden]       { opacity: 0; }
+//   }
+//   .error {
+//     text-align: center;
+
+//     &:not([hidden]) { opacity: 0.25; }
+//     &[hidden]       { opacity: 0; }
+
+//     .fas {
+//       font-size: 2em;
+//       padding: 16px 0;
+//     }
+
+//     @media screen and (max-width: 549px) { font-size: 1.75em; }
+//     @media screen and (min-width: 550px) { font-size: 2em; }
+//   }
+//   .spinner, .error { position: absolute; }
+// }
+// .update-indicator {
+//   @mixin uiAnim ($transform, $opacity) {
+//     transform: translateY($transform);
+//     opacity: $opacity;
+//   }
+//   @keyframes updateIndicatorPopin {
+//     0%   { @include uiAnim(-100%, 0); }
+//     // 25%  { @include uiAnim(-100%, 1); }
+//     // 50%  { @include uiAnim(-50%, ); }
+//     100% { @include uiAnim(0, 1); }
+//   }
+//   @keyframes updateIndicatorPopout {
+//     0%   { @include uiAnim(0, 1); }
+//     // 25%  { @include uiAnim(-100%, 1); }
+//     // 50%  { @include uiAnim(-50%, ); }
+//     100% { @include uiAnim(-100%, 0); }
+//   }
+
+//   @include flexbox($hAlign: none);
+//   position: absolute;
+//   z-index: zOrder(higher);
+//   padding: 4px 12px;
+//   border: 1.5px solid;
+//   border-radius: 20px;
+//   margin: 16px;
+//   @include theme(bg, bc);
+//   box-shadow: shadow(tpb(0.5));
+//   cursor: pointer;
+//   @include animation($duration: 0.4s, $timing: ease-out, $fill: forwards);
+
+//   &::before {
+//     @include fill(true, tpb(0.5));
+//   }
+//   &[hidden]      { display: none; }
+//   &.hidden       { animation-name: updateIndicatorPopout; }
+//   &:not(.hidden) { animation-name: updateIndicatorPopin; }
+//   &.sticky {
+//     position: fixed;
+//     top: 64px;
+//   }
+
+//   .counter {
+//     padding: 12px;
+//     background-color: tpb(0.25);
+//     border-radius: 50%;
+//     margin-right: 6px;
+//   }
+// }
+// .shift-code-list {
+//   display: flex;
+//   flex-direction: column;
+//   width: 100%;
+// }
+// .shift-code {
+//   &.dropdown-panel {
+//     @keyframes panelFadeIn {
+//       0%    { opacity: 0; }
+//       100%  { opacity: 1; }
+//     }
+//     @keyframes panelExpiredFadeIn {
+//       0%    { opacity: 0; }
+//       100%  { opacity: 0.5; }
+//     }
+//     @keyframes panelRedeemedFadeIn {
+//       0%    { opacity: 0; }
+//       100%  { opacity: 0.75; }
+//     }
+//     $redemptionColor: rgb(206, 146, 255);
+//     $labelColors: (
+//       basic: #fff,
+//       rare: #fff,
+//       expired: tpw(0.75),
+//       hidden: rgb(143, 178, 255),
+//       deleted: #f00,
+//       game-label: class-theme,
+//       new: $badge-new,
+//       expiring: $badge-expiring,
+//       recently-added: $theme-main,
+//       recently-updated: $theme-main,
+//       owned: $theme-main,
+//       redeemed: $redemptionColor
+//     );
+
+//     opacity: 0;
+//     margin: 8px 0;
+//     animation: panelFadeIn 0.4s linear forwards;
+
+//     &::before {
+//       transition: border-color $trd;
+//     }
+
+//     &.expired, &.hidden, &.deleted, &.redeemed {
+//       // > .header            { opacity: 0.75; }
+//       &.hidden, &.redeemed {
+//         > .header            { opacity: 0.75; }
+//       }
+//       &.expired, &.deleted {
+//         > .header            { opacity: 0.5 }
+//       } 
+
+//       &:hover, &:focus, &[data-expanded="true"] {
+//         > .header          { opacity: 1; }
+//       }
+//     }
+//     &.new::before {
+//       border-color: $badge-new; 
+//     }
+//     &.expiring::before { 
+//       border-color: $badge-expiring; 
+//     }
+//     &.new.expiring::before {
+//       $colors: (
+//         top: $badge-new,
+//         left: $badge-new,
+//         bottom: $badge-expiring,
+//         right: $badge-expiring
+//         );
+
+//       @each $side, $color in $colors {
+//         border-#{$side}-color: $color;
+//       }
+//     }
+//     &.redeemed::before {
+//       border-color: $redemptionColor;
+//     }
+
+//     .header {
+//       .title {
+//         @media screen and (min-width: 435px) { font-size: 1.3em; }
+//       }
+//       .icon { font-size: 1.5em; }
+//       .labels {
+//         $cMargins: -2px;
+
+//         @include flexbox(none, none, $wrap: true);
+//         font-size: 0.65em;
+//         margin: 2px $cMargins $cMargins;
+//         width: calc(100% + 1.25em + 24px);
+//         opacity: 1;
+        
+
+//         .code, .user {
+//           @include flexbox(none, none, $wrap: true);
+//           width: 100%;
+//         }
+//         .label {
+//           @keyframes labelFadeIn {
+//             0% { opacity: 0; }
+//             100% { opacity: 1; }
+//           }
+
+//           @include flexbox;
+//           display: none; // Default visibility is hidden
+//           margin: 2px;
+//           padding: 4px 8px;
+//           border: bd(1.5px);
+//           border-radius: 4px;
+//           text-shadow: dropShadow(tpb(0.25));
+//           line-height: 1;
+//           animation: labelFadeIn 0.2s ease-out forwards;
+
+//           &::before {
+//             @include fill(true);
+//             border-radius: 0;
+//             opacity: 0.25;
+//           }
+
+//           // Theming
+//           & {
+//             $bgColors: (       
+//               basic: #fff,
+//               rare: #fff,
+//               expired: tpw(0.75),
+//               hidden: rgb(143, 178, 255),
+//               deleted: #f00,
+//               game-label: class-theme,
+//               new: $badge-new,
+//               expiring: $badge-expiring,
+//               recently-added: $theme-main,
+//               recently-updated: $theme-main,
+//               owned: $theme-main,
+//               redeemed: $redemptionColor
+//               );
+
+//             @each $label, $color in $bgColors {
+//               &.#{$label} {
+//                 @if $label == game-label { 
+//                   @include classTheme(bc); 
+//                   @include classTheme((bg), before); 
+//                 }
+//                 @else { 
+//                   @if $label == basic or $label == expired {
+//                     color: $color;
+//                   }
+
+//                   border-color: $color; 
+
+//                   &::before {
+//                     background-color: $color;
+//                   }
+//                 } 
+//               }
+
+//               @at-root .shift-code.#{$label} .header .labels .label.#{$label} {
+//                 display: inline-flex;
+//               }
+//             }
+//           }
+//         }
+//       }
+//       .full-width { padding: 8px; }
+//       .progress-bar {
+//         @include sizing(9px, 100%);
+//         border: bd(1px);
+//         border-radius: 4px;
+//         @include multiProp(tpb(0.25), background-color, border-color);
+        
+//         overflow: hidden;
+
+//         &.inactive { opacity: 0.5; }
+//       }
+//       .progress {
+//         @keyframes progressClimb {
+//           0%    { transform: translateX(-100%); }
+//           100%  { transform: translateX(0); }
+//         }
+
+//         // @include theme(c, bg);
+//         @include classTheme((c, bg), base);
+//         box-shadow: 0 0 2.5em;
+//         width: 0;
+//         left: 0;
+//         transform: translateX(-100%);
+//         animation: progressClimb 1.2s 0.4s ease-out forwards;
+//       }
+//     }
+//     .body {
+//       @mixin fullWidth { grid-column: 1 / span 2; }
+      
+//       width: 100%;
+//       // padding: 8px;
+
+//       .view.code {
+//         padding: 8px;
+        
+//         .content-container {
+//           grid-template-columns: repeat(2, 1fr);
+
+//           @at-root .dropdown-panel[data-expanded="true"] .body .view.code:not([hidden]) .content-container {
+//             display: grid; 
+//           }
+//         }
+//         .background {
+//           @include fill;
+//           @include flexbox;
+//           color: #000;
+//           opacity: 0.1;
+//           overflow: hidden;
+  
+//           @media screen and (max-width: 499px) { font-size: 16em; }
+//           @media screen and (min-width: 500px) { font-size: 22em; }
+//         }
+//         .section {
+//           padding: 8px;
+  
+//           &:not(.can-split) { @include fullWidth; }
+//           &.can-split       { @include flexbox(none, none, $direction: c); }
+  
+//           &.shift-code {
+//             .content {
+//               @include theme(bc);
+//               // text-shadow: 2px 2px 20px;
+//               &::before {
+//                 @include fill(true);
+//                 // background: linear-gradient(to right, tpb(0.65), adjust-color($site-color-darker, $lightness: -5%) 85%);
+//               }
+//               // box-shadow: inset 40px 0 10px;
+//               border-left: 3px solid;
+//               // border: bd(1.5px, tpw(0.5));
+//               border-radius: 0 4px 4px 0;
+//             }
+//             .code {
+//               // @include theme(c);
+//               padding: 4px;
+//             }
+//           }
+
+//           @media screen and (max-width: 380px) { @include fullWidth; }
+//         }
+//         .title {
+//           display: inline-block;
+//           font-weight: 600;
+  
+//           &::after {
+//             content: ":";
+//           }
+//         }
+//         .platform-list {
+//           @include flexbox(c, s, $wrap: true);
+//           // color: tpw(0.75);
+//           font-size: 0.75em;
+//           margin: 6px -2px 0 -2px;
+//           // padding: 4px;
+//           // background-color: tpw(0.1);
+
+//           li {
+//             margin: 5px 2px;
+//           }
+//           .platform {
+//             border: bd(1px, tpw(0.5));
+//             border-radius: 4px;
+//             // background-color: tpw(0.1);
+//             // margin: 5px 2px;
+//             padding: 2px 8px;
+//             cursor: help;
+
+//             // @include classTheme(bg);
+//             background-color: $site-color-lighter;
+
+//             &::before {
+//               @include fill(true, tpb(0.5));
+//             }
+//           }
+//         }
+//         .content {
+//           $padding: 8px;
+  
+//           margin-top: 8px;
+//           border-radius: 4px;
+//           // background-color: tpb(0.2);
+//           background-color: adjust-color($site-color-darker, $lightness: -5%);
+//           // background-color: $site-color-darker;
+//           word-wrap: break-word;
+//           overflow: hidden;
+//           padding: $padding;
+  
+//           &.inactive { color: tpw(0.5); }
+//           .simple {
+//             position: absolute;
+//             @include pull(all);
+//             @include flexbox(s, s);
+//             background-color: adjust-color($site-color-darker, $lightness: -5%);
+//             border-radius: 4px;
+//             margin-top: 0;
+//             transition-duration: 0.35s;
+//             pointer-events: none;
+  
+//             &::before {
+//               // @include fill(true, tpb(0.2));
+//             }
+//           }
+          
+//           // &.code {
+//           //   display: grid;
+//           //   grid-template-columns: 1fr auto;
+//           // }
+//           @at-root .shift-code .body .section.can-split .content {
+//             flex: 1;
+//           }
+//           @include mouseState(noHover) {
+//             .simple { opacity: 1; }
+//           }
+//           @include mouseState(hover) {
+//             .simple { opacity: 0; }
+//           }
+  
+//           a { word-break: break-all; }
+//           ul { margin-left: 8px; }
+//           input {
+//             display: block;
+//             position: absolute;
+//             transform: translateY(calc(-100% - 8px));
+//             width: 100%;
+//           }
+//           dd, .code {
+//             display: inline-block;
+//           }
+//           // .code {
+//           //   padding: $padding;
+//           // }
+//           .copy-to-clipboard {
+//             position: absolute;
+//             @include pull(tb, r);
+//             font-size: 1.1em;
+//             padding: #{$padding} #{$padding * 4};
+//             background-color: scale-color($site-color-lighter, $lightness: -35%);
+  
+//             &::before { @include fill(true, #fff); }
+  
+//             @at-root .dropdown-panel .section.shift-code {
+//               @include mouseState(noHover) {
+//                 .copy-to-clipboard:not(:focus) { opacity: 0; }
+//               }
+//               @include mouseState(hover) {
+//                 .copy-to-clipboard             { opacity: 1; }
+//               }
+//             }
+//             @include mouseState(noHover) {
+//               &::before                { opacity: 0.2; }
+//             }
+//             @include mouseState(hover) {
+//               &::before                { opacity: 0.4; }
+//             }
+//             @include mouseState(click) { opacity: 0.75; }
+  
+//             .fas { @include multiProp(1em, sizing); }
+//           }
+//         }
+//         .content-container > .separator {
+//           @include fullWidth;
+//           margin: 8px;
+//           height: 4px;
+//           background-color: tpb(0.15);
+//           border-radius: 4px;
+//         }
+//         .footer {
+//           @include fullWidth;
+//           background-color: tpb(0.25);
+//           box-shadow: inset shadow(tpb(0.25));
+//           margin: 8px -8px -8px;
+  
+//           .actions, .info {
+//             width: 100%;
+//           }
+//           .actions {
+//             $spacing: 8px;
+  
+//             // display: grid;
+//             display: flex;
+//             padding: $spacing * 2 $spacing;
+//             // grid-template-columns: 1fr 2fr 2fr 1fr;
+  
+//             // @media screen and (max-width: 499px) {
+//             //   .mark-as-redeemed {
+//             //     grid-column: 1 / span 4;
+//             //     grid-row: 1;
+//             //   }
+//             //   .redemption-help, .overflow-menu {
+//             //     grid-row: 2;
+//             //   }
+//             //   .redemption-help {
+//             //     grid-column: 1 / span 2;
+//             //   } 
+//             //   .overflow-menu {
+//             //     grid-column: 3 / span 2;
+//             //   }
+//             // }
+//             // @media screen and (min-width: 500px) {
+//             //   .redemption-help {
+//             //     grid-column: 1;
+//             //   }
+//             //   .mark-as-redeemed {
+//             //     grid-column: 2 / span 2;
+//             //     grid-row: 1 / span 2;
+//             //   }
+//             //   .overflow-menu {
+//             //     grid-column: 4;
+//             //   }
+//             // }
+  
+//             .action {
+//               @include multiProp(#{$spacing * 2}, padding-left, padding-right);
+//               margin: $spacing;
+  
+//               .icon {
+//                 // padding-right: 4px;
+//                 font-size: 1.15em;
+//               }
+//             }
+//             .redeem {
+//               flex: 1;
+  
+//               &::before {
+//                 background-color: $redemptionColor;
+//               }
+  
+//               &.in-progress {
+//                 .label   { opacity: 0; }
+//                 .spinner { opacity: 1; }
+//               }
+//               &[aria-pressed="true"] {
+//                 @include mouseState(noHover) {
+//                   & {
+//                     opacity: 0.75;
+//                   };
+//                 }
+//               }
+  
+//               .spinner {
+//                 position: absolute;
+//                 opacity: 0;
+//               }
+//             }
+//             .options-menu {
+//               @include multiProp(#{$spacing * 3}, padding-left, padding-right);
+  
+//               @at-root .shift-code-options-dropdown {
+//                 .panel .title {
+//                   div:not(.code-id) {
+//                     opacity: 0.75;
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//           .code-info {
+//             padding: 16px;
+//             font-size: 0.85em;
+  
+//             dt, dd {
+//               display: inline;
+//             }
+//             dt {
+//               opacity: 0.5;
+//             }
+//             dd {
+//               cursor: default;
+
+//               @include mouseState(noHover) {
+//                 opacity: 0.5;
+//               }
+//               @include mouseState(hover) {
+//                 opacity: 0.75;
+//               }
+//             }
+//             dt::after {
+//               content: ':';
+//             }
+//           }
+//           .separator {
+//             border-bottom: 1.5px solid tpw(0.5);
+//             margin: 0 16px;
+//           }
+//         }
+//       }
+//       .view.edit > .content-container {
+//         padding: 16px;
+
+//         // form > .content-container {
+//         //   margin: 0;
+//         // }
+//       }
+
+//     }
+//   }
+// }
+// .search-result {
+//   margin: 32px 0;
+
+//   &.issue {
+
+//   }
+// }
+// .pager {
+//   margin-top: auto;
+// }
+
+
+// @import "../partials/_globals.scss";
+
+// .shift-header, .shift-code-list {
+//   @include ready;
+// }
+// .shift-header {
+//   font-size: 1.25em;
+//   width: 100%;
+//   background-color: $site-color-dark;
+//   border-bottom: bd(2px, $site-color-lighter);
+
+//   .content-wrapper {
+//     @include flexbox(c, sb);
+//     padding: 12px 16px;
+//   }
+//   .section {
+//     @include flexbox($vAlign: none);
+//   }
+//   .badge {
+//     $badgeColors: (
+//       total: #a5bacf,
+//       new: $badge-new,
+//       expiring: $badge-expiring
+//     );
+
+//     @include flexbox();
+//     font-size: 1em;
+//     min-width: 2.5em;
+//     padding: 6px 16px;
+//     margin-right: 6px;
+//     border-radius: 4px;
+//     overflow: hidden;
+
+//     // Colors
+//     @each $name, $color in $badgeColors {
+//       &.#{$name} {
+//         background-color: adjust-color($color, $alpha: -0.75);
+        
+//         &::before {
+//           border-color: $color;
+//         }
+//       }
+//     }
+
+//     @include pshared {
+//       @include fill(true);
+//       border: bd(2px);
+//       border-radius: 4px;
+//     }
+//     &::before {
+//       z-index: zOrder(higher);
+//       transition: box-shadow $trd, opacity $trd, transform $trd;
+//       // opacity: 0.25;
+//     }
+//     &::after {
+//       z-index: zOrder(aboveNormal);
+//       border-color: #fff;
+//       opacity: 0;
+//     }
+
+//     .fas {
+//       position: absolute;
+//       opacity: 0.25;
+//       font-size: 2.5em;
+//       // margin-right: 6px
+//     }
+//     .count {
+//       color: #fff;
+//       text-shadow: dropShadow(tpb(0.75));
+//     }
+
+//     // Filter Badges
+//     // &button {
+//     //   @include pshared {
+//     //     @include fill(true);
+//     //   }
+//     //   // &::before {
+//     //   //   background-color: #000;
+//     //   // }
+//     //   &::after {
+        
+//     //   }
+//     // }
+//     // Active States
+//     &.inactive {
+//       opacity: 0.5;
+//     }
+//     &:not(.inactive) {
+//       // &:not([aria-pressed="true"])::after { 
+//       //   box-shadow: none;
+//       // }
+//       // &[aria-pressed="true"]::before {
+//       //   box-shadow: inset 0 0 10px tpw(0.75);
+//       // }
+
+//       @include mouseState(hover) {
+//         &::after {
+//           opacity: 1;
+//         }
+//       }
+//       // &.new, &.expiring {
+//         // @include mouseState(noHover) {
+//         //   &::after {
+//         //     opacity: 0;
+//         //   }
+//         // }
+//         // @include mouseState(click) {
+//         //   opacity: 0.75;
+//         // }
+//       // }
+//     }
+//   }
+// }
+// .modal {
+//   .info {
+//     margin: 24px 0;
+//     // padding: 8px; 
+//     // border: bd(1.5px, $bodyLightColor);
+//     // border-radius: 8px;
+
+//     .section {
+//       @include flexbox(c, sb, $wrap: true);
+//       padding: 12px;
+//       background-color: tpw(0.1);
+//       border-radius: 8px;
+//       // border: bd(1.5px, tpw(0.5));
+//       text-shadow: dropShadow();
+
+//       &:not(:last-child) {
+//         margin-bottom: 8px;
+//       }
+
+//       // Shading
+//       @include mouseState(noHover) {
+//         dt, dd .primary.inactive, dd .secondary {
+//           opacity: 0.5;
+//         }
+//       }
+//       @include mouseState(hover) {
+//         dt, dd .primary.inactive, dd .secondary {
+//           opacity: 0.75;
+//         }
+//       }
+
+//       dt {
+//         @include flexbox($hAlign: s);
+//         flex: 1 1;
+
+//         .icon {
+//           margin-right: 8px;
+//           font-size: 1.5em;
+//         }
+
+//         &::after {
+//           content: ": ";
+//         }
+//       }
+//       dd {
+//         @include flexbox(c, e, $direction: c);
+//         flex: 2 1;
+//         text-align: end;
+
+//         .secondary {
+//           font-size: 0.75em;
+//           font-style: italic;
+//         }
+//         .inactive {
+//           &.secondary { display: none; }
+//         }
+//       }
+//     }
+//   }
+// }
