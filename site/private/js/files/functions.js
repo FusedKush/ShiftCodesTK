@@ -446,8 +446,6 @@ const globalFuncStats = {
   /**
    * Record a helper function call
    * 
- *
-   * 
    * @param {string} funcName The name of the function.
    * @param {undefined|boolean} funcResult Indicates the result of the function execution. 
    * - **True** indicates that the function executed successfully, without errors.
@@ -1280,7 +1278,6 @@ const edit = {
   },
   /**
    * Clone a given HTML Element
-   * - *Note: A **deep clone** is performed, meaning the entire subtree of the node is cloned.*
    * 
    * @param {Element} elm The element to be cloned.
    * @param {boolean} deepClone Indicates if a *deep clone* is to be performed.
@@ -1921,7 +1918,7 @@ var cookie = {
     else             { del(false); }
   }
 };
-// Misc.
+// Random Generation
 /**
  * Returns a random value between two values
  *
@@ -1957,30 +1954,18 @@ function randomID (prefix = "", min = 100, max = 9999) {
   return false;
 }
 /**
- * Determines if a plural letter is needed based on a value
- *
- * @param {number} val The value to be evaluated
- * @param {string} [letter='s'] The letter to be returned if a plural is needed
- * @returns {string} Returns the specified letter if val is 1 or an empty string if number is any other value
- */
-function checkPlural (val, letter = 's') {
-  if (val != 1) { return 's'; }
-  else          { return ''; }
-}
-/**
- * Convert the first letter of each word in a string to uppercase.
+ * Generate a random integer ID based on the current timestamp
  * 
- * @param {string} string The string to convert to uppercase.
- * @returns {string} Returns the converted string/ 
+ * @param {int} min The minimum value that can be generated for use at the end of the ID. 
+ * @param {int} max The maximum value that can be generated for use at the end of the ID. 
+ * @returns {string} Returns the new *Timestamp ID*.
  */
-function ucWords (string) {
-  let pieces = string.split(' ');
+function randomTimestampID (min = 1000, max = 9999) {
+  const timestamp = new Date().valueOf();
+  const randomInt = randomNum(min, max);
 
-  for (let i = 0; i < pieces.length; i++) {
-    let piece = pieces[i];
-
-    pieces[i] = piece.charAt(0).toUpperCase() + piece.substring(1);
-  }
+  return timestamp.toString() + randomInt.toString();
+}
 
 // Query Parameters
 /**

@@ -871,27 +871,6 @@ function execGlobalScripts () {
     })();
     // Check for hash-targeted elements
     hashUpdate();
-    // Get SHiFT stats
-    newAjaxRequest({
-      file: '/assets/requests/get/shift/stats',
-      callback: function (response) {
-        let res = tryJSONParse(response);
-
-        if (res) {
-          shiftStats = res.payload;
-        }
-        else {
-          newToast({
-            settings: {
-              template: 'exception'
-            },
-            content: {
-              body: 'We could not retrieve SHiFT Code statistics due to an error. This may affect the site until refreshed.'
-            }
-          });
-        }
-      }
-    });
     // Add inner span to buttons and links
     (function () {
       let clickables = dom.find.children(document, 'group', 'clickables');
@@ -1136,8 +1115,35 @@ function execGlobalScripts () {
         console.warn(`Button Alias "${alias}" was not found.`);
         return false;
       }
-      });
-    })();
+      
+    });
+    // Profile Card Modal
+    ShiftCodesTK.requests.savedRequests.saveRequest('profile_card_modal', {
+      parameters: {
+        user_id: ''
+      },
+      request: {
+        path: '/assets/requests/get/account/profile-card',
+        callback: (response) => {
+          if (response && response.payload !== undefined) {
+            if (response.payload[0]) {
+              const modal = dom.find.id('profile_card_modal');
+              const modalBody = (function () {
+                const body = dom.find.child(modal, 'class', 'body');
+                const container = dom.find.child(body, 'class', 'content-container');
+
+                return container;
+              })();
+              const element = createElementFromHTML(response.payload[0]);
+
+              modalBody.innerHTML = element.outerHTML;
+              multiView_setup(modalBody.childNodes[0]);
+              ShiftCodesTK.modals.toggleModal(modal, true);
+            }
+          }
+        }
+      }
+    });
   }
   else {
     setTimeout(execGlobalScripts, 250);
@@ -1148,3 +1154,4 @@ execGlobalScripts();
 window.addEventListener('load', function () {
   loadEventFired = true;
 });
+
