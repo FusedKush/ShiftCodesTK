@@ -449,7 +449,7 @@ function checkHash (key = false) {
   let hash = window.location.hash;
 
   function search(keyName) {
-    if (hash.search(`#${keyName}`) == 0) {
+    if (hash.search(new RegExp(`^#${keyName}`)) == 0) {
       hashListeners[keyName](hash);
       return true;
     }
