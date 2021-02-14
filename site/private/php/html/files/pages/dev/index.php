@@ -1,28 +1,16 @@
 <?php
-  $page['auth'] = [
-    'requireState'   => 'auth',
-    // 'onFailRedirect' => '/'
-    'onFailToast' => [
-      'content' => [
-        'body' => 'You must be logged in to view your submitted SHiFT Codes.'
-      ]
-    ]
-  ];
+  // $page['auth'] = [
+  //   'requireState'   => 'auth',
+  //   'onFailRedirect' => '/'
+  // ];
   $page['meta'] = [
-    'title'       => 'My SHiFT Codes - ShiftCodesTK',
-    'description' => 'SHiFT Codes you have submitted to ShiftCodesTK',
-    'canonical'   => '/codes/',
+    'title'       => 'Development Hub - ShiftCodesTK',
+    'description' => 'Resources related to the development of ShiftCodesTK',
+    'canonical'   => '/dev/',
     'image'       => 'bl3/2',
     'theme'       => 'main'
   ];
-  $page['shift'] = [
-    'game'               => null,
-    'owner'              => '$user',
-    'order'              => 'newest',
-    'status'             => [ 'active', 'expired', 'hidden' ],
-    'readOnlyProperties' => [ 'limit' ]
-  ];
-  
+
   include_once('../initialize.php');
 ?>
 <!DOCTYPE html>
@@ -41,8 +29,6 @@
     <!-- Main Header -->
     <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
-    <!-- SHiFT -->
-    <?php include_once('local/shift.php'); ?>
     <!--// After-Content Imports \\-->
     <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->

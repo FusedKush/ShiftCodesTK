@@ -11,75 +11,26 @@
   ];
 
   include_once('initialize.php');
-  ?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <!--// Styles \\-->
-    <!-- Shared Styles -->
-    <?php include_once('global/sharedStyles.php'); ?>
-    <!-- Local Styles -->
-    <link href="/assets/css/local/account.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
-    <!-- <link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link> -->
-    <!--// Metadata \\-->
-    <?php include_once('global/head.php'); ?>
-  </head>
-  <body data-theme="main">
-    <!--// Before-Content Imports \\-->
-    <?php include_once('global/beforeContent.php'); ?>
-    <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
-    <!-- Main Content -->
-    <main class="content-wrapper">
-      <div class="multi-view" id="account" data-view-type="tabs">
-        <div class="view" data-view="My Profile">
-          <h2>My Profile</h2>
-          <?php
-              include_once(HTML_INCLUDES_PATH . 'local/profile-card.php');
+  ?><!doctype html><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><link href="/assets/css/local/account.css<?php echo TK_VERSION_STR; ?>" rel=stylesheet><?php include_once('global/head.php'); ?><body data-theme=main><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><main class=content-wrapper><div class=multi-view id=account data-view-type=tabs><div class=view data-view="My Profile"><h2>My Profile</h2><?php
+              include_once(PRIVATE_PATHS['html_includes'] . 'local/profile-card.php');
 
               getProfileCard([
                 'showStats'   => true,
                 'showActions' => true,
                 'allowEdit'   => true
               ]);
-          ?>
-        </div>
-        <div class="view" data-view="My Account">
-        <h2>My Account</h2>
-          <!-- Profile Card -->
-          <?php
-            include_once(HTML_INCLUDES_PATH . 'local/profile-card.php');
+          ?></div><div class=view data-view="My Account"><h2>My Account</h2><?php
+            include_once(PRIVATE_PATHS['html_includes'] . 'local/profile-card.php');
 
             getProfileCard([
               'showRoles' => false
             ]);
-          ?>
-          <!-- Password -->
-          <div class="section password multi-view" data-view-type="toggle" id="update_password">
-            <h3>Change your Password</h3>
-            <div class="view" id="update_password_view">
-              <p>Change the password you use to log into ShiftCodesTK.</p>
-              <button 
-                class="styled color light view-toggle" 
-                title="Change your account password" 
-                aria-label="Change your account password" 
-                data-view="update_password_edit">
-                Change Password
-              </button>
-            </div>
-            <div class="view" id="update_password_edit">
-              <?php
-                // require_once(FORMS_PATH . 'account/change-password.php');
+          ?><div class="section multi-view password" id=update_password data-view-type=toggle><h3>Change your Password</h3><div class=view id=update_password_view><p>Change the password you use to log into ShiftCodesTK.</p><button aria-label="Change your account password" class="color light styled view-toggle" data-view=update_password_edit title="Change your account password">Change Password</button></div><div class=view id=update_password_edit><?php
+                // require_once(PRIVATE_PATHS['forms'] . 'account/change-password.php');
 
                 // $updatePasswordForm->insertForm();
-              ?>
-            </div>
-          </div>
-          <!-- Login Actions -->
-          <div class="section login-actions">
-          <?php
-            // require_once(FORMS_PATH . 'auth/logout.php');
+              ?></div></div><div class="section login-actions"><?php
+            // require_once(PRIVATE_PATHS['forms'] . 'auth/logout.php');
             // // $logoutForm = new FormBase([
             // //   'name'               => 'logout',
             // //   'action'             => '/assets/requests/forms/auth/logout',
@@ -123,12 +74,8 @@
             //   'use' => false
             // ]);
             // $logoutForm->insertForm();
-          ?>
-          </div>
-          <!-- Danger Zone -->
-          <div class="section danger-zone">
-          <?php
-            // require_once(FORMS_PATH . 'account/danger-zone.php');
+          ?></div><div class="section danger-zone"><?php
+            // require_once(PRIVATE_PATHS['forms'] . 'account/danger-zone.php');
 
             // // $dangerZoneForm->updateProperty('footer', [
             // //   'submit' => [
@@ -148,18 +95,4 @@
             // // $confirmation->updateProperty('hidden', true);
 
             // $dangerZoneForm->insertForm();
-          ?>
-          </div>
-        </div>
-      </div>
-    </main>
-    <!--// After-Content Imports \\-->
-    <?php include_once('global/afterContent.php'); ?>
-    <!--// Scripts \\-->
-    <!-- Shared Scripts -->
-    <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/js/global/libs/moment.js<?php echo TK_VERSION_STR; ?>"></script>
-    <script async src="/assets/js/local/account.js<?php echo TK_VERSION_STR; ?>"></script>
-  </body>
-</html>
+          ?></div></div></div></main><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?><script async src="/assets/js/global/libs/moment.js<?php echo TK_VERSION_STR; ?>"></script><script async src="/assets/js/local/account.js<?php echo TK_VERSION_STR; ?>"></script>
