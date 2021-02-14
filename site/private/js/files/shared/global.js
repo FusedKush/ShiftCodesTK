@@ -151,37 +151,42 @@ var requestToken = {
    */
   tagName: 'tk-request-token',
   /**
+   * The name of the Request Header that holds the request token
+   */
+  headerName: 'x-request-token',
+  /**
    * Check for updates to the request token
    * 
-   * @param {function} callback An optional callback to be executed when the AJAX request has completed. The request token is passed to the first parameter.
+   * @param {function} callback An optional callback to be executed when the AJAX request has completed. 
+   * - The _new request token_ is provided as the **first argument**.
+   * - The _old request token_ is provided as the **second argument**.
    */
   check: function (callback) {
     newAjaxRequest({
       file: '/assets/requests/get/token',
-      'callback': function (responseString) {
+      callback: function (responseString) {
         let token = requestToken.get();
         let response = tryJSONParse(responseString);
 
         if (response && response.statusCode == 200) {
-          let payloadToken = response.payload.token;
+          let newToken = response.payload.token;
 
-          if (payloadToken != 'unchanged') {
+          if (newToken != 'unchanged') {
             let fields = dom.find.children(document.body, 'attr', 'name', 'auth_token');
             
-            token = payloadToken;
-            edit.attr(getMetaTag(requestToken.tagName), 'add', 'content', token);
+            edit.attr(getMetaTag(requestToken.tagName), 'add', 'content', newToken);
 
             for (let field of fields) {
-              edit.attr(field, 'add', 'value', token);
+              edit.attr(field, 'add', 'value', newToken);
             }
 
             if (typeof callback == 'function') {
-              callback(token);
+              callback(newToken, token);
             }
           }
         }
         else {
-          newToast({
+          ShiftCodesTK.toasts.newToast({
             settings: {
               template: 'exception'
             },
