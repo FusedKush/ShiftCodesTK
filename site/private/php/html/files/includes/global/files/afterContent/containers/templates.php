@@ -90,11 +90,274 @@
   </template>
   <!-- Form Alerts -->
   <template id="form_alert_template">
-    <div class="alert">
-      <span class="icon">
-        <span class="box-icon"></span>
-      </span>
-      <span class="message"></span>
+  <!-- Profile Card -->
+  <template id="profile_card_template">
+    <?php
+      $templateID = 'profile_card_template_card';
+      $userTitle = "\${username}'s";
+
+      include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . 'account/update-profile.php');
+    ?>
+
+    <div
+      class="profile-card multi-view"
+      id="<?= $templateID; ?>"
+      data-user-id="${user_id}"
+      data-view-type="toggle">
+      <!-- User Details -->
+      <div class="section user">
+        <div class="profile-picture">
+          <img alt="<?= "{$userTitle} Profile Picture"; ?>">
+          <span class="placeholder box-icon" hidden></span>
+        </div>
+        <dl class="info">
+          <div class="definition user-name">
+            <dt>Username</dt>
+            <dd class="layer-target">${username}</dd>
+            <div class="layer tooltip" data-layer-delay="long"><?= "{$userTitle} Username"; ?></div>
+          </div>
+          <div class="definition user-id">
+            <dt>User ID</dt>
+            <dd class="layer-target">${user_id}</dd>
+            <div class="layer tooltip" data-layer-delay="long"><?= "{$userTitle} User ID"; ?></div>
+          </div>
+        </dl>
+      </div>
+      <!-- Primary View -->
+      <div class="view primary" id="<?= "{$templateID}_view_primary"; ?>">
+        <!-- User Roles -->
+        <div class="section roles">
+          <?php 
+            $roleList = array_reverse(ShiftCodesTK\Users\User::USER_ROLES, true);
+          ?>
+
+          <?php foreach ($roleList as $role => $roleData) : ?>
+            <?php
+              $roleTitle = str_replace('This user', '${username}', $roleData['label']);
+            ?>
+
+            <span class="<?= "role {$role} layer-target"; ?>" aria-label="<?= $roleTitle; ?>" data-role="<?= $role; ?>">
+              <span><?= $roleData['name']; ?></span>
+            </span>
+            <div class="layer tooltip"><?= $roleTitle; ?></div>
+          <?php endforeach; ?>
+          <!-- End of Role Loop -->
+        </div>
+        <!-- Profile Stats -->
+        <?php 
+          $profileStats = [
+            'last_public_activity'    => [
+              'name'                     => 'Last Seen',
+              'title'                    => 'The last time ${username} was publically active.',
+              'icon'                     => 'fas fa-star',
+              'is_date'                  => true
+            ],
+            'creation_date'           => [
+              'name'                     => 'Joined',
+              'title'                    => 'How long ago ${username} joined ShiftCodesTK.',
+              'icon'                     => 'fas fa-calendar-day',
+              'is_date'                  => true
+            ],
+            'shift_codes_submitted'   => [
+              'name'                     => 'SHiFT Codes Submitted',
+              'title'                    => 'The total number of SHiFT Codes submitted by ${username}.',
+              'icon'                     => 'fas fa-key',
+              'is_date'                  => false
+            ]
+          ];
+        ?>
+
+        <dl class="section stats">
+          <!-- Privacy Preference Button -->
+          <button
+            class="stat-privacy link appear layer-target"
+            aria-label="Profile Stats Privacy Settings"
+            data-alias="<?= "{$templateID}_edit_profile_action"; ?>">
+            <span class="box-icon fas fa-info-circle" aria-hidden="true"></span>
+          </button>
+          <div class="layer tooltip">
+            <div class="multi-view" data-type="toggle">
+              <?php
+                $privacyPreferenceTooltips = [
+                  'hidden'  => [
+                    'icon'        => 'fa-eye-slash',
+                    'description' => 'Only you are able to see them.'
+                  ],
+                  'private' => [
+                    'icon'        => 'fa-lock',
+                    'description' => 'Only other users who are currently logged-in are able to see them.'
+                  ],
+                  'public'  => [
+                    'icon'        => 'fa-eye',
+                    'description' => 'Everyone is able to see them.'
+                  ]
+                ];
+              ?>
+  
+              <?php foreach ($privacyPreferenceTooltips as $preference => $tooltip) : ?>
+                <?php
+                  $displayPreference = Strings\transform($preference, Strings\TRANSFORM_CAPITALIZE_WORDS);
+                  $fullTooltip = "Your Profile Statistics are currently  <span class=\"inline-box-icon fas {$tooltip['icon']}\" aria-hidden=\"true\"></span>  <em>{$displayPreference}</em>. {$tooltip['description']}";
+                ?>
+  
+                <span 
+                  class="status view <?= " {$preference} "; ?>" 
+                  hidden
+                  aria-hidden="true">
+                  <?= $fullTooltip; ?>
+                </span>
+              <?php endforeach; ?>
+              <!-- End of Privacy Preference Tooltip Loop -->
+            </div>
+            <br>
+            <br>You can change your Privacy Preferences using the&nbsp;<code><span class="inline-box-icon fas fa-pen"></span>&nbsp;&nbsp;Edit Profile</code>&nbsp;button.
+          </div>
+          <!-- End of Privacy Preference Button Conditional -->
+          <?php foreach ($profileStats as $stat_name => $stat_info) : ?>
+            <?php 
+              $stat_data = "\${{$stat_name}_value}";
+            ?>
+
+            <div class="<?= "definition {$stat_name}"; ?>">
+              <span class="<?= "box-icon icon {$stat_info['icon']}"; ?>" aria-hidden="true"></span>
+              &nbsp;<div class="stat">
+                <dt class="layer-target layer-hover-indicator"><?= $stat_info['name']; ?></dt>
+                <div class="layer tooltip"><?= $stat_info['title']; ?></div>
+                
+                <!-- Date Value -->
+                <?php if ($stat_info['is_date']) : ?>
+                  <dd class="layer-target" data-relative-date="<?= "\${{$stat_name}_value}"; ?>">
+                    <?= "\${{$stat_name}_value_relative}"; ?>
+                  </dd>
+                  <div class="layer tooltip"><?= "\${{$stat_name}_value_timestamp}"; ?></div>
+                <!-- Non-Date Value -->
+                <?php else : ?>
+                  <dd><?= $stat_data; ?></dd>
+                <?php endif; ?>
+                <!-- End of Date Value Check -->
+              </div>
+            </div>
+
+            <?php unset($profileStatDate); ?>
+          <?php endforeach; ?>
+          <!-- End of Profile Stats Loop -->
+        </dl>
+        <!-- Actions -->
+        <div class="section actions button-group">
+          <!-- Enforcement Button -->
+          <button 
+            class="styled warning button-effect outline enforcement layer-target" 
+            id="<?= "{$templateID}_enforce_action" ?>"
+            aria-label="Enforce ${username}">
+            <span class="fas fa-gavel" aria-hidden="true"></span>
+          </button>
+          <div class="layer tooltip" data-layer-target="<?= "{$templateID}_enforce_action" ?>">Take an enforcement action against ${username}</div>
+          <!-- Report Button -->
+          <button 
+            class="styled warning button-effect outline report layer-target" 
+            id="<?= "{$templateID}_report_action" ?>"
+            aria-label="Report ${username}">
+            <span class="fas fa-flag" aria-hidden="true"></span>
+          </button>
+          <div class="layer tooltip" data-layer-target="<?= "{$templateID}_report_action" ?>">Report ${username}'s Profile</div>
+          <!-- Edit Profile Button -->
+          <button 
+            class="styled light button-effect hover edit-profile layer-target" 
+            id="<?= "{$templateID}_edit_profile_action" ?>"
+            aria-label="Edit your Profile">
+            <span>
+              <span class="fas fa-pen" aria-hidden="true"></span>
+              &nbsp;&nbsp;Edit Profile
+            </span>
+          </button>
+          <div class="layer dropdown" data-layer-target="<?= "{$templateID}_edit_profile_action" ?>">
+            <div class="title">Edit your Profile</div>
+            <ul class="choice-list">
+              <li>
+                <button class="choice styled button-effect text layer-target" data-value="change-profile-picture" disabled>
+                  <span>
+                    <span class="inline-box-icon"><span class="fas fa-camera" aria-hidden="true"></span></span>
+                    Change Profile Picture
+                  </span>
+                </button>
+                <div class="layer dropdown" data-layer-pos="left">
+                  <div class="title">Change Profile Picture</div>
+                  <ul class="choice-list">
+                    <li>
+                      <button class="choice styled button-effect text auto-toggle" data-value="upload" disabled>
+                        <span class="inline-box-icon"><span class="fas fa-file-upload" aria-hidden="true"></span></span>
+                        Upload Profile Picture
+                      </button>
+                    </li>
+                    <li>
+                      <button class="choice styled warning button-effect text auto-toggle" data-value="remove" disabled>
+                        <span class="inline-box-icon"><span class="fas fa-trash-alt" aria-hidden="true"></span></span>
+                        Remove Profile Picture
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="multi-view" data-view-type="toggle">
+                <div class="view enabled">
+                  <button
+                    class="choice styled button-effect text auto-toggle view-toggle"
+                    data-value="change-username"
+                    data-view="<?= "{$templateID}_view_change_username" ?>">
+                    <span>
+                      <span class="inline-box-icon"><span class="fas fa-user"></span></span>
+                      Change Username
+                    </span>
+                  </button>
+                </div>
+                <div class="view disabled" hidden>
+                  <button
+                    class="choice styled button-effect text layer-target allow-disabled-layers"
+                    disabled>
+                    <span>
+                      <span class="inline-box-icon"><span class="fas fa-user"></span></span>
+                      Change Username
+                    </span>
+                  </button>
+                  <div class="layer tooltip" data-layer-pos="left">You can only change your username&nbsp;<em>twice</em>&nbsp;every&nbsp;<em>24 hours</em></div>
+                </div>
+              </li>
+              <li>
+                <button class="choice styled button-effect text auto-toggle view-toggle" data-value="role-details" data-view="<?= "{$templateID}_view_role_details"; ?>">
+                  <span>
+                    <span class="inline-box-icon"><span class="fas fa-star" aria-hidden="true"></span></span>
+                    Role Details
+                  </span>
+                </button>
+              </li>
+              <li>
+                <button class="choice styled button-effect text auto-toggle view-toggle" data-value="change-profile-stats-privacy" data-view="<?= "{$templateID}_view_stat_privacy"; ?>">
+                  <span>  
+                    <span class="inline-box-icon"><span class="fas fa-eye" aria-hidden="true"></span></span>
+                    Profile Stats Privacy
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Sub Views -->
+      <div class="view edit change-username" id="<?= "{$templateID}_view_change_username"; ?>">
+        <?php
+          $form_changeUsername->insertForm();
+        ?>
+      </div>
+      <div class="view edit role-details" id="<?= "{$templateID}_view_role_details"; ?>">
+        <?php
+          $form_roleDetails->insertForm();
+        ?>
+      </div>
+      <div class="view edit stat-privacy" id="<?= "{$templateID}_view_stat_privacy"; ?>">
+        <?php
+          $form_statPrivacy->insertForm();
+        ?>
+      </div>
     </div>
   </template>
 

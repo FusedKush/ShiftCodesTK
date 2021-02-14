@@ -1,262 +1,503 @@
 <?php
-  <?php 
-<?php
   use ShiftCodesTK\Users,
       ShiftCodesTK\Strings;
 
-    $defaults = [
-      'id'              => '$user',
-      'usePicture'      => false,
-      'showBorder'      => true,
-      'showInfoTerms'   => false,
-      'showRoles'       => true,
-      'showStats'       => false,
-      'showActions'     => false,
-      'allowEdit'       => false
-    ];
-    $settings = array_replace($defaults, $options);
-    $profileData = [];
-    $profileCardClasses = "profile-card multi-view force-size";
-    $profileCardID = "profile_card_" . rand(100, 1000);
+  /** Generate a *Profile Card*.
+   * 
+   * @param array $card_options An `array` of options to customize the Profile Card:
+   * 
+   * | Property | Type | Default Value | Description |
+   * | --- | --- | --- | --- |
+   * | *user_id* | `string` | `$user` | The `user_id` of the *User*. The keyword **$user** uses the *Current User's ID*. |
+   * | *show_picture* | `bool` | `true` | Indicates if the User's *Profile Picture* is to be displayed. |
+   * | *show_border* | `bool` | `true` | Indicates if a border is to be rendered around the Profile Card. |
+   * | *show_info_terms* | `bool` | `false` | Indicates if the *Primary Profile Info Terms* are to be rendered for the Profile Card. | 
+   * | *show_roles* | `bool` | `false` | Indicates if the User's *User Roles* are to be displayed on the Profile Card. This does not effect the role colors of the username, border, etc... |
+   * | *show_stats* | `bool` | `false` | Indicates if the User's *Profile Stats* are to be displayed on the Profile Card. Whether or not the stats are actually displayed depends on the User's *Profile Stats Privacy Preference*. |
+   * | *show_actions* | `bool` | `false` | Indicates if *Profile Card Actions* are to be displayed on the Profile Card. Which actions are rendered is determined by which `user_id` is provided. |
+   * | *allow_editing* | `bool` | `false` | Indicates if the User's Profile can be *edited*. |
+   * 
+   * @return string Returns the new *Profile Card* on success. 
+   */
+  function get_profile_card ($card_options = []) {
+    $isCurrentUser = false;
+    $isTemplate = ($card_options['user_id'] ?? null) === '$template';
+    $options = (function () use ($card_options) {
+      $defaultOptions = [
+        'user_id'         => '$user',
+        'show_picture'    => true,
+        'show_border'     => true,
+        'show_info_terms' => false,
+        'show_roles'      => false,
+        'show_stats'      => false,
+        'show_actions'    => false,
+        'allow_editing'   => false
+      ];
+      $options = array_merge($defaultOptions, $card_options);
 
-    if ($settings['id'] == '$user')   {
-      $profileData['id'] = auth_user_id();
-    }
-    else {
-      $profileData['id'] = $settings['id'];
-    }
+      if ($options['user_id'] == '$user') {
+        if (!Users\CurrentUser::is_logged_in()) {
+          throw new \Error("A user is not currently logged in.");
+        }
 
-    $profileData['isCurrentUser'] = $profileData['id'] == auth_user_id();
-    // Get Username & Roles
-    (function () use (&$_mysqli, &$profileData) {
-      if ($profileData['isCurrentUser']) {
-        $profileData['name'] = auth_user_name();
-        $profileData['roles'] = auth_user_roles();
+        $options['user_id'] = Users\CurrentUser::get_current_user()->user_id;
       }
-      else {  
-        $query = "SELECT 
-                    auth_users.username as 'username',
-                    auth_records.user_roles as 'roles'
-                  FROM auth_users
-                  INNER JOIN auth_records 
-                    ON auth_users.user_id=auth_records.user_id
-                  WHERE auth_users.user_id='{$profileData['id']}'
-                  LIMIT 1";
-        $sql = $_mysqli->query($query, [ 'collapseAll' => true ]);
 
-        $profileData['name'] = $sql['username'] 
-                               ?? "User {$profileData['id']}";
-        $profileData['roles'] = $sql['roles'] 
-                                ? json_decode($sql['roles'], true) 
-                                : array_fill_keys(AUTH_ROLES['roles'], false);
+      return $options;
+    })();
+    $userData = (function () use (&$isCurrentUser, $options, $isTemplate) {
+      if (!$isTemplate) {
+        $userData = new Users\UserRecord($options['user_id']);
+        
+        if ($userData->is_current_user()) {
+          $getFullData = $options['show_stats'] || $options['allow_editing'];
+  
+          $isCurrentUser = true;
+          return Users\CurrentUser::get_current_user($getFullData);
+        }
+        else {
+          return $userData;
+        }
+      }
+      else {
+        return false;
       }
     })();
+    $userID = !$isTemplate
+              ? Strings\encode_html($userData->user_id)
+              : '${user_id}';
+    $username = !$isTemplate
+                ? Strings\encode_html($userData->username)
+                : '${username}';
+    $profileCardClasses = (function () use ($options, $userData, $isTemplate) {
+      $classes = [ 'profile-card', 'multi-view' ];
 
-    // Profile Card classes
-    (function () use (&$profileCardClasses, $profileData, $settings) {
-      // Card Border
-      if ($settings['showBorder']) {
-        $profileCardClasses .= ' show-border';
+      if ($options['show_border']) {
+        $classes[] = 'show-border';
       }
-      if ($settings['showInfoTerms']) {
-        $profileCardClasses .= ' show-info-terms';
+      if ($options['show_info_terms']) {
+        $classes[] = 'show-info-terms';
       }
-      // Roles
-      if (array_search(true, $profileData['roles']) !== false) {
-        foreach ($profileData['roles'] as $role => $hasRole) {
-          if ($hasRole) {
-            $profileCardClasses .= " $role";
+      if (!$options['show_actions'] && !$options['allow_editing']) {
+        $classes[] = 'setup';
+      }
+      // User Roles
+      if (!$isTemplate) {
+        $userRoles = $userData->get_roles();
+
+        if ($userRoles) {
+          foreach ($userRoles as $role) {
+            $classes[] = "role-{$role}";
           }
         }
       }
-      // Edit view
-      if (!$settings['showActions'] || !$settings['allowEdit']) {
-        $profileCardClasses .= " setup";
-      }
-    })();
-  ?>
 
-  <div 
-    class="<?= $profileCardClasses; ?>" 
-    id="<?= $profileCardID; ?>"
-    data-view-type="toggle">
-    <div class="view" id="<?= "{$profileCardID}_view_view"; ?>">
+      return implode(' ', $classes);
+    })();
+    $profileCardID = !$isTemplate
+                     ? \ShiftCodesTK\Auth\random_unique_id(12, 'profile_card_')
+                     : 'profile_card_template_card';
+  ?>
+    <div 
+      class="<?= $profileCardClasses; ?>" 
+      id="<?= $profileCardID; ?>" 
+      data-user-id="<?= $userID; ?>" 
+      data-view-type="toggle">
       <!-- User Details -->
       <div class="section user">
         <?php
-          $title = $profileData['isCurrentUser'] 
-                   ? 'Your'
-                   : "{$profileData['name']}'s";
+          $userTitle = (
+                        $isCurrentUser
+                        ? 'Your'
+                        : "{$username}'s"
+                      );
         ?>
 
-        <div class="profile-picture" aria-hidden="true">
-          <?php if ($settings['usePicture']) : ?>
-            <img 
-              src="/assets/img/<?= $profileData['id']; ?>"
-              alt="<?= "$title Profile Picture"; ?>">
+        <!-- Profile Picture -->
+        <div class="profile-picture">
+          <!-- Show Profile Picture -->
+          <?php if ($options['show_picture'] && ($isTemplate || $userData->profile_picture ?? false)) : ?>
+            <img src="<?= "/assets/img/users/profiles/{$userID}?_request_token={$_SESSION['token']}"; ?>" alt="<?= "{$userTitle} Profile Picture"; ?>">
+          <!-- Hide Profile Picture -->
           <?php else : ?>
-          <!-- No Profile Picture -->
-            <span class="placeholder box-icon fas fa-user">
+            <?php
+              $placeholderLetters = (function () use ($username) {
+                $usernameObj = new Strings\StringObj($username);
+                $letters = $usernameObj->preg_match('/[A-Z]/', Strings\PREG_GLOBAL_SEARCH|Strings\PREG_RETURN_FULL_MATCH);
+    
+                if ($letters) {
+                  $letters = array_slice($letters, 0, 2, true);
+                  $letters = implode('', $letters);
+                }
+                else {
+                  $letters = $usernameObj->substr(0, 1);
+                  $letters = Strings\transform($letters, Strings\TRANSFORM_UPPERCASE);
+                }
+
+                return $letters;
+              })();
+            ?>
+            <!-- <span class="placeholder box-icon fas fa-user" aria-hidden="true"></span> -->
+            <span class="placeholder box-icon" aria-hidden="true"><?= $placeholderLetters ?></span>
           <?php endif; ?>
-          <!-- End of Profile Picture loop -->
+          <!-- End of Profile Picture Conditional -->
         </div>
+        <!-- Basic User Info -->
         <dl class="info">
-          <div class="definition user-name" title="<?= "$title Username"; ?>" aria-label="<?= "$title Username"; ?>">
+          <!-- Username -->
+          <div class="definition user-name">
             <dt>Username</dt>
-            <dd><?= clean_all_html($profileData['name']); ?></dd>
+            <dd class="layer-target"><?= $username; ?></dd>
+            <div class="layer tooltip" data-layer-delay="long"><?= "{$userTitle} Username"; ?></div>
           </div>
-          <div class="defintition user-id" title="<?= "$title User ID"; ?>" aria-label="<?= "$title User ID"; ?>">
+          <!-- User ID -->
+          <div class="definition user-id">
             <dt>User ID</dt>
-            <dd><?= $profileData['id']; ?></dd>
+            <dd class="layer-target"><?= $userID; ?></dd>
+            <div class="layer tooltip" data-layer-delay="long"><?= "{$userTitle} User ID"; ?></div>
           </div>
         </dl>
       </div>
-      <!-- Roles -->
-      <?php if ($settings['showRoles'] && array_search(true, $profileData['roles']) !== false) : ?>
-        <div class="section roles">
-          <?php foreach ($profileData['roles'] as $role => $hasRole) : ?>
-            <?php if ($hasRole) : ?>
-              <?php 
-                $label = AUTH_ROLES['props'][$role]['label'];
-                $label = $profileData['isCurrentUser'] 
-                        ? str_replace('This user is', 'You are', $label) 
-                        : str_replace('This user', $profileData['name'], $label);
-              ?>
-
-            <span 
-              class="<?= "role $role"; ?>"
-              title="<?= $label; ?>"
-              aria-label="<?= $label; ?>">
-              <span><?= ucfirst($role); ?></span>
-            </span>
-            <?php endif; ?>
-            <!-- End of role condition -->
-          <?php endforeach; ?>
-        </div>
-      <?php endif; ?>
-      <!-- End of Roles condition -->
-      <!-- Stats -->
-      <?php if ($settings['showStats']) : ?>
-        <?php
-          (function () use ($_mysqli, &$profileData) {
-            $query = "SELECT 
-                        `shift_codes_submitted` as 'codes_submitted',
-                        `creation_date` as 'join_date', 
-                        `last_public_activity` as 'last_seen_date'
-                      FROM
-                        `auth_records`
-                      WHERE `user_id`='{$profileData['id']}'
-                      LIMIT 1";
-            $sql = $_mysqli->query($query, [ 'collapseAll' => true ]);
-
-            // if (!$sql) {
-            //   return 0;
-            // }
-
-            foreach ($sql as $key => $value) {
-              $profileData[$key] = $value;
-            }
-          })();
-          $stats = [
-            'codes_submitted' => [
-              'name'  => 'SHiFT Codes Submitted',
-              'title' => $profileData['isCurrentUser'] 
-                         ? "The total number of SHiFT Codes that you have submitted"
-                         : "The total number of SHiFT Codes that {$profileData['name']} has submitted",
-              'icon'  => 'fas fa-key'
-            ],
-            'join_date' => [
-              'name'  => 'Joined',
-              'title' => $profileData['isCurrentUser'] 
-                         ? "How long ago you joined ShiftCodesTK"
-                         : "How long ago {$profileData['name']} joined ShiftCodesTK",
-              'icon'  => 'fas fa-calendar-day'
-            ],
-            'last_seen_date' => [
-              'name'  => 'Last Seen',
-              'title' => $profileData['isCurrentUser'] 
-                         ? "The last time you were active on ShiftCodesTK"
-                         : "The last time {$profileData['name']} was active on ShiftCodesTK",
-              'icon'  => 'fas fa-star'
-            ]
-          ];
-        ?>
-        <dl class="section stats">
-          <?php foreach ($stats as $name => $stat) : ?>
-            <?php
-              if (strpos($name, 'date') !== false) {
-                $date = new DateTime($profileData[$name]);
-                // $date->setTime(0, 0);
-              }
+      <!-- Primary View -->
+      <div class="view primary" id="<?= "{$profileCardID}_view_primary"; ?>">
+        <!-- User Roles -->
+        <?php if ($options['show_roles'] && ($isTemplate || $userData->get_roles(Users\User::USER_ROLES_GET_INT))) : ?>
+          <div class="section roles">
+            <?php 
+              $roleList = !$isTemplate
+                          ? $userData->get_roles(Users\User::USER_ROLES_GET_FULL_ARRAY)
+                          : array_reverse(Users\User::USER_ROLES, true);
             ?>
 
-            <div 
-              class="<?= "definition $name"; ?>"
-              title="<?= $stat['title']; ?>">
-              <span class="<?= "box-icon icon {$stat['icon']}"; ?>" aria-hidden="true"></span>
-              &nbsp;
-              <div class="stat">
-                <dt><?= $stat['name']; ?></dt>
-                <?php if (strpos($name, 'date') !== false) : ?>
-                  <dd data-ts="<?= $date->format('c'); ?>">
-                    <?= $date->format('F d, Y'); ?>
-                  </dd>
-                <?php else : ?>
-                <!-- Not Date -->
-                  <dd><?= $profileData[$name]; ?></dd>
-                <?php endif; ?>
-                <!-- End of date condition -->
+            <?php foreach ($roleList as $role => $roleData) : ?>
+              <?php
+                $roleTitle = $isCurrentUser   
+                            ? str_replace('This user is', 'You are', $roleData['label'])
+                            : str_replace('This user', $username, $roleData['label']);
+              ?>
+
+              <span class="<?= "role {$role} layer-target"; ?>" aria-label="<?= $roleTitle; ?>" data-role="<?= $role; ?>">
+                <span><?= $roleData['name']; ?></span>
+              </span>
+              <div class="layer tooltip"><?= $roleTitle; ?></div>
+            <?php endforeach; ?>
+            <!-- End of Role Loop -->
+          </div>
+        <?php endif; ?>
+        <!-- End of User Roles Condition -->
+        <!-- Profile Stats -->
+        <?php if ($options['show_stats'] && ($isTemplate || $userData->current_profile_stats_visibility())) : ?>
+          <?php 
+            $profileStats = [
+              'last_public_activity'    => [
+                'name'                     => 'Last Seen',
+                'title'                    => $isCurrentUser
+                                              ? 'The last time you were publically active.'
+                                              : "The last time {$username} was publically active.",
+                'icon'                     => 'fas fa-star',
+                'is_date'                  => true
+              ],
+              'creation_date'           => [
+                'name'                     => 'Joined',
+                'title'                    => $isCurrentUser
+                                              ? 'How long ago you joined ShiftCodesTK.'
+                                              : "How long ago {$username} joined ShiftCodesTK.",
+                'icon'                     => 'fas fa-calendar-day',
+                'is_date'                  => true
+              ],
+              'shift_codes_submitted'   => [
+                'name'                     => 'SHiFT Codes Submitted',
+                'title'                    => $isCurrentUser
+                                              ? 'The total number of SHiFT Codes you have submitted.'
+                                              : "The total number of SHiFT Codes submitted by {$username}.",
+                'icon'                     => 'fas fa-key',
+                'is_date'                  => false
+              ]
+            ];
+          ?>
+
+          <dl class="section stats">
+            <!-- Privacy Preference Button -->
+            <?php if ($options['allow_editing'] && $options['show_actions'] && ($isTemplate || $isCurrentUser)) : ?>
+              <button
+                class="stat-privacy styled light button-effect text view-toggle layer-target"
+                aria-label="Profile Stats Privacy Settings"
+                data-alias="<?= "{$profileCardID}_edit_profile_button"; ?>"
+                data-view="">
+                <?php
+                  $privacyPreferenceIcons = [
+                    'hidden'  => 'fa-eye-slash',
+                    'private' => 'fa-lock',
+                    'public'  => 'fa-eye'
+                  ];
+                ?>
+
+                <?php foreach ($privacyPreferenceIcons as $preference => $icon) : ?>
+                  <span 
+                    class="<?= "icon fas box-icon {$preference} {$icon}"; ?>"
+                    aria-hidden="true"
+                    <?= !$isTemplate && $userData->profile_stats_preference == $preference ? '' : ' hidden' ?>>
+                  </span>
+                <?php endforeach; ?>
+                <!-- End of Privacy Preference Icons Loop -->
+              </button>
+              <div class="layer tooltip">
+                <?php
+                  $privacyPreferenceTooltips = [
+                    'hidden'  => 'Your Profile Statistics are currently&nbsp;<em>Hidden</em>. Only you are able to see them.',
+                    'private' => 'Your Profile Statistics are currently&nbsp;<em>Private</em>. Only other users who are currently logged-in are able to see them.',
+                    'public'  => 'Your Profile Statistics are currently&nbsp;<em>Public</em>. Everyone is able to see them.'
+                  ];
+                ?>
+
+                <?php foreach ($privacyPreferenceTooltips as $preference => $tooltip) : ?>
+                  <span 
+                    class="status <?= " {$preference} "; ?>" 
+                    aria-hidden="<?= $userData->profile_stats_preference == $preference; ?>" 
+                    <?= !$isTemplate && $userData->profile_stats_preference == $preference ? '' : ' hidden'; ?>>
+                    <?= $tooltip; ?>
+                  </span>
+                <?php endforeach; ?>
+                <!-- End of Privacy Preference Tooltip Loop -->
+                <br>
+                <br>You can change your Privacy Preferences using the&nbsp;<code>Edit Profile</code>&nbsp;button.
               </div>
-            </div>
-          <?php endforeach; ?>
-          <!-- End of Stats loop -->
-        </dl>
-      <?php endif; ?>
-      <!-- End of stats condition -->
-      <!-- User Actions -->
-      <?php if ($settings['showActions']) : ?>
-        <div class="section actions">
-          <?php if (!$profileData['isCurrentUser']) : ?>
-            <button 
-              class="styled color warning report" 
-              title="<?= "Report {$profileData['name']}"; ?>" 
-              aria-label="<?= "Report {$profileData['name']}"; ?>" 
-              disabled>
-              <span class="fas fa-flag" aria-hidden="true"></span>
-            </button>
-          <?php endif; ?>
-          <!-- End of User ID condition -->
-          <?php if ($settings['allowEdit'] && $profileData['isCurrentUser']) : ?>
-            <button 
-              class="styled color light view-toggle" 
-              title="Edit your Profile" 
-              aria-label="Edit your Profile" 
-              data-view="<?= "{$profileCardID}_view_edit"; ?>">
-              Edit
-            </button>
-          <?php endif; ?>
-          <!-- End of edit condition -->
+            <?php endif; ?>
+            <!-- End of Privacy Preference Button Conditional -->
+            <?php foreach ($profileStats as $stat_name => $stat_info) : ?>
+              <?php 
+                $stat_data = !$isTemplate
+                             ? $userData->$stat_name
+                             : "\${{$stat_name}_value}";
+
+                if ($stat_info['is_date']) {
+                  $profileStatDate = !$isTemplate
+                                     ? new \DateTime($stat_data, new \DateTimeZone('UTC'))
+                                     : $stat_data;
+                }
+              ?>
+
+              <div class="<?= "definition {$stat_name}"; ?>">
+                <span class="<?= "box-icon icon {$stat_info['icon']}"; ?>" aria-hidden="true"></span>
+                &nbsp;<div class="stat">
+                  <dt class="layer-target layer-hover-indicator"><?= $stat_info['name']; ?></dt>
+                  <div class="layer tooltip"><?= $stat_info['title']; ?></div>
+                  
+                  <!-- Date Value -->
+                  <?php if (isset($profileStatDate)) : ?>
+                    <dd class="layer-target" data-relative-date="<?= !$isTemplate ? $profileStatDate->format('c') : "\${{$stat_name}_value}"; ?>">
+                      <?= !$isTemplate ? $profileStatDate->format('F d, Y') : "\${{$stat_name}_value_relative}"; ?>
+                    </dd>
+                    <div class="layer tooltip"><?= !$isTemplate ? $profileStatDate->format('F d, Y h:i A \U\T\C') : "\${{$stat_name}_value_timestamp}"; ?></div>
+                  <!-- Non-Date Value -->
+                  <?php else : ?>
+                    <dd><?= $stat_data; ?></dd>
+                  <?php endif; ?>
+                  <!-- End of Date Value Check -->
+                </div>
+              </div>
+
+              <?php unset($profileStatDate); ?>
+            <?php endforeach; ?>
+            <!-- End of Profile Stats Loop -->
+          </dl>
+        <?php endif; ?>
+        <!-- End of Profile Stats Conditional -->
+        <!-- Actions -->
+        <?php if ($options['show_actions']) : ?>
+          <div class="section actions button-group">
+            <!-- Report/Enforcement Buttons -->
+            <?php if (!$isCurrentUser) : ?>
+              <?php
+                $canEnforceUser = ($isTemplate 
+                                  || (Users\CurrentUser::is_logged_in() 
+                                  && Users\CurrentUser::get_current_user()->has_permission('MODERATE_USERS')
+                                  && $userData->get_roles(Users\User::USER_ROLES_GET_INT) < Users\CurrentUser::get_current_user()->get_roles(Users\User::USER_ROLES_GET_INT)));
+              ?>
+
+              <!-- Enforcement Button -->
+              <?php if ($canEnforceUser) : ?>
+                <button 
+                  class="styled warning button-effect outline enforcement layer-target" 
+                  aria-label="<?= "Enforce {$username}"; ?>">
+                  <span class="fas fa-gavel" aria-hidden="true"></span>
+                </button>
+                <div class="layer tooltip">Take an enforcement action against&nbsp;<strong><?= $username; ?></strong></div>
+              <?php endif; ?>
+              <!-- End of Enforcement Button Conditional -->
+              <!-- Report Button -->
+              <?php if ($isTemplate || !$userData->has_permission('MODERATE_USERS')) : ?>
+                <button 
+                  class="styled warning button-effect outline report layer-target" 
+                  aria-label="<?= "Report {$username}"; ?>">
+                  <span class="fas fa-flag" aria-hidden="true"></span>
+                </button>
+                <div class="layer tooltip">Report&nbsp;<strong><?= $username; ?></strong></div>
+              <?php endif; ?>
+              <!-- End of Report Button Conditional -->
+            <?php endif; ?>
+            <!-- End of Report/Enforcement Buttons -->
+            <!-- Edit Buttons -->
+            <?php if ($options['allow_editing'] && $options['show_actions'] && ($isTemplate || $isCurrentUser)) : ?>
+              <button
+                class="edit-profile styled button-effect hover light layer-target"
+                id="<?= "{$profileCardID}_edit_profile_button"; ?>"
+                aria-label="Edit your Profile">
+                <span>Edit Profile</span>
+              </button>
+              <!-- <div class="layer tooltip" data-layer-delay="long">Change your Username, view your Roles, and change your Profile Stats Privacy Preference.</div> -->
+              <div class="layer dropdown">
+                <div class="title">Edit your Profile</div>
+                <ul class="choice-list">
+                  <li>
+                    <button class="choice styled button-effect text layer-target" data-value="change-profile-picture" disabled>
+                      <span>
+                        <span class="inline-box-icon"><span class="fas fa-camera" aria-hidden="true"></span></span>
+                        Change Profile Picture
+                      </span>
+                    </button>
+                    <div class="layer dropdown" data-layer-pos="left">
+                      <div class="title">Change Profile Picture</div>
+                      <ul class="choice-list">
+                        <li>
+                          <button class="choice styled button-effect text auto-toggle" data-value="upload" disabled>
+                            <span class="inline-box-icon"><span class="fas fa-file-upload" aria-hidden="true"></span></span>
+                            Upload Profile Picture
+                          </button>
+                        </li>
+                        <li>
+                          <button class="choice styled warning button-effect text auto-toggle" data-value="remove" disabled>
+                            <span class="inline-box-icon"><span class="fas fa-trash-alt" aria-hidden="true"></span></span>
+                            Remove Profile Picture
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                  <li>
+                    <?php
+                      $canChangeUsername = !$isTemplate
+                                           ? $userData->check_username_eligibility()
+                                           : true;
+                      $usernameButtonClasses = [
+                        'choice',
+                        'styled',
+                        'button-effect',
+                        'text',
+                        'auto-toggle',
+                        'view-toggle',
+                        'allow-disabled-layers'
+                      ];
+
+                      if (!$canChangeUsername) {
+                        $usernameButtonClasses[] = 'layer-target';
+                      }
+                    ?>
+
+                    <button 
+                      class="<?= implode(' ', $usernameButtonClasses); ?>" 
+                      data-value="change-username"
+                      data-view="<?= "{$profileCardID}_view_change_username"; ?>"
+                      <?= !$canChangeUsername ? ' disabled' : ''; ?>>
+                      <span>
+                        <span class="inline-box-icon"><span class="fas fa-user" aria-hidden="true"></span></span>
+                        Change Username
+                      </span>
+                    </button>
+                    <?php if (!$canChangeUsername) : ?>
+                      <div class="layer tooltip" data-layer-pos="left">You can only change your username&nbsp;<em>twice</em>&nbsp;every&nbsp;<em>24 hours</em></div>
+                    <?php endif; ?>
+                    <!-- End of Username Tooltip Conditional -->
+                  </li>
+                  <li>
+                    <button class="choice styled button-effect text auto-toggle view-toggle" data-value="role-details" data-view="<?= "{$profileCardID}_view_role_details"; ?>">
+                      <span>
+                        <span class="inline-box-icon"><span class="fas fa-star" aria-hidden="true"></span></span>
+                        Role Details
+                      </span>
+                    </button>
+                  </li>
+                  <li>
+                    <button class="choice styled button-effect text auto-toggle view-toggle" data-value="change-profile-stats-privacy" data-view="<?= "{$profileCardID}_view_stat_privacy"; ?>">
+                      <span>  
+                        <span class="inline-box-icon"><span class="fas fa-eye" aria-hidden="true"></span></span>
+                        Profile Stats Privacy
+                      </span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            <?php endif; ?>
+            <!-- End of Edit Buttons Conditional -->
+          </div>
+        <?php endif; ?>
+        <!-- End of Actions Conditional -->
+      </div>
+      <!-- Editing Views -->
+      <?php if ($options['allow_editing'] && $options['show_actions'] && ($isTemplate || $isCurrentUser)) : ?>
+        <?php
+          include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . 'account/update-profile.php');
+        ?>
+
+        <!-- Change Username View -->
+        <div class="view edit change-username" id="<?= "{$profileCardID}_view_change_username"; ?>">
+          <?php
+            $form_changeUsername->updateProperty('formFooter->actions->reset->object->properties->customHTML->attributes', [
+              'data-view' => "{$profileCardID}_view_primary"
+            ]);
+
+            $form_changeUsername->insertForm();
+          ?>
+        </div>
+        <!-- Role Details View -->
+        <div class="view edit role-details" id="<?= "{$profileCardID}_view_role_details"; ?>">
+          <?php
+            $rolesField = $form_roleDetails->getChild('roles');
+
+            $form_roleDetails->updateProperty('formFooter->actions->reset->object->properties->customHTML->attributes', [
+              'data-view' => "{$profileCardID}_view_primary"
+            ]);
+
+            // Update Roles
+            $rolesField->updateProperty('content->description', (function () use (&$rolesField, &$userData, $isTemplate) {
+              $description = $rolesField->findReferencedProperty('content-description');
+
+              foreach ($description as $role => $roleDescription) {
+                if (!$isTemplate && !$userData->has_role($role)) {
+                  unset($description[$role]);
+                }
+              }
+
+              return $description;
+            })());
+            $rolesField->updateProperty('inputProperties->value', implode(', ', !$isTemplate ? $userData->get_roles() : []));
+            $rolesField->updateProperty('inputProperties->options', (function () use (&$rolesField, &$userData, $isTemplate) {
+              $options = $rolesField->findReferencedProperty('inputProperties->options');
+
+              foreach ($options as $role => $roleName) {
+                if (!$isTemplate && !$userData->has_role($role)) {
+                  unset($options[$role]);
+                }
+              }
+
+              return $options;
+            })());
+
+            $form_roleDetails->insertForm();
+          ?>
+        </div>
+        <!-- Profile Stats Privacy Preference View -->
+        <div class="view edit stat-privacy" id="<?= "{$profileCardID}_view_stat_privacy"; ?>">
+          <?php
+            $form_statPrivacy->updateProperty('formFooter->actions->reset->object->properties->customHTML->attributes', [
+              'data-view' => "{$profileCardID}_view_primary"
+            ]);
+            $form_statPrivacy->getChild('privacy_preference')->updateProperty('inputProperties->value', !$isTemplate ? $userData->profile_stats_preference : '');
+
+            $form_statPrivacy->insertForm();
+          ?>
         </div>
       <?php endif; ?>
-      <!-- End of actions condition -->
+      <!-- End of Editing Views Conditional -->
     </div>
-    <!-- Editing view -->
-    <?php if ($settings['allowEdit'] && $settings['showActions'] && $profileData['isCurrentUser']) : ?>
-      <div class="view" id="<?= "{$profileCardID}_view_edit"; ?>">
-        <?php
-          include_once(FORMS_PATH . 'account/update-profile.php');
-
-          $form_updateProfile->updateProperty('formFooter->actions->reset->attributes', [
-            [
-              'name'  => 'data-view',
-              'value' => "{$profileCardID}_view_view"
-            ]
-          ]);
-          $form_updateProfile->insertForm();
-        ?>
-      </div>
-    <?php endif; ?>
-    <!-- End of edit condition -->
-  </div>
-<?php } ?>
-<!-- End of Profile Card function -->
+  <?php } ?>

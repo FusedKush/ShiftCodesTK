@@ -1,0 +1,5 @@
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^(.*)$ /assets/requests/get/account/profile_picture.php?path=$1 [L,QSA]
