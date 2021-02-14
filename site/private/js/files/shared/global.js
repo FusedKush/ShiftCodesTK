@@ -938,13 +938,13 @@ function execGlobalScripts () {
 
             return scripts[scripts.length - 1];
           })();
-          containers.modals = dom.find.id('modals');
+          // containers.modals = dom.find.id('modals');
           containers.templates = dom.find.id('templates');
         })();
       let elements = {
         stylesheets: dom.find.children(document.body, 'attr', 'rel', 'stylesheet'),
         scripts: dom.find.children(document.body, 'tag', 'script'),
-        modals: dom.find.children(document.body, 'class', 'modal'),
+        // modals: dom.find.children(document.body, 'class', 'modal'),
         templates: dom.find.children(document.body, 'tag', 'template')
       };
 
@@ -955,7 +955,7 @@ function execGlobalScripts () {
         for (let i = elementList.length - 1; i >= 0; i--) {
           let element = elementList[i];
           
-          if (element != container && element.parentNode != container) {
+          if (element != container && !container.contains(element)) {
             if (['stylesheets', 'scripts'].indexOf(type) != -1) {
               container.insertAdjacentElement('afterend', element);
             }
