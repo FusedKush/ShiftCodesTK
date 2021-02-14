@@ -16,8 +16,9 @@ function updateDropdownPanelAttributes (panel, state) {
   panel.setAttribute('data-expanded', state);
   toggler.setAttribute('aria-expanded', state);
   toggler.setAttribute('aria-pressed', state);
-  toggler.title = labels[state];
-  toggler.setAttribute('aria-label', labels[state]);
+  // toggler.title = labels[state];
+  // toggler.setAttribute('aria-label', labels[state]);
+  updateLabel(toggler, labels[state], [ 'aria' ]);
 }
 // Set up Dropdown Panel
 function dropdownPanelSetup (panel) {
@@ -40,7 +41,7 @@ function dropdownPanelSetup (panel) {
         'primary',
         'secondary',
         'body'
-      ]
+      ];
 
     if (panel.id != '') {
       template.base.id = panel.id;
@@ -50,7 +51,7 @@ function dropdownPanelSetup (panel) {
       let prop = props[i];
       let val = dom.find.child(panel, 'class', prop);
 
-      if (val) {
+      if (val && val.parentNode == panel) {
         template[prop].innerHTML = val.outerHTML;
       }
       else {
@@ -75,7 +76,9 @@ function dropdownPanelSetup (panel) {
 
   updateDropdownPanelAttributes(panel, false);
   hashTargetOverlay.className = 'overlay-hashtarget';
-  panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
+  panel = panel.insertBefore(hashTargetOverlay, panel.childNodes[0]);
+
+  return panel;
 }
 // Toggle Dropdown Panel
 function toggleDropdownPanel (toggler) {
