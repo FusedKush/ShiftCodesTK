@@ -1,5 +1,8 @@
 // Pager scripts
-var pagers = {};
+var pagers = {
+  /** Indicates if the `pagers` module has been loaded. */
+  isLoaded: false
+};
 
 /**
  * Toggle the active state of a pager
@@ -69,7 +72,7 @@ function pagerUpdate (pager, newPage = 1) {
     button.setAttribute('data-value', ((val * props.offset) - offset));
 
     if (jump) {
-      updateLabel(button, button.title.replace(new RegExp('\\d+'), val));
+      updateLabel(button, dom.get(button, 'attr', 'aria-label').replace(new RegExp('\\d+'), val), [ 'aria', 'tooltip' ]);
       button.childNodes[0].innerHTML = val;
     }
   }
@@ -160,7 +163,10 @@ function pagerUpdate (pager, newPage = 1) {
       }
       // Update the active state of each Jump Button
       for (let jump of jumps) {
-        jump.setAttribute('aria-pressed', tryParseInt(jump.getAttribute('data-page')) == newPage);
+        let isPressed = tryParseInt(dom.get(jump, 'attr', 'data-page')) == newPage;
+
+        edit.attr(jump, 'update', 'aria-pressed', isPressed);
+        toggleState(jump, isPressed);
       }
     }
 
@@ -331,9 +337,33 @@ function updatePagerProps (pager, props) {
       let container = dom.find.child(dom.find.child(pager, 'class', 'jumps'), 'class', 'content-container');
 
       // Copy and add Jump Buttons to container
-      for (let i = 1; i <= newJumpButtons; i++) {
-        container.appendChild(edit.copy(jumps[0]));
-      }
+      (function () {
+        const attrList = [
+          'id',
+          'aria-describedby',
+          'data-layer-target',
+          'data-layer-targets',
+        ];
+        const attrRegex = new RegExp(`(${pager.id}|pager)_(jump)_(\\d+)`);
+        
+        for (let i = 1; i <= newJumpButtons; i++) {
+          const replacement = `${pager.id}_$2_${i}`;
+          const newJump = container.appendChild(edit.copy(jumps[0]));
+          const newTooltip = container.appendChild(edit.copy(jumps[0].nextElementSibling));
+  
+          for (attr of attrList) {
+            newJumpValue = dom.get(newJump, 'attr', attr);
+            newTooltipValue = dom.get(newTooltip, 'attr', attr);
+  
+            if (newJumpValue) {
+              edit.attr(newJump, 'update', attr, newJumpValue.replace(attrRegex, replacement));
+            }
+            if (newTooltipValue) {
+              edit.attr(newTooltip, 'update', attr, newTooltipValue.replace(attrRegex, replacement));
+            }
+          }
+        }
+      })();
     }
   })();
 
@@ -390,76 +420,89 @@ function configurePager (pager) {
     // Update Jump Buttons
     if (customLabel) {
       for (let button of dom.find.children(pager, 'class', 'jump')) {
-        updateLabel(button, button.title.replace('Page', customLabel));
+        updateLabel(button, dom.get(button, 'attr', 'aria-label').replace('Page', customLabel), [ 'aria', 'tooltip' ]);
       }
     }
   })();
+  // Setup Layers
+  ShiftCodesTK.layers.setupChildLayers(configuredPager);
+
   updatePagerProps(configuredPager, {});
 
   pager.parentNode.replaceChild(configuredPager, pager);
   return configuredPager;
 }
 
-pagerScripts = setInterval(function () {
-  if (globalFunctionsReady) {
-    clearInterval(pagerScripts);
-    // Configure present Pagers
-    (function () {
-      let pagers = dom.find.children(document, 'class', 'pager');
-
-      for (let p of pagers) {
-        if (!dom.has(p, 'class', 'no-auto-config') && !dom.has(p, 'class', 'configured')) {
-          configurePager(p);
-        }
-      }
-    })();
-
-    // Pager Event Listener
-    window.addEventListener('click', function (event) {
-      let pager = dom.find.parent(event.target, 'class', 'pager');
-
-      if (pager) {
-        let newPage = tryParseInt(dom.get(event.target, 'attr', 'data-page'));
-        let props = pagers[pager.id];
-
-        // Only continue if a new page is being requested
-        if (newPage != props.now) {
-          // Disable the Pager
-          pagerState(pager, true);
-
-          // Update focus if specified
-          if (props.onclick) {
-            tryToRun({
-              attempts: 20,
-              delay: 250,
-              function: function () {
-                let target = dom.find.id(props.onclick);
-
-                if (target && !target.disabled) {
-                  target.focus();
-                  return true;
-                }
-                else {
-                  return false;
-                }
-              },
-              customError: `Focus Target for pager "${pager.id}" was not found or is disabled.`
-            })
+(function () {
+  pagerScripts = setInterval(function () {
+    if (globalFunctionsReady) {
+      clearInterval(pagerScripts);
+  
+      // Configure present Pagers
+      (function () {
+        let pagers = dom.find.children(document, 'class', 'pager');
+  
+        for (let p of pagers) {
+          if (!dom.has(p, 'class', 'no-auto-config') && !dom.has(p, 'class', 'configured')) {
+            configurePager(p);
           }
+        }
+      })();
+  
+      // Pager Event Listener
+      window.addEventListener('click', function (event) {
+        const pagerButton = dom.has(event.target, 'class', 'pager-button', null, true);
 
-          // Invoke custom callback functions
-          if (props.customCallbacks) {
-            for (let callback of props.customCallbacks) {
-              callback(tryParseInt(dom.get(event.target, 'attr', 'data-value')));
+        if (pagerButton) {
+          const pager = dom.has(event.target, 'class', 'pager', null, true);
+    
+          if (pager) {
+            let newPage = tryParseInt(dom.get(event.target, 'attr', 'data-page'));
+            let props = pagers[pager.id];
+    
+            // Only continue if a new page is being requested
+            if (newPage != props.now) {
+              // Disable the Pager
+              pagerState(pager, true);
+    
+              // Update focus if specified
+              if (props.onclick) {
+                tryToRun({
+                  attempts: 20,
+                  delay: 250,
+                  function: function () {
+                    let target = dom.find.id(props.onclick);
+    
+                    if (target && !target.disabled) {
+                      target.focus();
+                      return true;
+                    }
+                    else {
+                      return false;
+                    }
+                  },
+                  customError: `Focus Target for pager "${pager.id}" was not found or is disabled.`
+                })
+              }
+    
+              // Invoke custom callback functions
+              if (props.customCallbacks) {
+                for (let callback of props.customCallbacks) {
+                  callback(tryParseInt(dom.get(event.target, 'attr', 'data-value')));
+                }
+              }
+    
+              // Update the Pager
+              setTimeout(function() {
+                pagerUpdate(pager, newPage);
+              }, 250);
             }
           }
-
-          // Update the Pager
-          setTimeout(function() {
-            pagerUpdate(pager, newPage);
-          }, 250);
         }
-      }
-    });
-  }
-}, 250);
+      });
+
+      // Module is loaded
+      pagers.isLoaded = true;
+    }
+  }, 250);
+})();
