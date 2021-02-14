@@ -1,0 +1,1 @@
+!function(){var e=setInterval(function(){"undefined"!=typeof globalFunctionsReady&&"undefined"!=typeof ShiftCodesTK&&(clearInterval(e),ShiftCodesTK.local.isReady=!0)},250)}();

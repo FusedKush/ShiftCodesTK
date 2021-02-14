@@ -18,16 +18,9 @@
   ];
 
   require_once('../initialize.php');
-?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><style>main,main *{opacity:1}</style><?php include_once('global/head.php'); ?><body data-theme=main><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><main class=content-wrapper><?php
-        require_once(FORMS_PATH . 'shift/shift-code.php');
+?><!doctype html><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><style>main,main *{opacity:1}</style><?php include_once('global/head.php'); ?><body data-theme=main><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><main class=content-wrapper><?php
+        include(PRIVATE_PATHS['forms'] . 'shift/shift-code.php');
 
-        if (isset($_GET['game'])) {
-          $cleanParam = check_parameter('game', $_GET['game'], $shiftCodeForm['game_id']);
-
-          if ($cleanParam['valid']) {
-            $shiftCodeForm['game_id']->updateProperty('value', $cleanParam['value']);
-          }
-        }
-
-        $shiftCodeForm['base']->insertForm();
+        $form_shiftCode = getShiftCodeForm('add');
+        $form_shiftCode->insertForm();
       ?></main><?php include_once('global/afterContent.php'); ?><?php include_once('global/sharedScripts.php'); ?>

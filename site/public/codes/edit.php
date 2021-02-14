@@ -22,8 +22,8 @@
   if (!isset($_GET['code'])) {
     response_redirect('/codes/');
   }
-?><!doctypehtml><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><style>main,main *{opacity:1}</style><?php include_once('global/head.php'); ?><body data-theme=main><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><main class=content-wrapper><?php
-        require_once(FORMS_PATH . 'shift-code.php');
+?><!doctype html><html lang=en><meta charset=utf-8><?php include_once('global/sharedStyles.php'); ?><style>main,main *{opacity:1}</style><?php include_once('global/head.php'); ?><body data-theme=main><?php include_once('global/beforeContent.php'); ?><?php include_once('global/main-header.php'); ?><main class=content-wrapper><?php
+        require_once(PRIVATE_PATHS['forms'] . 'shift-code.php');
 
         $cleanParam = check_parameter('code', $_GET['code'], $shiftCodeForm['code_id']);
 
