@@ -729,6 +729,82 @@ function updateClientCursorProperties (event) {
 function execGlobalScripts () {
   if (typeof globalFunctionsReady == 'boolean') {
     // *** Immediate Functions ***
+    /** The `relativeDates` interface is responsible for displaying *Relative Dates* for elements. */
+    ShiftCodesTK.relative_dates = {
+      class_name: 'relative-date-updated',
+      attribute_name: 'data-relative-date',
+      interval: {
+        duration: 150000,
+        id: null,
+
+        start () {
+          if (this.id !== null) {
+            console.error('The Relative Date Refresh Interval has already been started.');
+            return false;
+          }
+
+          this.id = setInterval(ShiftCodesTK.relative_dates.refresh_all_elements, this.duration);
+          return true;
+        },
+        stop () {
+          if (this.id === null) {
+            console.error('The Relative Date Refresh Interval has not been started.');
+            return false;
+          }
+
+          clearInterval(this.id);
+          this.id = null;
+          return true;
+        }
+      },
+
+      refresh_element (element) {
+        let relativeDate = dom.get(element, 'attr', this.attribute_name);
+
+        if (relativeDate) {
+          let dateMoment = moment(relativeDate);
+      
+          if (dateMoment) {
+            element.innerHTML = `${ucWords(dateMoment.fromNow(true))} ago`;
+            return true;
+          }
+          else {
+            console.error(`"${relativeDate}" is not a valid Date Timestamp for the target element.`);
+          }
+        }
+        else {
+          console.error("A Date Timestamp was not provided for the target element.");
+        }
+
+        return false;
+      },
+      refresh_all_elements () {
+        const relativeDates = ShiftCodesTK.relative_dates;
+        const elements = dom.find.children(document.body, 'attr', relativeDates.attribute_name);
+        let refreshedElements = [];
+
+        if (elements) {
+          for (let element of elements) {
+            let relativeDate = dom.get(element, 'attr', relativeDates.attribute_name);
+            
+            if (relativeDate) {
+              relativeDates.refresh_element(element);
+              edit.class(element, 'add', relativeDates.class_name);
+              refreshedElements.push(element);
+            }
+          }
+  
+          setTimeout(() => {
+            for (let element of refreshedElements) {
+              edit.class(element, 'remove', relativeDates.class_name);
+            }
+          }, 1000);
+        }
+
+        return refreshedElements;
+      }
+    };
+
     // Determine Webp Support in the browser
     (function () {
       let img = document.createElement('img');
@@ -978,6 +1054,9 @@ function execGlobalScripts () {
         }
       }
     });
+    // Refresh relative dates
+    ShiftCodesTK.relative_dates.refresh_all_elements();
+    ShiftCodesTK.relative_dates.interval.start();
     // Button Aliases
     window.addEventListener('click', (event) => {
       const element = dom.has(event.target, 'attr', 'data-alias', null, true);
