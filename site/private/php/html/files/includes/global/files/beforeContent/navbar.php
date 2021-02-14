@@ -58,30 +58,24 @@
                     'showRoles'  => false
                   ]);
                 ?>
-              </div>
-              <ul class="choice-list">
-                <?php
-                  $items = [
-                    [
-                      'icon'  => 'fas fa-plus',
-                      'name'  => 'New Code',
-                      'title' => 'Submit a new SHiFT Code to ShiftCodesTK',
-                      'link'  => '/codes/add'
-                    ],
-                    [
-                      'icon'  => 'fas fa-list-alt',
-                      'name'  => 'My Codes',
-                      'title' => 'Your submitted SHiFT Codes',
-                      'link'  => '/codes/'
-                    ],
-                    [
-                      'icon'  => 'fas fa-user',
-                      'name'  => 'My Account',
-                      'title' => 'View and manage your ShiftCodesTK Account',
-                      'link'  => '/account'
-                    ]
-                  ]
-                ?>
+                <!-- Global Stats Modal Toggle -->
+                <?php if (isset($_GET['show_global_function_stats'])) : ?>
+                  <div class="separator" aria-hidden="true"></div>
+                  <li>
+                    <button
+                      class="choice layer-target modal-toggle auto-toggle"
+                      data-modal="global_function_stats_modal">
+                      <span 
+                        class="<?= "box-icon fas fa-clock"; ?>"
+                        aria-hidden="true">
+                      </span>
+                      <span class="label">Function Stats</span>
+                    </button>
+                    <div class="layer tooltip" data-layer-pos="left" data-layer-delay="medium">
+                      Statistics related to the&nbsp;<code>dom</code>&nbsp;&&nbsp;<code>edit</code>&nbsp;helper functions
+                    </div>
+                  </li>
+                <?php endif; ?>
 
                 <?php foreach ($items as $item) : ?>
                   <li>
