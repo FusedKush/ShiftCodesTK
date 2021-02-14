@@ -704,6 +704,23 @@ function globalListenerHashTargetHover (event) {
 function globalListenerHashTargetAway () {
   clearTimeout(hashTargetTimeout);
 }
+/**
+ * Update the Client Cursor Properties via `mousemove` or `mouseleave` events
+ * 
+ * @param {Event} event The event that occurred
+ * @returns {object} Returns the new *client cursor properties* object 
+ */
+function updateClientCursorProperties (event) {
+  const cursorProperties = {
+    x: event.clientX,
+    y: event.clientY,
+    target: event.target
+  };
+
+  ShiftCodesTK.client.cursor = cursorProperties;
+
+  return cursorProperties;
+}
 
 // *** Immediate Functions & Event Listeners *** //
 // Checking for Dependencies
@@ -816,29 +833,29 @@ function execGlobalScripts () {
       hashUpdate();
     });
     // Prevent Anchor-Jumping behind navbar
-    window.addEventListener('scroll', function () {
-      if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
+    // window.addEventListener('scroll', function () {
+    //   if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
 
-      globalScrollUpdates++;
+    //   globalScrollUpdates++;
 
-      globalScrollTimer = setTimeout(function () {
-        if (globalScrollUpdates == 1) {
-          let e = document.getElementsByTagName('*');
+    //   globalScrollTimer = setTimeout(function () {
+    //     if (globalScrollUpdates == 1) {
+    //       let e = document.getElementsByTagName('*');
 
-          for (i = 0; i < e.length; i++) {
-            let pos = e[i].getBoundingClientRect().top;
+    //       for (i = 0; i < e.length; i++) {
+    //         let pos = e[i].getBoundingClientRect().top;
 
-            if (pos >= 0 && pos <= 1) { hashUpdate(); }
-          }
-        }
+    //         if (pos >= 0 && pos <= 1) { hashUpdate(); }
+    //       }
+    //     }
 
-        globalScrollUpdates = 0;
-      }, 150);
-    });
+    //     globalScrollUpdates = 0;
+    //   }, 150);
+    // });
     // Clear Scroll event count on page load
     window.addEventListener('load', globalListenerLoadClearScroll);
     // Add Focus Scroll Listener to all present elements
-    addFocusScrollListeners(document);
+    // addFocusScrollListeners(document);
     // Intercept all hashed anchors
     (function () {
       let e = document.getElementsByTagName('a');
@@ -848,10 +865,39 @@ function execGlobalScripts () {
       }
     })();
     // Manage focus lock
-    window.addEventListener('click', focusLock.handle);
+    window.addEventListener('mousedown', focusLock.handle);
     window.addEventListener('keydown', focusLock.handle);
-    // Cursor Properties
+    // Client Properties
     (function () {
+      ShiftCodesTK.client = {
+        cursor: {
+          x: 0,
+          y: 0,
+          target: 0
+        },
+        scroll: 0
+      };
+
+      function get_scroll_pos () {
+        const sources = [
+          window.pageYOffset,
+          document.documentElement.scrollTop,
+          document.body.scrollTop
+        ];
+
+        for (const source of sources) {
+          if (typeof source != 'undefined' && source != undefined) {
+            ShiftCodesTK.client.scroll = source;
+            return;
+          }
+        }
+      }
+
+      get_scroll_pos();
+      window.addEventListener('mousemove', updateClientCursorProperties);
+      document.body.addEventListener('mouseleave', updateClientCursorProperties);
+      window.addEventListener('scroll', get_scroll_pos);
+    })();
     // Copy to Clipboard
     window.addEventListener('click', (event) => {
       let copyButton = (function () {
