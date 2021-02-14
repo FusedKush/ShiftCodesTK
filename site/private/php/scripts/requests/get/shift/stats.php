@@ -1,5 +1,5 @@
 <?php
-  require_once(SCRIPTS_INCLUDES_PATH . 'shift_stats.php');
+  require_once(PRIVATE_PATHS['script_includes'] . 'shift_stats.php');
 
   $response = new ResponseObject();
 

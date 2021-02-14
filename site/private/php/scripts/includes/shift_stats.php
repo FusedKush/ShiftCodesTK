@@ -1,6 +1,6 @@
 <?php
   (function () use (&$_mysqli) {
-    require_once(SCRIPTS_PATH . 'includes/shift_constants.php');
+    require_once(PRIVATE_PATHS['scripts'] . 'includes/shift_constants.php');
 
     $stats = array_fill_keys(array_merge(['all'], array_keys(SHIFT_GAMES)), array_fill_keys(array_keys(SHIFT_DATES), 0));
 
@@ -29,11 +29,15 @@
                                    GROUP BY scd.game_id");
       $result = $_mysqli->query($query);
 
-      foreach ($result as &$row) {
-        $game = $row['game_id'];
+      if ($result) {
+        foreach ($result as &$row) {
+          $game = $row['game_id'];
 
-        $stats['all'][$type] += $row['count'];
-        $stats[$game][$type] += $row['count'];
+          if (isset($stats[$game][$type])) {
+            $stats['all'][$type] += $row['count'];
+            $stats[$game][$type] += $row['count'];
+          }
+        }
       }
     }
 

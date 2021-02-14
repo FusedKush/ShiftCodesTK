@@ -14,7 +14,7 @@
       'type'        => 'string',
       'required'    => true,
       'validations' => [
-        'match' => [ 'add', 'delete' ]
+        'match' => [ 'redeem', 'remove' ]
       ]
     ])
   ];
@@ -23,9 +23,16 @@
    */
   $validation = check_parameters($_POST, $paramSettings);
   /**
-   * @var string|false The User's Redemption ID, or **false** if the user does not currently possess one.
+   * @var string The User's Redemption ID.
    */
   $redemptionID = redemption_get_id();
+
+  if (!$redemptionID) {
+    $redemptionID = redemption_new_id();
+  }
+  else {
+    redemption_update_cookie($redemptionID);
+  }
   
   // Invalid request parameters
   if (!$validation['valid']) {
@@ -53,7 +60,7 @@
      * @var array The SQL Query parameters
      */
     $queryParams = [
-      $redemptionID ? $redemptionID : redemption_new_id(),
+      $redemptionID,
       $params['code']
     ];
     /**

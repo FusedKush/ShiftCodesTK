@@ -1,6 +1,6 @@
 <?php
   // require_once('../../reinitialize.php');
-  require_once(SCRIPTS_INCLUDES_PATH . 'shift_constants.php');
+  require_once(PRIVATE_PATHS['script_includes'] . 'shift_constants.php');
   
   $response = new ResponseObject();
   $params = (function () use (&$response) {
