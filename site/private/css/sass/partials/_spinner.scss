@@ -49,3 +49,21 @@
     }
   }
 }
+.has-spinner {
+  &:not(.spinning) {
+    .spinner {
+      opacity: 0;
+    }
+  }  
+  &.spinning {
+    > :not(.spinner) {
+      opacity: 0 !important;
+    }
+  }
+
+  .spinner {
+    position: absolute;
+    transform: scale(0.75);
+    opacity: 0.85;
+  }
+}
