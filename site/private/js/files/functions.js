@@ -1746,19 +1746,35 @@ function decodeReservedHTML (html) {
 
   return decoded;
 }
-function deleteElement (elm) {
-  if (elm) {
-    return elm.parentNode.removeChild(elm);
-  }
-  else {
-    let error = new Error();
-        error.name = 'deleteElement Error';
-        error.message = `Argument 1 is not a valid element: ${elm}`;
-
-    console.error(error);
-    return false;
-  }
+/**
+ * Determines if a plural letter is needed based on a value
+ *
+ * @param {number} val The value to be evaluated
+ * @param {string} [letter='s'] The letter to be returned if a plural is needed
+ * @returns {string} Returns the specified letter if val is 1 or an empty string if number is any other value
+ */
+function checkPlural (val, letter = 's') {
+  if (val != 1) { return 's'; }
+  else          { return ''; }
 }
+/**
+ * Convert the first letter of each word in a string to uppercase.
+ * 
+ * @param {string} string The string to convert to uppercase.
+ * @returns {string} Returns the converted string.
+ */
+function ucWords (string) {
+  let pieces = string.split(' ');
+
+  for (let i = 0; i < pieces.length; i++) {
+    let piece = pieces[i];
+
+    pieces[i] = piece.charAt(0).toUpperCase() + piece.substring(1);
+  }
+
+  return pieces.join(' ');
+}
+
 // Cookies
 var cookie = {
   get: function (cookie = false) {
