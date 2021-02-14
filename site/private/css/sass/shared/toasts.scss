@@ -82,11 +82,11 @@ $listPadding: 16px;
       }
     }
     .content-container {
-      @include flexbox($hAlign: none, $vAlign: s, $wrap: true);
+      @include flexbox(none, none, $wrap: true);
       font-size: 0.85em;
     }
     .content {
-      display: inline-flex;
+      @include flexbox(c, none, inline);
       flex: 1;
       padding: $padding;
     }
@@ -96,6 +96,8 @@ $listPadding: 16px;
       padding: $padding / 2;
       display: flex;
       font-size: 1.5em;
+      min-height: 1.75em;
+      align-self: flex-start;
     }
     .title {
       font-size: 1.15em;
@@ -103,17 +105,33 @@ $listPadding: 16px;
     .body {
       color: tpw(0.75);
       margin-top: 0;
-    }
-    .action.dedicated {
-      border-radius: 50%;
-      margin: $padding;
+
+      code {
+        display: inline-block;
+        margin-top: 4px;
+      }
     }
     .actions {
       @include flexbox(none, e);
       align-self: flex-end;
-      padding: $padding;
+      // padding: $padding;
       font-size: 1.15em;
       width: 100%;
+      padding-right: $padding / 2;
+    }
+    .action {
+      margin: $padding $padding / 2;
+
+      @include mouseState(noHover) {
+        &::before {
+          opacity: 0.25;
+        }
+      }
+      &.dedicated {
+        border-radius: 50%;
+        margin: $padding;
+        align-self: flex-start;
+      }
     }
   }
 }

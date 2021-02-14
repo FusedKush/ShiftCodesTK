@@ -28,6 +28,8 @@
   &::before {
     @include fill(true);
     @include theme(bg);
+
+    transition: background-color 0.4s ease-out, opacity $trd, transform $trd;
   }
 
   .content-wrapper {
@@ -79,6 +81,48 @@
     &[data-pressed="true"]     { @extend %btnHover; }
   }
   .fas { font-size: 26px; }
+  .brand {
+    @include flexbox($type: inline);
+    height: 64px;
+    padding: 12px 16px;
+    font-size: 1.5em;
+
+    @mixin brandBorder($hover, $click) {
+      @if $hover == $click {
+        .name {
+          &::before, &::after { opacity: $hover; }
+        }
+      }
+      @else {
+        .name {
+          &::before { opacity: $hover; }
+          &::after  { opacity: $click; }
+        }
+      }
+    }
+    @include mouseState(noHover) {
+      @include brandBorder(0, 0);
+    }
+    @include mouseState(hover) {
+      @include brandBorder(1, 0);
+    }
+    @include mouseState(click) {
+      @include brandBorder(0, 1);
+    }
+
+    .name {
+      padding: 4px 0;
+
+      &::before, &::after {
+        @include fill(true);
+        border-bottom: bd(2px);
+      }
+      &::before { @include theme(bc); }
+      &::after  { border-color: #fff; }
+
+      .focus { @include theme(c); }
+    }
+  }
   .logo {
     @include flexbox;
     @include bgImg;
@@ -124,7 +168,7 @@
         }
         // Animations
         .loader.progress-bar.is-loading .progress {
-          transition: width $dur ease;
+          transition: width $dur ease, color 0.4s ease;
         }
       }
     }
@@ -138,12 +182,15 @@
       @include flexbox($hAlign: none);
       opacity: 1;
       padding: 0;
-      background-color: tpb(0.25);
+      // background-color: tpb(0.25);
+      background-color: $site-color-light;
+      
       font-size: 1em;
     }
 
     .profile-card {
       padding: 12px;
+      border-radius: 8px 8px 0 0;
     }
     // .profile-picture {
     //   @include flexbox;
@@ -179,6 +226,7 @@
     font-size: 1em;
 
     .profile-card {
+      width: 100%;
       padding: 12px;
     }
   }

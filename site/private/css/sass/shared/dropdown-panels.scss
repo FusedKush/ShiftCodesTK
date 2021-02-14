@@ -12,7 +12,7 @@
     display: none;
   }
   &::before {
-    @include fill(true, $site-color-lighter);
+    @include fill(true, $site-color-dark);
     @include multiProp(100%, sizing);
     border: bd(2px, tpw(0.25));
     border-radius: inherit;
@@ -82,11 +82,11 @@
         @include flexbox(none, s, $direction: c);
         padding: 8px;
       }
-        .primary { font-size: 1em; }
-        .secondary {
-          font-size: 0.8em;
-          opacity: 0.5;
-        }
+      .primary { font-size: 1em; }
+      .secondary {
+        font-size: 0.8em;
+        opacity: 0.5;
+      }
     }
     .indicator {
       @include flexbox;
@@ -104,7 +104,7 @@
     .full-width { grid-column: 1 / span 2; }
     .fas { @include boxIcon; }
   }
-  .body {
+  > .body {
     background-color: rgba(0, 0, 0, 0.2);
 
     &.content-container { padding: 16px; }

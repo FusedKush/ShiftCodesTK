@@ -1,6 +1,11 @@
 @import "../partials/_globals";
 
 .modal {
+  @mixin modalPadding {
+    @media screen and (min-width: 440px) { padding: 24px; }
+    @media screen and (max-width: 439px) { padding: 16px; }
+  }
+
   position: fixed;
   @include pull(all);
   
@@ -39,44 +44,87 @@
     }
 
     @include flexbox(none, none, $direction: c);
-    background-color: $site-color-light;
+    background-color: $site-color-darker;
     border: bd(1.5px, tpw(0.75));
     border-radius: 4px;
     box-shadow: shadow(tpb(0.75));
-    min-width: 50%;
-    max-width: 100%;
-    max-height: 100%;
+    max-height: calc(100% - 16px);
     @include animation($duration: 0.2s, $timing: ease-out, $fill: forwards);
+    overflow: hidden;
 
     @at-root .modal {
       &.inactive .panel       { animation-name: modalPopOut; }
       &:not(.inactive) .panel { animation-name: modalPopIn; }
-    }
-  }
-  .header {
-    @include flexbox($hAlign: sb);
-    padding: 8px;
-    background-color: tpb(0.25);
-    font-size: 1.25em;
 
-    .title {
-      padding: 16px;
-    }
-    .close {
-      font-size: inherit;
-      padding: 16px;
-      margin-left: auto;
-
-      @include mouseState(noHover) {
-        opacity: 0.75;
+      &:not(.small) .panel {
+        min-width: 50%;
+        max-width: calc(100% - 16px);
+      }
+      &.small .panel {
+        min-width: calc(320px - 32px);
+        max-width: 440px;
       }
     }
-  }
-  .body {
-    overflow: auto;
+
+    > {
+      .header {
+        @include flexbox(none, sb);
+        // padding: 8px;
+        background-color: tpb(0.25);
+        font-size: 1.25em;
     
-    > .content-container {
-      padding: 24px;
+        .title {
+          @include modalPadding;
+          align-self: center;;
+        }
+        .dismiss {
+          font-size: inherit;
+          @include modalPadding;
+          margin-left: auto;
+          align-self: start;
+    
+          @include mouseState(noHover) {
+            opacity: 0.75;
+          }
+    
+          @at-root .modal.hide-dismiss-button .header .dismiss {
+            display: none;
+          }
+        }
+      }
+      .body {
+        overflow: auto;
+        // background-color: tpb(0.25);
+        
+        > .content-container {
+          @include modalPadding;
+        }
+      }
+      .footer {
+        $buttonMargins: 4px;
+    
+        background-color: tpb(0.25);
+        
+        .content-container {
+          @include flexbox($hAlign: s, $direction: rr, $wrap: true);
+          margin: #{-$buttonMargins} #{-$buttonMargins};
+          @include modalPadding;
+    
+          > div {
+            margin: $buttonMargins;
+      
+            button {
+              margin: 0;
+              width: 100%;
+            }
+          }
+      
+          @at-root .modal .footer.pull-left .content-container {
+            flex-direction: row;
+          }
+        }
+    
+      }
     }
   }
 }

@@ -1,0 +1,193 @@
+@import "../partials/_globals";
+
+/**
+  * Styles related to miscellaneous functions in functions.js
+  **/
+
+  #global_function_stats_modal {
+    &:not(.updating-stats) dd span {
+      animation-name: numberChange;
+    }
+
+    .intro {
+      font-style: italic;
+      // opacity: 0.75;
+      margin-bottom: 8px;
+    }
+    .section {
+      margin-bottom: 32px;
+
+      &.totals {
+        $margin: 4px;
+
+        @include flexbox(none, none, $wrap: true);
+        margin: -#{$margin};
+        padding: 16px 0;
+
+        dl {
+          @include spacing($margin, 16px);
+          flex: 1 1 calc(50% - #{$margin * 2});
+          border: bd(1.5px, tpw(0.25));
+          border-radius: 8px;
+          background-color: tpb(0.25);
+
+          &.total {
+            flex: 1 1 calc(100%);
+          }
+
+          dt {
+            opacity: 0.75;
+          }
+          .subtitle {
+            opacity: 0.5;
+            font-size: 0.85em;
+            font-style: italic;
+          }
+          dd {
+            margin-top: 8px;
+            
+            .value {
+              font-size: 1.25em;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+      &.returns {
+        .content-container > dl > dt {
+          font-size: 1.15em;
+        }
+      }
+      &:not(.totals) {
+        border: bd(1.5px, tpw(0.25));
+        border-radius: 8px;
+        background-color: tpb(0.25);
+        max-height: 400px;
+        overflow: auto;
+
+        .content-container {
+          // padding: 16px;
+        }
+        .title {
+          padding: 16px;
+          opacity: 0.75;
+        }
+        .placeholder {
+          display: none;
+          opacity: 0.5;
+          text-align: center;
+          padding: 16px;
+
+          &:last-child {
+            display: block;
+          }
+        }
+        .content-container > dl {
+          // @include flexbox(c, e, $direction: rr);
+          // padding: 4px;
+          // font-size: 0.85em;
+          padding: 12px 16px;
+          
+          &:nth-child(1n) {
+            // background-color: tpw(0.05);
+          }
+          &:nth-child(2n) {
+            background-color: tpw(0.1);
+          }
+
+          dt {
+            // overflow: hidden;
+            // padding: 1.5px 0;
+            // @include flexbox(none, none);
+            opacity: 0.75;
+            // margin-left: 8px;
+            // margin-left: auto;
+            code {
+              margin-right: 3px;
+              // flex: 1;
+            }
+            // span {
+            //   overflow: hidden;
+            //   word-wrap: break-word;
+            //   word-break: break-word;
+            //   // white-space: nowrap;
+            //   text-overflow: ellipsis;
+            // }
+          }
+          dd {
+            @include flexbox(e, s, inline, $wrap: true);
+            margin-top: 8px;
+            font-size: 0.85em;
+
+            span {
+              // padding: 4px 8px;
+              // border: bd(1.5px, tpw(0.25));
+              // border-radius: 8px;
+              
+              // &:first-child {
+              //   background-color: tpw(0.1);
+              //   font-weight: bold;
+              // }
+              // &:not(:first-child) {
+              //   font-size: 0.9em;
+              //   opacity: 0.85;
+              // }
+            }
+          }
+          // dt, dd {
+          //   flex: 1 1;
+          // }
+        }
+      }
+
+      dd {
+        @keyframes numberChange {
+          0%   { transform: translateY(-15%); }
+          50%  { transform: translateY(10%); }
+          100% { transform: translateY(0); }
+        }
+
+        @include flexbox(e, s);
+        margin: -2px;
+
+        span {
+          padding: 4px 8px;
+          border-radius: 4px;
+          margin: 2px;
+          cursor: default;
+          @include animation(0.4s, ease, $fill: forwards);
+        }
+        .value {
+          background-color: tpw(0.15);
+          border: bd(1.5px, tpw(0.75));
+          box-shadow: inset shadow(tpb(0.25));
+        }
+        .percentage, .speed {
+          border: bd(1.5px, tpw(0.35));
+          opacity: 0.75;
+          font-size: 0.85em;
+
+          @include mouseState(hover) {
+            opacity: 1;
+          }
+        }
+      }
+      .title {
+        font-size: 1.25em;
+      }
+      .function-stats {
+        @include flexbox(none, none, $wrap: true);
+        width: 100%;
+        // border-left: bd(1.5px, tpw(0.25));
+        margin: 8px 0;
+
+        dl {
+          border-left: bd(1.5px, tpw(0.25));
+          // border: bd(1.5px, tpw(0.25));
+          padding: 12px;
+          flex: 0 1 50%;
+          min-width: 180px;
+        }
+      }
+    }
+  }
