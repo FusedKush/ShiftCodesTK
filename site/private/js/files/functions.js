@@ -1512,7 +1512,20 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
   
   if (progressBar !== null && dom.get(progressBar, 'attr', 'role') == 'progressbar') {
     let bar = dom.find.child(progressBar, 'class', 'progress');
-    let count = dom.find.child(progressBar, 'class', 'progress-count');
+    let cursor = (function () {
+      if (dom.has(progressBar, 'class', 'show-cursor')) {
+        let cursor = dom.find.child(progressBar, 'class', 'cursor');
+
+        if (!cursor) {
+          cursor = document.createElement('span');
+          cursor = progressBar.appendChild(cursor);
+        }
+
+        return cursor;
+      }
+
+      return false;
+    })();
     let opt = mergeObj(defaultOptions, options);
     let id = progressBar.id;
 
@@ -1530,13 +1543,45 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
         // }
         bar.style.width = `${newVal}%`;
 
-        if (count) {
-          let offset = 100 - newVal;
-          let regex = new RegExp('\\d{1,3}');
+        if (dom.has(progressBar, 'class', 'full-animation')) {
+          edit.class(bar, newVal == 100 ? 'add' : 'remove', 'full');
+        }
 
-          count.style.transform = `translateX(${offset}%)`;
-          updateLabel(count, count.title.replace(regex, newVal));
-          count.innerHTML = count.innerHTML.replace(regex, newVal);
+        if (cursor) {
+          let sizeOffset = '24px';
+          let valueRegex = new RegExp('\\d{1,3}');
+          let cursorPos = `calc(${newVal}% - ${sizeOffset})`;
+          let cursorOffset = (function () {
+            let str = '';
+
+            if (newVal < 10 || newVal > 90) {
+              str = "calc(";
+  
+              if (newVal < 10) {
+                str += `${(0 - newVal) * 10}% + ${sizeOffset}`;
+              }
+              else {
+                str += `${(90 - newVal) * 10}% + ${sizeOffset}`;
+              }
+  
+              str += ")";
+            }
+            else {
+              str = '0';
+            }
+
+            return str;
+          })();
+          // let offset = 100 - newVal;
+          
+          cursor.style.left = cursorPos;
+          cursor.style.transform = `translateX(${cursorOffset})`;
+          // updateLabel(cursor, `${}`, [ 'aria-label', 'tooltip' ]);
+          cursor.innerHTML = cursor.innerHTML.replace(valueRegex, newVal);
+
+          // count.style.transform = `translateX(${offset}%)`;
+          // updateLabel(count, count.title.replace(regex, newVal));
+          // count.innerHTML = count.innerHTML.replace(regex, newVal);
         }
       }
 
@@ -1589,8 +1634,9 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
       progressBar.setAttribute('data-progress', 0);
       bar.style.removeProperty('width');
 
-      if (count) {
-        count.style.removeProperty('transform');
+      if (cursor) {
+        cursor.style.removeProperty('left');
+        cursor.style.removeProperty('transform');
       }
     }
   }
