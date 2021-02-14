@@ -658,11 +658,13 @@ function fixClickableContent (e) {
     let child = children[i];
 
     if (child.nodeName == '#text') {
-      let span = document.createElement('span');
+      // let span = document.createElement('span');
 
-      span.innerHTML = child.textContent;
+      // span.innerHTML = child.textContent;
+      e.innerHTML = `<span>${e.innerHTML}</span>`;
+      return true;
 
-      e.replaceChild(span, child);
+      // e.replaceChild(span, child);
     }
   }
 }
@@ -671,8 +673,8 @@ function btnPressToggle (button) {
     let t = e.currentTarget;
     let state = dom.has(t, 'attr', 'aria-pressed', 'true');
 
+    t.setAttribute('aria-pressed', !state);
     setTimeout(function () {
-      t.setAttribute('aria-pressed', !state);
     }, 500);
   });
 }
@@ -771,15 +773,26 @@ function execGlobalScripts () {
     })();
     // Add Press Toggle Listener to buttons
     (function () {
-      let buttons = dom.find.children(document, 'tag', 'button');
-
-      for (let i = 0; i < buttons.length; i++) {
-        let btn = buttons[i];
-
-        if (dom.has(btn, 'class', 'o-pressed')) {
-          btnPressToggle(btn);
+      window.addEventListener('click', function (event) {
+        if (button = dom.has(event.target, 'class', 'o-pressed', null, true)) {
+          let state = dom.has(button, 'attr', 'aria-pressed', 'true');
+      
+          console.info(button, dom.get(button, 'attr', 'aria-pressed'), dom.has(button, 'attr', 'aria-pressed', 'true'));
+          edit.attr(button, 'update', 'aria-pressed', !state);
+          setTimeout(function () {
+          }, 500);
         }
-      }
+
+      });
+      // let buttons = dom.find.children(document, 'tag', 'button');
+
+      // for (let i = 0; i < buttons.length; i++) {
+      //   let btn = buttons[i];
+
+      //   if (dom.has(btn, 'class', 'o-pressed')) {
+      //     btnPressToggle(btn);
+      //   }
+      // }
     })();
     // Group related stylesheets, scripts, modals, & templates together
     (function () {
