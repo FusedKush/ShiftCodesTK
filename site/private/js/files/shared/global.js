@@ -478,7 +478,7 @@ function addHashListener (key, callback) {
   return checkHash(key);
 }
 // Copy the contents of the field to the clipboard
-function copyToClipboard (event) {
+function old_copyToClipboard (event) {
   let button = event.currentTarget;
   let target = (function () {
     let treeJumps = parseInt(button.getAttribute('data-copy-target'));
@@ -512,6 +512,143 @@ function copyToClipboard (event) {
       }
     });
   }, 25);
+}
+/**
+ * Select the contents of a node
+ * 
+ * @param {HTMLElement|node} node The node or element to be selected
+ * @returns {Selection|false} Returns the _Selection `Object`_ on success, or **false** if an error occurred.
+ */
+function selectNode (node) {
+  try {
+    let selection = window.getSelection();
+    let range = new Range();
+
+    range.selectNodeContents(node);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    return selection;
+  }
+  catch (error) {
+    console.error(`selectNode Error: "${error}"`);
+    return false;
+  }
+}
+/**
+ * Copy the contents of a node to the clipboard
+ * - _Note: This function **must** be invoked from within a short-lived event handler to work properly._
+ * - The `node` is determined using the `data-copy` attribute on the `copy-to-clipboard` button:
+ * - - If the `id` of an element is provided, the contents of the element will be copied.
+ * - - If a `number` is provided, it will indicate how many parent nodes the common ancestor element of the element with the `copy-content` is.
+ * - - If omitted, or one of the above methods fails, children of the nearest parent will be checked.
+ * 
+ * @param {HTMLElement|node} node The node or element to be copied to the clipboard.
+ * @returns {boolean} Returns **true** if the content of `node` was successfully copied to the clipboard, or **false** if it did not.
+ */
+function copyToClipboard (node) {
+  const nodeToSelect = (function () {
+    const formFieldTags = [
+      'input',
+      'textarea',
+      'select'
+    ];
+    const nodeTag = dom.get(node, 'tag');
+    let nodeToSelect = document.createElement('pre');
+
+    edit.class(nodeToSelect, 'add', 'copy-to-clipboard-temp-node');
+
+    if (formFieldTags.indexOf(nodeTag) != -1) {
+      nodeToSelect.textContent = node.value;
+    }
+    else {
+      nodeToSelect.textContent = node.textContent;
+    }
+    
+    nodeToSelect = dom.find.id('data').appendChild(nodeToSelect);
+
+    return nodeToSelect;
+  })();
+  const selection = selectNode(nodeToSelect);
+  const result = document.execCommand('copy');  
+  
+  // Result Toast
+  (function () {
+    const toastsObject = ShiftCodesTK.toasts;
+    let toastSettings = (function () {
+      const settings = {
+        shared: {
+          settings: {
+            id: 'copied_to_clipboard'
+          },
+          content: {
+            icon: 'fas fa-clipboard'
+          }
+        },
+        true: {
+          settings: {
+            duration: 'short'
+          },
+          content: {
+            title: 'Copied to Clipboard!'
+          }
+        },
+        false: {
+          settings: {
+            duration: 'infinite',
+            callback: (action) => {
+              const attrName = 'data-range';
+              const toast = dom.find.parent(action, 'class', 'toast');
+              const node = (function () {
+                const nodeID = dom.get(toast, 'attr', attrName);
+                
+                return dom.find.id(nodeID);
+              })();
+
+              if (!dom.has(action, 'class', 'dedicated')) {
+                const selection = selectNode(node);
+  
+                return selection;
+              }
+              else if (node.id.indexOf('range_') == 0) {
+                edit.attr(node, 'remove', 'id');
+              }
+            }
+          },
+          content: {
+            title: 'Could not Copy to Clipboard',
+            body: `This might work in a different browser, but you can just manually select the text instead.`
+          },
+          actions: [
+            {
+              content: 'Select Text',
+              title: 'Selects and highlights the text to be manually copied to the clipboard'
+            }
+          ]
+        }
+      };
+
+      return mergeObj(settings.shared, settings[result]);
+    })();
+  
+    let toast = toastsObject.newToast(toastSettings);
+    
+    if (!result) {
+      const range = selection.getRangeAt(0);
+      const node = range.commonAncestorContainer;
+      const nodeID = node.id 
+                     ? node.id 
+                     : randomID('range_', 10000, 999999);
+
+      node.id = nodeID;
+      edit.attr(toast, 'add', `data-range`, nodeID);
+    }
+  })();
+
+  selection.removeAllRanges();
+  deleteElement(nodeToSelect);
+
+  return result;
 }
 // Buttons
 function fixClickableContent (e) {
@@ -715,7 +852,73 @@ function execGlobalScripts () {
     window.addEventListener('keydown', focusLock.handle);
     // Cursor Properties
     (function () {
-      ShiftCodesTK.cursor = {};
+    // Copy to Clipboard
+    window.addEventListener('click', (event) => {
+      let copyButton = (function () {
+        if (copyButton = dom.has(event.target, 'class', 'copy-to-clipboard', null, true)) {
+          return copyButton;
+        }
+
+        return false;
+      })();
+
+      if (copyButton) {
+        try {
+          const copyContent = (function () {
+            const attr = dom.get(copyButton, 'attr', 'data-copy');
+
+            if (attr) {
+              const count = tryParseInt(attr, 'ignore');
+
+              if (count === false) {
+                const node = dom.find.id(attr);
+
+                if (node) {
+                  return node;
+                }
+                else {
+                  throw `Provided element "${attr}" does not exist.`;
+                }
+              }
+              else {
+                let parent = copyButton;
+
+                for (let i = 0; i < count; i++) {
+                  if (parent.parentNode) {
+                    parent = parent.parentNode;
+                  }
+                  else {
+                    throw `Parent number "${count}" does not exist.`;
+                  }
+                }
+
+                return dom.find.child(parent, 'class', 'copy-content');
+              }
+            }
+
+            if (copyButton.parentNode) {
+              return dom.find.child(copyButton.parentNode, 'class', 'copy-content');
+            }
+            else {
+              return false;
+            }
+          })();
+
+          if (copyContent) {
+            const result = copyToClipboard(copyContent);
+
+            if (!result) {
+              isDisabled(copyButton, true);
+              ShiftCodesTK.layers.updateTooltip(copyButton, 'Could not be copied to the Clipboard.', { delay: 'none' });
+            }
+          }
+        }
+        catch (error) {
+          console.error(`copyToClipboard Error: ${error}"`);
+          return false;
+        }
+      }
+    });
 
       window.addEventListener('mousemove', function (event) {
         ShiftCodesTK.cursor = {
