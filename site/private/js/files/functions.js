@@ -296,8 +296,8 @@ function regexMatchAll(exp, string) {
   * @param {object} [requestProperties.headers] Additional request headers to be sent with the request, provided as key=value pairs.
   * - *Note: **POST** requests automatically send a **Content-Type** header of `application/x-www-form-urlencoded` if it is not explicitly provided.*
   * @param {object} [requestProperties._tokenRefreshed] **Internal** — Indicates that a prior request already attempted to refresh an invalid token.
- * @returns {boolean} Returns **true** if the provided configuration is valid, or **false** if an error occurred. 
- * - *To access the request response, you must specify a callback function using the `callback` property of the `requestProperties` argument.*
+ * @returns {XMLHttpRequest|false} Returns the *XMLHTTPRequest`Object`* on success, or **false** if an error occurred. 
+ * - * An additional property, `_requestID`, holds the unique ID of the request.
  */
 function newAjaxRequest (requestProperties) {
   /** The Ajax Request */
@@ -309,17 +309,20 @@ function newAjaxRequest (requestProperties) {
       return new ActiveXObject('Microsoft.XMLHttp');
     }
   })();
-  let defaultProperties = {
-    file: null,
-    type: 'GET',
-    params: {},
-    callback: false,
-    headers: {},
-    _tokenRefreshed: false
-  };
+      request._requestID = new Date().valueOf().toString() + randomNum(0, 1000);
 
   /** The resolved Request Properties */
   let properties = (function () {
+    let defaultProperties = {
+      file: null,
+      type: 'GET',
+      params: {},
+      callback: false,
+      headers: {
+        [requestToken.headerName]: requestToken.get()
+      },
+      _tokenRefreshed: false
+    };
     let props = mergeObj(defaultProperties, requestProperties);
 
     props.type = props.type.toUpperCase();
@@ -327,9 +330,9 @@ function newAjaxRequest (requestProperties) {
     if (props.type == 'POST' && !props.headers['Content-Type']) {
       props.headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
-    if (!props.params._token && !props.params._auth_token) {
-      props.params._token = requestToken.get();
-    }
+    // if (!props.params._token && !props.params._auth_token) {
+    //   props.params._token = requestToken.get();
+    // }
 
     return props;
   })();
@@ -377,7 +380,25 @@ function newAjaxRequest (requestProperties) {
         // Try to retrieve updated request token
         if (response && response.statusMessage == 'Missing or Invalid Request Token' && !properties._tokenRefreshed) {
           properties._tokenRefreshed = true;
-          requestToken.check(function () {
+
+          requestToken.check(function (newToken, oldToken) {
+            properties.headers[requestToken.headerName] = newToken;
+
+            // Check Params
+            (function () {
+              const params = properties.params;
+  
+              for (let param in params) {
+                if (param.indexOf('token') != -1) {
+                  const value = params[param];
+  
+                  if (value == oldToken) {
+                    params[param] = newToken;
+                  }
+                }
+              }
+            })();
+            
             newAjaxRequest(properties);
           });
           
@@ -393,43 +414,18 @@ function newAjaxRequest (requestProperties) {
   // Build & Send the Ajax Request
   (function () {
     /** The Request Parameters String */
-    let paramString = (function () {
-      let str = '';
-
-      for (let param in properties.params) {
-        let value = properties.params[param];
-  
-        // Parameter is an Array
-        if (value.constructor.name == 'Array') {
-          for (let arrayValue of value) {
-            if (param.indexOf('[]') == -1) {
-              param += '[]';
-            }
-
-            str += `${param}=${arrayValue}&`;
-          }
-        }
-        // Parameter is a String
-        else {
-          str += `${param}=${value}&`;
-        }
-      }
-  
-      // Remove trailing ampersand
-      return str.slice(0, -1);
-    })();
+    let paramString = encodeQueryParameters(properties.params, false);
 
     if (properties.type == "GET") {
       if (!properties._tokenRefreshed) {
-        if (properties.file.indexOf('?') == -1) {
-          properties.file += '?';
+        // if (properties.file.indexOf('?') == -1) {
+        //   properties.file += '?';
+        // }
+        // else {
+        //   properties.file += '&';
+        // }
   
-        }
-        else {
-          properties.file += '&';
-        }
-  
-        properties.file += paramString;
+        properties.file += `?${paramString}`;
       }
       
       openAndSend();
@@ -438,7 +434,10 @@ function newAjaxRequest (requestProperties) {
       openAndSend(paramString);
     }
   })();
+
+  return request;
 }
+
 // Global Helper Functions
 /**
  * A group of properties and methods for Global Helper Function Stat Collection
