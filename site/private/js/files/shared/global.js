@@ -359,11 +359,8 @@ function toggleBodyScroll (allowScroll = 'toggle') {
     if (allowScroll) {
       edit.class(body, 'remove', classname);
       body.style.removeProperty('top');
-
-      setTimeout(function () {
-        window.scrollTo(0, tryParseInt(body.getAttribute(attr)));
-        body.removeAttribute(attr);
-      }, 50);
+      window.scrollTo(0, tryParseInt(body.getAttribute(attr)));
+      body.removeAttribute(attr);
     }
     else {
       let scroll = window.pageYOffset;
@@ -380,6 +377,28 @@ function toggleBodyScroll (allowScroll = 'toggle') {
   }
 
   return false;
+}
+function changeSiteTheme (theme) {
+  const themes = ShiftCodesTK.global.themeColors;
+                 delete themes.bg;
+  const metaTags = {
+    theme: getMetaTag('theme-color'),
+    stored: getMetaTag('tk-theme-color')
+  };
+
+  if (Object.keys(themes).indexOf(theme) == -1) {
+    console.error(`changeSiteTheme Error: "${theme}" is not a valid theme.`);
+    return false;
+  }
+
+  edit.attr(document.body, 'update', 'data-theme', theme);
+
+  if (metaTags.theme.content == metaTags.stored.content) {
+    metaTags.theme.content = themes[theme];
+  }
+
+  metaTags.stored.content = themes[theme];
+  return true;
 }
 // Update visibility of hash-targeted elements
 function hashUpdate () {
