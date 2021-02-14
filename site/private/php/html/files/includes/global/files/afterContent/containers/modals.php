@@ -1,5 +1,36 @@
+<?php function confirmation_modal () { ?>
+  <div class="modal small" id="confirmation_modal">
+    <div class="title">Action Confirmation</div>
+    <div class="body">
+      <div class="inner-body">Are you sure you want to perform this action?</div>
+    </div>
+    <div class="footer">
+      <div>
+        <button class="modal-action modal-toggle prevent-onclose layer-target styled has-spinner" id="confirmation_modal_approve" data-action="approve">
+          <span>Confirm</span>
+          <?php include(PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+        </button>
+        <div class="layer tooltip" id="confirmation_modal_approve_tooltip" data-layer-delay="medium">
+          <span>Approve this action</span>
+        </div>
+      </div>
+      <div>
+        <button class="modal-action modal-toggle layer-target styled button-effect text has-spinner" id="confirmation_modal_deny" data-action="deny">
+          <span>Cancel</span>
+          <?php include(PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+        </button>
+        <div class="layer tooltip" id="confirmation_modal_deny_tooltip" data-layer-delay="medium">
+          <span>Deny this action</span>
+        </div>
+      </div>
+    </div>
+  </div>
+<?php } ?>
+<!-- End of Confirmation Modal Function -->
+
 <div class="modals" id="modals">
-<!-- Global Modals -->
+  <!-- Global Modals -->
+  <?php confirmation_modal(); ?>
   <!-- Profile Card Modal -->
   <div class="modal" id="profile_card_modal">
     <div class="body">

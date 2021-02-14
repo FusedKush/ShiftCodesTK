@@ -48,6 +48,9 @@
       </div>
     </div> 
   </template>
+  <template id="confirmation_modal_template">
+    <?php confirmation_modal(); ?>
+  </template>
   <!-- Dropdown Panels -->
   <template id="dropdown_panel_template">
       <div class="dropdown-panel">
