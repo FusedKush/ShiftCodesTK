@@ -2,6 +2,6 @@
   $files = ['footer', 'containers/containers', 'noscript-markup'];
 
   foreach ($files as $file) {
-    include_once(HTML_INCLUDES_PATH . "global/files/afterContent/$file.php");
+    include_once(PRIVATE_PATHS['html_includes'] . "global/files/afterContent/$file.php");
   }
 ?>
