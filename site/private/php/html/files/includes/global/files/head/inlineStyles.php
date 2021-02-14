@@ -16,4 +16,9 @@
   main.no-header {
     min-height: 100%;
   }
+
+  .layer:not(.configured),
+  .multi-view:not(.multi-view-setup) {
+    display: none;
+  }
 </style>

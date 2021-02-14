@@ -1,11 +1,12 @@
 <aside class="sidebar" id="sidebar" data-expanded="false" aria-expanded="false" hidden="true" aria-hidden="true">
   <nav class="panel" aria-label="Sidebar">
     <div class="header">
-      <button class="toggle bubble-parent no-focus-scroll" id="sidebar_toggle" title="Close the Sidebar" aria-label="Close the Sidebar">
+      <button class="toggle bubble-parent no-focus-scroll layer-target" id="sidebar_toggle">
         <span class="bubble bubble-light"></span>
         <span class="fas fa-bars"></span>
       </button>
-      <a class="brand" href="/" title="ShiftCodesTK Home" aria-label="ShiftCodesTK Home">
+      <div class="layer tooltip" data-layer-pos="right" data-layer-delay="long">Close the Sidebar</div>
+      <a class="brand layer-target" href="/" aria-label="ShiftCodesTK Home">
         <span class="name">ShiftCodes<strong class="focus">TK</strong></span>
       </a>
     </div>
@@ -19,6 +20,33 @@
           'tps' => 'Borderlands: TPS'
         ];
       ?>
+      <?php 
+        /**
+         * Generate a new sidebar link
+         * 
+         * @param string $name The displayed name of the link
+         * @param string $link The destination url 
+         * @param string $icon The icon classname
+         * @param false|string $tooltip A tooltip to be displayed when hovering over the link
+         * @return string Returns the new sidebar link markup
+         */
+        function getSidebarLink ($name, $link, $icon, $tooltip = false) { 
+      ?>
+        <li>
+          <a href="<?= $link; ?>"
+             <?php if ($tooltip !== false) { echo ' class="layer-target"'; } ?>
+          >
+            <span class="<?= $icon; ?>"></span>
+            <span class="name"><?= $name; ?></span>
+          </a>
+
+          <?php if ($tooltip !== false) : ?>
+            <div class="layer tooltip sticky" data-layer-pos="right"><?= $tooltip; ?></div>
+          <?php endif; ?>
+        </li>
+      <?php } ?>
+      <!-- End of getSidebarLink -->
+      <!-- SHiFT Links -->
       <?php foreach($links as $link => $name) : ?>
         <?php
           $counts = [
@@ -33,10 +61,12 @@
             <?php if ($counts['new'] > 0 || $counts['expiring'] > 0) : ?>
               <span class="badges">
                 <?php if ($counts['new'] > 0) : ?>
-                  <span class="badge new" title="New SHiFT Codes!" aria-label="New SHiFT Codes!"><strong>New!</strong></span>
+                  <span class="badge new layer-target"><strong>New!</strong></span>
+                  <div class="layer tooltip" data-layer-pos="right">New SHiFT Codes!</div>
                 <?php endif; ?>
                 <?php if ($counts['expiring'] > 0) : ?>
-                  <span class="badge expiring" title="Expiring SHiFT Codes!" aria-label="Expiring SHiFT Codes!"><strong>Expiring!</strong></span>
+                  <span class="badge expiring layer-target"><strong>Expiring!</strong></span>
+                  <div class="layer tooltip" data-layer-pos="right">Expiring SHiFT Codes!</div>
                 <?php endif; ?>
               </span>
             <?php endif; ?>
@@ -44,24 +74,11 @@
         </li>
       <?php endforeach; ?>
       <div class="separator"></div>
-      <li>
-        <a href="/about-us">
-          <span class="fas fa-users"></span>
-          <span class="name">About us</span>
-        </a>
-      </li>
-      <li>
-        <a href="/credits">
-          <span class="fas fa-award"></span>
-          <span class="name">Credits</span>
-        </a>
-      </li>
-      <li>
-        <a href="/help/">
-          <span class="fas fa-question"></span>
-          <span class="name">Help Center</span>
-        </a>
-      </li>
+      <?php
+        getSidebarLink('About us', '/about-us', 'fas fa-users');
+        getSidebarLink('Credits', '/credits', 'fas fa-award');
+        getSidebarLink('Help Center', '/help/', 'fas fa-question');
+      ?>
     </ul>
   </nav>
 </aside>

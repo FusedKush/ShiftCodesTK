@@ -5,5 +5,5 @@
     <?= json_encode($_SESSION['toasts'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK); ?>
   </div>
 
-  <?php $_SESSION['toasts'] = []; ?>
+  <?php getSessionToast(true); ?>
 <?php endif; ?>

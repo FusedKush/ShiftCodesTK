@@ -64,7 +64,7 @@
         aria-label="Refresh the current page and try again">
         <span>Refresh</span>
       </a>
-    <?php else : ?>
+    <?php elseif (ERROR_NOTICE_CODE != -4) : ?>
       <a 
         class="action" 
         href=" " 

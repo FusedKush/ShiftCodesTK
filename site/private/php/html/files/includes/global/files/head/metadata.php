@@ -1,9 +1,5 @@
 <?php
   /**
-   * The domain the live site resides on
-   */
-  $siteDomain = 'shiftcodestk.com';
-  /**
    * Theme color codes
    */
   $themeColors = [
@@ -36,6 +32,8 @@
 <!-- Custom Properties -->
 <meta name="tk-bg-color" content="<?= $themeColors['bg']; ?>">
 <meta name="tk-request-token" content="<?= $_SESSION['token']; ?>">
+<!-- Theme Colors -->
+<meta name="tk-theme-colors" content=<?= clean_all_html(json_encode($themeColors)); ?>>
 
 <!-- Page-Specific Properties -->
 <?php
@@ -43,12 +41,21 @@
 ?>
 <!-- Facebook & Twitter Properties -->
 <?php foreach ($socialMetadata as $meta) : ?>
-  <meta property="<?= "og:$meta"; ?>" content="<?= PAGE_SETTINGS['meta'][$meta]; ?>">
+  <?php
+    $metaContent = PAGE_SETTINGS['meta'][$meta];
+
+    if ($meta == 'image') {
+      $domain = SITE_DOMAIN;
+      $metaContent = "https://{$domain}/assets/img/metadata/{$metaContent}";
+    }
+  ?>
+
+  <meta property="<?= "og:$meta"; ?>" content="<?= $metaContent; ?>">
 <?php endforeach; ?>
 <title><?= PAGE_SETTINGS['meta']['title']; ?></title>
 <!-- Canonical Page Location -->
-<meta name="canonical" href="<?= "https://{$siteDomain}{PAGE_SETTINGS['meta']['canonical']}"; ?>">
-<meta property="og:url" content="<?= "https://{$siteDomain}{PAGE_SETTINGS['meta']['canonical']}"; ?>">
+<meta name="canonical" href="https://<?= SITE_DOMAIN . PAGE_SETTINGS['meta']['canonical']; ?>">
+<meta property="og:url" content="https://<?= SITE_DOMAIN . PAGE_SETTINGS['meta']['canonical']; ?>">
 <!-- Browser Properties -->
 <link rel="manifest" href="/assets/manifests/<?= PAGE_SETTINGS['meta']['theme']; ?>.webmanifest">
 <!-- Custom Properties -->
