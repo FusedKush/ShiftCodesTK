@@ -55,6 +55,15 @@ a {
   }
   &:not(.themed) { color: inherit; }
 }
+p:not(:first-child) {
+  margin-top: $df-elm-spacing;
+}
+
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 // Interactables
 $buttonLinkColors: (
   'info': #4c00ff,
@@ -139,8 +148,6 @@ button.styled, a.button {
   &::after {
     border: bd(1.5px, #fff);
     opacity: 0;
-  }
-    }           
   }
 
   // Alignment
@@ -362,6 +369,8 @@ button, a, input, select, textarea {
     cursor: not-allowed !important;
   }
 }
+
+// Lists
 ul.styled { list-style: disc inside; }
 ol.styled { list-style: decimal inside; }
 ul, ol {
@@ -383,29 +392,50 @@ ul, ol {
   }
   &:not(.styled) { list-style: none; }
 }
+
+// Code
 code {
-  padding: 2px 6px;
-  line-height: 1.5;
+  padding: 3px 6px;
+  line-height: 1.75;
   white-space: nowrap;
 }
-pre {
+pre, .code-block {
   @include spacing($df-elm-spacing 0, 8px);
 
   code {
     background-color: transparent;
     padding: 0;
   }
+  font-size: 0.9em;
+  max-height: 500px;
 }
-pre, code {
+pre, code, .code-block {
+  // $codeColor: adjust-color($site-color-lighter, $saturation: 20%, $lightness: 10%);
+  $codeColor: $site-color-lighter;
+
   font-family: inherit;
-  border-radius: 4px;
-  background-color: tpw(0.1);
-  border: bd(1.5px, tpw(0.5));
+  border-radius: 6px;
+  // background-color: tpw(0.15);
+  // border: bd(1.5px, tpw(0.5));
+  background-color: adjust-color($site-color-main, $alpha: -0.25);
+  color: $codeColor;
+  border: bd(1.5px, adjust-color($codeColor, $alpha: -0.25));
   overflow: auto;
-  text-shadow: dropShadow(tpb(0.5));
+  // text-shadow: dropShadow(tpb(0.5));
+  text-shadow: dropShadow(adjust-color($site-color-darker, $alpha: -0.5));
 }
+
+// Misc
 img {
   max-width: 100%;
+}
+@keyframes relativeDateUpdated {
+  0%, 100% { opacity: 1; /* transform: scale(1); */ }
+  33%      { opacity: 0.85; /* transform: scale(1.05); */ }
+  66%      { opacity: 0.75; /* transform: scale(0.95); */ }
+}
+[data-relative-date].relative-date-updated {
+  animation: relativeDateUpdated linear 0.4s;
 }
 template, .webp-support { display: none; }
 .xe-notice {
@@ -418,8 +448,6 @@ template, .webp-support { display: none; }
   }
 }
 
-// Reusable Classes
-// ------------------------
 // Header
 @media screen and (max-width: 474px) {
   header.main .intro   { height: calc(30vh + 32px); }
@@ -499,6 +527,7 @@ header.main {
     display: flex;
     @include theme(bg);
     border-bottom: bd(2px, tpw(0.5));
+    transition: background-color 0.4s ease-out, opacity $trd, transform $trd;
     animation: breadcrumbFadeIn 0.2s ease-out;
 
     &::before {
@@ -655,7 +684,7 @@ div, span, a, button, strong, b, em, i {
   }
 }
 // Copy to Clipboard Button
-button.copy {
+button.copy-to-clipboard {
   @keyframes copiedToClipboard {
     0%, 50%, 100% { transform: scale(1); }
     25%           { transform: scale(0.9); }
@@ -670,35 +699,86 @@ button.copy {
 }
 // Progress Bar
 .progress-bar {
+  $pbTransition: 0.4s ease;
+  $pbCursorFontSize: 0.85em;
+  $pbCursorPadding: 3px;
+
+  @include flexbox(c, none);
   @include sizing(6px, 100%);
   background-color: tpb(0.5);
   border-radius: 8px;
+
+  &.show-cursor {
+    // margin: 8px 0;
+    // margin: calc(0.425em + 3px) 0;
+    margin: calc(#{$pbCursorFontSize / 2} + #{$pbCursorPadding}) 0;
+  }
 
   .progress {
     @include multiProp(100%, sizing);
     background-color: tpw(0.5);
     border-radius: 8px;
+    transition: width $pbTransition;
 
     // Pull bar to 0%
     position: absolute;
-    // left: -100%;
-    // transform: translateX(0);
+
+    // Use `width` to specify progress bar amount
     width: 0%;
-    transition: width 0.4s ease;
 
     &.no-animation {
       transition: none;
     }
+    @at-root .progress-bar.full-animation .progress {
+      &:not(.full) {
+        opacity: 0.75;
+      }
+      &.full {
+        @mixin progressGlowStart {
+          opacity: 0.75;
+          box-shadow: 0 0 10px transparent;
+        }
+        @keyframes progressGlow {
+          0%, 100% {
+            @include progressGlowStart;
+          }
+          50% {
+            opacity: 1;
+            box-shadow: 0 0 10px; 
+          }
+        }
+  
+        @include progressGlowStart;
+        animation: progressGlow 3s ease infinite;
+      }
+    }
+  }
+  .cursor {
+    position: absolute;
+    padding: $pbCursorPadding ($pbCursorPadding * 3);
+    font-size: $pbCursorFontSize;
+    background-color: tpb(0.75);
+    border: bd(1px);
+    border-radius: 24px;
+    transition: left $pbTransition, transform $pbTransition, opacity $pbTransition;
+
+    // Use `left` to position cursor (calc([0-100%] - 24px))
+    left: calc(0% - 24px);
+     // Use `translateX` offset cursor
+     // - At < 10%, calc([0-100%] + 24px) to offset right
+     // - At > 90%, calc([0-100%] - 24px) to offset left
+    transform: translateX(calc(0% + 24px));
   }
 }
 // Horizontal Menus
 .h-menu {
-  @include flexbox(e);
+  @include flexbox(e, $wrap: true);
   padding: 8px;
   font-size: 1.15em;
   
   a, button {
-    @include multiProp(8px, spacing);
+    margin: 4px 8px;
+    padding: 8px;
     font-size: 1em;
 
     @include pshared {
@@ -732,12 +812,19 @@ button.copy {
     }
   }
 }
+
 #containers {
   @include fill;
   pointer-events: none;
 
   #templates {
     display: none;
+  }
+  #data {
+    position: absolute;
+    top: -100%;
+    left: -100%;
+    opacity: 0;
   }
   #modals .modal {
     pointer-events: all;
