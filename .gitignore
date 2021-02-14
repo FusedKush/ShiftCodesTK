@@ -1,9 +1,12 @@
 # Ignore
 .*
 .*/**/*
-node_modules/
 *.code-workspace
+node_modules/
+site/private/img/assets/*
+site/private/img/users/
 
 # Allow
 !.htaccess
 !.cpanel.yml
+!site/private/img/assets/rewards/
