@@ -1,11 +1,12 @@
 // *** Functions ***
 // Updates the appearance of the Navbar
 function updNav () {
-  let pos = [
-    window.pageYOffset,
-    document.documentElement.scrollTop,
-    document.body.scrollTop
-  ]
+  // let pos = [
+  //   window.pageYOffset,
+  //   document.documentElement.scrollTop,
+  //   document.body.scrollTop
+  // ];
+  let pos = ShiftCodesTK.client.scroll;
   let nav = document.getElementById("navbar");
   let themeColor = {
     'setting': getMetaTag('theme-color'),
@@ -13,11 +14,11 @@ function updNav () {
     'theme': getMetaTag('tk-theme-color').content
   };
 
-  if(pos[1] > 0 || pos[2] > 0 || pos[3] > 0) {
+  if(pos > 2) {
     nav.setAttribute("data-at-top", false);
     themeColor.setting.content = themeColor.theme;
   }
-  else {
+  else if (!dom.has(document.body, 'class', 'scroll-disabled')) {
     nav.setAttribute("data-at-top", true);
     themeColor.setting.content = themeColor.background;
   }
@@ -81,17 +82,31 @@ function lpbUpdate (progress, interval = false, additionalOptions = {}) {
       // Watch for Scrolling
       window.addEventListener("scroll", updNav);
 
-      if (dom.find.id('auth_logout_button')) {
-        dom.find.id('auth_logout_button').addEventListener('click', function () {
-          newAjaxRequest({
-            file: '/assets/requests/post/auth/logout',
-            type: 'POST',
-            callback: function (responseText) {
-              console.log(tryJSONParse(responseText));
-            }
-          })
-        });
-      }
+      // Setup Layers 
+      // (function () {
+      //   const layers = dom.find.children(dom.find.id("navbar"), 'class', 'layer');
+
+      //   for (let layer of layers) {
+      //     if (!dom.has(layer, 'class', 'configured')) {
+      //       ShiftCodesTK.layers.setupLayer(layer);
+      //     }
+      //   }
+      // })();
+
+      // Site Settings
+      // ShiftCodesTK.forms.registerHook('/assets/requests/post/js/update-site-settings', 'afterSubmit', function (form, formData, formProps, response) {
+      //   ShiftCodesTK.toasts.newToast({
+      //     settings: {
+      //       id: 'site_settings_updated_toast',
+      //       duration: 1500
+      //     },
+      //     content: {
+      //       title: 'Site Settings Updated!',
+      //       icon: 'fas fa-cogs'
+      //     }
+      //   });
+      // });
+      
     }
   }, 250);
 })();
