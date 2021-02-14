@@ -6,10 +6,10 @@
 // Primary Site Theme
 $site-color-main:        #0f1d2c; // Main Color
 // Accents
-$site-color-light:       adjust-color($site-color-main, $lightness: 10%);
-$site-color-lighter:     adjust-color($site-color-main, $lightness: 15%);
-$site-color-dark:        adjust-color($site-color-main, $lightness: -5%);
-$site-color-darker:      adjust-color($site-color-main, $lightness: -10%);
+$site-color-light:       adjust-color($site-color-main, $saturation: 30%, $lightness: 30%);
+$site-color-lighter:     adjust-color($site-color-main, $saturation: 50%, $lightness: 50%);
+$site-color-dark:        adjust-color($site-color-main, $saturation: 15%, $lightness: 15%);
+$site-color-darker:      adjust-color($site-color-main, $saturation: 10%, $lightness: 10%);
 
 // Secondary Site Themes
 $theme-main:             #f00;               // Main Theme Color
@@ -43,11 +43,13 @@ $badgeColors : (                               // Badge Color Definition List
   expiring:              $badge-expiring
 );
 
+$role-developer:         #14a4e7;            // Developer Role Color
 $role-admin:             #ffd100;            // Admin Role Color
 $role-badass:            #c053ff;            // Badass Role Color
 $roleColors : (                                // Role Color Definition List
   badass:                $role-badass,
-  admin:                 $role-admin
+  admin:                 $role-admin,
+  developer:             $role-developer
 );
 
 /*** Functions ***/
@@ -58,20 +60,20 @@ $roleColors : (                                // Role Color Definition List
 // Z-Index Stacking Order
 @function zOrder($type) {
   $stackingOrder: (
-    hidden: -1,
-    default: 0,
-    higher: 1,
-    aboveNormal: 2,
-    navbar: 100,
-    sidebar: 101,
-    popup: 102,
-    layer: 103,
-    dropdownMenuPanel: 103,
-    dropdownMenuToggle: 104,
-    banner: 105,
-    max: 999
-    );
-
+    hidden              : -1,
+    default             : 0,
+    higher              : 1,
+    aboveNormal         : 2,
+    navbar              : 100,
+    sidebar             : 101,
+    popup               : 102,
+    layer               : 103,
+    dropdownMenuPanel   : 103,
+    dropdownMenuToggle  : 104,
+    banner              : 105,
+    max                 : 999
+  );
+  
   @return map-get($stackingOrder, $type);
 }
 // Default Border Properties
@@ -130,8 +132,8 @@ $roleColors : (                                // Role Color Definition List
     );
 
   // Type
-  @if $type == default { display: flex; }
-  @else                { display: inline-flex; }
+  @if $type == default     { display: flex; }
+  @else if $type == inline { display: inline-flex; }
   // Alignment
   @each $axisN, $axisV in $axisList {
     @if $axisV != none {
@@ -282,7 +284,11 @@ $roleColors : (                                // Role Color Definition List
     @each $colorN, $colorV in $themeColors {
       body[data-theme="#{$colorN}"] & { 
         #{map-get($typeNames, $type)}: $colorV; 
-        transition-property: opacity, transition, #{map-get($typeNames, $type)};
+
+        &:not(.disable-theme-transitions) {
+          // transition: opacity $trd, transform $trd, #{map-get($typeNames, $type)} 0.4s ease;
+          transition: #{map-get($typeNames, $type)} 0.4s ease-out, opacity $trd, transform $trd !important;
+        }
       }
     }
   }
@@ -305,7 +311,7 @@ $roleColors : (                                // Role Color Definition List
 
       &.#{map-get($selectors, $placement)} {
         #{map-get($typeNames, $type)}: $colorV;
-        transition-property: opacity, transition, #{map-get($typeNames, $type)};
+        // transition: #{map-get($typeNames, $type)} 0.4s ease-out, opacity $trd, transform $trd;
       }
     }
   }
@@ -319,7 +325,12 @@ $roleColors : (                                // Role Color Definition List
 }
 // Icon with maintained aspect ratio
 @mixin boxIcon ($inline: false) {
-  @include flexbox($type: $inline);
+  $type: 'none';
+
+  @if ($inline == false) { $type: 'default'; } 
+  @if ($inline == true)  { $type: 'inline'; } 
+
+  @include flexbox($type: $type);
   @include multiProp(1em, sizing);
 }
 // Progress Bar Shadow
