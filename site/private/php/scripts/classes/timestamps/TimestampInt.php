@@ -1,20 +1,11 @@
 <?php 
   namespace ShiftCodesTK\Timestamps;
 
-use OutOfRangeException;
-use ShiftCodesTK\Integers,
+  use ShiftCodesTK\Integers,
       ShiftCodesTK\Strings;
 
   /** Represents a *Timestamp Integer* with milliseconds */
   class TimestampInt extends Integers\BigInt {
-    // /** @var string A `String Integer` representing the multiplier for `float` conversions. */
-    // private const TS_STRING_MULTIPLIER = "1000"; 
-    /** @var string A `String Integer` representing the multiplier for `string` conversions. */
-    private const TS_STRING_MULTIPLIER = "1000000";
-    // /** @var int An `int` representing the number of significant digits for `float` calculations. */
-    // private const TS_STRING_DIGITS = 3;
-    /** @var int An `int` representing the number of significant digits for `string` calculations. */
-    private const TS_STRING_DIGITS = 6;
     /** @var string A `DateTime` *Format String* used to convert to and from `DateTime` objects. */
     private const TS_DATETIME_FORMAT = '\0\.u U';
 
@@ -196,7 +187,7 @@ use ShiftCodesTK\Integers,
      * @param string|int|\GMP|BigInt|null $timestamp The timestamp to pass to the `TimestampInt`.
      * @param int $precision If it has already been determined, the *Millisecond Precision* of the `$timestamp`. This property should be omitted if the *Timestamp Precision* should automatically be determined.
      * @return BigInt Returns the new `BigInt`.
-     * @throws UnexpectedValueException if the `$timestamp` is of an unknown format.
+     * @throws \UnexpectedValueException if the `$timestamp` is of an unknown format.
      */
     public function __construct($timestamp = null, $precision = null) {
       if (!isset(self::$TS_TYPE_BITMASK)) {

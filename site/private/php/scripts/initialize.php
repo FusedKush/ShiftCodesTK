@@ -533,9 +533,9 @@
 
       $path = str_replace('\\', '/', $path);
       $path = \preg_replace('%(?:\/){0,1}ShiftCodesTK\/%', '', $path);
-      $path = \preg_replace_callback('%[A-Z]+(?=\w*\/\w+)%', function ($matches) { 
-        return strtolower($matches[0]);
-      }, $path);
+      // $path = \preg_replace_callback('%[A-Z]+(?=\w*\/\w+)%', function ($matches) { 
+      //   return strtolower($matches[0]);
+      // }, $path);
 
       return PRIVATE_PATHS['classes'] . "{$path}.php";
     })();
