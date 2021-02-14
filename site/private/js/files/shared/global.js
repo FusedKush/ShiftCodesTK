@@ -727,8 +727,61 @@ function updateClientCursorProperties (event) {
 // *** Immediate Functions & Event Listeners *** //
 // Checking for Dependencies
 function execGlobalScripts () {
-  if (typeof globalFunctionsReady == 'boolean') {
+  if (typeof globalFunctionsReady == 'boolean' && typeof moment == 'function') {
     // *** Immediate Functions ***
+
+    // Local Functions
+    ShiftCodesTK.local = {};
+    // Global Properties & Methods
+    ShiftCodesTK.global = {
+      themeColors: tryJSONParse(getMetaTag('tk-theme-colors').content)
+    };
+    // Get SHiFT Platform & Game Data
+    ShiftCodesTK.shift = (function () {
+      let shiftData = {
+        platforms: {},
+        games: {}
+      };
+
+      try {
+        const dataTypes = [
+          'platforms',
+          'games'
+        ];
+        const source = dom.find.id('shift_data');
+  
+        if (source) {
+          for (let dataType of dataTypes) {
+            let data = dom.find.child(source, 'class', dataType);
+            
+            if (data) {
+              let parsedData = tryJSONParse(data.innerHTML, 'ignore');
+  
+              if (parsedData) {
+                shiftData[dataType] = parsedData;
+              }
+              else {
+                throw new Error(`SHiFT ${ucWords(dataType)} could not be parsed.`);
+              }
+            }
+            else {
+              throw new Error(`SHiFT ${ucWords(dataType)} was not found.`);
+            }
+          }
+
+          deleteElement(source);
+        }
+        else {
+          throw new Error(`No SHiFT Platform & Game Data was found.`);
+        }
+      }
+      catch (error) {
+        console.error(`An error occurred while parsing SHiFT Platform & Game Data: ${error}`);
+      }
+      finally {
+        return shiftData;
+      }
+    })();
     /** The `relativeDates` interface is responsible for displaying *Relative Dates* for elements. */
     ShiftCodesTK.relative_dates = {
       class_name: 'relative-date-updated',
