@@ -4,8 +4,8 @@
   "description": "ShiftCodesTK Website",
   "main": "gulpfile.js",
   "dependencies": {
-    "npm": "^6.14.5",
-    "node": "^12.13.0"
+    "node": "^12.13.0",
+    "npm": "^6.14.5"
   },
   "devDependencies": {
     "@babel/core": "^7.10.4",

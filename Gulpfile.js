@@ -1,5 +1,7 @@
 /** Core Gulp Methods */
 const gulp = require('gulp');
+const { env } = require('process');
+
 /** Shared Gulp Plugins */
 const plugins = (function () {
   let plugins = {};
@@ -10,6 +12,7 @@ const plugins = (function () {
       plugins.concat = require('gulp-concat');
       plugins.rename = require('gulp-rename');
       plugins.browsersync = require('browser-sync').create('ShiftCodesTK');
+      plugins.spawn = require('child_process').spawn;
 
       /** CSS Plugins */
       plugins.css = {};
@@ -41,7 +44,8 @@ const files = (function () {
       // Root
       (function () {
         files.root = {};
-        files.root.site = './site/',
+        files.root.rootdir = './';
+        files.root.site = `${files.root.rootdir}site/`,
         files.root.private = `${files.root.site}private/`;
         files.root.public = `${files.root.site}public/`;
       })();
@@ -54,6 +58,7 @@ const files = (function () {
         files.css.sass = {};
         files.css.sass.root = `${files.css.files}sass/`;
         files.css.sass.glob = `${files.css.sass.root}**/*.scss`;
+        files.css.sass.partialsGlob = `${files.css.files}sass/partials/**/*.scss`;
   
         files.css.css = {};
         files.css.css.files = `${files.css.files}.css/`;
@@ -161,15 +166,23 @@ const tasks = (function () {
         /** Tasks related to the compilation, transformation, and concatentation of SCSS & CSS files */
         tasks.css = {
           /** Compile SASS to CSS */
-          sass () {
-            return gulp.src(files.css.sass.glob)
-                       .pipe(plugins.newer({
-                         dest: files.css.css.files,
-                         ext: '.css' 
-                        }))
-                       .pipe(plugins.css.sass()
-                                    .on('error', plugins.css.sass.logError))
-                       .pipe(gulp.dest(files.css.css.files));
+          sass (allFiles = false) {
+            if (!allFiles) {
+              return gulp.src(files.css.sass.glob)
+                         .pipe(plugins.newer({
+                           dest: files.css.css.files,
+                           ext: '.css' 
+                          }))
+                         .pipe(plugins.css.sass()
+                                      .on('error', plugins.css.sass.logError))
+                         .pipe(gulp.dest(files.css.css.files));
+            } 
+            else {
+              return gulp.src(files.css.sass.glob)
+                         .pipe(plugins.css.sass()
+                                      .on('error', plugins.css.sass.logError))
+                         .pipe(gulp.dest(files.css.css.files));
+            }
           },
           /** Run Post-CSS transformations */
           postCSS: (function () {
@@ -203,6 +216,8 @@ const tasks = (function () {
 
         /** Run all of the CSS micro tasks */
         tasks.css.mainTask = gulp.series(tasks.css.sass, tasks.css.postCSS, tasks.css.concat);
+        /** Run all of the CSS micro tasks for all files */
+        tasks.css.mainTaskAllFiles = gulp.series(function () { return tasks.css.sass(true); }, tasks.css.postCSS, tasks.css.concat);
       })();
       // JS
       (function () {
@@ -228,10 +243,10 @@ const tasks = (function () {
             (function () {
               const fileName = 'moment.js';
     
-              gulp.src([`${files.js.min}global/libs/moment.js/files/moment.js`, `${files.js.min}global/libs/moment.js/files/moment-timezone-with-data-10-year-range.js`])
-                      .pipe(plugins.newer(`${files.js.min}global/libs/moment.js/${fileName}`))
+              gulp.src([`${files.js.min}shared/libs/moment.js/files/moment.js`, `${files.js.min}shared/libs/moment.js/files/moment-timezone-with-data-10-year-range.js`])
+                      .pipe(plugins.newer(`${files.js.min}shared/libs/moment.js/${fileName}`))
                       .pipe(plugins.concat(fileName))
-                      .pipe(gulp.dest(`${files.js.min}global/libs/moment.js`));
+                      .pipe(gulp.dest(`${files.js.min}shared/libs/moment.js`));
             })();
             // Shared Scripts
             (function () {
@@ -239,7 +254,9 @@ const tasks = (function () {
     
               gulp.src([
                         `${files.js.min}shared/global.js`,
-                        `${files.js.min}shared/**/*.js`
+                        `${files.js.min}shared/layers.js`,
+                        `${files.js.min}shared/**/*.js`,
+                        `!${files.js.min}shared/**/files/**/*.js`
                       ])
                       .pipe(plugins.newer(`${files.js.min}${fileName}`))
                       .pipe(plugins.concat(fileName))
@@ -260,10 +277,12 @@ const tasks = (function () {
             const minifierOptions = {
               caseSensitive: true,
               collapseBooleanAttributes: true,
-              collapseInlineTagWhitespace: true,
+              collapseInlineTagWhitespace: false,
               collapseWhitespace: true,
+              continueOnParseError: true,
               conversativeCollapse: true,
               decodeEntities: true,
+              ignoreCustomFragments: [ /<%[\s\S]*?%>/, /<\?[\s\S]*?\?>/, /(\<\<|\>\>)/, /for(?: {0,1})\(.+\)/ ],
               minifyCSS: true,
               minifyJS: true,
               minifyURLs: true,
@@ -272,10 +291,9 @@ const tasks = (function () {
               removeAttributeQuotes: true,
               removeComments: true,
               removeEmptyAttributes: true,
-              removeOptionalTags: true,
+              removeRedundantAttributes: true,
               removeScriptTypeAttributes: true,
               removeStyleLinkTypeAttributes: true,
-              removeTagWhitespace: true,
               sortAttributes: true,
               sortClassName: true,
               trimCustomFragments: true,
@@ -318,8 +336,9 @@ const tasks = (function () {
               proxy: "localhost:2600",
               // Watcher
               files: [
-                files.root.public,
-                `${files.root.private}/php/**/*`
+                `${files.root.public}/**/*`,
+                `${files.root.private}/php/scripts/**/*`,
+                `${files.root.private}/php/html/.min/includes/**/*`
               ],
               // Preferences
               open: "local",
@@ -350,9 +369,10 @@ const tasks = (function () {
                 logEvent(`${info.icon} "${path.replace(new RegExp('\\\\', 'g'), '/')}" ${info.name}`);
                 return Promise.resolve(true);
               });
-    
+
             // CSS
-            gulp.watch(files.css.sass.glob, exports.css);
+            gulp.watch([ files.css.sass.glob, `!${files.css.sass.partialsGlob}` ], exports.css);
+            gulp.watch(files.css.sass.partialsGlob, tasks.css.mainTaskAllFiles);
             sync.addWatcher(files.css.sass.glob, [files.css.css.files, files.css.min], 'delete');
     
             // JS
@@ -372,15 +392,32 @@ const tasks = (function () {
             Promise.resolve(true);
           }
         };
+        tasks.startup.mainTask = gulp.series(
+          gulp.parallel(
+            tasks.startup.startBrowsersync,
+            tasks.startup.registerWatchers
+          ),
+          tasks.startup.log
+        );
         
         /** Run all of the startup micro tasks */
-        tasks.startup.mainTask = gulp.series(
-                                   gulp.parallel(
-                                     tasks.startup.startBrowsersync,
-                                     tasks.startup.registerWatchers
-                                   ),
-                                   tasks.startup.log
-                                 );
+        tasks.startup.startProcess = async () => {
+          var process;
+
+          function spawnChild (e) {
+            if (process) {
+              process.kill();
+            }
+
+            process = plugins.spawn('gulp', ['main'], { stdio: 'inherit', shell: true });
+            e();
+            // return process;
+          }
+
+          gulp.watch(`${files.root.rootdir}gulpfile.js`, spawnChild);
+          spawnChild(() => {});
+          Promise.resolve(process);
+        }
       })();
 
   return tasks;
@@ -394,5 +431,6 @@ const tasks = (function () {
     exports[taskName] = task.mainTask;
   }
 
-  exports.default = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask, tasks.startup.mainTask);
+  exports.default = tasks.startup.startProcess;
+  exports.main = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask, tasks.startup.mainTask);
 })();
