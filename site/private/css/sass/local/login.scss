@@ -8,18 +8,20 @@ main {
   @include bgImg;
   @include flexbox($direction: c);
   
-  padding: 32px; 
+  padding: 32px 16px; 
 
   &::before {
-    @include fill(true, tpb(0.5));
+    @include fill(true, tpb(0.65));
   }
 
   form {
-    background-color: adjust-color($site-color-main, $alpha: -0.25);
+    background-color: adjust-color($site-color-main, $alpha: -0.15);
     border-radius: 8px;
     box-shadow: shadow(tpb(0.5));
-    border: bd($theme-main);
-    min-width: 50%;
-    max-width: 32em;
+    // border: bd($theme-main);
+    border: bd(1.5px);
+    @include theme(bc);
+    // min-width: 50%;
+    max-width: 480px;
   }
 }

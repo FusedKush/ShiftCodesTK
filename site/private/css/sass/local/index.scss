@@ -58,7 +58,7 @@ section {
         opacity: 0.75;
       }
     }
-    .action {
+    .actions-container {
       $actionPadding: 12px;
 
       background-color: tpw(0.25);
@@ -176,10 +176,11 @@ section {
   }
   &.faq {
     border-color: $theme-main;
-    @include multiProp(32px, padding-top, padding-bottom);
+    // @include multiProp(32px, padding-top, padding-bottom);
 
     .content-wrapper {
       @include flexbox(none, none, $direction: c);
+      padding: 64px 32px;
     }
     h2.title {
       margin-bottom: 16px;
