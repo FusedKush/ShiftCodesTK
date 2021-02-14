@@ -1,5 +1,7 @@
 <?php
-  include(FORMS_PATH . 'auth/logout.php');
+  use ShiftCodesTK\Users\CurrentUser;
+
+  include(PRIVATE_PATHS['forms'] . 'auth/logout.php');
 
   $response = &$form_authLogout->findReferencedProperty('formSubmit->response');
 
@@ -7,12 +9,10 @@
     $formValidation = $form_authLogout->validateForm();
 
     if ($formValidation) {
-      if (auth_isLoggedIn() && $form_authLogout->findReferencedProperty('formSubmit->parameters->user_id') == auth_user_id()) {
-        auth_logout(true);
-  
-        if (!auth_isLoggedIn()) {
-          return true;
-        }
+      CurrentUser::get_current_user()->logout(true);
+     
+      if (!CurrentUser::is_logged_in()) {
+        return true;
       }
 
       // Logout Error
