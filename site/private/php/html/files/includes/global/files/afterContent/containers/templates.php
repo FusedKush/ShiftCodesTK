@@ -6,7 +6,7 @@
   <!-- Global Templates -->
   <!-- Toasts -->
   <template id="toast_template">
-    <div class="toast" id="toast" role="alert" hidden aria-hidden="true">
+    <div class="toast" id="toast_template" role="alert" hidden aria-hidden="true">
       <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100%" aria-hidden="true">
         <div class="progress"></div>
       </div>
@@ -20,10 +20,10 @@
             <p class="body"></p>
           </div>
         </div>
-        <button class="dedicated styled action dismiss-toast layer-target" aria-controls="toast" aria-label="Dismiss the toast">
+        <button class="dedicated styled action dismiss-toast layer-target" id="toast_template_dismiss_toast" aria-controls="toast_template" aria-label="Dismiss the toast" data-layer-targets="toast_template_dismiss_toast_tooltip">
           <span class="fas fa-times box-icon" aria-hidden="true"></span>
         </button>
-        <div class="layer tooltip">Dismiss the toast</div>
+        <div class="layer tooltip" id="toast_template_dismiss_toast_tooltip" data-layer-target="toast_template_dismiss_toast">Dismiss the toast</div>
         <div class="actions">
         </div>
       </div>
@@ -36,12 +36,15 @@
         <div class="panel">
           <div class="header">
             <strong class="title"></strong>
-            <button class="close modal-toggle bubble-parent" data-modal-toggle="false" title="Close the modal" aria-label="Close the modal">
+            <button class="dismiss modal-toggle bubble-parent" data-modal-toggle="false" title="Dismiss the modal" aria-label="Dismiss the modal">
               <span class="bubble bubble-light"></span>
               <span class="fas fa-times box-icon" aria-hidden="true"></span>
             </button>
           </div>
           <div class="body">
+            <div class="content-container"></div>
+          </div>
+          <div class="footer">
             <div class="content-container"></div>
           </div>
         </div>
@@ -75,24 +78,33 @@
   <template id="pager_template">
     <div class="pager configured">
       <div class="content-wrapper">
-        <button class="styled previous" title="Previous Page" aria-label="Previous Page">
+        <button class="pager-button styled previous layer-target" aria-label="Previous Page">
           <span class="fas fa-chevron-left box-icon"></span>
         </button>
+        <div class="layer tooltip">Previous Page</div>
         <div class="jumps">
           <div class="content-container">
-            <button class="styled jump" title="Jump to Page 1" aria-label="Jump to Page 1">
-            <strong class="box-icon">1</strong>
+            <button class="pager-button styled jump layer-target" id="pager_jump_1" aria-label="Jump to Page 1">
+              <b class="box-icon">1</b>
             </button>
+            <div class="layer tooltip" id="pager_jump_1_tooltip">Jump to Page 1</div>
           </div>
         </div>
-        <button class="styled next" title="Next Page" aria-label="Next Page">
+        <button class="pager-button styled next layer-target" aria-label="Next Page">
           <span class="fas fa-chevron-right box-icon"></span>
         </button>
+        <div class="layer tooltip">Next Page</div>
       </div>
     </div>
   </template>
   <!-- Form Alerts -->
   <template id="form_alert_template">
+  <?= FormCore::ALERT_TEMPLATE; ?>
+  </template>
+  <!-- Form Character Counters -->
+  <template id="form_character_counter_template">
+    <?= FormField::CHARACTER_COUNTER_TEMPLATE; ?>
+  </template>
   <!-- Profile Card -->
   <template id="profile_card_template">
     <?php
