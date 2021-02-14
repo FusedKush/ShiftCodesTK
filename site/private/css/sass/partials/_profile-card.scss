@@ -1,14 +1,14 @@
 .profile-card {
-  $padding: 1em;
-  $margins: 0.75em;
+  $padding: 16px;
+  $margins: 12px;
 
-  background-color: $site-color-light;
+  background-color: $site-color-dark;
   border-color: tpw(0.75);
   border-radius: 8px;
   padding: $padding;
   text-shadow: 2px 2px 4px tpb(0.5);
 
-  &.show-border {
+  &:not(.hide-border) {
     border: bd(2px);
   }
   &::before {
@@ -16,48 +16,54 @@
     box-shadow: inset shadow(tpb(0.5));
   }
   
-  .view {
-    @include flexbox($hAlign: sb, $vAlign: none, $wrap: true);
-    
-    > .section {
-      $widths: (
-        user: 75%,
-        roles: 75%,
-        stats: 75%,
-        actions: 25%
-      );
-  
-      @each $role, $width in $widths {
-        &.#{$role} {
-          flex: 1 1 calc(#{$width} - (#{$margins} * 2));
-          
-          @if $role != roles {
-            margin: $margins;
-          }
-        }
-
-      }
+  .view-toggle {
+    &.change-username, &.role-details, &.stat-privacy {
+      font-size: 1rem;
+      margin-left: auto;
     }
-    form {
-      padding: 8px;
-      font-size: 0.9em;
+    &.change-username {
+      // align-self: flex-start;
+      position: absolute;
+      top: 0;
+      right: #{$margins};
+      transform: translateY(calc(-100% - #{$margins}));
+    }
+  }
+  > .section, .view > .section {
+    $widths: (
+      user: 75%,
+      roles: 75%,
+      stats: 75%,
+      actions: 100%
+    );
+
+    @each $role, $width in $widths {
+      &.#{$role} {
+        flex: 1 1 calc(#{$width} - (#{$margins} * 2));
+        
+        @if $role != roles AND $role != actions {
+          margin: $margins;
+        }
+      }
+
     }
   }
   .user {
     @include flexbox($hAlign: s);
 
     .profile-picture {
+      $profilePictureBorderWidth: 2px;
       $radius: 50%;
   
       @include flexbox();
-      @include multiProp(3em, sizing);
+      @include multiProp(calc(3.5em + #{$profilePictureBorderWidth}), sizing);
       margin-right: $margins * 1.5;
-      background-color: tpw(0.1);
-      border: bd(1.5px);
-      border-color: tpw(0.75);
+      background-color: tpb(0.1);
+      border: bd($profilePictureBorderWidth);
+      border-color: tpw(0.25);
       border-radius: $radius;
       overflow: hidden;
-  
+      
       &::after {
         @include fill(true);
         box-shadow: inset shadow(tpb(0.5));
@@ -68,13 +74,15 @@
         @include multiProp(100%, sizing);
         border-radius: $radius;
         cursor: help;
+        padding: $profilePictureBorderWidth;
       }
       .placeholder {
-        font-size: 1.5em;
+        font-size: 1.25em;
       }
     }
-    .info {
-      cursor: help;
+    > .info {
+      cursor: default;
+
       &:not([data-show-terms="1"]) {
         dt {
           position: absolute;
@@ -85,7 +93,7 @@
     
       .user-name {
         color: #fff;
-        font-size: 1.4em;
+        font-size: 1.35em;
         font-weight: bold;
       }
       .user-id {
@@ -94,97 +102,211 @@
       }
     }
   }
-  .roles {
-    @include flexbox($hAlign: none, $wrap: true);
-    margin: 0.5em;
+  .view {
+    @include flexbox($hAlign: sb, $vAlign: none, $wrap: true);
+    
+    &.edit {
+      margin-top: $margins;
+      @include spacing($margins, $padding);
+      background-color: tpb(0.25);
+      border: bd(1.5px, tpb(0.5));
+      border-radius: 8px;
+    }
 
-    .role {
-      font-size: 0.85em;
-      padding: 0.35em 1.25em;
-      border: bd(1.5px);
-      border-radius: 20px;
-      margin: 0.25em;
-      cursor: help;
-
-      &::before {
-        @include fill(true, #000);
-        box-shadow: 0 0 0.5em;
-        opacity: 0.65;
+    form {
+      padding: $margins;
+      font-size: 0.9em;
+    }
+    .section.roles {
+      @include flexbox($hAlign: none, $wrap: true);
+      margin: calc(#{$margins / 2} + 1.5px);
+      padding-right: calc(#{$margins / 2} - 1.5px);
+  
+      button.role-details {
+        // margin-right: #{$margins / 2};
       }
-
-      @each $role, $color in $roleColors {  
-        @at-root .profile-card.#{$role} {
-          border-color: $color;
-
-          &.show-border {
-            box-shadow: 0 0 1em -4px $color;
-          }
-
-          .profile-picture {
+  
+      // .role {
+      //   font-size: 0.85em;
+      //   padding: 0.35em 1.25em;
+      //   border: bd(1.5px);
+      //   border-radius: 20px;
+      //   margin: 0.25em;
+      //   cursor: help;
+  
+      //   &::before {
+      //     @include fill(true, #000);
+      //     box-shadow: 0 0 0.5em;
+      //     opacity: 0.65;
+      //   }
+  
+      //   @each $role, $color in $roleColors {  
+      //     @at-root .profile-card.#{$role} {
+      //       border-color: $color;
+  
+      //       &.show-border {
+      //         box-shadow: 0 0 1em -4px $color;
+      //       }
+  
+      //       .profile-picture {
+      //         border-color: $color;
+      //       }
+      //       .info .user-name {
+      //         color: $color;
+      //       }
+      //       .stats {
+      //         border-color: $color;
+      //       }
+      //     }
+  
+      //     &.#{$role} {
+      //       @include multiProp($color, color, background-color);
+  
+      //       &::before {
+      //         color: $color;
+      //       }
+      //     }
+      //   }
+  
+      //   > span {
+      //     color: #fff;
+      //   }
+      // } 
+    }
+    .section.roles, .role-details {
+      .role {
+        font-size: 0.85em;
+        padding: 0.35em 1.25em;
+        border: bd(1.5px);
+        border-radius: 20px;
+        margin: 0.25em;
+        cursor: default;
+  
+        &::before {
+          @include fill(true, #000);
+          box-shadow: 0 0 0.5em;
+          opacity: 0.65;
+        }
+  
+        @each $role, $color in $roleColors {  
+          @at-root .profile-card.#{'role-' + $role} {
+            $tintedColor: adjust-color($color, $alpha: -0.25);
+  
             border-color: $color;
+  
+            &.show-border {
+              box-shadow: 0 0 1em -4px $color;
+            }
+  
+            .profile-picture {
+              border-color: $tintedColor;
+            }
+            .info .user-name {
+              color: $color;
+            }
+            .view .section.stats {
+              border-color: $color;
+  
+              .definition {
+                border-color: $tintedColor;
+              }
+            }
           }
-          .info .user-name {
-            color: $color;
-          }
-          .stats {
-            border-color: $color;
+  
+          &.#{$role} {
+            @include multiProp($color, color, background-color);
+  
+            &::before {
+              color: $color;
+            }
           }
         }
-
-        &.#{$role} {
-          @include multiProp($color, color, background-color);
-
-          &::before {
-            color: $color;
-          }
+  
+        > span {
+          color: #fff;
         }
-      }
-
-      > span {
-        color: #fff;
-      }
-    } 
-  }
-  .stats {
-    @include flexbox($hAlign: s, $direction: c);
-    color: tpw(0.75);
-    padding: $padding;
-    border: bd(1.5px);
-    border-color: tpw(0.75);
-    border-radius: 8px;
-    background-color: tpw(0.1);
-    box-shadow: inset shadow(tpb(0.5));
-
-    .definition {
-      @include flexbox($hAlign: s);
-      padding: 2px 0;
-      cursor: help;
-
-      &:not(:last-child) {
-        margin-bottom: $padding;
-      }
+      } 
     }
-    .icon {
-      color: #fff;
-      font-size: 1.1em;
-      border: bd(1.5px, tpw(0.75));
-      padding: 1em;
-      border-radius: 4px;
-      margin-right: 6px;
-    }
-    dt {
-      font-size: 0.85em;
+    .section.stats {
+      $statMargins: 4px;
+  
+      @include flexbox($hAlign: s, $wrap: true);
+      color: tpw(0.75);
+      // padding: $padding;
+      margin: #{$margins - $statMargins};
       
-      &::after {
-        content: ":";
+      .definition {
+        @include flexbox($hAlign: s);
+        flex: 1 1 calc(50% - #{$statMargins * 2});
+        margin: $statMargins;
+        padding: $padding;
+        border: bd(1.5px, tpw(0.5));
+        border-radius: 8px;
+        background-color: tpb(0.25);
+        // box-shadow: inset shadow(tpb(0.5));
+        cursor: default;
+  
+        .icon {
+          color: #fff;
+          font-size: 1.1em;
+          border: bd(1.5px, tpw(0.75));
+          padding: 1em;
+          border-radius: 4px;
+          margin-right: 6px;
+        }
+        dt {
+          display: inline-block;
+          font-size: 0.85em;
+          
+          @include mouseState(hover) {
+            // text-decoration: underline dotted;
+            // cursor: help;
+          }
+          
+          &::after {
+            content: ":";
+          }
+        }
+        dd {
+          color: #fff;
+          font-size: 1.1em;
+        }
+      }
+      button.stat-privacy {
+        position: absolute;
+        top: -34px;
+        right: -8px;
+        // border-radius: 50%;
+        padding: 12px;
+        font-size: 1em;
+  
+        &::after {
+          // border-color: tpb(0.5);
+        }
+  
+        .icon {
+          &[hidden] {
+            display: none;
+          }
+        }
       }
     }
-    dd {
-      color: #fff;
-      font-size: 1em;
+    .section.actions {
+      $actionsPadding: $padding - 4px; // Card Padding - Button Group Margin
+  
+      @include flexbox(none, e);
+      padding: $actionsPadding;
+  
+      button {
+        // margin: 12px;
+        font-size: 0.9em;
+      }
     }
   }
-  .actions {
-    @include flexbox(e, e);
+  
+}
+.modal#profile-card-modal {
+  .panel > .body > .content-container {
+    padding: 0;
   }
 }

@@ -10,6 +10,49 @@ main.content-wrapper {
     background-color: tpb(0.05);
     margin: 32px 0;
 
+    &.account-standing {
+      $reputationColors: (
+        great: lime,
+        moderate: yellow,
+        poor: orange
+      );
+
+      .reputation-bar {
+        @include flexbox();
+        margin: 16px 0;
+
+        .label {
+          font-size: 1.25em;
+        }
+      }
+      p {
+        border: 1.5px solid tpw(0.5);
+        border-radius: 4px;
+        background-color: tpw(0.1);
+        padding: 12px;
+      }
+      
+      @each $reputation, $color in $reputationColors {
+        &[data-reputation="#{$reputation}"] {
+          .progress-bar {
+            margin: 0 12px;
+            
+            .progress {
+              @include multiProp($color, color, background-color);
+            }
+          }
+          p {
+            @if $reputation == poor {
+              border-color: $color;
+            }
+
+            .reputation, strong {
+              color: $color;
+            }
+          }
+        }
+      }
+    }
     &.danger-zone {
       border-color: #c90000;
     }
@@ -17,8 +60,10 @@ main.content-wrapper {
   .profile-card:not(:first-child) {
     margin-top: 16px;
   }
-  .profile-card .view {
-    font-size: 1.15em;
+  .profile-card {
+    .user, .view {
+      // font-size: 1.15em;
+    }
   }
   h3 {
     font-size: 1.35em;
@@ -26,7 +71,11 @@ main.content-wrapper {
     margin-bottom: 8px;
   }
   #update_password_view {
-    @include flexbox(s, sb, $wrap: true);
+    @include flexbox(s, sb, $wrap: true, $type: none);
+
+    &:not([hidden]) {
+      display: flex;
+    }
 
     p {
       opacity: 0.75;
