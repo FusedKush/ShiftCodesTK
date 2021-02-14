@@ -12,6 +12,13 @@ var globalScrollTimer;
 var globalScrollUpdates = 0;
 var hashTargetTimeout;
 var focusLock = {
+  /**
+   * Set the `focusLock` on a number of elements
+   * 
+   * @param {Element|array} elements The *element* (`Element`) or *elements* (`array`) to set the focusLock on. 
+   * - **Note**: *Keyboard Focus Lock* will move focus to the previous or next element depending on the order of the provided elements.
+   * @param {function} callback The callback function to invoke when focusLock has been lost. 
+   */
   set: function (elements, callback) {
     focusLock.active = {};
     focusLock.active.elements = elements;
@@ -31,8 +38,9 @@ var focusLock = {
 
         // Global matches
         arr.push(ShiftCodesTK.toasts.containers.activeToasts);
+        arr.push(ShiftCodesTK.layers.layerContainer);
         // Specified matches
-        if (elms.constructor.name == 'Array') {
+        if (Array.isArray(elms)) {
           for (let match of elms) {
             arr.push(match);
           }
@@ -44,7 +52,7 @@ var focusLock = {
         return arr;
       })();
 
-      if (type == 'click') {
+      if (type == 'mousedown') {
         do {
           for (let match of matches) {
             if (target == match) {
@@ -59,34 +67,73 @@ var focusLock = {
         focusLock.active.callback();
       }
       else if (type == 'keydown') {
-        let fs = (function () {
-          let arr = [];
-
-          if (elms.constructor === Array) {
-            for (let e of elms) {
-              arr = arr.concat(dom.find.children(e, 'group', 'focusables'));
-            }
-          }
-          else {
-            arr = arr.concat(dom.find.children(elms, 'group', 'focusables'));
-          }
-
-          return arr;
-        })();
-
-        let first = fs[0];
-        let last = fs[fs.length - 1];
-
-        if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
-          event.preventDefault();
-
-          if (target == first)     { last.focus(); }
-          else if (target == last) { first.focus(); }
-        }
-        else if (event.key == 'Escape') {
+        function focusLockLost () {
           event.preventDefault();
           focusLock.active.callback();
         }
+        if (event.key == 'Tab') {
+          event.preventDefault();
+          
+          /** Focusable elements */
+          const fs = (function () {
+            let arr = [];
+  
+            if (Array.isArray(elms)) {
+              for (let e of elms) {
+                arr = arr.concat(dom.find.children(e, 'group', 'focusables', true));
+              }
+            }
+            else {
+              arr = arr.concat(dom.find.children(elms, 'group', 'focusables', true));
+            }
+  
+            return arr;
+          })();
+          const cursor = (function () {
+            const cursorPosIndex = fs.indexOf(target);
+
+            if (cursorPosIndex != -1) {
+              let cursor = {
+                previous: cursorPosIndex > 0
+                          ? cursorPosIndex - 1
+                          : fs.length - 1,
+                pos: cursorPosIndex,
+                next: cursorPosIndex < fs.length - 1
+                      ? cursorPosIndex + 1
+                      : 0
+              };
+
+              for (let pos in cursor) {
+                let posIndex = cursor[pos];
+                
+                cursor[pos] = fs[posIndex];
+              }
+              
+              console.info(cursor);
+              return cursor;
+            }
+            else {
+              focusLockLost();
+            }
+          })();
+          
+          if (event.shiftKey) { cursor.previous.focus(); }
+          else                { cursor.next.focus(); }
+        }
+        else if (event.key == 'Escape') {
+          focusLockLost();
+        }
+        // if (event.shiftKey === true && event.key == 'Tab' && target == first || event.shiftKey === false && event.key == 'Tab' && target == last) {
+        //   event.preventDefault();
+          
+        //   console.log(first, target, last);
+        //   if (target == first)     { last.focus(); }
+        //   else if (target == last) { first.focus(); }
+        // }
+        // else if (event.key == 'Escape') {
+        //   event.preventDefault();
+        //   focusLock.active.callback();
+        // }
       }
     }
   },
