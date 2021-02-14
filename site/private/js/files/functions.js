@@ -1,6 +1,14 @@
 var globalFunctionsReady = true; // Load state
 var pbIntervals = {};
 
+/** Reserved HTML Characters and their HTML Entity Equivalents */
+const RESERVED_HTML_CHARACTERS = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;'
+}
+
 // Error Handling
 /**
  * Returns an error determined by the value of behavior
@@ -1248,17 +1256,40 @@ function updateProgressBar (progressBar = null, value = 100, options = {}) {
     throw error;
   }
 }
+// String Manipulation
 /**
- * Create an HTMLElement from an HTML string
+ * Encodes an html string by converting reserved HTML Characters into their HTML Entity Equivalents.
  * 
- * @param {string} html A string of html to build the element from
- * @return {object} Returns an HTMLElement interface to manipulate
+ * @param {string} html The HTML String to encode.
+ * @returns {string} Returns the encoded HTML string.
  */
-function createElementFromHTML (html) {
-  let div = document.createElement('div');
-      div.innerHTML = html;
+function encodeReservedHTML (html) {
+  let encoded = html;
 
-  return div.firstChild;
+  for (let character in RESERVED_HTML_CHARACTERS) {
+    let entity = RESERVED_HTML_CHARACTERS[character];
+
+    encoded = encoded.replace(new RegExp(character, 'g'), entity);
+  }
+
+  return encoded;
+}
+/**
+ * Decodes an html string by converting reserved HTML Characters from their HTML Entity Equivalents.
+ * 
+ * @param {string} html The HTML String to decode.
+ * @returns {string} Returns the decoded HTML string.
+ */
+function decodeReservedHTML (html) {
+  let decoded = html;
+
+  for (let character in RESERVED_HTML_CHARACTERS) {
+    let entity = RESERVED_HTML_CHARACTERS[character];
+
+    decoded = decoded.replace(new RegExp(entity, 'g'), character);
+  }
+
+  return decoded;
 }
 function deleteElement (elm) {
   if (elm) {
