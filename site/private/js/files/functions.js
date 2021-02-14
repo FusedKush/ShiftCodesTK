@@ -187,6 +187,36 @@ function tryJSONParse (string = null, behavior = 'silent') {
     return tryError(error, behavior);
   }
 }
+/**
+ * Add a callback function to be invoked when the DOM or Page has finished loading.
+ * - If the page has already finished loading, `callback` will immediately be invoked.
+ * 
+ * @param {Function} callback The function to be invoked once the DOM or Page has finished loading.
+ * @param {"dom"|"page"} type Indicates the `Event Listener` type to use for the hook:
+ * - **dom** - Uses the `DOMContentLoaded` event, fired once the *DOM* has finished loading. This is the default value.
+ * - **page** - Uses the `load` event, fired once the *page* has finished loading.
+ * @returns {boolean} Returns **true** if the hook was added or the callback function was invoked. Returns **false** if an error occurred.
+ */
+function addPageLoadHook (callback, type = 'dom') {
+  if (document.readyState == 'loading') {
+    if (type == 'dom') {
+      document.addEventListener('DOMContentLoaded', callback);
+    }
+    else if (type == 'page') {
+      window.addEventListener('load', callback);
+    }
+    else {
+      console.error(`addPageLoadHookError: "${type}" is not a valid type for the second argument.`);
+      return false;
+    }
+
+    return true;
+  }
+  else {
+    callback();
+    return true;
+  }
+}
 
 // Scripting
 /**
