@@ -1,0 +1,10 @@
+New SHiFT Codes for ${game}! 
+Expires: ${expiration}
+Reward: ${reward}
+Source: ${source}
+
+${redemption_info}
+
+${notes}
+
+For more SHiFT Codes, visit ${share_link}

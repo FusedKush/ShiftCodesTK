@@ -2,7 +2,7 @@
   // require_once('../../../initialize.php');
 
   $response = new ResponseObject();
-  $oldToken = $_GET['_token'];
+  $oldToken = TOKEN_HEADER;
   $currentToken = $_SESSION['token'];
   $responseToken = '';
 

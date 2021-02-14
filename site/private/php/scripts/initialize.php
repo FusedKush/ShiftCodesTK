@@ -44,11 +44,11 @@
     $paths = [];
 
     $paths['root'] = dirname($_SERVER["DOCUMENT_ROOT"]) . '/private/';
+    $paths['resources'] = $paths['root'] . 'resources/';
     $paths['php'] = $paths['root'] . 'php/';
     $paths['scripts'] = $paths['php'] . 'scripts/';
     $paths['classes'] = $paths['scripts'] . 'classes/';
     $paths['modules'] = $paths['scripts'] . 'modules/';
-    $paths['resources'] = $paths['scripts'] . 'resources/';
     $paths['script_includes'] = $paths['scripts'] . 'includes/';
     $paths['requests'] = $paths['scripts'] . 'requests/';
     $paths['forms'] = $paths['scripts'] . 'forms/';
@@ -82,11 +82,11 @@
      * | Key | Path | Description |
      * | --- | --- | -- |
      * | *root* | `/private/` | The root private directory where all private resources are stored. |
+     * | *resources* | `/private/resources/` | The private Resources directory where backend resources are stored. |
      * | *php* | `/private/php/` | The main private PHP directory where all PHP resources are stored. |
      * | *modules* | `/private/php/modules/` | The private PHP Scripts directory where all ShiftCodesTK modules are stored. |
      * | *scripts* | `/private/php/scripts/` | The private PHP Scripts directory where all PHP scripts are stored. |
      * | *classes* | `/private/php/scripts/classes/` | The private PHP Ccripts directory where all PHP Class Definitions are stored. |
-     * | *resources* | `/private/php/scripts/resources/` | The private PHP Script Resources directory where PHP script assets are stored. |
      * | *script_includes* | `/private/php/scripts/includes/` | The private PHP Script Includes directory where PHP script snippets are stored. |
      * | *requests* | `/private/php/scripts/requests/` | The private PHP Requests directory where PHP request scripts are stored. |
      * | *forms* | `/private/php/scripts/forms/` | The private PHP Forms directory where PHP form configurations are stored. |

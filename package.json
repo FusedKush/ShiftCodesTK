@@ -1,6 +1,6 @@
 {
   "name": "shiftcodestk",
-  "version": "1.5.0-alpha",
+  "version": "1.5.0",
   "description": "ShiftCodesTK Website",
   "main": "gulpfile.js",
   "dependencies": {

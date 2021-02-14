@@ -4,6 +4,10 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.php -f
 RewriteRule ^(.*)$ $1.php [NC,L]
 
+<Files "initialize.php">
+  Require all denied
+</Files>
+
 ErrorDocument 400 /error-document.php?code=400
 ErrorDocument 401 /error-document.php?code=401
 ErrorDocument 403 /error-document.php?code=403
