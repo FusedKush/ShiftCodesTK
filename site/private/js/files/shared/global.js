@@ -978,13 +978,32 @@ function execGlobalScripts () {
         }
       }
     });
+    // Button Aliases
+    window.addEventListener('click', (event) => {
+      const element = dom.has(event.target, 'attr', 'data-alias', null, true);
 
-      window.addEventListener('mousemove', function (event) {
-        ShiftCodesTK.cursor = {
-          x: event.clientX,
-          y: event.clientY,
-          target: event.target
+      if (element) {
+        const alias = dom.get(element, 'attr', 'data-alias');
+        const aliasTarget = dom.find.id(alias);
+
+        if (aliasTarget) {
+          if (aliasTarget.click !== undefined) {
+            aliasTarget.click();
+            return true;
+          }
+          else if (aliasTarget.focus !== undefined) {
+            aliasTarget.focus();
+            return true;
+          }
+          else {
+            console.warn(`Button Alias "${alias}" could not be aliased.`);
+            return false;
+          }
         }
+
+        console.warn(`Button Alias "${alias}" was not found.`);
+        return false;
+      }
       });
     })();
   }
