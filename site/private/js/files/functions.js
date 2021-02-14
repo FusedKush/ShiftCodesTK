@@ -151,7 +151,37 @@ function tryJSONParse (string = null, behavior = 'silent') {
     })();
 
   try {
-    return JSON.parse(string);
+    let skipAttempts = 0;
+    let trimmedString = '';
+    let parsedString = string;
+    let parsedJSON = false;
+
+    if (parsedString == '') {
+      parsedString = '{}';
+    }
+
+    while (parsedJSON === false) {
+      try {
+        parsedJSON = JSON.parse(parsedString);
+      }
+      catch (error) {
+        let bracketPos = parsedString.indexOf('{');
+      
+        trimmedString = parsedString.slice(0, bracketPos);
+        parsedString = parsedString.slice(bracketPos);
+        skipAttempts++;
+      }
+
+      if (skipAttempts == 10) {
+        throw error;
+      }
+    }
+
+    if (skipAttempts > 0) {
+      console.warn(`tryJSONParse Warning: Invalid content was found before the JSON Data and has been trimmed.\n\rTrimmed Content: ${trimmedString}\n\rOriginal String: ${string}`);
+    }
+
+    return parsedJSON;
   }
   catch (e) {
     return tryError(error, behavior);
@@ -379,218 +409,362 @@ function newAjaxRequest (requestProperties) {
     }
   })();
 }
-// Date & Time
+// Global Helper Functions
 /**
- * Format a Date-Time string
- *
- * @param {'year'|'month'|'monthN'|'monthL'|'date'|'day'|'dayN'|'dayL'|'hour12'|'hour24'|'minute'|'second'|'ampm'|'js'|'iso'|'tmp-full'|'tmp-date'|'tmp-time12'|'tmp-time24'|'string'} [format='y-m-d'] How to format the string. Can be a string using valid keywords, or a template keyword.
- * @param {string|boolean} [useDate=false] Set a custom date and time. A timestamp or valid datetime string, or false to use the current date. 
- * @param {string} [utc='check'] Treat the passed datetime as UTC
- * @returns {string} Returns the formatted datetime string, or false if useDate is invalid
+ * A group of properties and methods for Global Helper Function Stat Collection
  */
-function datetime (format = 'year-month-date', useDate = 'now', utc = false) {
-  let base = (function () {
-    if (useDate == 'now') {
-      return new Date();
-    }
-    else if (typeof useDate == 'Object' && useDate.constructor.name == 'Date') {
-      return useDate;
-    }
-    else {
-      let d = new Date(useDate);
-
-      if (useDate && d != 'Invalid Date') {
-        return d;
+const globalFuncStats = {
+  /**
+   * Record a helper function call
+   * 
+ *
+   * 
+   * @param {string} funcName The name of the function.
+   * @param {undefined|boolean} funcResult Indicates the result of the function execution. 
+   * - **True** indicates that the function executed successfully, without errors.
+   * - **False** indicates that the function executed unsuccessfully due to errors.
+   * - Omitting this argument will record the function call itself, but not the result. 
+   * @param {*} funcReturnValue The return value *type* of the function, if applicable.
+   */
+  record (funcName, funcResult, funcReturnValue) { 
+    if (this.statCollectionEnabled) {
+      if (typeof funcResult == 'undefined') {
+        if (this.functionData.uses[funcName] === undefined) {
+          this.functionData.uses[funcName] = 0;
+        }
+  
+        this.total++;
+        this.functionData.uses[funcName]++;
       }
       else {
-        return false;
-      }
-    }
-  })();
-
-  if (base !== false) {
-    function addLeading (val) {
-      return `0${val}`.slice(-2);
-    }
-    function replaceDate (match) {
-      let str = date[match];
-
-      if (str !== false) { return str; }
-      else               { return match; }
-    }
-
-    let vals = (function () {
-      if (utc == 'check') {
-        let str = base.toUTCString();
-          // Not Now || Time is Specified                   && Time is not default
-        if (!useDate || str.search('(\\d{2}\\:)') != -1 && str.search('00:00:00') == -1) {
-          utc = false;
+        if (funcResult) {
+          const returnValues = this.functionData.returnValues;
+          const returnValueType = (function () {
+            if (funcReturnValue === false || funcReturnValue === true) {
+              return funcReturnValue;
+            }
+            else if (Array.isArray(funcReturnValue)) {
+              return 'array';
+            }
+            else {
+              return typeof funcReturnValue;
+            }
+          })();
+    
+          if (returnValues[returnValueType] === undefined) {
+            returnValues[returnValueType] = {
+              TOTAL: 0
+            };
+          }
+          if (returnValues[returnValueType][funcName] === undefined) {
+            returnValues[returnValueType][funcName] = 0;
+          }
+    
+          returnValues[returnValueType].TOTAL++;
+          returnValues[returnValueType][funcName]++
+          this.success++;
         }
         else {
-          utc = true;
+          this.errors++;
         }
       }
-
-      if (utc) {
-        return {
-          year: base.getUTCFullYear(),
-          month: base.getUTCMonth(),
-          date: base.getUTCDate(),
-          day: base.getUTCDay(),
-          hour: base.getUTCHours(),
-          minute: base.getUTCMinutes(),
-          second: base.getUTCSeconds()
-        };
-      }
-      else {
-        return {
-          year: base.getFullYear(),
-          month: base.getMonth(),
-          date: base.getDate(),
-          day: base.getDay(),
-          hour: base.getHours(),
-          minute: base.getMinutes(),
-          second: base.getSeconds()
-        };
-      }
-    })();
-    let templates = {
-      'tmp-full': 'monthN date, year hour12:minute ampm',
-      'tmp-date': 'month/date/year',
-      'tmp-time12': 'hour12:minute ampm',
-      'tmp-time24': 'hour24:minute'
     }
-    let def = {
-      // String definitions
-      days: {
-        0: 'Sunday',
-        1: 'Monday',
-        2: 'Tuesday',
-        3: 'Wednesday',
-        4: 'Thursday',
-        5: 'Friday',
-        6: 'Saturday'
-      },
-      months: {
-        0: 'January',
-        1: 'Feburary',
-        2: 'March',
-        3: 'April',
-        4: 'May',
-        5: 'June',
-        6: 'July',
-        7: 'August',
-        8: 'September',
-        9: 'October',
-        10: 'November',
-        11: 'December'
+  },
+  updateModal () {
+    if (this.statCollectionEnabled) {
+      const currentStats = Object.assign({}, globalFuncStats);
+
+      function getCounter (counter, newCount, ignoredTypes = '') {
+        let oldValue = (function () {
+          let oldValue = counter.innerHTML;
+
+          oldValue = (function () {
+            let regex = new RegExp('^<span class="value">([\\d,]+)</span>');
+            let matches = oldValue.match(regex);
+
+            if (matches) {
+              return matches[1];
+            }
+
+            return "0";
+          })();
+          // oldValue = oldValue.match(new RegExp('^<span class="value">([\\d,]+)</span>'))[1];
+          oldValue = oldValue.replace(/,/g, '');
+          oldValue = tryParseInt(oldValue);
+
+          return oldValue;
+        })();
+        let newValue = newCount.toLocaleString();
+        let counterStr = '';
+        
+        counterStr += `<span class="value">${newValue}</span>`;
+        
+        if (ignoredTypes.indexOf('percentage') == -1) {
+          let percentage = ((newCount / currentStats.total) * 100).toFixed(2);
+          counterStr += `<span class="percentage">${percentage}%</span>`;
+        }
+        if (ignoredTypes.indexOf('speed') == -1) {
+          let speed = Math.round((newCount - oldValue) / 5);
+          counterStr += `<span class="speed">${speed} / sec</span>`;
+        }
+
+        return counterStr;
       }
+  
+      edit.class(globalFuncStats.modal, 'add', 'updating-stats');
+  
+      setTimeout(() => {
+        // Totals
+        (function () {
+          const section = dom.find.child(globalFuncStats.modal, 'class', 'section totals');
+          const totals = [ 'total', 'success', 'errors' ];
+    
+          for (let count of totals) {
+            let field = dom.find.child(section, 'class', count);
+            let fieldValue = dom.find.child(field, 'tag', 'dd');
+            // let oldValue = tryParseInt(fieldValue.innerHTML.replace(/(^\d+) .+$/, '$1'));
+    
+            // fieldValue.innerHTML = currentStats[count];
+            // fieldValue.innerHTML += `<br>(${Math.round(currentStats[count] - oldValue) / 5} /sec)`;
+            fieldValue.innerHTML = getCounter(fieldValue, currentStats[count], 'percentage');
+  
+            // if (count != 'total') {
+            //   // updateCounter(fieldValue, currentStats[count]);
+            //   fieldValue.innerHTML += ` (${((currentStats[count] / currentStats.total) * 100).toFixed(2)}%)`;
+            // }
+          }
+        })();
+        // Function Calls
+        (function () {
+          const section = dom.find.child(globalFuncStats.modal, 'class', 'section calls');
+          const wrapper = section.childNodes[0];
+          const uses = (function () {
+            const uses = currentStats.functionData.uses;
+            let sortedUses = [];
+    
+            for (let funcName in uses) {
+              sortedUses.push([funcName, uses[funcName]]);
+            }
+    
+            sortedUses.sort((a, b) => {
+              return b[1] - a[1];
+            });
+    
+            return sortedUses;
+          })();
+
+          if (uses.length > 0) {
+            for (let useIndex in uses) {
+              let use = uses[useIndex];
+              let funcName = use[0];
+              let useCount = use[1];
+              let log = (function () {
+                const existingEntry = wrapper.childNodes[(tryParseInt(useIndex) + 1)];
+
+                if (existingEntry && dom.has(existingEntry, 'tag', 'dl')) {
+                  return existingEntry;
+                }
+                else {
+                  let dl = document.createElement('dl');  
+                  const dt = document.createElement('dt'); 
+                  const dd = document.createElement('dd'); 
+
+                  dd.innerHTML = `<span class="value">0</span>
+                                  <span class="percentage">0.00%</span>
+                                  <span class="speed">0 / sec</span>`;
+
+                  dl.appendChild(dt);
+                  dl.appendChild(dd);
+                  dl = wrapper.appendChild(dl);
+
+                  if (useIndex == 0) {
+                    const placeholder = dom.find.child(section, 'class', 'placeholder');
+
+                    if (placeholder) {
+                      deleteElement(placeholder);
+                    }
+                  }
+    
+                  return dl;
+                }
+              })();
+    
+              dom.find.child(log, 'tag', 'dt').innerHTML = funcName.replace(/^([a-z]+)/, "<code>$1</code>");
+              (function () {
+                const dd = dom.find.child(log, 'tag', 'dd');
+    
+                dd.innerHTML = getCounter(dd, useCount);
+                // dd.innerHTML = `<span>${useCount.toLocaleString()}</span> <span>${((useCount / currentStats.total) * 100).toFixed(2)}%</span>`;
+              })();
+            }
+          }
+        })();
+        // Return Values
+        (function () {
+          const section = dom.find.child(globalFuncStats.modal, 'class', 'section returns');
+          const wrapper = section.childNodes[0];
+          const returnValues = (function () {
+            const values = currentStats.functionData.returnValues;
+            let sortedValues = [];
+    
+            for (let valueType in values) {
+              sortedValues.push([valueType, values[valueType].TOTAL, values[valueType]]);
+            }
+    
+            sortedValues.sort((a, b) => {
+              return b[1] - a[1];
+            });
+    
+            return sortedValues;
+          })();
+
+          if (returnValues.length > 0) {
+            if (wrapper.childNodes[0] && dom.has(wrapper.childNodes[0], 'class', 'placeholder')) {
+              deleteElement(wrapper.childNodes[0]);
+            }
+    
+            for (let returnValueIndex in returnValues) {
+              let returnValue = returnValues[returnValueIndex];
+              let returnValueType = returnValue[0];
+              let totalOccurrences = returnValue[1];
+              let funcOccurrences = returnValue[2];
+              let log = (function () {
+                const existingEntry = wrapper.childNodes[(tryParseInt(returnValueIndex) + 1)];
+    
+                if (existingEntry && dom.has(existingEntry, 'tag', 'dl')) {
+                  return existingEntry;
+                }
+                else {
+                  let dl = document.createElement('dl');  
+                  const dt = document.createElement('dt'); 
+                  const dd = document.createElement('dd'); 
+    
+                  dd.innerHTML = `<span class="value">0</span>
+                                  <span class="percentage">0.00%</span>
+                                  <span class="speed">0 / sec</span>`;
+
+                  dl.appendChild(dt);
+                  dl.appendChild(dd);
+    
+                  dl = wrapper.appendChild(dl);
+
+                  if (returnValueIndex == 0) {
+                    const placeholder = dom.find.child(section, 'class', 'placeholder');
+
+                    if (placeholder) {
+                      deleteElement(placeholder);
+                    }
+                  }
+    
+                  return dl;
+                }
+              })();
+    
+              dom.find.child(log, 'tag', 'dt').innerHTML = returnValueType;
+
+              (function () {
+                const dd = dom.find.child(log, 'tag', 'dd');
+    
+                // dd.innerHTML = `<span>${totalOccurrences}</span>`;
+                dd.innerHTML = getCounter(dd, totalOccurrences, 'speed');
+                // dd.innerHTML = `<span>${totalOccurrences.toLocaleString()}</span> <span>${((totalOccurrences / currentStats.total) * 100).toFixed(2)}%</span>`;
+                
+                (function () {
+                  const funcOccurrenceList = (function () {
+                    let list = [];
+
+                    for (let funcName in funcOccurrences) {
+                      list.push([funcName, funcOccurrences[funcName]]);
+                    }
+
+                    list.sort((a, b) => {
+                      return b[1] - a[1];
+                    });
+
+                    return list;
+                  })();
+                  let funcStats = '';
+
+                  funcStats += '<div class="function-stats">';
+
+                  for (let funcOccurrence of funcOccurrenceList) {
+                    let funcName = funcOccurrence[0];
+                    let funcOccurrenceCount = funcOccurrence[1];
+
+                    if (funcName == 'TOTAL') {
+                      continue;
+                    }
+
+                    funcStats += `<dl>
+                                    <dt>${funcName.replace(/^([a-z]+)/, "<code>$1</code>")}<dt>
+                                    <dd>${getCounter(dd, funcOccurrenceCount, 'speed, percentage')}</dd>
+                                  </dl>`;
+                    // dd.innerHTML += `<dl><dt>${funcName.replace(new RegExp('^(dom|edit)'), "<code>$1</code>")}</dt><dd>${funcOccurrences[funcName].toLocaleString()}</dd></dl>`;
+                  }
+
+                  funcStats += '</div>';
+
+                  dd.innerHTML += funcStats;
+                })();
+              })();
+            }
+          }
+        })();
+  
+        edit.class(globalFuncStats.modal, 'remove', 'updating-stats');
+      }, 50);
+    }
+  },
+};
+(function () {
+  /** Indicates if stat collection is enabled or disabled. */
+  Object.defineProperty(globalFuncStats, 'statCollectionEnabled', {
+    writable: false,
+    value: getQueryParameters().show_global_function_stats !== undefined
+  });
+
+  if (globalFuncStats.statCollectionEnabled) {
+    /** The total number of attempted function calls */
+    globalFuncStats.total = 0;
+    /** The number of *successful* function calls */
+    globalFuncStats.success = 0;
+    /** The number of *errored* function calls */
+    globalFuncStats.errors = 0;
+    /** Function call data and information */
+    globalFuncStats.functionData = {
+      uses: {},
+      returnValues: {}
     };
-    let date = {
-      year: vals.year,
-      month: addLeading(vals.month + 1),
-      monthN: def.months[vals.month].slice(0, 3),
-      monthL: def.months[vals.month],
-      date: addLeading(vals.date),
-      day: vals.day,
-      dayN: def.days[vals.day].slice(0, 3),
-      dayL: def.days[vals.day],
-      hour12: (function () {
-        let h = vals.hour;
+    globalFuncStats.modalUpdateInterval = 0;
+    
+    (function () {
+      const interval = setInterval(() => {
+        if (typeof ShiftCodesTK != 'undefined' && typeof ShiftCodesTK.modals != 'undefined') {
+          clearInterval(interval);
 
-        if (h > 1 && h <= 12) { return h; }
-        else if (h > 12)      { return h - 12; }
-        else                  { return 12; }
-      })(),
-      hour24: addLeading(vals.hour),
-      minute: addLeading(vals.minute),
-      second: addLeading(vals.second),
-      ampm: (function () {
-        let h = vals.hour;
-
-        if (h <= 12) { return 'AM'; }
-        else         { return 'PM'; }
-      })(),
-      js: base, // JS Date Object
-      iso: base.toISOString() // ISO 8601 String
-    }
-    let regex = new RegExp(`(\\w+)`, 'g');
-
-    if (templates[format]) {
-      return datetime(templates[format], useDate);
-    }
-    else if (format == 'js') {
-      return date.js;
-    }
-    else {
-      return format.replace(regex, replaceDate);
-    }
-  }
-  else {
-    return false;
-  }
-}
-
-/**
- * Get the number of days between two dates
- *
- * @param {string} date The date to be compared. A timestamp or valid datetime string.
- * @param {string|boolean} [start=false] The date to be compared to. A timestamp or valid datetime string, or false to use the current date. 
- * @returns {number} Returns the number of days between the two dates.
- */
-function dateDif (date, start = 'now') {
-  let dates = {};
-  let args = {
-    'date': date,
-    'start': start
-  };
-  let names = Object.keys(args);
-
-  for (let i = 0; i < names.length; i++) {
-    let name = names[i];
-    let arg = args[name];
-    let d = datetime('js', arg);
-
-    dates[name] = Date.UTC(d.getFullYear(), d.getMonth(), d.getDate());
-  }
-
-  let dif = Math.abs(dates.start - dates.date);
-
-  return Math.ceil(dif / (1000 * 3600 * 24));
-}
-
-/**
- * Returns a date-relative string depending on the amount of days between two dates
- *
- * @param {string} date The date to be compared. A timestamp or valid datetime string.
- * @param {string|boolean} [start=false] The date to be compared to. A timestamp or valid datetime string, or false to use the current date. 
- * @returns {string|boolean} 'Yesterday', 'Today', 'Tomorrow', or a day of the week if the date difference is seven or less range. Otherwise, returns false
- */
-function dateRel (date, start = 'now') {
-  let dates = {
-    date: datetime('tmp-date', date),
-    start: datetime('tmp-date', start)
-  };
-  let dif = dateDif(dates.date, dates.start);
-  if (dif == 0)                   { return 'Today'; }
-  else if (dif == 1) {
-    if (dates.start > dates.date) { return 'Yesterday'; }
-    else                          { return 'Tomorrow'; }
-  }
-  else if (dif < 7 && dif > -7)   {
-    let prefix = (function () {
-      if (dates.start > dates.date) { return 'Last'; }
-      else                          { return 'Next'; }
+          /** The Stat Modal */
+          globalFuncStats.modal = dom.find.id('global_function_stats_modal');
+          // Setup Modal
+          globalFuncStats.modal = ShiftCodesTK.modals.setupModal(globalFuncStats.modal);
+          // Modal Listeners
+          ShiftCodesTK.modals.registerCallback('global_function_stats_modal', 'on_open', (modal) => {
+            globalFuncStats.updateModal();
+            globalFuncStats.modalUpdateInterval = setInterval(() => {
+              globalFuncStats.updateModal();
+            }, 5000);
+          });
+          ShiftCodesTK.modals.registerCallback('global_function_stats_modal', 'on_close_any', (modal) => {
+            clearInterval(globalFuncStats.modalUpdateInterval);
+          });
+        }
+      }, 250);
     })();
-
-    return prefix + ' ' + datetime('dayL', date);
   }
-  else                            { return false; }
-}
+})();
 /**
- * A group of functions related to finding and accessing elements
+ * A group of methods related to finding and accessing elements
  */
-var dom = {
+const dom = {
   /**
    * Parameter validation for the DOM functions
    *
@@ -608,9 +782,16 @@ var dom = {
       validTypes.indexOf(type) != -1,
       typeof name == 'string' || typeof name == 'number'
     ];
+    const stats = this.stats;
+
+    globalFuncStats.record(func);
 
     if (checks.indexOf(false) == -1) {
-      return callback();
+      const callbackResult = callback();
+
+      globalFuncStats.record(func, true, callbackResult);
+
+      return callbackResult;
     }
     else {
       try {
@@ -625,9 +806,10 @@ var dom = {
           error.message = `Argument 2 ${error.message} type: ${type}`;
         }
         else if (!checks[2]) {
-          error.message = `Argument 3 ${error.message} class, tag, or attribute: ${attr}`;
+          error.message = `Argument 3 ${error.message} class, tag, or attribute: ${name}`;
         }
 
+        globalFuncStats.record(func, false);
         throw error;
       }
       catch (error) {
@@ -652,7 +834,7 @@ var dom = {
       'tag': elm.tagName  
              ? elm.tagName.toLowerCase()  
              : false,
-      'attr': elm.getAttribute && elm.getAttribute(name)
+      'attr': elm.getAttribute !== undefined && elm.getAttribute(name) !== null
               ? elm.getAttribute(name)     
               : false
     };
@@ -666,18 +848,34 @@ var dom = {
    * 
    * @param {Element} elm The element to be accessed.
    * @param {"class"|"tag"|"attr"} type The type of property to retrieve.
-   * @param {string} name The *class*, *tagname*, or *attribute* to check for.
+   * @param {string} name The *class*, *tagname*, or *attribute* to check for. If `type` is set to **"class"**, a list of classes can be checked for by separating them with a space.
    * @param {string} value If `type` is set to **attr**, this is the value the attribute must be set to. Otherwise, this parameter has no effect.
-   * @returns {boolean} Returns **true** if the element has the provided *class*, *tagname*, or *attribute*. Otherwise, returns **false**.
+   * @param {boolean} checkParent Indicates if the parent(s) of the element should be searched if the element does not possess the provided *class*, *tagname*, or *attribute*.
+   * @returns {HTMLElement|boolean} Returns a different set of values depending on the value of `checkParent`:
+   * - If `checkParent` is **false**: Returns **true** if the element has the provided *class*, *tagname*, or *attribute*. Otherwise, returns **false**.
+   * - If `checkParent` is **true**: Returns the *matching element or parent* if either has the provided *class*, *tagname*, or *attribute*. Otherwise, returns **false**.
    */
-  has: function (elm, type, name, value = null) {
+  has: function (elm, type, name, value = null, checkParent = false) {
     let types = {
       'class': function () {
         let classList = dom.get(elm, 'class');
+        let requiredClasses = name.split(' ');
 
-        return classList
-               ? classList.contains(name)
-               : false;
+        checkRequiredClass: for (let requiredClassIndex = 0; requiredClassIndex < requiredClasses.length; requiredClassIndex++) {
+          let requiredClassName = requiredClasses[requiredClassIndex];
+
+          for (let classListIndex = 0; classListIndex < classList.length; classListIndex++) {
+            let classListName = classList[classListIndex];
+
+            if (classListName == requiredClassName) {
+              continue checkRequiredClass;
+            }
+          }
+
+          return false;
+        }
+
+        return true;
       },
       'tag': function () {
         return dom.get(elm, 'tag') == name;
@@ -693,7 +891,25 @@ var dom = {
     };
 
     return dom.try('domHas', elm, type, name, function () {
-      return types[type]();
+      const result = types[type]();
+
+      if (!checkParent) {
+        return result;
+      }
+      else {
+        if (result) {
+          return elm;
+        }
+        else {
+          const parentResult = dom.find.parent(elm, type, name, value);
+  
+          if (parentResult) {
+            return parentResult;
+          }
+        }
+        
+        return false;
+      }
     });
   }, 
   /** 
@@ -706,11 +922,16 @@ var dom = {
      * @param {Element} elm The element acting as the base of the search.
      * @param {"class"|"tag"|"attr"|"group"} type The type of criteria to search by.
      * @param {string|"inputs"|"clickables"|"focusables"} name A *class*, *tagname*, *attribute*, or *group type* to search for.
-     * - **inputs** will match all `input`, `select`, and `textarea` elements.
-     * - **clickables** will match all `a` and `button` elements.
-     * - **focusables** will match all `input`, `select`, `textarea`, `a`, and `button` elements.
-     * @param {string} value If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. If `type` is set to **attr** and this parameter is omitted, all elements with the provided attribute will be matched. Otherwise, this parameter has no effect.
-     * @returns {array|false} On success, returns an array of matches. Returns **false** Returns **false** if no matches were found or if an error occurred.
+     * - If `type` is set to **"class"**, you can specify multiple classes to match as a space-separated list.
+     * - If `type` is set to **"group"**, the following options are available:
+     * - - **inputs** will match all `input`, `select`, and `textarea` elements.
+     * - - **clickables** will match all `a` and `button` elements.
+     * - - **focusables** will match all `input`, `select`, `textarea`, `a`, and `button` elements.
+     * @param {string} value An *attribute value* or *group viability status* to search for:
+     * - If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. 
+     * - If `type` is set to **attr** and this parameter is omitted, all elements with the provided attribute will be matched. 
+     * - If `type` is set to **group**, passing **true** will require elements to be *visible* and *enabled* to be matched.
+     * @returns {array|false} Returns an array of matches. The array will be empty if no results were found. Returns **false** if an error occurred.
      */
     parents: function (elm, type, name, value = null) {
       return dom.try('domFindParents', elm, type, name, function () {
@@ -725,7 +946,15 @@ var dom = {
           if (typeof element.getElementsByTagName == 'undefined') {
             break;
           }
-          else if (type != 'group' & dom.has(element, type, name, value) || type == 'group' && groupTypes[name].indexOf(dom.get(element, 'tag')) != -1) {
+
+          const isMatch = type != 'group' 
+                            && dom.has(element, type, name, value) 
+                          || type == 'group' 
+                            && (groupTypes[name].indexOf(dom.get(element, 'tag')) != -1
+                              && !element.hidden
+                              && !dom.get(element, 'attr', 'disabled'));
+
+          if (isMatch) {
             results.push(element);
           }
           else if (dom.has(element, 'tag', 'body') || dom.has(element, 'tag', 'html')) {
@@ -744,9 +973,11 @@ var dom = {
      * @param {Element} elm The element acting as the base of the search.
      * @param {"class"|"tag"|"attr"|"group"} type The type of criteria to search by.
      * @param {string|"inputs"|"clickables"|"focusables"} name A *class*, *tagname*, *attribute*, or *group type* to search for.
-     * - **inputs** will match any `input`, `select`, or `textarea` element.
-     * - **clickables** will match any `a` or `button` element.
-     * - **focusables** will match any `input`, `select`, `textarea`, `a`, or `button` element.
+     * - If `type` is set to **"class"**, you can specify multiple classes to match as a space-separated list.
+     * - If `type` is set to **"group"**, the following options are available:
+     * - - **inputs** will match any `input`, `select`, or `textarea` element.
+     * - - **clickables** will match any `a` or `button` element.
+     * - - **focusables** will match any `input`, `select`, `textarea`, `a`, or `button` element.
      * @param {string} value If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. If `type` is set to **attr** and this parameter is omitted, any element with the provided attribute will be matched. Otherwise, this parameter has no effect.
      * @returns {Element|false} On success, returns the matched element. Returns **false** if no matches were found or if an error occurred.
      */
@@ -764,11 +995,17 @@ var dom = {
      * @param {Element} elm The element acting as the base of the search.
      * @param {"class"|"tag"|"attr"|"group"} type The type of criteria to search by.
      * @param {string|"inputs"|"clickables"|"focusables"} name A *class*, *tagname*, *attribute*, or *group type* to search for.
-     * - **inputs** will match all `input`, `select`, and `textarea` elements.
-     * - **clickables** will match all `a` and `button` elements.
-     * - **focusables** will match all `input`, `select`, `textarea`, `a`, and `button` elements.
-     * @param {string} value If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. If `type` is set to **attr** and this parameter is omitted, all elements with the provided attribute will be matched. Otherwise, this parameter has no effect.
-     * @returns {array|false} On success, returns an array of matches. Returns **false** if no matches were found or if an error occurred.
+     * - If `type` is set to **"class"**, you can specify multiple classes to match as a space-separated list.
+     * - If `type` is set to **"group"**, the following options are available:
+     * - - **inputs** will match all `input`, `select`, and `textarea` elements.
+     * - - **clickables** will match all `a` and `button` elements.
+     * - - **focusables** will match all `input`, `select`, `textarea`, `a`, and `button` elements.
+     * @param {string} value An *attribute value* or *group viability status* to search for:
+     * - If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. 
+     * - If `type` is set to **attr** and this parameter is omitted, all elements with the provided attribute will be matched. 
+     * - If `type` is set to **group**, passing **true** will require elements to be *visible* and *enabled* to be matched.
+     * - Otherwise, this parameter has no effect.
+     * @returns {array|false} Returns an array of matches. The array will be empty if no results were found. Returns **false** if an error occurred.
      */
     children: function (elm, type, name, value = null) {
       let types = {
@@ -803,7 +1040,9 @@ var dom = {
           if (valid) {
             for (let element of elements) {
               if (valid.indexOf(dom.get(element, 'tag')) != -1) {
-                results.push(element);
+                if (value != true || (!element.hidden && !dom.get(element, 'attr', 'disabled'))) {
+                  results.push(element);
+                }
               }
             }
 
@@ -828,9 +1067,11 @@ var dom = {
      * @param {Element} elm The element acting as the base of the search.
      * @param {"class"|"tag"|"attr"|"group"} type The type of criteria to search by.
      * @param {string|"inputs"|"clickables"|"focusables"} name A *class*, *tagname*, *attribute*, or *group type* to search for.
-     * - **inputs** will match any `input`, `select`, or `textarea` element.
-     * - **clickables** will match any `a` or `button` element.
-     * - **focusables** will match any `input`, `select`, `textarea`, `a`, or `button` element.
+     * - If `type` is set to **"class"**, you can specify multiple classes to match as a space-separated list.
+     * - If `type` is set to **"group"**, the following options are available:
+     * - - **inputs** will match any `input`, `select`, or `textarea` element.
+     * - - **clickables** will match any `a` or `button` element.
+     * - - **focusables** will match any `input`, `select`, `textarea`, `a`, or `button` element.
      * @param {string} value If `type` is set to **attr**, this is the value the attribute must be set to in order to be matched. If `type` is set to **attr** and this parameter is omitted, any element with the provided attribute will be matched. Otherwise, this parameter has no effect.
      * @returns {Element|false} On success, returns the matched element. Returns **false** if no matches were found or if an error occurred.
      */
@@ -856,9 +1097,8 @@ var dom = {
     }
   }
 };
-// Class & Attribute manipulation
 /** Methods for editing HTML Elements */
-var edit = {
+const edit = {
   try: function (options) {
     let defaultOptions = {
       func: '',
@@ -880,10 +1120,18 @@ var edit = {
     ];
 
     try {
+      globalFuncStats.record(o.func);
+
       if (checks.indexOf(false) == -1) {
-        return o.callback();
+        let callbackResult = o.callback();
+
+        globalFuncStats.record(o.func, true, callbackResult);
+
+        return callbackResult;
       }
       else {
+        globalFuncStats.record(o.func, false);
+
         if (!checks[0]) {
           throw `Invalid element: ${o.elm}`;
         }
