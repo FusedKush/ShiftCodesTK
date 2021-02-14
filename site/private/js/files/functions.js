@@ -1188,8 +1188,11 @@ const edit = {
    * Add, Update, or Remove an attribute from a given element
    * 
    * @param {Element} elm The element to be updated.
-   * @param {"add"|"update"|"remove"|"toggle"} type Indicates if the provided attribute is to be *added*, *updated*, or *removed* from the element. The keyword **toggle** is used to toggle the prescence of a particular attribute.
-   * - *Note: **add** and **update** perform the same action, and are available as separate options only for coding clarity.*
+   * @param {"add"|"update"|"remove"|"toggle"|"list"} type Indicates how the element is to be updated.
+   * - **add**, **update**: Add the attribute to the element or update the existing value. (`element.setAttribute()`)
+   * - **remove**: Remove the attribute from the element. (`element.removeAttribute()`)
+   * - **toggle**: Adds or Removes the attribute depending on its current state.
+   * - **list**: Adds, updates, or removes an attribute with a comma-separated list as the value.
    * @param {string} name The name of the attribute to be added or removed. Multiple classes can be added or removed at once by separating them with a *space*. 
    * - *Note: Removing a non-existent attribute **will not** throw an error.*
    * @param {string} val The value of the attribute to be set. This value does not need to be set for boolean attributes, such as *disabled*, and has no effect if `type` is set to **remove**.
@@ -1202,14 +1205,45 @@ const edit = {
       'type': type,
       'name': name,
       'val': val,
-      'validTypes': [ 'add', 'update', 'remove', 'toggle' ],
+      'validTypes': [ 'add', 'update', 'remove', 'toggle', 'list' ],
       'callback': function () {
+        const existingAttr = dom.get(elm, 'attr', name);
+
         if (type == 'toggle') {
-          type = !dom.has(elm, 'attr', name) ? 'add' : 'remove';
+          type = existingAttr === false ? 'add' : 'remove';
         }
 
-        if (type == 'add' | type == 'update') { elm.setAttribute(name, val); }
-        else                                  { elm.removeAttribute(name); }
+        if (type == 'add' || type == 'update') {
+          elm.setAttribute(name, val);
+        }
+        else if (type == 'remove') {
+          elm.removeAttribute(name);
+        }
+        else if (type == 'list') {
+          // Add new attribute
+          if (!existingAttr) {
+            edit.attr(elm, 'add', name, val);
+          }
+          else {
+            // Add new value
+            if (existingAttr.indexOf(val) == -1) {
+              edit.attr(elm, 'update', name, `${existingAttr}, ${val}`);
+            }
+            // Remove value
+            else {
+              const values = existingAttr.split(', ');
+
+              values.splice(values.indexOf(val), 1);
+
+              if (values.length > 0) {
+                edit.attr(elm, 'update', name, values.join(', '));
+              }
+              else {
+                edit.attr(elm, 'remove', name);
+              }
+            }
+          }
+        }
 
         return true;
       }
@@ -1245,6 +1279,8 @@ const edit = {
     });
   }
 };
+
+// Class & Attribute manipulation
 /**
  * Retrieve the value of a HTML meta tag
  * 
@@ -1257,6 +1293,41 @@ function getMetaTag (name) {
   return meta ? meta : false;
 }
 // Element manipulation
+/**
+ * Create an HTMLElement from an HTML string
+ * 
+ * @param {string} html A string of html to build the element from
+ * @return {object} Returns an HTMLElement interface to manipulate
+ */
+function createElementFromHTML (html) {
+  let div = document.createElement('div');
+      div.innerHTML = html;
+
+  return div.firstChild;
+}
+/**
+ * Remove an element from the DOM
+ * 
+ * @param {Element} element The element to be deleted.
+ * @returns {Element|false} Returns the *deleted element* on success, and **false** on failure.
+ */
+function deleteElement (element) {
+  try {
+    if (!element) {
+      throw 'A valid element to delete must be provided.';
+    }
+    else if (!element.parentNode) {
+      throw 'Top-Level Nodes cannot be deleted.';
+    }
+
+    return element.parentNode.removeChild(element);
+  }
+  catch (error) {
+    console.error(`deleteElement Error: ${error}`);
+    return false;
+  }
+}
+
 function setElementState (affectedState, element, state, setTabIndex) {
   let validStates = ['disabled', 'hidden'];
 
