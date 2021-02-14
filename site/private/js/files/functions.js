@@ -2066,3 +2066,16 @@ function updateQueryParameters (params, method = 'replace', allowNullValue = fal
 
   return newParams;
 }
+
+// Regular Expressions
+/**
+ * Escape a string for use in a regular expression
+ * 
+ * @param {string} string The string to escape
+ * @returns {string} Returns the escaped string.
+ */
+function escapeRegExp (string) {
+  const regex = new RegExp('[.*+\\-?^${}()|[\\]\\\\]', 'g');
+
+  return string.replaceAll(regex, '\\$&');
+}
