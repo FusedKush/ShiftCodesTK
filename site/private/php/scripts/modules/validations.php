@@ -81,13 +81,78 @@
 
       return true;
     }
+    /** Check the *Variable Type* of a variable
+     * 
+     * @param mixed $var The variable being tested.
+     * @param string $allowed_types A `string` representing the types the `$var` is permitted to be of. 
+     * - Multiple types can be specified using a pipe (`|`). 
+     * - You can specify the name of a *Class* to test if the `$var` is an instance of the designated class.
+     * @return string|false Returns the *Variable Type* if it matches of the `$allowed_types`, or **false** if the `$var` is not of a permitted type.
+     */
     function check_type ($var = null, string $allowed_types) {
-      $allowedTypes = (function () use ($allowed_types) {
-        $types = [];
+      if (array_search($allowed_types, [ 'mixed', 'any' ]) === false) {
+        $typeChecks = array_merge(
+          array_fill_keys([ 'bool', 'boolean' ], function () use ($var) { 
+            return is_bool($var); 
+          }),
+          array_fill_keys([ 'int', 'integer' ], function () use ($var) { 
+            return is_int($var) || (is_numeric($var) && !Strings\substr_check($var, '.')); 
+          }),
+          array_fill_keys([ 'float', 'double' ], function () use ($var) { 
+            return is_float($var) || (is_numeric($var) && Strings\substr_check($var, '.')); 
+          }),
+          array_fill_keys([ 'function', 'callable' ], function () use ($var) { 
+            return is_callable($var);
+          }),
+          array_fill_keys([ 'null', 'void' ], function () use ($var) { 
+            return is_null($var);
+          }),
+          [
+            'string' => function () use ($var) { 
+              return is_string($var);
+            },
+            'array' => function () use ($var) { 
+              return is_array($var);
+            },
+            'object' => function () use ($var) { 
+              return is_object($var);
+            },
+            'iterable' => function () use ($var) { 
+              return is_iterable($var);
+            },
+            'resource' => function () use ($var) { 
+              return is_resource($var);
+            },
+          ]
+        );
+        $validTypes = explode('|', $allowed_types);
 
-        return $types;
-      })();
-      $varType = gettype($var);
+        foreach ($validTypes as $type) {
+          $typeFunc = $typeChecks[$type] ?? null;
+
+          if (isset($typeFunc)) {
+            if ($typeFunc()) {
+              return $type;
+            }
+          }
+          else {
+            if (class_exists($type)) {
+              if (is_object($var) && is_a($var, $type)) {
+                return true;
+              }
+            }
+            else {
+              trigger_error("\"{$type}\" is not a valid Variable Type or Class Name.");
+              continue;
+            }
+          }
+        }
+
+        return false;
+      }
+      else {
+        return gettype($var);
+      }
     }
     /** Check if a variable matches a set of values
      * 
@@ -432,6 +497,8 @@
    * Check if a parameter is *present* and *not empty*
    * - To be considered *present*, the parameter must not be **null** and it must not be an blank `string` or empty `array`.
    * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_variable()} instead.
+   * 
    * @param mixed $parameter The parameter to be checked.
    * @return boolean Returns **true** if the parameter is considered to be *present*, or **false** if it is not.
    */
@@ -450,6 +517,8 @@
   }
   /**
    * Check if a parameter matches one of the provided values.
+   * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_match()} instead.
    * 
    * @param mixed $parameter The parameter to check. 
    * - If the parameter is an `array`, each value of the provided array must match a value in the `$matches` array.
@@ -525,6 +594,8 @@
   }
   /**
    * Check if a parameter lies within a specified range
+   * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_range()} instead.
    * 
    * @param mixed $parameter The parameter to check. How the parameter is validated is determined by the *type*.
    * @param "string"|"number"|"array"|"date" $type Indicates how the parameter and range options are to be compared.
@@ -609,6 +680,8 @@
   /**
    * Check if a parameter matches a Regular Expression pattern
    * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_pattern()} instead.
+   * 
    * @param string $parameter The parameter to check. 
    * @param string $pattern The Regular Expression pattern to match.
    * @return boolean Returns **true** if the parameter matches the given expression, or **false** if it does not.
@@ -618,6 +691,8 @@
   }
   /**
    * Check if a parameter is a valid date
+   * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_date()} instead.
    * 
    * @param string $parameter The parameter to check.
    * @param array $formats A list of formats that the date must match to be considered valid. 
@@ -650,6 +725,8 @@
   /**
    * Check if a parameter is a valid URL
    * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_url()} instead.
+   * 
    * @param string $parameter The parameter to check.
    * @param "any"|"relative"|"absolute" $type Indicates what type of URL to search for. 
    * - **any** — Matches both *relative* and *absolute URLs*.
@@ -679,6 +756,8 @@
    * Check if a parameter is a valid *Email Address*.
    * > _In general, this validates e-mail addresses against the syntax in RFC 822, with the exceptions that comments and whitespace folding and dotless domain names are not supported._
    * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_email()} instead.
+   * 
    * @param string $parameter The parameter to check.
    * @return bool Returns **true** if the parameter is considered to be a valid *Email Address*, or **false** if it is not.
    */
@@ -689,6 +768,8 @@
   // Bulk Validation
   /**
    * Validation Properties for a parameter. Use `check_parameter()` or `check_parameters()` to validate a parameter using these options.
+   * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\VariableEvaluator} instead.
    */
   class ValidationProperties {
     /**
@@ -1002,6 +1083,8 @@
   /**
    * Validate a list of parameters against a matching list of constraints
    * - For a parameter to be validated, it must be present in both the `$parameterList` and `$propertiesList` with the *same key*.
+   * 
+   * @deprecated `1.5.0` Use {@see ShiftCodesTK\Validations\check_variables()} instead.
    * 
    * @param array $parameterList An associative array of properties to be validated. 
    * @param array $propertiesList An indexed array of `ValidationProperties` objects.  
