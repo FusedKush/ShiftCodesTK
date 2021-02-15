@@ -850,7 +850,7 @@
      * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
      * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
      */
-    public function trim (int $trim_side = null, string $charlist = " \n\r\t\v\s") {
+    public function trim (int $trim_side = STR_SIDE_BOTH, string $charlist = " \n\r\t\v\s") {
       return $this->exec_on_strings('trim', false, ...func_get_args());
     }
     /** Collapse whitespace, or other characters, within each of the strings.

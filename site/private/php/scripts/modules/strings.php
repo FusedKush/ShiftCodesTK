@@ -499,7 +499,7 @@
    * @param string $charlist The list of characters that will be trimmed from the string.
    * @return string Returns the modified `$string`.
    */
-  function trim (string $string, int $trim_side = null, string $charlist = " \n\r\t\v\p{Z}"): string {
+  function trim (string $string, int $trim_side = STR_SIDE_BOTH, string $charlist = " \n\r\t\v\s"): string {
     return StringObj::alias('trim', ...func_get_args());
   }
   /** An *alias* of `StringObj::collapse()`
@@ -511,7 +511,7 @@
    * @param string $charlist The list of characters that will be collapsed in the string.
    * @return string Returns the modified `$string`.
    */
-  function collapse (string $string, string $charlist = " \n\r\t\v\p{Z}"): string {
+  function collapse (string $string, string $charlist = " \n\r\t\v\s"): string {
     return StringObj::alias('collapse', ...func_get_args());
   }
   /** An *alias* of `StringObj::pad()`
