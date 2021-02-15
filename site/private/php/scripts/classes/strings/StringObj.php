@@ -1104,7 +1104,7 @@
      * @param STR_SIDE_BOTH|STR_LEFT|STR_RIGHT $trim_side A `STR_SIDE_*` constant indicating which sides(s) of the string are to be trimmed.
      * @param string $charlist The list of characters that will be trimmed from the string.
      * - By default, the `$charlist` is a list of whitespace characters: ` \n\r\t\v\s`.
-     * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided.
+     * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided, with the exception of the *Tilde* (`~`).
      * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
      * 
      * | Editing Mode | Return Value |
@@ -1116,7 +1116,7 @@
     public function trim (int $trim_side = STR_SIDE_BOTH, string $charlist = " \n\r\t\v\s") {
       $patterns = (function () use ($trim_side, $charlist) {
         $patterns = [];
-        $charlistStr = escape_reg($charlist, '/');
+        $charlistStr = str_replace($charlist, '~', '\~');
 
         if ($trim_side == STR_SIDE_LEFT) {
           $patterns[] = "/^[{$charlistStr}]+/";
@@ -1135,7 +1135,7 @@
      * 
      * @param string $charlist The list of characters that will be collapsed in the string.
      * - By default, the `$charlist` is a list of whitespace characters: ` \n\r\t\v\s`.
-     * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided.
+     * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided, with the exception of the *Tilde* (`~`).
      * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
      * 
      * | Editing Mode | Return Value |
@@ -1145,7 +1145,7 @@
      * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
      */
     public function collapse (string $charlist = " \n\r\t\v\s") {
-      $charlistStr = escape_reg($charlist, '/');
+      $charlistStr = str_replace($charlist, '~', '\~');
       $string = preg_replace($this->string, "/[{$charlistStr}]{2,}/", function ($matches) {
         return $matches[0][0];
       });
