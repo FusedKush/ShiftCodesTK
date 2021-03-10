@@ -3,7 +3,7 @@
     "plugins/markdown"
   ],
   "opts": {
-    "destination": "./site/public/dev/docs/js",
+    "destination": "./src/public/dev/docs/js",
     "template": "node_modules/docdash"
   }
 }

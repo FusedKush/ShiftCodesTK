@@ -9,7 +9,7 @@
   },
   "autoload": {
     "psr-4": {
-      "ShiftCodesTK\\": "site/private/php/classes/"
+      "ShiftCodesTK\\": "src/private/php/classes/"
     }
   },
   "require": {

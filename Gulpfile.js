@@ -51,9 +51,9 @@ const files = (function () {
       (function () {
         files.root = {};
         files.root.rootdir = '.';
-        files.root.site = `${files.root.rootdir}/site`,
-        files.root.private = `${files.root.site}/private`;
-        files.root.public = `${files.root.site}/public`;
+        files.root.src = `${files.root.rootdir}/src`,
+        files.root.private = `${files.root.src}/private`;
+        files.root.public = `${files.root.src}/public`;
       })();
       // CSS
       (function () {
@@ -425,7 +425,7 @@ const tasks = (function () {
           /** Register all of the default project watchers */
           async registerWatchers () {
             // All files
-            gulp.watch(`${files.root.site}**/*`)
+            gulp.watch(`${files.root.src}**/*`)
               .on('all', function (event, path) {
                 const info = (function () {
                   if (event == 'add' || event == 'addDir') {
