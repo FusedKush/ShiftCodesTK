@@ -1,0 +1,20 @@
+{
+  "name": "fusedkush/shiftcodestk",
+  "description": "ShiftCodesTK Website",
+  "type": "project",
+  "homepage": "https://shiftcodestk.com",
+  "readme": "https://github.com/FusedKush/ShiftCodesTK#readme",
+  "support": {
+    "issues": "https://github.com/FusedKush/ShiftCodesTK/issues"
+  },
+  "autoload": {
+    "psr-4": {
+      "ShiftCodesTK\\": "site/private/php/classes/"
+    }
+  },
+  "require": {
+    "monolog/monolog": "1.0.*",
+    "clean/phpdoc-md": "^0.19.1",
+    "league/commonmark": "^1.5"
+  }
+}

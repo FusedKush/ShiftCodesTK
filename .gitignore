@@ -3,10 +3,19 @@
 .*/**/*
 *.code-workspace
 node_modules/
-site/private/img/assets/*
-site/private/img/users/
+tools/
+vendor/
+phive.phar
+src/private/img/assets/*
+src/private/img/users/
+src/public/**/*.php
+src/public/dev/docs/
+src/public/assets/css
+src/public/assets/js
 
 # Allow
 !.htaccess
 !.cpanel.yml
-!site/private/img/assets/rewards/
+!.phpdoc-md
+!initialize.php
+!src/private/img/assets/rewards

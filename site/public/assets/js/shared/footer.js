@@ -1,1 +1,0 @@
-document.getElementById("footer_return").addEventListener("click",function(e){this.blur()});

@@ -1,6 +1,5 @@
-/** Core Gulp Methods */
 const gulp = require('gulp');
-const { env } = require('process');
+var currentProcess = null;
 
 /** Shared Gulp Plugins */
 const plugins = (function () {
@@ -8,11 +7,14 @@ const plugins = (function () {
       // Global Plugins
       plugins.moment = require('moment');
       plugins.newer = require('gulp-newer');
-      plugins.path = require('path');
+      plugins.path = require('path').posix;
       plugins.concat = require('gulp-concat');
       plugins.rename = require('gulp-rename');
       plugins.browsersync = require('browser-sync').create('ShiftCodesTK');
       plugins.spawn = require('child_process').spawn;
+      plugins.kill = require('tree-kill');
+      plugins.vinyl_source = require('vinyl-source-stream');
+      plugins.vinyl_buffer = require('vinyl-buffer');
 
       /** CSS Plugins */
       plugins.css = {};
@@ -28,8 +30,12 @@ const plugins = (function () {
       
       /** JS Plugins */
       plugins.js = {};
+      plugins.js.sourcemaps = require('gulp-sourcemaps');
       plugins.js.babel = require('gulp-babel');
-      plugins.js.uglify = require('gulp-uglify');
+      plugins.js.uglify = require('gulp-uglify-es').default;
+      plugins.js.jsdoc = require('gulp-jsdoc3');
+      plugins.js.watchify = require('watchify');
+      plugins.js.browserify = require('browserify');
 
       /** HTML Plugins */
       plugins.html = {};
@@ -44,50 +50,51 @@ const files = (function () {
       // Root
       (function () {
         files.root = {};
-        files.root.rootdir = './';
-        files.root.site = `${files.root.rootdir}site/`,
-        files.root.private = `${files.root.site}private/`;
-        files.root.public = `${files.root.site}public/`;
+        files.root.rootdir = '.';
+        files.root.site = `${files.root.rootdir}/site`,
+        files.root.private = `${files.root.site}/private`;
+        files.root.public = `${files.root.site}/public`;
       })();
       // CSS
       (function () {
         files.css = {};
-        files.css.files = `${files.root.private}css/`;
-        files.css.min = `${files.root.public}assets/css/`;
+        files.css.files = `${files.root.private}/css`;
+        files.css.min = `${files.root.public}/assets/css`;
   
         files.css.sass = {};
-        files.css.sass.root = `${files.css.files}sass/`;
-        files.css.sass.glob = `${files.css.sass.root}**/*.scss`;
-        files.css.sass.partialsGlob = `${files.css.files}sass/partials/**/*.scss`;
+        files.css.sass.root = `${files.css.files}/sass`;
+        files.css.sass.glob = `${files.css.sass.root}/**/*.scss`;
+        files.css.sass.partialsGlob = `${files.css.files}/sass/partials/**/*.scss`;
   
         files.css.css = {};
-        files.css.css.files = `${files.css.files}.css/`;
-        files.css.css.filesGlob = `${files.css.css.files}**/*.css`
-        files.css.css.minGlob = `${files.css.min}**/*.css`;
+        files.css.css.files = `${files.css.files}/.css`;
+        files.css.css.filesGlob = `${files.css.css.files}/**/*.css`
+        files.css.css.minGlob = `${files.css.min}/**/*.css`;
       })();
       // JS
       (function () {
         files.js = {};
 
-        files.js.root = `${files.root.private}js/`;
-        files.js.files = `${files.js.root}files/`;
-        files.js.filesGlob = `${files.js.files}**/*.js`;
-        files.js.generated = `${files.js.root}.generated/`;
-        files.js.generatedGlob = `${files.js.generated}**/*.js`;
-
-        files.js.min = `${files.root.public}assets/js/`;
-        files.js.minGlob = `${files.js.min}**/*.js`;
+        files.js.root = `${files.root.private}/js`;
+        files.js.files = `${files.js.root}/files`;
+        files.js.filesGlob = `${files.js.files}/**/*.js`;
+        files.js.generated = `${files.js.root}/.generated`;
+        files.js.generatedGlob = `${files.js.generated}/**/*.js`;
+        
+        files.js.min = `${files.root.public}/assets/js`;
+        files.js.minGlob = `${files.js.min}/**/*.js`;
+        files.js.sourcemaps = `${files.js.min}/sourcemaps`;
       })();
-      // HTML
+      // PHP-HTML
       (function () {
         files.html = {};
-        files.html.root = `${files.root.private}php/html/`;
+        files.html.root = `${files.root.private}/php-html`;
 
-        files.html.files = `${files.html.root}files/`;
-        files.html.filesGlob = `${files.html.files}**/*.php`;
+        files.html.files = `${files.html.root}/files`;
+        files.html.filesGlob = `${files.html.files}/**/*.php`;
         
-        files.html.min = `${files.html.root}.min/`;
-        files.html.minGlob = `${files.html.min}**/*.php`;
+        files.html.min = `${files.html.root}/.min`;
+        files.html.minGlob = `${files.html.min}/**/*.php`;
       })();
 
   return files;
@@ -207,8 +214,8 @@ const tasks = (function () {
           concat () {
             const fileName = 'shared-styles.css';
     
-            return gulp.src([ `${files.css.min}shared/global.css`, `${files.css.min}shared/**/*.css` ])
-                       .pipe(plugins.newer(`${files.css.min}${fileName}`))
+            return gulp.src([ `${files.css.min}/shared/global.css`, `${files.css.min}/shared/**/*.css` ])
+                       .pipe(plugins.newer(`${files.css.min}/${fileName}`))
                        .pipe(plugins.concat(fileName))
                        .pipe(gulp.dest(files.css.min));
           }
@@ -221,49 +228,115 @@ const tasks = (function () {
       })();
       // JS
       (function () {
+        const sourcemapOptions = {
+          init: {
+            loadMaps: true
+          },
+          write: function (sourceDir, destDir, filename) {
+            let path = plugins.path.relative(`${destDir}`, `${files.js.sourcemaps}/${filename}`);
+            let options = {
+              includeContent: false,
+              sourceRoot: plugins.path.relative(files.js.sourcemaps, sourceDir),
+              destPath: destDir
+            };
+  
+            return [ path, options ];
+          },
+          sources: function (sourceDir, sourcePath, file) {
+            const newSourcePath = /\w/.test(sourceDir)
+                                  ? `./${sourcePath}`.replace(sourceDir, '')
+                                  : sourcePath;
+
+            return newSourcePath;
+          }
+        }
+
         /** Tasks related to the compilation, uglification, and concatenation of JavaScript files */
         tasks.js = {
-          /** Compile JavaScript using Babel */
+          /** Bundle Node Modules to a Javascript File */
+          browserify: {
+            /** The Browserify Instance */
+            instance: plugins.js.watchify(
+              plugins.js.browserify(
+                `${files.root.rootdir}/browserify.js`,
+                {
+                  standalone: 'node_modules'
+                }
+              )
+            ),
+
+            /** Bundle Node Modules to a Javascript File */
+            bundle () {
+              const sourceDir = files.root.rootdir;
+              const destDir = files.js.generated;
+
+              tasks.js.browserify.instance.bundle()
+                .pipe(plugins.vinyl_source('browserify-bundle.js'))
+                .pipe(plugins.vinyl_buffer())
+                .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
+                .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
+                  return sourcemapOptions.sources(sourceDir, sourcePath, file) 
+                }))
+                .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'browserify')))
+                .pipe(gulp.dest(destDir));
+            },
+          },
+          /** Transform JavaScript using Babel */
           babel () {
+            const sourceDir = files.js.files;
+            const destDir = files.js.generated;
+
             return gulp.src(files.js.filesGlob)
-                       .pipe(plugins.newer(files.js.generated))
+                       .pipe(plugins.newer(destDir))
+                       .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
                        .pipe(plugins.js.babel())
-                       .pipe(gulp.dest(files.js.generated));
+                       .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
+                          return sourcemapOptions.sources(sourceDir, sourcePath, file) 
+                        }))
+                       .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'babel')))
+                       .pipe(gulp.dest(destDir))
           },
           /** Uglify JavaScript */
           uglify () {
+            const sourceDir = files.js.generated;
+            const destDir = files.js.min;
+
             return gulp.src(files.js.generatedGlob)
-                       .pipe(plugins.newer(files.js.min))
+                       .pipe(plugins.newer(destDir))
+                       .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
                        .pipe(plugins.js.uglify())
-                       .pipe(gulp.dest(files.js.min));
+                       .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
+                          return sourcemapOptions.sources(sourceDir, sourcePath, file) 
+                        }))
+                       .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'uglify')))
+                       .pipe(gulp.dest(destDir));
           },
           /** Concatenate scripts */
-          async concat () {
-            // Moment
-            (function () {
-              const fileName = 'moment.js';
-    
-              gulp.src([`${files.js.min}shared/libs/moment.js/files/moment.js`, `${files.js.min}shared/libs/moment.js/files/moment-timezone-with-data-10-year-range.js`])
-                      .pipe(plugins.newer(`${files.js.min}shared/libs/moment.js/${fileName}`))
+          concat () {
+            const sourceDir = files.js.min;
+            const destDir = files.js.min;
+            const fileName = 'shared-scripts.js';
+  
+            return gulp.src(
+                        [
+                          `${sourceDir}/shared/global.js`,
+                          `${sourceDir}/shared/layers.js`,
+                          `${sourceDir}/shared/**/*.js`,
+                          `!${sourceDir}/shared/**/files/**/*.js`
+                        ]
+                      )
+                      .pipe(plugins.newer(`${files.js.min}/${fileName}`))
+                      .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
                       .pipe(plugins.concat(fileName))
-                      .pipe(gulp.dest(`${files.js.min}shared/libs/moment.js`));
-            })();
-            // Shared Scripts
-            (function () {
-              const fileName = 'shared-scripts.js';
-    
-              gulp.src([
-                        `${files.js.min}shared/global.js`,
-                        `${files.js.min}shared/layers.js`,
-                        `${files.js.min}shared/**/*.js`,
-                        `!${files.js.min}shared/**/files/**/*.js`
-                      ])
-                      .pipe(plugins.newer(`${files.js.min}${fileName}`))
-                      .pipe(plugins.concat(fileName))
-                      .pipe(gulp.dest(files.js.min));
-            })();
+                      .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
+                         return sourcemapOptions.sources(sourceDir, sourcePath, file) 
+                        }))
+                      .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'concat')))
+                      .pipe(gulp.dest(destDir));
           }
-        };
+        }
+
+        tasks.js.browserify.instance.on('update', tasks.js.browserify.bundle);
 
         /** Run all of the JS micro tasks */
         tasks.js.mainTask = gulp.series(tasks.js.babel, tasks.js.uglify, tasks.js.concat);
@@ -307,7 +380,7 @@ const tasks = (function () {
           },
           /** Sync with site root */
           async sync () {
-            sync.update(`${files.html.min}pages/**/*.php`, `${files.root.public}`, 'sync', 'change', 'src');
+            sync.update(`${files.html.min}/pages/**/*.php`, `${files.root.public}`, 'sync', 'change', 'src');
             Promise.resolve(true);
           }
         };
@@ -338,7 +411,7 @@ const tasks = (function () {
               files: [
                 `${files.root.public}/**/*`,
                 `${files.root.private}/php/scripts/**/*`,
-                `${files.root.private}/php/html/.min/includes/**/*`
+                `${files.html.min}/includes/**/*`
               ],
               // Preferences
               open: "local",
@@ -365,7 +438,7 @@ const tasks = (function () {
                     return { name: 'removed', icon: '-' };
                   }
                 })();
-    
+
                 logEvent(`${info.icon} "${path.replace(new RegExp('\\\\', 'g'), '/')}" ${info.name}`);
                 return Promise.resolve(true);
               });
@@ -377,6 +450,10 @@ const tasks = (function () {
     
             // JS
             gulp.watch(files.js.filesGlob, exports.js);
+            gulp.watch(`${files.root.rootdir}/browserify.js`, () => { 
+              tasks.js.browserify.bundle();
+              return exports.js();
+            });
             sync.addWatcher(files.js.filesGlob, [files.js.files, files.js.min], 'delete');
   
             // HTML
@@ -402,21 +479,30 @@ const tasks = (function () {
         
         /** Run all of the startup micro tasks */
         tasks.startup.startProcess = async () => {
-          var process;
-
           function spawnChild (e) {
-            if (process) {
-              process.kill();
+            if (currentProcess !== null) {
+              plugins.browsersync.exit();
+              // currentProcess.kill();
+              plugins.kill(currentProcess.pid);
+              currentProcess = null;
             }
 
-            process = plugins.spawn('gulp', ['main'], { stdio: 'inherit', shell: true });
+            currentProcess = plugins.spawn(
+              'gulp', 
+              [ 'main' ], 
+              { 
+                stdio: 'inherit', 
+                shell: true
+              }
+            );
             e();
             // return process;
           }
 
-          gulp.watch(`${files.root.rootdir}gulpfile.js`, spawnChild);
+          gulp.watch(`${files.root.rootdir}/gulpfile.js`, spawnChild);
+          tasks.js.browserify.bundle();
           spawnChild(() => {});
-          Promise.resolve(process);
+          return currentProcess;
         }
       })();
 
@@ -433,4 +519,10 @@ const tasks = (function () {
 
   exports.default = tasks.startup.startProcess;
   exports.main = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask, tasks.startup.mainTask);
+  exports.jsdoc = function (cb) {
+    const config = require(`${files.root.rootdir}/jsdoc.json`);
+
+    gulp.src([ files.js.filesGlob, `${files.js.files}README.md` ], { read: false })
+        .pipe(plugins.js.jsdoc(config, cb));
+  }
 })();

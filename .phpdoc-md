@@ -1,0 +1,12 @@
+<?php
+  return (object)[
+      'rootNamespace' => 'ShiftCodesTK', 
+      'destDirectory' => 'site/public/dev/docs/php',
+      'format' => 'github',
+      'classes' => [
+          'ShiftCodesTK\TooltipLayer',
+          'ShiftCodesTK\Immutable',
+          'ShiftCodesTK\Auth\UniqueID'
+      ]
+  ];
+?>
