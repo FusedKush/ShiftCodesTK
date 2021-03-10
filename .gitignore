@@ -15,6 +15,7 @@ src/public/assets/js
 
 # Allow
 !.htaccess
+!.node-version
 !.cpanel.yml
 !.phpdoc-md
 !initialize.php
