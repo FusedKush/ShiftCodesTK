@@ -489,7 +489,7 @@ const tasks = (function () {
 
             currentProcess = plugins.spawn(
               'gulp', 
-              [ 'main' ], 
+              [ 'builder' ], 
               { 
                 stdio: 'inherit', 
                 shell: true
@@ -518,11 +518,12 @@ const tasks = (function () {
   }
 
   exports.default = tasks.startup.startProcess;
-  exports.main = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask, tasks.startup.mainTask);
-  exports.jsdoc = function (cb) {
-    const config = require(`${files.root.rootdir}/jsdoc.json`);
+  exports.build = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask);
+  exports.builder = gulp.series(exports.build, tasks.startup.mainTask);
+  // exports.jsdoc = function (cb) {
+  //   const config = require(`${files.root.rootdir}/jsdoc.json`);
 
-    gulp.src([ files.js.filesGlob, `${files.js.files}README.md` ], { read: false })
-        .pipe(plugins.js.jsdoc(config, cb));
-  }
+  //   gulp.src([ files.js.filesGlob, `${files.js.files}README.md` ], { read: false })
+  //       .pipe(plugins.js.jsdoc(config, cb));
+  // }
 })();
