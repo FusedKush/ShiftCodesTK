@@ -1,0 +1,13 @@
+#!/bin/bash
+
+while read oldrev newrev ref
+do
+  branch=`echo $ref | cut -d/ -f3`
+  branches="/home/shiftcodestk/branches"
+
+  if [ "master" == "${branch}" ]; then
+    git --work-tree="${branches}/latest" checkout -f $branch
+  else 
+    git --work-tree="${branches}/beta" checkout -f $branch
+  fi
+done
