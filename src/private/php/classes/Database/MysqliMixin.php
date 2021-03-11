@@ -4,7 +4,7 @@
   /** Properties & Methods used for connecting to and querying the ShiftCodesTK Database */
   trait MysqliMixin {
     /**
-     * @var mysqli|null|false The ShiftCodesTK Database Connection Handle. Represents the connection between PHP and the ShiftCodesTK Database.
+     * @var \mysqli|null|false The ShiftCodesTK Database Connection Handle. Represents the connection between PHP and the ShiftCodesTK Database.
      * - Has a value of **null** if the database connection has not yet been initialized.
      * - Has a value of **false** if an error occurred while connecting to the Database. 
      */

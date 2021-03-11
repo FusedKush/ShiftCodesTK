@@ -36,42 +36,6 @@
           <div class="title">
             <h2>Scratchpad</h2>
           </div>
-          <?php 
-            use ShiftCodesTK\Forms, ShiftCodesTK\Validations;
-            $doc = file_get_contents(\ShiftCodesTK\PUBLIC_PATHS['root'] . '/dev/docs/php/TooltipLayer.md');
-            $convertor = new League\CommonMark\GithubFlavoredMarkdownConverter([
-              'html_input'         => 'strip',
-              'allow_unsafe_links' => false,
-              'max_nesting_level'  => 25
-            ]);
-
-            echo $convertor->convertToHtml($doc);
-            // $form = (new Forms\Form())
-            //         ->set_name('Test Form')
-            //         ->set_title('Test Form', true)
-            //         ->update_details('This is a test!', "Test Description. Please <a href=\"#\">ignore</a> this. Thank you.")
-            //         ->update_action('/assets/requests/post/account/login', null, 'GET')
-            //         ->update_form_preferences([ 'show_alerts' => false, 'spacing' => Forms\Form::FORM_PREFS_SPACING_NONE ])
-            //         ->update_footer_settings([ 'sticky' => true, 'show_progress' => false ])
-            //         ->toggle_footer(false);
-            // $form->toggle_toast_method()
-            //      ->update_toast_properties(['content' => [ 'body' => 'foo' ]])
-            //      ->update_redirect_properties([ 'delay' => 1485, 'path' => "/foo/bar/baz.html", 'use_query_param' => true ])
-            //      ->toggle_form_action('toast', true);
-            // $form->add_request_parameters([ 'foo' => 'foo', 'bar' => 'bar' ])
-            //      ->success();
-
-            // var_dump($form, $form->add_class('foo', null, true), $form->add_class("foo"));
-          ?>
-        </div>
-        <div class="view profile-cards" data-view="Profile Cards">
-          <div class="title">
-            <h2>Profile Cards</h2>
-            <p>Profile Cards are used to represent a User of ShiftCodesTK.</p>
-          </div>
-          <section>
-            <div class="profile-card" data-card-user="149357043452" data-card-flags="CARD_SHOW_ROLES|CARD_SHOW_STATS|CARD_SHOW_ACTIONS|CARD_ALLOW_EDITING"></div>
-          </section>
         </div>
         <div class="view buttons" data-view="Buttons">
           <?php function getButtonList ($classes = '', $pressed = false) { ?>

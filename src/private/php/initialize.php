@@ -71,6 +71,12 @@
      */
     define("ShiftCodesTK\PRIVATE_PATHS", $paths);
   })();
+
+  // Startup Modules
+  foreach (['serverConfig', 'functions', 'strings', 'response'] as $file) {
+    require_once(PRIVATE_PATHS['php'] . "/modules/$file.php");
+  }
+
   // Request Constants
   (function () {
     /**
@@ -80,24 +86,60 @@
     define('SCRIPT_TYPE', strpos($_SERVER['REQUEST_URI'], '/assets/') === 0 ? 0 : 1);
     /** @var string|false The Request Token Header if sent */
     define('TOKEN_HEADER', $_SERVER[ 'HTTP_X_REQUEST_TOKEN'] ?? false);
-    /** @var string|false If sent with the request, this is the *Request Token* used to conduct the request. */
-    define('ShiftCodesTK\REQUEST_TOKEN', (function () {
-      if ($token = $_SERVER['HTTP_X_REQUEST_TOKEN'] ?? null) {
-        return $token;
-      }
-      else if ($token = $_POST['_auth_token'] ?? null) {
-        return $token;
-      }
-      else if ($token = $_GET['_request_token'] ?? null) {
-        return $token;
-      }
+    // `ShiftCodesTK\REQUEST_TOKEN`
+    (function () {
+      $requestToken = (function () {
+        if ($token = $_SERVER['HTTP_X_REQUEST_TOKEN'] ?? null) {
+          return $token;
+        }
+        else if ($token = $_POST['_auth_token'] ?? null) {
+          return $token;
+        }
+        else if ($token = $_GET['_request_token'] ?? null) {
+          return $token;
+        }
+  
+        return false;
+      })();
 
-      return false;
-    })());
+      /** @var string|false If sent with the request, this is the *Request Token* used to conduct the request. */
+      define('ShiftCodesTK\REQUEST_TOKEN', $requestToken);
+    })();
     /**
      * @var "SCRIPT"|"PAGE" Indicates if the current script that is executing is a *page* or a *remote script*.
      */
     define('ShiftCodesTK\SCRIPT_TYPE', strpos($_SERVER['REQUEST_URI'], '/assets/') === 0 ? "SCRIPT" : "PAGE");
+    // `ShiftCodesTK\BUILD_INFORMATION`
+    (function () {
+      $buildInfo = (function () {
+        $buildInfo = [];
+        $gitPath = (dirname($_SERVER["DOCUMENT_ROOT"], 2)) . "/.git";
+        $head = file_get_contents("{$gitPath}/HEAD");
+
+        $buildInfo['branch'] = trim(preg_replace("%(.*?\/){2}%", "", $head));
+        $buildInfo['is_dev_branch'] = $buildInfo['branch'] !== 'master';
+  
+        $branchPath = "{$gitPath}/refs/heads/{$buildInfo['branch']}";
+  
+        $buildInfo['last_commit'] = [
+          'hash'    => trim(file_get_contents($branchPath)),
+          'time'    => date(DATE_ISO8601, filemtime($branchPath)),
+          'message' => trim(file_get_contents("{$gitPath}/COMMIT_EDITMSG"))
+        ];
+  
+        return $buildInfo;
+      })();
+
+      /** Information regarding the current *Build* of ShiftCodesTK.
+       * 
+       * | Property | Type | Description |
+       * | --- | --- | --- |
+       * | *branch* | `string` | The name of the current *Build Branch*. |
+       * | *is_dev_branch* | `bool` | Indicates if the current `branch` is a *Development Branch* (**true**), or a *Production Branch* (**false**). |
+       * | *last_commit* | `array` | Information related to the last *Branch Commit*. |
+       */
+      define('ShiftCodesTK\BUILD_INFORMATION', $buildInfo);
+    })();
   })();
   // Set Path & Timezone Defaults
   (function () {
@@ -337,28 +379,6 @@
 
   // Class Autoloading
   require(PRIVATE_PATHS['vendor'] . '/autoload.php');
-  // spl_autoload_register(function ($class_name) {
-  //   $file_path = (function () use ($class_name) {
-  //     $path = $class_name;
-
-  //     $path = str_replace('\\', '/', $path);
-  //     $path = \preg_replace('%(?:\/){0,1}ShiftCodesTK\/%', \ShiftCodesTK\PRIVATE_PATHS['classes'], $path);
-
-  //     return "{$path}.php";
-  //   })();
-
-  //   if (file_exists($file_path)) {
-  //     include ($file_path);
-  //     return true;
-  //   }
-
-  //   return false;
-  // }, true, true);
-
-  // Startup Modules
-  foreach (['serverConfig', 'functions', 'strings', 'response'] as $file) {
-    require_once(PRIVATE_PATHS['php'] . "/modules/$file.php");
-  }
   
   /**
    * The query string to be used when loading cached resources.

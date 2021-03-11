@@ -7,22 +7,25 @@
   ini_set('session.gc_maxlifetime', 60 * 60 * 2);
   ini_set('session.sid_length', '64');
   ini_set('session.hash_function', 'sha256');
-  // Production Properties
-  // session_set_cookie_params([
-  //   'lifetime' => 0,
-  //   'domain'   => 'shiftcodestk.com',
-  //   'secure'   => true,
-  //   'httponly' => true,
-  //   'samesite' => 'Lax'
-  // ]);
-  // Development Properties
-  session_set_cookie_params([
-    'lifetime' => 0,
-    'domain'   => '',
-    'secure'   => false,
-    'httponly' => true,
-    'samesite' => 'Lax'
-  ]);
+
+  if (!ShiftCodesTK\BUILD_INFORMATION['is_dev_branch']) {
+    session_set_cookie_params([
+      'lifetime' => 0,
+      'domain'   => ShiftCodesTK\SITE_DOMAIN,
+      'secure'   => true,
+      'httponly' => true,
+      'samesite' => 'Lax'
+    ]);
+  }
+  else {
+    session_set_cookie_params([
+      'lifetime' => 0,
+      'domain'   => '',
+      'secure'   => false,
+      'httponly' => true,
+      'samesite' => 'Lax'
+    ]);
+  }
 
   // Startup
   session_start();
