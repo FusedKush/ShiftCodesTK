@@ -491,7 +491,6 @@
   $scriptsToLoad = (function () {
     $scripts = [
       'required' => [
-        '.secrets', 
         'secrets',
         'integers',
         'timestamps',

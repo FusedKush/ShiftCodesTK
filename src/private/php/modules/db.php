@@ -741,7 +741,7 @@
           }
         })();
 
-        $this->mysqli = new mysqli(...array_values(ShiftCodesTKSecrets::getSecret('db')));
+        $this->mysqli = new mysqli(...array_values(\ShiftCodesTK\Secrets::get_secret('db')));
         $this->check_mysqli_errors(true);
         $this->mysqli->select_db(!\ShiftCodesTK\BUILD_INFORMATION['is_dev_branch'] ? "ShiftCodesTK" : "ShiftCodesTK_beta");
   
@@ -2131,6 +2131,7 @@
      * @return object Returns the connection handle
      */
     public function __construct () {
+      $this->con = new mysqli(...array_values(\ShiftCodesTK\Secrets::get_secret('db')));
       $this->con->select_db(!\ShiftCodesTK\BUILD_INFORMATION['is_dev_branch'] ? "ShiftCodesTK" : "ShiftCodesTK_beta");
 
       $this->dateFormats['date'] = 'Y-m-d';

@@ -252,7 +252,7 @@
    * @return string Returns the generated hash
    */
   function auth_strHash($string) {
-    return hash_hmac('sha256', $string, ShiftCodesTKSecrets::getSecret('hash'));
+    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::get_secret('hash'));
   }
   /**
    * Determine if two string hashes match

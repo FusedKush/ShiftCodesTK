@@ -1,7 +1,7 @@
 <?php
   namespace ShiftCodesTK;
 
-/** Server-Side Secret Management */
+  /** Server-Side Secret Management */
   class Secrets {
     /** @var object The list of stored `secrets`. */
     private $SECRETS = null;
@@ -13,7 +13,7 @@
      */
     private function __construct () {
       try {
-        $jsonData = getJSONFile(\ShiftCodesTK\PRIVATE_PATHS['resources'] . '/.secrets.json');
+        $jsonData = getJSONFile(\ShiftCodesTK\PRIVATE_PATHS['resources'] . '/.secrets.json', true);
 
         if (!$jsonData) {
           throw new \Error();
@@ -39,7 +39,7 @@
 
         return self::$instance;
       })();
-      $secretValue = $instance->SECRETS->$secret ?? null;
+      $secretValue = $instance->SECRETS[$secret] ?? null;
 
       if ($secretValue === null) {
         trigger_error("Secret \"{$secret}\" does not exist.");
