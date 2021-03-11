@@ -1,4 +1,4 @@
-Source Code for [ShiftCodesTK](https://shiftcodestk.com), a site about SHiFT Codes for [Borderlands](borderlands.com).
+Source Code for [ShiftCodesTK](https://shiftcodestk.com), a site about SHiFT Codes for [Borderlands](https://borderlands.com).
 
 ## Building ##
 ShiftCodesTK uses [npm](https://www.npmjs.com/) and [Composer](https://getcomposer.org) to manage project dependencies. [Gulp](https://gulpjs.com/) is used for building the project files.
