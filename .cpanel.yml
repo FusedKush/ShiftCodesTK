@@ -1,5 +1,0 @@
----
-deployment:
-  tasks:
-    - export DEPLOYPATH=/home/shiftcodestk/branches/beta
-    - / -r * $DEPLOYPATH
