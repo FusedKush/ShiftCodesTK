@@ -1,9 +1,5 @@
 ---
 deployment:
   tasks:
-    - export PUBLIC=/home/shiftcodetk/public_html/
-    - /site -R public $PUBLIC
-
-    - export PRIVATE=/home/shiftcodetk/private/
-    - /site/private -R img $PRIVATE
-    - /site/private -R php $PRIVATE
+    - export DEPLOYPATH=/home/shiftcodestk/branches/beta/src
+    - / -R src $DEPLOYPATH
