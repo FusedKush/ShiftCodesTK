@@ -3,11 +3,11 @@
 while read oldrev newrev ref
 do
   branch=`echo $ref | cut -d/ -f3`
-  branches="/home/shiftcodestk/branches"
+  deployments="/home/shiftcodestk/deployments"
 
   if [ "master" == "${branch}" ]; then
-    git --work-tree="${branches}/latest" checkout -f $branch
+    git --work-tree="${deployments}/stable" checkout -f $branch
   else 
-    git --work-tree="${branches}/beta" checkout -f $branch
+    git --work-tree="${deployments}/beta" checkout -f $branch
   fi
 done
