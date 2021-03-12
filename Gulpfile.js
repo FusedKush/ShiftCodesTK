@@ -337,6 +337,7 @@ const tasks = (function () {
         }
 
         tasks.js.browserify.instance.on('update', tasks.js.browserify.bundle);
+        tasks.js.browserify.bundle();
 
         /** Run all of the JS micro tasks */
         tasks.js.mainTask = gulp.series(tasks.js.babel, tasks.js.uglify, tasks.js.concat);
