@@ -254,32 +254,25 @@ const tasks = (function () {
         /** Tasks related to the compilation, uglification, and concatenation of JavaScript files */
         tasks.js = {
           /** Bundle Node Modules to a Javascript File */
-          browserify: {
-            /** The Browserify Instance */
-            instance: plugins.js.watchify(
-              plugins.js.browserify(
-                `${files.root.rootdir}/browserify.js`,
+          browserify () {
+            const sourceDir = files.root.rootdir;
+            const destDir = files.js.generated;
+
+            return plugins.js.browserify(
+              `${files.root.rootdir}/browserify.js`,
                 {
                   standalone: 'node_modules'
                 }
-              )
-            ),
-
-            /** Bundle Node Modules to a Javascript File */
-            bundle () {
-              const sourceDir = files.root.rootdir;
-              const destDir = files.js.generated;
-
-              tasks.js.browserify.instance.bundle()
-                .pipe(plugins.vinyl_source('browserify-bundle.js'))
-                .pipe(plugins.vinyl_buffer())
-                .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
-                .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
-                  return sourcemapOptions.sources(sourceDir, sourcePath, file) 
-                }))
-                .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'browserify')))
-                .pipe(gulp.dest(destDir));
-            },
+            )
+              .bundle()
+              .pipe(plugins.vinyl_source(`browserify-bundle.js`))
+              .pipe(plugins.vinyl_buffer())
+              .pipe(plugins.js.sourcemaps.init(sourcemapOptions.init))
+              .pipe(plugins.js.sourcemaps.mapSources(function (sourcePath, file) {
+                return sourcemapOptions.sources(sourceDir, sourcePath, file) 
+              }))
+              .pipe(plugins.js.sourcemaps.write(...sourcemapOptions.write(sourceDir, destDir, 'browserify')))
+              .pipe(gulp.dest(destDir));
           },
           /** Transform JavaScript using Babel */
           babel () {
@@ -336,8 +329,7 @@ const tasks = (function () {
           }
         }
 
-        tasks.js.browserify.instance.on('update', tasks.js.browserify.bundle);
-        tasks.js.browserify.bundle();
+        // tasks.js.browserify.instance.on('update', tasks.js.browserify.bundle);
 
         /** Run all of the JS micro tasks */
         tasks.js.mainTask = gulp.series(tasks.js.babel, tasks.js.uglify, tasks.js.concat);
@@ -451,15 +443,14 @@ const tasks = (function () {
     
             // JS
             gulp.watch(files.js.filesGlob, exports.js);
-            gulp.watch(`${files.root.rootdir}/browserify.js`, () => { 
-              tasks.js.browserify.bundle();
-              return exports.js();
-            });
+            gulp.watch([ `${files.root.rootdir}/browserify.js`, `${files.root.rootdir}/Gulpfile.js` ], gulp.series(tasks.js.browserify, exports.js));
             sync.addWatcher(files.js.filesGlob, [files.js.files, files.js.min], 'delete');
   
             // HTML
             gulp.watch(files.html.filesGlob, exports.html);
             sync.addWatcher(files.html.filesGlob, [files.html.files, files.html.min], 'delete');
+
+            gulp.watch(`${files.root.rootdir}/Gulpfile.js`, tasks.startup.startProcess);
 
             logEvent('Registered Default Watchers.');
             Promise.resolve(true);
@@ -479,31 +470,24 @@ const tasks = (function () {
         );
         
         /** Run all of the startup micro tasks */
-        tasks.startup.startProcess = async () => {
-          function spawnChild (e) {
-            if (currentProcess !== null) {
-              plugins.browsersync.exit();
-              // currentProcess.kill();
-              plugins.kill(currentProcess.pid);
-              currentProcess = null;
-            }
-
-            currentProcess = plugins.spawn(
-              'gulp', 
-              [ 'builder' ], 
-              { 
-                stdio: 'inherit', 
-                shell: true
-              }
-            );
-            e();
-            // return process;
+        tasks.startup.startProcess = (cb) => {
+          if (currentProcess !== null) {
+            plugins.browsersync.exit();
+            // currentProcess.kill();
+            plugins.kill(currentProcess.pid);
+            currentProcess = null;
           }
 
-          gulp.watch(`${files.root.rootdir}/gulpfile.js`, spawnChild);
-          tasks.js.browserify.bundle();
-          spawnChild(() => {});
-          return currentProcess;
+          currentProcess = plugins.spawn(
+            'gulp', 
+            [ 'individualBuilder' ], 
+            { 
+              stdio: 'inherit', 
+              shell: true
+            }
+          );
+          cb();
+          // return process;
         }
       })();
 
@@ -518,9 +502,28 @@ const tasks = (function () {
     exports[taskName] = task.mainTask;
   }
 
-  exports.default = tasks.startup.startProcess;
-  exports.build = gulp.series(tasks.css.mainTask, tasks.js.mainTask, tasks.html.mainTask);
-  exports.builder = gulp.series(exports.build, tasks.startup.mainTask);
+  /** Responsible for building the main project files.
+   * 
+   * Invokes the following sub-tasks:
+   * - `css`
+   * - `js`
+   * - `html`
+   */
+  exports.build = gulp.series(tasks.css.mainTask, tasks.js.browserify, tasks.js.mainTask, tasks.html.mainTask);
+  /** A process responsible for managing the workspace while the user is working.
+   * 
+   * - Invokes `build` to compile the project files
+   * - Starts a `browsersync` instance
+   * - Adds `gulp` *Watchers* to the project files to build them appropriately while working.
+   */
+  exports.individualBuilder = gulp.series(exports.build, tasks.startup.mainTask);
+  /** Responsible for managing the workspace while the user is working.
+   * 
+   * This is a wrapper for the `individualBuilder` that automatically relaunches a new `individualBuilder` whenever the `gulpfile.js` is modified.
+   */
+  exports.builder = tasks.startup.startProcess;
+  /** The default task for Gulp, `build`. */
+  exports.default = exports.build;
   // exports.jsdoc = function (cb) {
   //   const config = require(`${files.root.rootdir}/jsdoc.json`);
 
