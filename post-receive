@@ -3,11 +3,39 @@
 while read oldrev newrev ref
 do
   branch=`echo $ref | cut -d/ -f3`
-  deployments="/home/shiftcodestk/deployments"
 
-  if [ "master" == "${branch}" ]; then
-    git --work-tree="${deployments}/stable" checkout -f $branch
-  else 
-    git --work-tree="${deployments}/beta" checkout -f $branch
-  fi
+  if [ "master" == "${branch}" ] || [ "beta" == "${branch}" ]; then
+    siteroot="/home/shiftcodestk"
+    deployments="${siteroot}/deployments"
+    repository="${siteroot}/repository"
+
+    chmod -R 0711 $repository
+
+    if [ "master" == "${branch}" ]; then
+      git --work-tree="${deployments}/stable" checkout -f $branch
+    else
+      git --work-tree="${deployments}/beta" checkout -f $branch
+    fi
+
+    cd $deployments
+
+    if [ "master" == "${branch}" ]; then
+      cd "stable"
+    else
+      cd "beta"
+    fi
+
+    nvs use auto
+    npm install
+    composer install
+    gulp build
+
+    if [ "master" == "${branch}" ]; then
+      chmod -R 0711 "${deployments}/stable"
+      chmod -R 0755 "${deployments}/stable/src/public"
+    else
+      chmod -R 0711 "${deployments}/beta"
+      chmod -R 0755 "${deployments}/beta/src/public"
+    fi
+  fi;
 done
