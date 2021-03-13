@@ -403,7 +403,8 @@ const tasks = (function () {
               // Watcher
               files: [
                 `${files.root.public}/**/*`,
-                `${files.root.private}/php/scripts/**/*`,
+                `${files.root.private}/php/**/*`,
+                `${files.root.private}/resources/**/*`,
                 `${files.html.min}/includes/**/*`
               ],
               // Preferences
