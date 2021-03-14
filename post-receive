@@ -32,10 +32,10 @@ do
     gulp build
 
     # Update deployed file permissions
-    find $branchDeploymentPath -type d -exec chmod -R 0711
-    find $branchDeploymentPath \( -path "${branchDeploymentPath}/node_modules" -prune -o -path "${branchDeploymentPath}/vendors" -prune -o \) -type f -exec chmod -R 0700
-    find $branchPublicPath -type d -exec chmod -R 0755
-    find $branchPublicPath -type f -exec chmod -R 0744
+    find $branchDeploymentPath -type d -exec chmod -R 0711 {} \;
+    find $branchDeploymentPath \( -path "${branchDeploymentPath}/node_modules" -prune -o -path "${branchDeploymentPath}/vendors" -prune -o \) -type f -exec chmod -R 0700 {} \;
+    find $branchPublicPath -type d -exec chmod -R 0755 {} \;
+    find $branchPublicPath -type f -exec chmod -R 0744 {} \;
     chmod 0700 "${branchPublicPath}/initialize.php"
   fi;
 done
