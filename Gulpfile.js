@@ -5,7 +5,7 @@ var currentProcess = null;
 const plugins = (function () {
   let plugins = {};
       // Global Plugins
-      plugins.moment = require('moment');
+      plugins.dayjs = require('dayjs');
       plugins.newer = require('gulp-newer');
       plugins.path = require('path').posix;
       plugins.concat = require('gulp-concat');
@@ -101,7 +101,7 @@ const files = (function () {
 })();
 
 function logEvent (message) {
-  console.log(`[${plugins.moment().format('kk:mm:ss')}] ${message}`);
+  console.log(`[${plugins.dayjs().format('HH:mm:ss.SSS')}] ${message}`);
 }
 
 /** Methods for keeping files in sync */

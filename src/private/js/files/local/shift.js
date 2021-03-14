@@ -9,7 +9,7 @@
     if (isReady) {
       clearInterval(interval);
 
-      const currentTimestamp = moment.utc().valueOf();
+      const currentTimestamp = node_modules.dayjs.utc().valueOf();
       const formsObj = ShiftCodesTK.forms;
       const layersObj = ShiftCodesTK.layers;
       const modalsObj = ShiftCodesTK.modals;
@@ -133,7 +133,7 @@
            */
           updateLastTimestamp () {
             try {
-              const newTimestamp = moment.utc().valueOf();
+              const newTimestamp = node_modules.dayjs.utc().valueOf();
   
               this.updateStats.last = newTimestamp;
   
@@ -216,7 +216,7 @@
             return newAjaxRequest({
               file: '/assets/requests/get/shift/updates',
               params: {
-                'last_check': moment.utc(updateCheck.updateStats.last).format(),
+                'last_check': node_modules.dayjs.utc(updateCheck.updateStats.last).format(),
                 'game_id': shiftObj.getResultProp('game')
               },
               callback: handleUpdateData
@@ -697,7 +697,7 @@
           })();
 
           if (field) {
-            const timestamp = moment.utc(timestampString);
+            const timestamp = node_modules.dayjs.utc(timestampString);
 
             if (timestamp) {
               const formattedTimestamp = timestamp.format('MMMM DD, YYYY hh:mm A [UTC]');
@@ -965,11 +965,11 @@
                 // SHiFT Code has an Expiration Date
                 if (shiftCodeData.info.release_date.type == 'date' && [ 'through', 'until' ].indexOf(shiftCodeData.info.expiration_date.type) != -1) {
                   /** The Expiration Date Moment of the SHiFT Code */
-                  let expiration = moment.utc(shiftCodeData.info.expiration_date.value);
+                  let expiration = node_modules.dayjs.utc(shiftCodeData.info.expiration_date.value);
                   /** The total duration of the SHiFT Code */
                   let duration = expiration.diff(shiftCodeData.info.release_date.value, 'hours');
                   /** The total number of hours remaining before the SHiFT Code is set to expire */
-                  let timeLeft = expiration.diff(moment.utc(), 'hours');
+                  let timeLeft = expiration.diff(node_modules.dayjs.utc(), 'hours');
                   /** The time-from-now string for the Expiration Date */
                   let timeAgo = expiration.fromNow(true);
 
@@ -1069,13 +1069,13 @@
                         let release = shiftCodeData.info.release_date.value;
 
                         if (dates.release.type == 'date') {
-                          /** The SHiFT Code Release Date Moment */
-                          let releaseMoment = moment(release);
+                          /** The SHiFT Code Release Date `dayjs` object */
+                          let releaseObj = node_modules.dayjs(release);
 
                           return {
-                            simple: releaseMoment.calendar(null, dates.release.formats.simple),
-                            full: releaseMoment.calendar(null, dates.release.formats.full),
-                            expanded: releaseMoment.calendar(null, dates.release.formats.expanded),
+                            simple: releaseObj.calendar(null, dates.release.formats.simple),
+                            full: releaseObj.calendar(null, dates.release.formats.full),
+                            expanded: releaseObj.calendar(null, dates.release.formats.expanded),
                           };
                         }
                         else {
@@ -1109,13 +1109,13 @@
                         let expiration = shiftCodeData.info.expiration_date.value;
 
                         if ([ 'through', 'until' ].indexOf(dates.expiration.type) != -1) {
-                          /** The SHiFT Code Release Date Moment */
-                          let expirationMoment = moment.tz(expiration, shiftCodeData.info.timezone);
+                          /** The SHiFT Code Release Date `dayjs` object */
+                          let expirationObj = node_modules.dayjs.tz(expiration, shiftCodeData.info.timezone);
 
                           return {
-                            simple: expirationMoment.calendar(null, dates.expiration.formats.simple),
-                            full: expirationMoment.calendar(null, dates.expiration.formats.full),
-                            expanded: expirationMoment.calendar(null, dates.expiration.formats.expanded),
+                            simple: expirationObj.calendar(null, dates.expiration.formats.simple),
+                            full: expirationObj.calendar(null, dates.expiration.formats.full),
+                            expanded: expirationObj.calendar(null, dates.expiration.formats.expanded),
                           };
                         }
                         else {
@@ -1837,7 +1837,7 @@
         })();
         // Initial SHiFT Code Update Timestamps
         (function () {
-          let now = moment.utc().valueOf();
+          let now = node_modules.dayjs.utc().valueOf();
 
           shiftObj.updateCheck.updateStats = {
             first: now,
@@ -2055,7 +2055,7 @@
                           const releaseDate = shiftCode.info.release_date;
   
                           if (releaseDate.type == 'date') {
-                            const date = moment(releaseDate.value);
+                            const date = node_modules.dayjs(releaseDate.value);
   
                             if (date) {
                               bindings.release_date = date.format('Y-MM-DD');
@@ -2074,7 +2074,7 @@
                           bindings.expiration_date_type = expirationDate.type;
   
                           if ([ 'through', 'until' ].indexOf(expirationDate.type) != -1) {
-                            const date = moment.tz(expirationDate.value, timezone);
+                            const date = node_modules.dayjs.tz(expirationDate.value, timezone);
   
                             if (date) {
                               bindings.expiration_date_value_date = date.format('Y-MM-DD');
@@ -2247,20 +2247,20 @@
                       },
                       created: (function () {
                         let date = shiftCode.info.creation_date;
-                        let dateMoment = moment(date);
+                        let dateObj = node_modules.dayjs(date);
   
                         return {
-                          primary: ucWords(dateMoment.fromNow()),
-                          secondary: dateMoment.format(dateFormat)
+                          primary: ucWords(dateObj.fromNow()),
+                          secondary: dateObj.format(dateFormat)
                         }
                       })(),
                       updated: (function () {
                         let date = shiftCode.info.last_update;
-                        let dateMoment = moment(date);
+                        let dateObj = node_modules.dayjs(date);
   
                         return {
-                          primary: ucWords(dateMoment.fromNow()),
-                          secondary: dateMoment.format(dateFormat)
+                          primary: ucWords(dateObj.fromNow()),
+                          secondary: dateObj.format(dateFormat)
                         }
                       })()
                       // expiration: (function () {
@@ -2268,11 +2268,11 @@
                       //   const expType = shiftCode.info.expiration_date.type;
   
                       //   if (expType == 'date') {
-                      //     const dateMoment = moment(date);
+                      //     const dateObj = node_modules.dayjs(date);
   
                       //     return {
-                      //       primary: ucWords(dateMoment.fromNow()),
-                      //       secondary: dateMoment.format(dateFormat)
+                      //       primary: ucWords(dateObj.fromNow()),
+                      //       secondary: dateObj.format(dateFormat)
                       //     }
                       //   }
                       //   else {

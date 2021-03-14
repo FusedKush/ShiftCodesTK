@@ -559,7 +559,7 @@
                       const responseObject = {
                         response: response == 'approved',
                         explicitResponse: response,
-                        timestamp: moment.utc().valueOf(),
+                        timestamp: node_modules.dayjs.utc().valueOf(),
                         modal: modal
                       };
         

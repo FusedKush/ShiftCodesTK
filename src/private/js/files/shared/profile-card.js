@@ -1,8 +1,8 @@
 (function () {
   let interval = setInterval(function () {
-    let isReady = typeof globalFunctionsReady != 'undefined' 
-                  && typeof moment != 'undefined' 
-                  && typeof ShiftCodesTK != 'undefined' 
+    let isReady = typeof globalFunctionsReady !== 'undefined' 
+                  && typeof node_modules !== 'undefined' 
+                  && typeof ShiftCodesTK !== 'undefined' 
                   && ShiftCodesTK.requests.isLoaded;
 
     if (isReady) {
@@ -187,7 +187,7 @@
                * @property A *Timestamp* representing when the stored data will expire. 
                * @type {number}
                **/
-              max_age: moment()
+              max_age: node_modules.dayjs()
                        .add(10, 'minutes')
                        .valueOf()
             };
@@ -208,7 +208,7 @@
 
           if (storedData) {
             // Check if stored data has expired
-            if (moment().valueOf() < this.stored_data[user_id].max_age) {
+            if (node_modules.dayjs().valueOf() < this.stored_data[user_id].max_age) {
               return storedData.data;
             }
             else {
@@ -367,7 +367,7 @@
                     if (dateStats.indexOf(stat_name) != -1) {
                       edit.attr(stat_node, 'update', 'data-relative-date', stat_value);
                       ShiftCodesTK.relative_dates.refresh_element(stat_node);
-                      ShiftCodesTK.layers.updateTooltip(stat_node, moment(stat_value).format('MMMM DD, YYYY hh:mm A [UTC]'));
+                      ShiftCodesTK.layers.updateTooltip(stat_node, node_modules.dayjs(stat_value).format('MMMM DD, YYYY hh:mm A [UTC]'));
                     }
                     else {
                       stat_node.innerHTML = stat_value;

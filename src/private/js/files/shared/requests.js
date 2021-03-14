@@ -1151,7 +1151,7 @@ ShiftCodesTK.requests.isLoaded = false;
                * @param {*} requestEvent
                */
               function handleRequestEvent (requestEvent) {
-                const currentTimestamp = moment().valueOf();
+                const currentTimestamp = node_modules.dayjs().valueOf();
                 const targetRequest = requestEvent.target;
                 const eventType =  requestEvent.type;
 
@@ -1183,7 +1183,7 @@ ShiftCodesTK.requests.isLoaded = false;
                   // End Timestamp & Result State
                   if ([ 'RequestCancelled', 'RequestCompleted' ].indexOf(customEventName) != -1) {
                     properties = mergeObj(properties, {
-                      timestampEnd: moment().valueOf(),
+                      timestampEnd: node_modules.dayjs().valueOf(),
                       resultState: customEventName == 'RequestCompleted'
                     });
                   }

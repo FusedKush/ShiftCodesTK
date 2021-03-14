@@ -719,434 +719,483 @@ function updateClientCursorProperties (event) {
   return cursorProperties;
 }
 
-// *** Immediate Functions & Event Listeners *** //
-// Checking for Dependencies
-function execGlobalScripts () {
-  if (typeof globalFunctionsReady == 'boolean' && typeof moment == 'function') {
-    // *** Immediate Functions ***
+// Immediate Functions & Event Listeners
+(function () {
+  let interval = setInterval (() => {
+    if (typeof globalFunctionsReady === 'boolean' && typeof node_modules !== 'undefined') {
+      clearInterval(interval);
 
-    // Local Functions
-    ShiftCodesTK.local = {};
-    // Global Properties & Methods
-    ShiftCodesTK.global = {
-      themeColors: tryJSONParse(getMetaTag('tk-theme-colors').content)
-    };
-    // Get SHiFT Platform & Game Data
-    ShiftCodesTK.shift = (function () {
-      let shiftData = {
-        platforms: {},
-        games: {}
+      // Local Functions
+      ShiftCodesTK.local = {};
+      // Global Properties & Methods
+      ShiftCodesTK.global = {
+        themeColors: tryJSONParse(getMetaTag('tk-theme-colors').content)
       };
-
-      try {
-        const dataTypes = [
-          'platforms',
-          'games'
-        ];
-        const source = dom.find.id('shift_data');
+      // Get SHiFT Platform & Game Data
+      ShiftCodesTK.shift = (function () {
+        let shiftData = {
+          platforms: {},
+          games: {}
+        };
   
-        if (source) {
-          for (let dataType of dataTypes) {
-            let data = dom.find.child(source, 'class', dataType);
-            
-            if (data) {
-              let parsedData = tryJSONParse(data.innerHTML, 'ignore');
-  
-              if (parsedData) {
-                shiftData[dataType] = parsedData;
-              }
-              else {
-                throw new Error(`SHiFT ${ucWords(dataType)} could not be parsed.`);
-              }
-            }
-            else {
-              throw new Error(`SHiFT ${ucWords(dataType)} was not found.`);
-            }
-          }
-
-          deleteElement(source);
-        }
-        else {
-          throw new Error(`No SHiFT Platform & Game Data was found.`);
-        }
-      }
-      catch (error) {
-        console.error(`An error occurred while parsing SHiFT Platform & Game Data: ${error}`);
-      }
-      finally {
-        return shiftData;
-      }
-    })();
-    /** The `relativeDates` interface is responsible for displaying *Relative Dates* for elements. */
-    ShiftCodesTK.relative_dates = {
-      class_name: 'relative-date-updated',
-      attribute_name: 'data-relative-date',
-      interval: {
-        duration: 150000,
-        id: null,
-
-        start () {
-          if (this.id !== null) {
-            console.error('The Relative Date Refresh Interval has already been started.');
-            return false;
-          }
-
-          this.id = setInterval(ShiftCodesTK.relative_dates.refresh_all_elements, this.duration);
-          return true;
-        },
-        stop () {
-          if (this.id === null) {
-            console.error('The Relative Date Refresh Interval has not been started.');
-            return false;
-          }
-
-          clearInterval(this.id);
-          this.id = null;
-          return true;
-        }
-      },
-
-      refresh_element (element) {
-        let relativeDate = dom.get(element, 'attr', this.attribute_name);
-
-        if (relativeDate) {
-          let dateMoment = moment(relativeDate);
-      
-          if (dateMoment) {
-            element.innerHTML = `${ucWords(dateMoment.fromNow(true))} ago`;
-            return true;
-          }
-          else {
-            console.error(`"${relativeDate}" is not a valid Date Timestamp for the target element.`);
-          }
-        }
-        else {
-          console.error("A Date Timestamp was not provided for the target element.");
-        }
-
-        return false;
-      },
-      refresh_all_elements () {
-        const relativeDates = ShiftCodesTK.relative_dates;
-        const elements = dom.find.children(document.body, 'attr', relativeDates.attribute_name);
-        let refreshedElements = [];
-
-        if (elements) {
-          for (let element of elements) {
-            let relativeDate = dom.get(element, 'attr', relativeDates.attribute_name);
-            
-            if (relativeDate) {
-              relativeDates.refresh_element(element);
-              edit.class(element, 'add', relativeDates.class_name);
-              refreshedElements.push(element);
-            }
-          }
-  
-          setTimeout(() => {
-            for (let element of refreshedElements) {
-              edit.class(element, 'remove', relativeDates.class_name);
-            }
-          }, 1000);
-        }
-
-        return refreshedElements;
-      }
-    };
-
-    // Determine Webp Support in the browser
-    (function () {
-      let img = document.createElement('img');
-
-      img.classList.add('webp-support');
-      img.onload = function ()  { webpSupportUpdate(true); };
-      img.onerror = function () { webpSupportUpdate(false); };
-      img.src = '/assets/img/webp_support.webp';
-
-      document.body.appendChild(img);
-    })();
-    // Check for hash-targeted elements
-    hashUpdate();
-    // Add inner span to buttons and links
-    (function () {
-      let clickables = dom.find.children(document, 'group', 'clickables');
-
-      for (let i = 0; i < clickables.length; i++) {
-        fixClickableContent(clickables[i]);
-      }
-    })();
-    // Add Press Toggle Listener to buttons
-    (function () {
-      window.addEventListener('click', function (event) {
-        if (button = dom.has(event.target, 'class', 'o-pressed', null, true)) {
-          let state = dom.has(button, 'attr', 'aria-pressed', 'true');
-      
-          console.info(button, dom.get(button, 'attr', 'aria-pressed'), dom.has(button, 'attr', 'aria-pressed', 'true'));
-          edit.attr(button, 'update', 'aria-pressed', !state);
-          setTimeout(function () {
-          }, 500);
-        }
-
-      });
-      // let buttons = dom.find.children(document, 'tag', 'button');
-
-      // for (let i = 0; i < buttons.length; i++) {
-      //   let btn = buttons[i];
-
-      //   if (dom.has(btn, 'class', 'o-pressed')) {
-      //     btnPressToggle(btn);
-      //   }
-      // }
-    })();
-    // Group related stylesheets, scripts, modals, & templates together
-    (function () {
-      let containers = {};
-        (function () {
-          containers.main = dom.find.id('containers');
-          containers.stylesheets = (function () {
-            let stylesheets = dom.find.children(document.head, 'attr', 'rel', 'stylesheet');
-
-            return stylesheets[stylesheets.length - 1];
-          })();
-          containers.scripts = (function () {
-            let scripts = dom.find.children(document.body, 'tag', 'script');
-
-            return scripts[scripts.length - 1];
-          })();
-          // containers.modals = dom.find.id('modals');
-          containers.templates = dom.find.id('templates');
-        })();
-      let elements = {
-        stylesheets: dom.find.children(document.body, 'attr', 'rel', 'stylesheet'),
-        scripts: dom.find.children(document.body, 'tag', 'script'),
-        // modals: dom.find.children(document.body, 'class', 'modal'),
-        templates: dom.find.children(document.body, 'tag', 'template')
-      };
-
-      for (let type in elements) {
-        let container = containers[type];
-        let elementList = elements[type];
-
-        for (let i = elementList.length - 1; i >= 0; i--) {
-          let element = elementList[i];
-          
-          if (element != container && !container.contains(element)) {
-            if (['stylesheets', 'scripts'].indexOf(type) != -1) {
-              container.insertAdjacentElement('afterend', element);
-            }
-            else {
-              container.appendChild(element);
-            }
-          }
-        }
-      }
-    })();
-
-    // *** Event Listeners ***
-    // Hash Update
-    window.addEventListener('hashchange', function (e) {
-      event.preventDefault();
-      checkHash();
-      hashUpdate();
-    });
-    // Prevent Anchor-Jumping behind navbar
-    // window.addEventListener('scroll', function () {
-    //   if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
-
-    //   globalScrollUpdates++;
-
-    //   globalScrollTimer = setTimeout(function () {
-    //     if (globalScrollUpdates == 1) {
-    //       let e = document.getElementsByTagName('*');
-
-    //       for (i = 0; i < e.length; i++) {
-    //         let pos = e[i].getBoundingClientRect().top;
-
-    //         if (pos >= 0 && pos <= 1) { hashUpdate(); }
-    //       }
-    //     }
-
-    //     globalScrollUpdates = 0;
-    //   }, 150);
-    // });
-    // Clear Scroll event count on page load
-    window.addEventListener('load', globalListenerLoadClearScroll);
-    // Add Focus Scroll Listener to all present elements
-    // addFocusScrollListeners(document);
-    // Intercept all hashed anchors
-    (function () {
-      let e = document.getElementsByTagName('a');
-
-      for (i = 0; i < e.length; i++) {
-        if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
-      }
-    })();
-    // Manage focus lock
-    window.addEventListener('mousedown', focusLock.handle);
-    window.addEventListener('keydown', focusLock.handle);
-    // Client Properties
-    (function () {
-      ShiftCodesTK.client = {
-        cursor: {
-          x: 0,
-          y: 0,
-          target: 0
-        },
-        scroll: 0
-      };
-
-      function get_scroll_pos () {
-        const sources = [
-          window.pageYOffset,
-          document.documentElement.scrollTop,
-          document.body.scrollTop
-        ];
-
-        for (const source of sources) {
-          if (typeof source != 'undefined' && source != undefined) {
-            ShiftCodesTK.client.scroll = source;
-            return;
-          }
-        }
-      }
-
-      get_scroll_pos();
-      window.addEventListener('mousemove', updateClientCursorProperties);
-      document.body.addEventListener('mouseleave', updateClientCursorProperties);
-      window.addEventListener('scroll', get_scroll_pos);
-    })();
-    // Copy to Clipboard
-    window.addEventListener('click', (event) => {
-      let copyButton = (function () {
-        if (copyButton = dom.has(event.target, 'class', 'copy-to-clipboard', null, true)) {
-          return copyButton;
-        }
-
-        return false;
-      })();
-
-      if (copyButton) {
         try {
-          const copyContent = (function () {
-            const attr = dom.get(copyButton, 'attr', 'data-copy');
-
-            if (attr) {
-              const count = tryParseInt(attr, 'ignore');
-
-              if (count === false) {
-                const node = dom.find.id(attr);
-
-                if (node) {
-                  return node;
+          const dataTypes = [
+            'platforms',
+            'games'
+          ];
+          const source = dom.find.id('shift_data');
+    
+          if (source) {
+            for (let dataType of dataTypes) {
+              let data = dom.find.child(source, 'class', dataType);
+              
+              if (data) {
+                let parsedData = tryJSONParse(data.innerHTML, 'ignore');
+    
+                if (parsedData) {
+                  shiftData[dataType] = parsedData;
                 }
                 else {
-                  throw `Provided element "${attr}" does not exist.`;
+                  throw new Error(`SHiFT ${ucWords(dataType)} could not be parsed.`);
                 }
               }
               else {
-                let parent = copyButton;
-
-                for (let i = 0; i < count; i++) {
-                  if (parent.parentNode) {
-                    parent = parent.parentNode;
-                  }
-                  else {
-                    throw `Parent number "${count}" does not exist.`;
-                  }
-                }
-
-                return dom.find.child(parent, 'class', 'copy-content');
+                throw new Error(`SHiFT ${ucWords(dataType)} was not found.`);
               }
             }
-
-            if (copyButton.parentNode) {
-              return dom.find.child(copyButton.parentNode, 'class', 'copy-content');
-            }
-            else {
-              return false;
-            }
-          })();
-
-          if (copyContent) {
-            const result = copyToClipboard(copyContent);
-
-            if (!result) {
-              isDisabled(copyButton, true);
-              ShiftCodesTK.layers.updateTooltip(copyButton, 'Could not be copied to the Clipboard.', { delay: 'none' });
-            }
+  
+            deleteElement(source);
+          }
+          else {
+            throw new Error(`No SHiFT Platform & Game Data was found.`);
           }
         }
         catch (error) {
-          console.error(`copyToClipboard Error: ${error}"`);
+          console.error(`An error occurred while parsing SHiFT Platform & Game Data: ${error}`);
+        }
+        finally {
+          return shiftData;
+        }
+      })();
+      /** The `dayjs_managers` are responsible for rendering *Relative* and *Calendar Dates* for elements using a simple attribute. */
+      ShiftCodesTK.dayjs_managers = {
+        /** @var {string} ShiftCodesTK.dayjs_managers.attributes The attributes used with managed elements. */
+        attributes: {
+          /** @var {string} ShiftCodesTK.dayjs_managers.attributes.relative_attr The used to identify a *Relative Date*. */
+          relative_attr: 'data-relative-date',
+          /** @var {string} ShiftCodesTK.dayjs_managers.attributes.calendar_attr The used to identify a *Calendar Date*. */
+          calendar_attr: 'data-calendar-date',
+          /** @var {string} ShiftCodesTK.dayjs_managers.attributes.calendar_locale The attribute used to specify a *Custom Calendar Date Locale*. */
+          calendar_locale: 'data-calendar-date-locale'
+        },
+        /** @var {object} ShiftCodesTK.dayjs_managers.interval The interval in which the `dayjs_managers` run. */
+        interval: {
+          /** @var {int} ShiftCodesTK.dayjs_managers.interval.duration The amount of time, in *milliseconds*, between executions. */
+          duration: 150000,
+          /** @var {(string|null)} ShiftCodesTK.dayjs_managers.interval.id The current *Interval ID* of the manager interval, if applicable. */
+          id: null,
+
+          /** Start the `dayjs_managers` interval
+           * 
+           * @return {bool} Returns **true** on success, or **false** if the interval has already been started.
+           */
+          start () {
+            if (this.id !== null) {
+              return false;
+            }
+  
+            this.id = setInterval(ShiftCodesTK.dayjs_managers.refresh_all_elements, this.duration);
+            return true;
+          },
+          /** Pause the `dayjs_managers` interval
+           * 
+           * @return {bool} Returns **true** on success, or **false** if the interval is not currently active.
+           */
+          stop () {
+            if (this.id === null) {
+              return false;
+            }
+  
+            clearInterval(this.id);
+            this.id = null;
+            return true;
+          }
+        },
+
+        /** Refresh a *Relative* or *Calendar Date* on an element
+         * 
+         * @param {Element} element The element to refresh.
+         * @returns {bool} Returns **true** if a *Relative* or *Calendar Date* was successfully refreshed on the element. Returns **false** if a date was not found or refreshed.
+         */
+        refresh_element (element) {
+          let relativeDate = dom.get(element, 'attr', this.attributes.relative_attr);
+          let calendarDate = dom.get(element, 'attr', this.attributes.calendar_attr);
+
+          if (relativeDate) {
+            let dateObj = node_modules.dayjs(relativeDate);
+
+            if (dateObj) {
+              element.innerHTML = dateObj.fromNow();
+              return true;
+            }
+            else {
+              console.warn(`An invalid Relative Date was provided to a dayjs manager: "${relativeDate}"`);
+            }
+          }
+          else if (calendarDate) {
+            let dateObj = node_modules.dayjs(calendarDate);
+
+            if (dateObj) {
+              const customLocale = (function () {
+                const localeAttr = dom.get(element, 'attr', this.attributes.calendar_locale);
+
+                if (localeAttr) {
+                  if (localeAttr.indexOf('.') !== -1) {
+                    const customLocalePieces = localeAttr.split('.');
+                    const customLocale = node_modules.dayjs.tkLocales.en.calendar[customLocalePieces[0]][customLocalePieces[1]];
+  
+                    if (customLocale) {
+                      return customLocale;
+                    }
+                  }
+
+                  console.warn(`"${localeAttr}" is not a valid custom locale.`);
+                }
+
+                return null;
+              }.bind(this))();
+
+              element.innerHTML = dateObj.calendar(null, customLocale);
+              return true;
+            }
+            else {
+              console.warn(`An invalid Calendar Date was provided to a dayjs manager: "${relativeDate}"`);
+            }
+          }
+
           return false;
+        },
+        /** Refresh all elements currently bound to a `dayjs_manager`
+         * 
+         * @returns array Returns an `array` of all elements that were successfully refreshed. 
+         */
+        refresh_all_elements () {
+          const managerObj = ShiftCodesTK.dayjs_managers;
+          const validElements = {
+            relative: dom.find.children(document.body, 'attr', managerObj.attributes.relative_attr),
+            calendar: dom.find.children(document.body, 'attr', managerObj.attributes.calendar_attr),
+          };
+          let refreshedElements = [];
+
+          if (validElements.relative || validElements.calendar) {
+            for (let elementCategory in validElements) {
+              let elementList = validElements[elementCategory];
+
+              for (let element of elementList) {
+                let elementResult = managerObj.refresh_element(element);
+
+                if (elementResult) {
+                  refreshedElements.push(element);
+                }
+              }
+            }
+          }
+  
+          return refreshedElements;
         }
-      }
-    });
-    // Refresh relative dates
-    ShiftCodesTK.relative_dates.refresh_all_elements();
-    ShiftCodesTK.relative_dates.interval.start();
-    // Button Aliases
-    window.addEventListener('click', (event) => {
-      const element = dom.has(event.target, 'attr', 'data-alias', null, true);
-
-      if (element) {
-        const alias = dom.get(element, 'attr', 'data-alias');
-        const aliasTarget = dom.find.id(alias);
-
-        if (aliasTarget) {
-          if (aliasTarget.click !== undefined) {
-            aliasTarget.click();
-            return true;
-          }
-          else if (aliasTarget.focus !== undefined) {
-            aliasTarget.focus();
-            return true;
-          }
-          else {
-            console.warn(`Button Alias "${alias}" could not be aliased.`);
-            return false;
-          }
+      };
+  
+      // Determine Webp Support in the browser
+      (function () {
+        let img = document.createElement('img');
+  
+        img.classList.add('webp-support');
+        img.onload = function ()  { webpSupportUpdate(true); };
+        img.onerror = function () { webpSupportUpdate(false); };
+        img.src = '/assets/img/webp_support.webp';
+  
+        document.body.appendChild(img);
+      })();
+      // Check for hash-targeted elements
+      hashUpdate();
+      // Add inner span to buttons and links
+      (function () {
+        let clickables = dom.find.children(document, 'group', 'clickables');
+  
+        for (let i = 0; i < clickables.length; i++) {
+          fixClickableContent(clickables[i]);
         }
-
-        console.warn(`Button Alias "${alias}" was not found.`);
-        return false;
-      }
-      
-    });
-    // Profile Card Modal
-    ShiftCodesTK.requests.savedRequests.saveRequest('profile_card_modal', {
-      parameters: {
-        user_id: ''
-      },
-      request: {
-        path: '/assets/requests/get/account/profile-card',
-        callback: (response) => {
-          if (response && response.payload !== undefined) {
-            if (response.payload[0]) {
-              const modal = dom.find.id('profile_card_modal');
-              const modalBody = (function () {
-                const body = dom.find.child(modal, 'class', 'body');
-                const container = dom.find.child(body, 'class', 'content-container');
-
-                return container;
-              })();
-              const element = createElementFromHTML(response.payload[0]);
-
-              modalBody.innerHTML = element.outerHTML;
-              multiView_setup(modalBody.childNodes[0]);
-              ShiftCodesTK.modals.toggleModal(modal, true);
+      })();
+      // Add Press Toggle Listener to buttons
+      (function () {
+        window.addEventListener('click', function (event) {
+          if (button = dom.has(event.target, 'class', 'o-pressed', null, true)) {
+            let state = dom.has(button, 'attr', 'aria-pressed', 'true');
+        
+            console.info(button, dom.get(button, 'attr', 'aria-pressed'), dom.has(button, 'attr', 'aria-pressed', 'true'));
+            edit.attr(button, 'update', 'aria-pressed', !state);
+            setTimeout(function () {
+            }, 500);
+          }
+  
+        });
+        // let buttons = dom.find.children(document, 'tag', 'button');
+  
+        // for (let i = 0; i < buttons.length; i++) {
+        //   let btn = buttons[i];
+  
+        //   if (dom.has(btn, 'class', 'o-pressed')) {
+        //     btnPressToggle(btn);
+        //   }
+        // }
+      })();
+      // Group related stylesheets, scripts, modals, & templates together
+      (function () {
+        let containers = {};
+          (function () {
+            containers.main = dom.find.id('containers');
+            containers.stylesheets = (function () {
+              let stylesheets = dom.find.children(document.head, 'attr', 'rel', 'stylesheet');
+  
+              return stylesheets[stylesheets.length - 1];
+            })();
+            containers.scripts = (function () {
+              let scripts = dom.find.children(document.body, 'tag', 'script');
+  
+              return scripts[scripts.length - 1];
+            })();
+            // containers.modals = dom.find.id('modals');
+            containers.templates = dom.find.id('templates');
+          })();
+        let elements = {
+          stylesheets: dom.find.children(document.body, 'attr', 'rel', 'stylesheet'),
+          scripts: dom.find.children(document.body, 'tag', 'script'),
+          // modals: dom.find.children(document.body, 'class', 'modal'),
+          templates: dom.find.children(document.body, 'tag', 'template')
+        };
+  
+        for (let type in elements) {
+          let container = containers[type];
+          let elementList = elements[type];
+  
+          for (let i = elementList.length - 1; i >= 0; i--) {
+            let element = elementList[i];
+            
+            if (element != container && !container.contains(element)) {
+              if (['stylesheets', 'scripts'].indexOf(type) != -1) {
+                container.insertAdjacentElement('afterend', element);
+              }
+              else {
+                container.appendChild(element);
+              }
             }
           }
         }
-      }
-    });
-  }
-  else {
-    setTimeout(execGlobalScripts, 250);
-  }
-}
-execGlobalScripts();
-
-window.addEventListener('load', function () {
-  loadEventFired = true;
-});
+      })();
+  
+      // *** Event Listeners ***
+      // Hash Update
+      window.addEventListener('hashchange', function (e) {
+        event.preventDefault();
+        checkHash();
+        hashUpdate();
+      });
+      // Prevent Anchor-Jumping behind navbar
+      // window.addEventListener('scroll', function () {
+      //   if (globalScrollTimer !== null) { clearTimeout(globalScrollTimer); }
+  
+      //   globalScrollUpdates++;
+  
+      //   globalScrollTimer = setTimeout(function () {
+      //     if (globalScrollUpdates == 1) {
+      //       let e = document.getElementsByTagName('*');
+  
+      //       for (i = 0; i < e.length; i++) {
+      //         let pos = e[i].getBoundingClientRect().top;
+  
+      //         if (pos >= 0 && pos <= 1) { hashUpdate(); }
+      //       }
+      //     }
+  
+      //     globalScrollUpdates = 0;
+      //   }, 150);
+      // });
+      // Clear Scroll event count on page load
+      window.addEventListener('load', globalListenerLoadClearScroll);
+      // Add Focus Scroll Listener to all present elements
+      // addFocusScrollListeners(document);
+      // Intercept all hashed anchors
+      (function () {
+        let e = document.getElementsByTagName('a');
+  
+        for (i = 0; i < e.length; i++) {
+          if (e[i].hash != '') { e[i].addEventListener('click', hashUpdate); }
+        }
+      })();
+      // Manage focus lock
+      window.addEventListener('mousedown', focusLock.handle);
+      window.addEventListener('keydown', focusLock.handle);
+      // Client Properties
+      (function () {
+        ShiftCodesTK.client = {
+          cursor: {
+            x: 0,
+            y: 0,
+            target: 0
+          },
+          scroll: 0
+        };
+  
+        function get_scroll_pos () {
+          const sources = [
+            window.pageYOffset,
+            document.documentElement.scrollTop,
+            document.body.scrollTop
+          ];
+  
+          for (const source of sources) {
+            if (typeof source != 'undefined' && source != undefined) {
+              ShiftCodesTK.client.scroll = source;
+              return;
+            }
+          }
+        }
+  
+        get_scroll_pos();
+        window.addEventListener('mousemove', updateClientCursorProperties);
+        document.body.addEventListener('mouseleave', updateClientCursorProperties);
+        window.addEventListener('scroll', get_scroll_pos);
+      })();
+      // Copy to Clipboard
+      window.addEventListener('click', (event) => {
+        let copyButton = (function () {
+          if (copyButton = dom.has(event.target, 'class', 'copy-to-clipboard', null, true)) {
+            return copyButton;
+          }
+  
+          return false;
+        })();
+  
+        if (copyButton) {
+          try {
+            const copyContent = (function () {
+              const attr = dom.get(copyButton, 'attr', 'data-copy');
+  
+              if (attr) {
+                const count = tryParseInt(attr, 'ignore');
+  
+                if (count === false) {
+                  const node = dom.find.id(attr);
+  
+                  if (node) {
+                    return node;
+                  }
+                  else {
+                    throw `Provided element "${attr}" does not exist.`;
+                  }
+                }
+                else {
+                  let parent = copyButton;
+  
+                  for (let i = 0; i < count; i++) {
+                    if (parent.parentNode) {
+                      parent = parent.parentNode;
+                    }
+                    else {
+                      throw `Parent number "${count}" does not exist.`;
+                    }
+                  }
+  
+                  return dom.find.child(parent, 'class', 'copy-content');
+                }
+              }
+  
+              if (copyButton.parentNode) {
+                return dom.find.child(copyButton.parentNode, 'class', 'copy-content');
+              }
+              else {
+                return false;
+              }
+            })();
+  
+            if (copyContent) {
+              const result = copyToClipboard(copyContent);
+  
+              if (!result) {
+                isDisabled(copyButton, true);
+                ShiftCodesTK.layers.updateTooltip(copyButton, 'Could not be copied to the Clipboard.', { delay: 'none' });
+              }
+            }
+          }
+          catch (error) {
+            console.error(`copyToClipboard Error: ${error}"`);
+            return false;
+          }
+        }
+      });
+      // `dayjs_managers`
+      ShiftCodesTK.dayjs_managers.refresh_all_elements();
+      ShiftCodesTK.dayjs_managers.interval.start();
+      // Button Aliases
+      window.addEventListener('click', (event) => {
+        const element = dom.has(event.target, 'attr', 'data-alias', null, true);
+  
+        if (element) {
+          const alias = dom.get(element, 'attr', 'data-alias');
+          const aliasTarget = dom.find.id(alias);
+  
+          if (aliasTarget) {
+            if (aliasTarget.click !== undefined) {
+              aliasTarget.click();
+              return true;
+            }
+            else if (aliasTarget.focus !== undefined) {
+              aliasTarget.focus();
+              return true;
+            }
+            else {
+              console.warn(`Button Alias "${alias}" could not be aliased.`);
+              return false;
+            }
+          }
+  
+          console.warn(`Button Alias "${alias}" was not found.`);
+          return false;
+        }
+        
+      });
+      // Profile Card Modal
+      ShiftCodesTK.requests.savedRequests.saveRequest('profile_card_modal', {
+        parameters: {
+          user_id: ''
+        },
+        request: {
+          path: '/assets/requests/get/account/profile-card',
+          callback: (response) => {
+            if (response && response.payload !== undefined) {
+              if (response.payload[0]) {
+                const modal = dom.find.id('profile_card_modal');
+                const modalBody = (function () {
+                  const body = dom.find.child(modal, 'class', 'body');
+                  const container = dom.find.child(body, 'class', 'content-container');
+  
+                  return container;
+                })();
+                const element = createElementFromHTML(response.payload[0]);
+  
+                modalBody.innerHTML = element.outerHTML;
+                multiView_setup(modalBody.childNodes[0]);
+                ShiftCodesTK.modals.toggleModal(modal, true);
+              }
+            }
+          }
+        }
+      });
+    }
+  }, 100);
+  
+  window.addEventListener('load', function () {
+    loadEventFired = true;
+  });
+})();
 
