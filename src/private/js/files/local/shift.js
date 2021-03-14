@@ -1405,44 +1405,51 @@
                     actions.share = dom.find.child(actions.container, 'class', 'share');
                     actions.redeem = dom.find.child(actions.container, 'class', 'redeem');
                     actions.optionsMenu = dom.find.child(actions.container, 'class', 'options-menu');
-      
-                // Active SHiFT Code
-                if (shiftCodeData.states.code.isActive) {
-                  // Share Form
-                  (function () {
-                    const shareForm = dom.find.child(actions.share, 'tag', 'form');
-                    const codeIDField = formsObj.getField(shareForm, 'share_link');
 
-                    formsObj.updateField(codeIDField, `https://${window.location.host}/${shiftCodeData.properties.game_id}?code=${shiftCodeData.properties.code.id}`, { updateDefault: true });
-                  })(); 
-                  // Redeem Form
-                  (function () {
-                    const redeemForm = dom.find.child(actions.redeem, 'tag', 'form');
-                    const bindings = {
-                      code: shiftCodeData.properties.code.hash,
-                      action: shiftCodeData.states.user.hasRedeemed ? 'remove' : 'redeem'
-                    };
-  
-                    for (let binding in bindings) {
-                      let bindingValue = bindings[binding];
-                      let field = formsObj.getField(redeemForm, binding);
-  
-                      if (field) {
-                        if (Array.isArray(field)){
-                          formsObj.updateField(field[0], bindingValue);
-                        }
-                        else {
-                          formsObj.updateField(field, bindingValue);
+                // TEMP: Hide actions for non-editors until all actions are updated
+                if (!shiftCodeData.states.user.canEdit) {
+                  deleteElement(actions.container);
+                  deleteElement(dom.find.child(footer, 'class', 'separator'));
+                }
+                else {
+                  // Active SHiFT Code
+                  if (shiftCodeData.states.code.isActive) {
+                    // Share Form
+                    (function () {
+                      const shareForm = dom.find.child(actions.share, 'tag', 'form');
+                      const codeIDField = formsObj.getField(shareForm, 'share_link');
+
+                      formsObj.updateField(codeIDField, `https://${window.location.host}/${shiftCodeData.properties.game_id}?code=${shiftCodeData.properties.code.id}`, { updateDefault: true });
+                    })(); 
+                    // Redeem Form
+                    (function () {
+                      const redeemForm = dom.find.child(actions.redeem, 'tag', 'form');
+                      const bindings = {
+                        code: shiftCodeData.properties.code.hash,
+                        action: shiftCodeData.states.user.hasRedeemed ? 'remove' : 'redeem'
+                      };
+    
+                      for (let binding in bindings) {
+                        let bindingValue = bindings[binding];
+                        let field = formsObj.getField(redeemForm, binding);
+    
+                        if (field) {
+                          if (Array.isArray(field)){
+                            formsObj.updateField(field[0], bindingValue);
+                          }
+                          else {
+                            formsObj.updateField(field, bindingValue);
+                          }
                         }
                       }
-                    }
-                  })();
-                }
-                // Inactive SHiFT Code
-                else {
-                  isDisabled(dom.find.child(actions.share, 'tag', 'button'), true);
-                  isDisabled(dom.find.child(actions.redeem, 'tag', 'button'), true);
-                  // updateLabel(actions.redeem, 'This SHiFT Code has Expired.', [ 'aria', 'tooltip' ]);
+                    })();
+                  }
+                  // Inactive SHiFT Code
+                  else {
+                    isDisabled(dom.find.child(actions.share, 'tag', 'button'), true);
+                    isDisabled(dom.find.child(actions.redeem, 'tag', 'button'), true);
+                    // updateLabel(actions.redeem, 'This SHiFT Code has Expired.', [ 'aria', 'tooltip' ]);
+                  }
                 }
               })();
               // Info
