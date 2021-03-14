@@ -1,4 +1,5 @@
 <?php
+  // New Module
   namespace ShiftCodesTK\Forms {
     use ShiftCodesTK\Strings;
 
@@ -164,7 +165,9 @@
       define("ShiftCodesTK\Forms\ALERT_TEMPLATE", $template);
     })();
   }
+  // Old Module
   namespace {
+    use const ShiftCodesTK\DATE_TIMEZONES;
 
     /** Form Configuration */
   
