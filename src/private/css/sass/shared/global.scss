@@ -395,7 +395,7 @@ ul, ol {
 
 // Code
 code {
-  padding: 3px 6px;
+  padding: 4px 8px;
   line-height: 1.75;
   white-space: nowrap;
 }
@@ -410,19 +410,19 @@ pre, .code-block {
   max-height: 500px;
 }
 pre, code, .code-block {
-  // $codeColor: adjust-color($site-color-lighter, $saturation: 20%, $lightness: 10%);
-  $codeColor: $site-color-lighter;
+  $codeColor: adjust-color($site-color-lighter, $lightness: 25%);
+  // $codeColor: $site-color-lighter;
 
   font-family: inherit;
   border-radius: 6px;
-  // background-color: tpw(0.15);
-  // border: bd(1.5px, tpw(0.5));
-  background-color: adjust-color($site-color-main, $alpha: -0.25);
+  background-color: adjust-color($codeColor, $alpha: -0.9);
+  border: bd(1.5px, adjust-color($codeColor, $alpha: -0.75));
+  // background-color: adjust-color($site-color-main, $alpha: -0.25);
   color: $codeColor;
-  border: bd(1.5px, adjust-color($codeColor, $alpha: -0.25));
+  // border: bd(1.5px, adjust-color($codeColor, $alpha: -0.25));
   overflow: auto;
-  // text-shadow: dropShadow(tpb(0.5));
-  text-shadow: dropShadow(adjust-color($site-color-darker, $alpha: -0.5));
+  text-shadow: dropShadow(tpb(0.35));
+  // text-shadow: dropShadow(adjust-color($site-color-darker, $alpha: -0.25));
 }
 
 // Misc
@@ -433,9 +433,6 @@ img {
   0%, 100% { opacity: 1; /* transform: scale(1); */ }
   33%      { opacity: 0.85; /* transform: scale(1.05); */ }
   66%      { opacity: 0.75; /* transform: scale(0.95); */ }
-}
-[data-relative-date].relative-date-updated {
-  animation: relativeDateUpdated linear 0.4s;
 }
 template, .webp-support { display: none; }
 .xe-notice {
