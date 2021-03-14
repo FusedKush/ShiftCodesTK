@@ -8,34 +8,34 @@ do
     siteroot="/home/shiftcodestk"
     deployments="${siteroot}/deployments"
     repository="${siteroot}/repository"
-
-    chmod -R 0711 $repository
-
+    
+    # Set Branch-specific variables
     if [ "master" == "${branch}" ]; then
-      git --work-tree="${deployments}/stable" checkout -f $branch
+      branchDeploymentPath="${deployments}/stable"
+      branchPublicPath=$branchDeploymentPath
     else
-      git --work-tree="${deployments}/beta" checkout -f $branch
+      branchDeploymentPath="${deployments}/beta"
+      branchPublicPath="${branchDeploymentPath}/src/public"
     fi
 
-    cd $deployments
+    # Update Repository Permissions
+    chmod -R 0700 $repository
 
-    if [ "master" == "${branch}" ]; then
-      cd "stable"
-    else
-      cd "beta"
-    fi
+    # Deploy the repository
+    git --work-tree=$branchDeploymentPath checkout -f $branch
+    cd $branchDeploymentPath
 
+    # Generate project files
     nvs use auto
     npm install
     composer install
     gulp build
 
-    if [ "master" == "${branch}" ]; then
-      chmod -R 0711 "${deployments}/stable"
-      chmod -R 0755 "${deployments}/stable/src/public"
-    else
-      chmod -R 0711 "${deployments}/beta"
-      chmod -R 0755 "${deployments}/beta/src/public"
-    fi
+    # Update deployed file permissions
+    find $branchDeploymentPath --type d --exec chmod -R 0711
+    find $branchDeploymentPath \( -path "${branchDeploymentPath}/node_modules" -prune -o -path "${branchDeploymentPath}/vendors" -prune -o \) --type f --exec chmod -R 0700
+    find $branchPublicPath --type d --exec chmod -R 0755
+    find $branchPublicPath --type f --exec chmod -R 0744
+    chmod 0700 "${branchPublicPath}/initialize.php"
   fi;
 done
