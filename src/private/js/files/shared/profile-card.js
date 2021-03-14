@@ -366,7 +366,7 @@
   
                     if (dateStats.indexOf(stat_name) != -1) {
                       edit.attr(stat_node, 'update', 'data-relative-date', stat_value);
-                      ShiftCodesTK.relative_dates.refresh_element(stat_node);
+                      ShiftCodesTK.dayjs_managers.refresh_element(stat_node);
                       ShiftCodesTK.layers.updateTooltip(stat_node, node_modules.dayjs(stat_value).format('MMMM DD, YYYY hh:mm A [UTC]'));
                     }
                     else {
