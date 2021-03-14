@@ -378,7 +378,7 @@ function newAjaxRequest (requestProperties) {
         let response = tryJSONParse(request.responseText);
 
         // Try to retrieve updated request token
-        if (response && response.statusMessage == 'Missing or Invalid Request Token' && !properties._tokenRefreshed) {
+        if (response && response.status_message == 'Missing or Invalid Request Token' && !properties._tokenRefreshed) {
           properties._tokenRefreshed = true;
 
           requestToken.check(function (newToken, oldToken) {

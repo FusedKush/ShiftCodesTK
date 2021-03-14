@@ -1266,7 +1266,7 @@ ShiftCodesTK.requests.isLoaded = false;
                       const response = tryJSONParse(eventProperties.resultResponse, 'ignore');
 
                       if (response) {
-                        if (response.statusMessage == 'Missing or Invalid Request Token' && !_tokenRefreshed) {
+                        if (response.status_message == 'Missing or Invalid Request Token' && !_tokenRefreshed) {
                           requestToken.check((newToken, oldToken) => {
                             requestProperties.headers[requestToken.headerName] = newToken;
                             

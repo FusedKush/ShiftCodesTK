@@ -55,16 +55,16 @@
      * @return void
      */
     public function set($code) {
-      $statusCode = \ShiftCodesTK\STATUS_CODES[$code] ?? false;
-      $httpCode = $statusCode && isset($statusCode['httpCode']) ? $statusCode['httpCode'] : $code;
+      $status_code = \ShiftCodesTK\STATUS_CODES[$code] ?? false;
+      $httpCode = $status_code && isset($status_code['httpCode']) ? $status_code['httpCode'] : $code;
 
-      if (!$statusCode) {
+      if (!$status_code) {
         error_log("\"$code\" is not a valid Status Code.");
         return;
       }
 
       $this->status_code = $httpCode;
-      $this->status_message = $statusCode['name'];
+      $this->status_message = $status_code['name'];
     }
     /**
      * Add or update a payload
@@ -121,8 +121,8 @@
     public function getPayloads() {
       $payloads = (array) clone $this;
 
-      unset($payloads['statusCode']);
-      unset($payloads['statusMessage']);
+      unset($payloads['status_code']);
+      unset($payloads['status_message']);
 
       return $payloads;
     }

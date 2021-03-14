@@ -152,7 +152,7 @@ function getChangelogs () {
   function handleResponse (serverResponse) {
     let response = tryJSONParse(serverResponse);
 
-    if (response && response.statusCode == 0) {
+    if (response && response.status_code == 200) {
       let changelogs = response.payload.changelogs;
           count.fetched = changelogs.length;
 

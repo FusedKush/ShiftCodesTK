@@ -171,7 +171,7 @@ var requestToken = {
         let token = requestToken.get();
         let response = tryJSONParse(responseString);
 
-        if (response && response.statusCode == 200) {
+        if (response && response.status_code == 200) {
           let newToken = response.payload.token;
 
           if (newToken != 'unchanged') {

@@ -90,7 +90,7 @@
   })();
   // Update payload
   (function () use (&$response, $validation, $redemptionID) {
-    if ($response->statusCode < 400) {
+    if ($response->status_code < 400) {
       /**
        * @var boolean Indicates if an informational toast should be displayed when the request has completed.
        */

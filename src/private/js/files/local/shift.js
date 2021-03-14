@@ -1946,7 +1946,7 @@
               }
     
               if (formEventData.formResponseData) {
-                if (formEventData.formResponseData.statusCode == 200) {
+                if (formEventData.formResponseData.status_code == 200) {
                   setTimeout(() => {
                     const matchingShiftCodes = dom.find.children(shiftObj.locations.shiftCodeList, 'class', 'shift-code');
   

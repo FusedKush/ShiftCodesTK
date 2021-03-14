@@ -2748,7 +2748,7 @@
         })();
   
         if ($props['success']) {
-          if ($response->statusCode === null) {
+          if ($response->status_code === null) {
             $response->set(1);
           }
         }

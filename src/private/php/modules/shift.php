@@ -580,7 +580,7 @@
         if ($result === false) {
           $response->fatalError(-3, [
             'type'       => 'Server Query Error',
-            'statusCode' => $_mysqli->con->errno
+            'status_code' => $_mysqli->con->errno
           ]);
           exit;
         }
