@@ -550,48 +550,51 @@
              */
             function updateRedemptionComponents (shiftCodePanel) {
               const redemptionButtonContainer = dom.find.child(shiftCodePanel, 'class', 'action redeem');
-              const redemptionButton = dom.find.child(redemptionButtonContainer, 'class', 'redeem');
-  
-              edit.class(shiftCodePanel, redemptionState ? 'add' : 'remove', 'redeemed');
-  
-              if (redemptionButton) {
-                /** String replacement bindings */
-                const bindings = {
-                  icon: [
-                    redemptionState 
-                     ? 'fa-bookmark' 
-                     : 'fa-check', 
-                    redemptionState 
-                     ? 'fa-check' 
-                     : 'fa-bookmark'
-                  ],
-                  title: [
-                    redemptionState 
-                      ? 'redeemed' 
-                      : 'unredeemed', 
-                    redemptionState 
-                      ? 'unredeemed' 
-                      : 'redeemed'
-                  ]
-                };
-                /** Base title and tooltip strings */
-                const baseTitles = {
-                  aria: 'Mark this SHiFT Code as redeemed', 
-                  tooltip: `Mark this SHiFT Code as&nbsp;<em>redeemed</em>
-                            <br>
-                            <br><button class="link no-color modal-toggle" data-modal="shift_code_redeeming_codes_info_modal"><strong>Learn More</strong></button>`
-                };
-  
-                // Button Content
-                redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.icon);
-                // redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.title);
 
-                if (!redemptionButton.disabled) {
-                  // Aria
-                  edit.attr(redemptionButton, 'update', 'aria-pressed', redemptionState);
-                  updateLabel(redemptionButton, baseTitles.aria.replace(...bindings.title), [ 'aria' ]);
-                  // Tooltip
-                  updateLabel(redemptionButton, baseTitles.tooltip.replace(...bindings.title), [ 'tooltip' ]);
+              if (redemptionButtonContainer) {
+                const redemptionButton = dom.find.child(redemptionButtonContainer, 'class', 'redeem');
+    
+                edit.class(shiftCodePanel, redemptionState ? 'add' : 'remove', 'redeemed');
+    
+                if (redemptionButton) {
+                  /** String replacement bindings */
+                  const bindings = {
+                    icon: [
+                      redemptionState 
+                       ? 'fa-bookmark' 
+                       : 'fa-check', 
+                      redemptionState 
+                       ? 'fa-check' 
+                       : 'fa-bookmark'
+                    ],
+                    title: [
+                      redemptionState 
+                        ? 'redeemed' 
+                        : 'unredeemed', 
+                      redemptionState 
+                        ? 'unredeemed' 
+                        : 'redeemed'
+                    ]
+                  };
+                  /** Base title and tooltip strings */
+                  const baseTitles = {
+                    aria: 'Mark this SHiFT Code as redeemed', 
+                    tooltip: `Mark this SHiFT Code as&nbsp;<em>redeemed</em>
+                              <br>
+                              <br><button class="link no-color modal-toggle" data-modal="shift_code_redeeming_codes_info_modal"><strong>Learn More</strong></button>`
+                  };
+    
+                  // Button Content
+                  redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.icon);
+                  // redemptionButton.innerHTML = redemptionButton.innerHTML.replace(...bindings.title);
+  
+                  if (!redemptionButton.disabled) {
+                    // Aria
+                    edit.attr(redemptionButton, 'update', 'aria-pressed', redemptionState);
+                    updateLabel(redemptionButton, baseTitles.aria.replace(...bindings.title), [ 'aria' ]);
+                    // Tooltip
+                    updateLabel(redemptionButton, baseTitles.tooltip.replace(...bindings.title), [ 'tooltip' ]);
+                  }
                 }
               }
             }
@@ -1613,7 +1616,6 @@
       // Startup
       (function () {
         const shiftObj = ShiftCodesTK.local.shift;
-        const requestsObj = ShiftCodesTK.requests;
 
         // Sync SHiFT Properties
         (function () {
