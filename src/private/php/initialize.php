@@ -6,11 +6,6 @@
   /** The global namespace for ShiftCodesTK */
   namespace ShiftCodesTK;
 
-  /**
-   * A test variable used for testing things.
-   */
-  define("ShiftCodesTK\Foo", 42);
-
   // Public Paths
   (function () {
     /**
@@ -71,6 +66,9 @@
      */
     define("ShiftCodesTK\PRIVATE_PATHS", $paths);
   })();
+
+  // Class Autoloading
+  require(PRIVATE_PATHS['vendor'] . '/autoload.php');
 
   // Startup Modules
   foreach (['serverConfig', 'functions', 'strings', 'response'] as $file) {
@@ -376,9 +374,6 @@
      */
     define("ShiftCodesTK\SITE_DOMAIN", 'shiftcodestk.com');
   })();
-
-  // Class Autoloading
-  require(PRIVATE_PATHS['vendor'] . '/autoload.php');
   
   /**
    * The query string to be used when loading cached resources.
@@ -391,7 +386,7 @@
     // Get Server Config
     (function () {
       try {
-        $configData = getJSONFile(PRIVATE_PATHS['resources'] . '/server_config.json', true);
+        $configData = include(PRIVATE_PATHS['resources'] . '/server_config.php');
   
         if (!$configData) {
           throw new \Error();
@@ -405,8 +400,8 @@
          * | Key | Type | Description |
          * | --- | --- | --- |
          * | *version* | `string` | The current version of ShiftCodesTK. |
-         * | *version_str* | `string` | A *query string* for use with cached resources.
-         * | *in_maintenance* | `bool` | Indicates if the site is currently in *Maintenance Mode*. |
+         * | *version_str* | `string` | A *query string* for use with cached resources. |
+         * | *in_maintenance* | `bool` | Indicates if the site is currently in site-wide *Maintenance Mode*. |
          */
         define('ShiftCodesTK\SERVER_CONFIGURATION', $configData);
       }
