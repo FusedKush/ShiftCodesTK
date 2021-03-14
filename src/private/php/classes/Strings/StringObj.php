@@ -1,5 +1,6 @@
 <?php
   namespace ShiftCodesTK\Strings;
+  use ShiftCodesTK\Validations;
 
   /** Represents a *String* that can be evaluated and manipulated. 
    * 
@@ -109,11 +110,7 @@
 
         if (array_search($property, $editableProperties) !== false) {
           if ($property == 'string') {
-            $constraints = new \ValidationProperties([
-              'type'     => 'string'
-            ]);
-
-            if (!$constraints->check_parameter($value)['valid']) {
+            if (!Validations\check_type($value, 'string')) {
               throw new \UnexpectedValueException("\"{$value}\" is not a valid string.");
             }
 
@@ -123,19 +120,15 @@
             $this->check_string_mode();
           }
           else if ($property == 'string_mode') {
-            $constraints = new \ValidationProperties([
-              'required'    => true,
-              'type'        => 'integer',
-              'validations' => [
-                'match'        => [
-                  self::STRING_MODE_AUTO,
-                  self::STRING_MODE_STRING,
-                  self::STRING_MODE_MB_STRING
-                ]
-              ]
-            ]);
+            $isValidValue = Validations\check_var($value)
+                            && Validations\check_type($value, 'int')
+                            && Validations\check_match($value, [
+                              self::STRING_MODE_AUTO,
+                              self::STRING_MODE_STRING,
+                              self::STRING_MODE_MB_STRING
+                            ]);
 
-            if (!$constraints->check_parameter($value)['valid']) {
+            if (!$isValidValue) {
               throw new \UnexpectedValueException("\"{$value}\" is not a valid String Mode.");
             }
 
@@ -143,19 +136,15 @@
             $this->check_string_mode();
           }
           else if ($property == 'editing_mode') {
-            $constraints = new \ValidationProperties([
-              'required'    => true,
-              'type'        => 'integer',
-              'validations' => [
-                'match'        => [
-                  self::EDITING_MODE_CHAIN,
-                  self::EDITING_MODE_STANDARD,
-                  self::EDITING_MODE_COPY
-                ]
-              ]
-            ]);
+            $isValidValue = Validations\check_var($value)
+                            && Validations\check_type($value, 'int')
+                            && Validations\check_match($value, [
+                              self::EDITING_MODE_CHAIN,
+                              self::EDITING_MODE_STANDARD,
+                              self::EDITING_MODE_COPY
+                            ]);
 
-            if (!$constraints->check_parameter($value)['valid']) {
+            if (!$isValidValue) {
               throw new \UnexpectedValueException("\"{$value}\" is not a valid Editing Mode.");
             }
 

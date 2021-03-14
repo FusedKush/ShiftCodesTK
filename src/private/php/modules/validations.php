@@ -101,10 +101,9 @@
         return false;
       }
       else if (is_string($var)) {
-        $str = new Strings\StringObj($var);
-        $str->trim();
+        $str = trim($var);
 
-        if ($str->strlen() == 0) {
+        if (mb_strlen($str) === 0) {
           return false;
         }
       }
