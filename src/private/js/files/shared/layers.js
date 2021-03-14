@@ -1541,7 +1541,7 @@ ShiftCodesTK.layers = {
           configuredLayers.push(layerSetupResult);
         }
         else {
-          console.warning(`layers.setupChildLayers Warning: Failed to setup layer: `, layer);
+          console.warn(`layers.setupChildLayers Warning: Failed to setup layer: `, layer);
         }
       }
 
