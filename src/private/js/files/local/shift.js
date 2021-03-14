@@ -1,7 +1,8 @@
 // Initialization
 (function () {
   const interval = setInterval(() => {
-    const isReady = typeof ShiftCodesTK != 'undefined' 
+    const isReady = typeof ShiftCodesTK !== 'undefined' 
+                    && typeof node_modules !== 'undefined'
                     && ShiftCodesTK.forms.isLoaded
                     && ShiftCodesTK.requests.isLoaded
                     && pagers.isLoaded;
@@ -1643,7 +1644,7 @@
           // FetchShiftCodes
           (function () {
             function handleFetchShiftCodesResponse (responseData, requestData) {
-              if (responseData && responseData.statusCode == 200) {
+              if (responseData && responseData.status_code == 200) {
                 lpbUpdate(85, true, { start: 50 });
   
                 setTimeout(() => {

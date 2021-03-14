@@ -503,10 +503,10 @@
             </div>
           </div>
           <div class="section shift-code-usage">
-            SHiFT Codes can be redeemed&nbsp;
-              <a class="in-game styled layer-target" target="_blank" href="/help/how-to-redeem">In-Game</a>&nbsp;
+            SHiFT Codes can be redeemed 
+              <a class="in-game styled layer-target" target="_blank" href="/help/how-to-redeem">In-Game</a>
               <div class="layer tooltip" data-layer-delay="medium">How to Redeem SHiFT Codes In-Game</div>
-            or&nbsp;
+            &nbsp;or&nbsp;
               <a class="online styled layer-target" target="_blank" rel="external noopener" href="https://shift.gearboxsoftware.com/rewards">
                 <span class="fas fa-external-link-square-alt layer-target" aria-hidden="true">&nbsp;</span>
                 <div class="layer tooltip" data-layer-delay="medium">External Link</div>
