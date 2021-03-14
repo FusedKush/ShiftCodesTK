@@ -5,7 +5,7 @@ do
   branch=`echo $ref | cut -d/ -f3`
 
   if [ "master" == "${branch}" ] || [ "beta" == "${branch}" ]; then
-    siteroot="~"
+    siteroot="/home/shiftcodestk"
     deployments="${siteroot}/deployments"
     repository="${siteroot}/repository"
     
