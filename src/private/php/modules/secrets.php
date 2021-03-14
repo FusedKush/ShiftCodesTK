@@ -13,16 +13,20 @@
      */
     private function __construct () {
       try {
-        $jsonData = getJSONFile(\ShiftCodesTK\PRIVATE_PATHS['resources'] . '/.secrets.json', true);
+        $secretsData = include(\ShiftCodesTK\PRIVATE_PATHS['resources'] . '/.secrets.php');
 
-        if (!$jsonData) {
-          throw new \Error();
+        if (!$secretsData) {
+          $this->SECRETS = [];
+
+          if (!isset($secretsData)) {
+            throw new \Error();
+          }
         }
 
-        $this->SECRETS = $jsonData;
+        $this->SECRETS = $secretsData;
       }
       catch (\Throwable $exception) {
-        throw new \Error("Secrets could not be parsed.");
+        throw new \Error("Secrets could not be retrieved.");
       } 
     }
     /**
