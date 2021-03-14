@@ -23,9 +23,9 @@ do
 
     # Deploy the repository
     git --work-tree="${branchDeploymentPath}" checkout -f "${branch}"
-    cd "${branchDeploymentPath}"
 
     # Generate project files
+    cd "${branchDeploymentPath}"
     nvs use auto
     npm install
     composer install
@@ -34,14 +34,14 @@ do
     # Update deployed file permissions
     cd "${branchDeploymentPath}"
     find . \
-      -type d \
       -path "./node_modules*" -prune -o \
-      -path "./vendors*" -prune -o \
+      -path "./vendor*" -prune -o \
+      -type d \
       -exec chmod 0711 {} \;
     find . \
-      -type f \
       -path "./node_modules*" -prune -o \
-      -path "./vendors*" -prune -o \
+      -path "./vendor*" -prune -o \
+      -type f \
       -exec chmod 0700 {} \; 
 
     cd "${branchPublicPath}"
@@ -53,7 +53,7 @@ do
       -exec chmod -R 0744 {} \;
 
     chmod 0700 "${branchDeploymentPath}/node_modules"
-    chmod 0700 "${branchDeploymentPath}/vendors"
+    chmod 0700 "${branchDeploymentPath}/vendor"
     chmod 0700 "${branchPublicPath}/initialize.php"
   fi;
 done
