@@ -12,7 +12,7 @@ do
     # Set Branch-specific variables
     if [ "master" == "${branch}" ]; then
       branchDeploymentPath="${deployments}/stable"
-      branchPublicPath=$branchDeploymentPath
+      branchPublicPath="$branchDeploymentPath/public"
     else
       branchDeploymentPath="${deployments}/beta"
       branchPublicPath="${branchDeploymentPath}/src/public"
@@ -32,10 +32,25 @@ do
     gulp build
 
     # Update deployed file permissions
-    find $branchDeploymentPath -type d -exec chmod -R 0711 {} \;
-    find $branchDeploymentPath \( -path "${branchDeploymentPath}/node_modules" -prune -o -path "${branchDeploymentPath}/vendors" -prune -o \) -type f -exec chmod -R 0700 {} \;
-    find $branchPublicPath -type d -exec chmod -R 0755 {} \;
-    find $branchPublicPath -type f -exec chmod -R 0744 {} \;
+    find $branchDeploymentPath
+      -type d
+      -path "${branchDeploymentPath}/node_modules*" -prune -o
+      -path "${branchDeploymentPath}/vendors*" -prune -o
+      -exec chmod 0711 {} \;
+    find $branchDeploymentPath
+      -type f
+      -path "${branchDeploymentPath}/node_modules*" -prune -o
+      -path "${branchDeploymentPath}/vendors*" -prune -o
+      -exec chmod 0700 {} \;
+    chmod 0700 "${branchDeploymentPath}/node_modules"
+    chmod 0700 "${branchDeploymentPath}/vendors"
+
+    find $branchPublicPath 
+      -type d 
+      -exec chmod -R 0755 {} \;
+    find $branchPublicPath 
+      -type f 
+      -exec chmod -R 0744 {} \;
     chmod 0700 "${branchPublicPath}/initialize.php"
   fi;
 done
