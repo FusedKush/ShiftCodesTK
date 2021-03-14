@@ -109,7 +109,7 @@
 
     @each $pos, $posProps in $posList {
       @keyframes panel#{$pos}Transition {
-        0% { transform: nth(map-get($posProps, 'panePlAnimation'), 1); }
+        0% { transform: nth(map-get($posProps, 'panelAnimation'), 1); }
         50% { transform: nth(map-get($posProps, 'panelAnimation'), 2); }
         100% { transform: nth(map-get($posProps, 'panelAnimation'), 3); }
       }
