@@ -395,8 +395,8 @@ ul, ol {
 
 // Code
 code {
-  padding: 4px 8px;
-  line-height: 1.75;
+  padding: 4px 9px;
+  line-height: 2;
   white-space: nowrap;
 }
 pre, .code-block {
@@ -411,18 +411,19 @@ pre, .code-block {
 }
 pre, code, .code-block {
   $codeColor: adjust-color($site-color-lighter, $lightness: 25%);
-  // $codeColor: $site-color-lighter;
-
+  
   font-family: inherit;
-  border-radius: 6px;
-  background-color: adjust-color($codeColor, $alpha: -0.9);
-  border: bd(1.5px, adjust-color($codeColor, $alpha: -0.75));
-  // background-color: adjust-color($site-color-main, $alpha: -0.25);
   color: $codeColor;
-  // border: bd(1.5px, adjust-color($codeColor, $alpha: -0.25));
-  overflow: auto;
+  background-color: adjust-color($codeColor, $alpha: -0.9);
   text-shadow: dropShadow(tpb(0.35));
-  // text-shadow: dropShadow(adjust-color($site-color-darker, $alpha: -0.25));
+  border: bd(1.5px, adjust-color($codeColor, $alpha: -0.75));
+  border-radius: 6px;
+  overflow: auto;
+
+  &.dark-bg {
+    background-color: adjust-color($color: $site-color-darker, $alpha: -0.25);
+    border-color: adjust-color($color: $site-color-darker, $alpha: -0.5);
+  }
 }
 
 // Misc

@@ -225,7 +225,7 @@
               <!-- End of Privacy Preference Tooltip Loop -->
             </div>
             <br>
-            <br>You can change your Privacy Preferences using the&nbsp;<code><span class="inline-box-icon fas fa-pen"></span>&nbsp;&nbsp;Edit Profile</code>&nbsp;button.
+            <br>You can change your Privacy Preferences using the&nbsp;<code class="dark-bg"><span class="inline-box-icon fas fa-pen"></span>&nbsp;&nbsp;Edit Profile</code>&nbsp;button.
           </div>
           <!-- End of Privacy Preference Button Conditional -->
           <?php foreach ($profileStats as $stat_name => $stat_info) : ?>
