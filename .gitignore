@@ -8,6 +8,7 @@ vendor/
 phive.phar
 src/private/img/assets/*
 src/private/img/users/
+src/private/resources/build-tools/**/*
 src/public/**/*.php
 src/public/dev/docs/
 src/public/assets/css
@@ -20,3 +21,4 @@ src/public/assets/js
 !.phpdoc-md
 !initialize.php
 !src/private/img/assets/rewards
+!src/private/resources/build-tools/**/*.template

@@ -252,7 +252,7 @@
    * @return string Returns the generated hash
    */
   function auth_strHash($string) {
-    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::get_secret('hash'));
+    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::getSecret('hash'));
   }
   /**
    * Determine if two string hashes match
@@ -1136,6 +1136,14 @@
 
     return $fileData;
   }
+  // function var_export_pretty ($var, $return = true) {
+  //   $exportedVar = (new ShiftCodesTK\Strings\StringObj(var_export($var, true)));
+  //     ->preg_replace([
+  //       'array (',
+  //       ', )'
+  //     ])
+
+  // }
   /**
    * Remove extraneous whitespace from a string
    *

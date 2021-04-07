@@ -404,7 +404,6 @@ const tasks = (function () {
               files: [
                 `${files.root.public}/**/*`,
                 `${files.root.private}/php/**/*`,
-                `${files.root.private}/resources/**/*`,
                 `${files.html.min}/includes/**/*`
               ],
               // Preferences
