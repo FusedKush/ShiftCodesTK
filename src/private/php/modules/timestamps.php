@@ -21,7 +21,7 @@
    * **Note**: You will need to add this value to the `ShiftCodesTKEpoch` value to get the full timestamp.
    * 
    * - *Low-Precision* Timestamps are shorter than the *High-Precision* ones, saving space when the additional precision is not needed.
-   * @return mixed Returns a `string` representing the *Number of Milliseconds* since the **ShiftCodesTK Epoch**.
+   * @return string Returns a `string` representing the *Number of Milliseconds* since the **ShiftCodesTK Epoch**.
    */
   function tktime (bool $less_precision = false) {
     $currentTimestamp = (TimestampInt::get_current_timestamp($less_precision))->get_int();

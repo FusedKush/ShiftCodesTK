@@ -41,7 +41,7 @@
      * @return int|false Returns an `int` representing the *Millisecond Precision* of the provided `$var` on success. Returns **false** if an error occurred.
      */
     public static function get_timestamp_precision ($format, $var) {
-      $invalidTypeError = function () use ($format, $var) {
+      $invalidTypeError = function () use ($format) {
         $providedFormat = self::$TS_TYPE_BITMASK->get_flag($format);
         $providedValueType = gettype($format);
 
@@ -90,7 +90,7 @@
                       ->trim(Strings\STR_SIDE_RIGHT, "0")
                       ->strlen();
             
-            return $digits === 6
+            return $digits > 3
                    ? 6
                    : 3;
           } 
@@ -172,14 +172,14 @@
      * @return TimestampInt Returns a `TimestampInt` representing the *Current Timestamp*. 
      */
     public static function get_current_timestamp ($less_precision = false) {
-      $timestampString = microtime($less_precision);
+      $timestampString = microtime($less_precision === true ? true : null);
 
       return TimestampInt::create_from(
         $less_precision
           ? self::TS_TYPE_FLOAT
           : self::TS_TYPE_STRING, 
         $timestampString
-        );
+      );
     }
 
     /** Initialize a new `TimestampInt`
