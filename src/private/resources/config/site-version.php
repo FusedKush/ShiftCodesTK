@@ -11,9 +11,9 @@ return ShiftCodesTK\PHPConfigurationFiles\ConfigurationFile::__set_state(array(
    'contents' => 
   ShiftCodesTK\PHPConfigurationFiles\ConfigurationProperty::__set_state(array(
      'name' => 'site_version',
-     'value' => '1.5.0',
+     'value' => '2.0.0',
      'isEncrypted' => false,
-     'lastModified' => '174153029869728',
+     'lastModified' => '174160945220994',
   )),
    'configurationValueIndex' => 
   array (
