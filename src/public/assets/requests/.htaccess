@@ -2,4 +2,4 @@ RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} !-f
 
-RewriteRule ^(.*)$ process-request.php?_request=$1 [L,QSA]
+RewriteRule ^(.*)$ handle-request.php?__request=$1 [L,QSA]

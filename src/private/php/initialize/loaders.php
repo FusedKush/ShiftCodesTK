@@ -5,8 +5,10 @@
 
   use const ShiftCodesTK\PRIVATE_PATHS;
 
-  /** @var string The path to the *Class Autoloader*. */
-  define("ShiftCodesTK\Initialize\Loader\CLASS_AUTOLOADER", PRIVATE_PATHS['vendor'] . '/autoload.php');
+  // Class Autoloader
+  require(PRIVATE_PATHS['vendor'] . '/autoload.php');
+
+  // Module Loader
   /** @var array Represents the *Modules* that should be loaded. 
    * 
    * The *Module Name* of the Module is listed, without the *File Extension*.
@@ -18,7 +20,7 @@
    * | *required* | The modules that will be loaded for every initialized script. |
    * | *page_only*| The modules that will only be loaded for *PHP-HTML Scripts*. |
    */
-  define("ShiftCodesTK\Initialize\Loader\MODULE_LIST", [
+  $__module_list = [
     'required'  => [
       'functions', 
       'integers',
@@ -38,13 +40,9 @@
       'pageSettings', 
       'shiftStats'
     ]
-  ]);
+  ];
 
-  // Class Autoloader
-  require(\ShiftCodesTK\Initialize\Loader\CLASS_AUTOLOADER);
-
-  // Module Loader
-  foreach (\ShiftCodesTK\Initialize\Loader\MODULE_LIST as $module_group => $module_list) {
+  foreach ($__module_list as $module_group => $module_list) {
     if ($module_group === 'page_only' && \ShiftCodesTK\SCRIPT_TYPE !== \ShiftCodesTK\SCRIPT_TYPE_PAGE) {
       continue;
     }
@@ -54,11 +52,9 @@
                          : PRIVATE_PATHS['modules'];
 
     foreach ($module_list as $module) {
-
       require_once("{$module_group_path}/{$module}.php");
-
-      if ($module === 'auth') {
-      }
     }
   }
+
+  unset($__module_list);
 ?>
