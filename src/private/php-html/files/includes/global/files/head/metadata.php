@@ -37,25 +37,26 @@
 
 <!-- Page-Specific Properties -->
 <?php
-  $socialMetadata = ['title', 'description', 'image'];
+  $social_metadata = ['title', 'description', 'image'];
+  $site_domain = \ShiftCodesTK\SITE_DOMAIN;
 ?>
 <!-- Facebook & Twitter Properties -->
-<?php foreach ($socialMetadata as $meta) : ?>
+<?php foreach ($social_metadata as $meta) : ?>
   <?php
-    $metaContent = PAGE_SETTINGS['meta'][$meta];
+    $meta_content = PAGE_SETTINGS['meta'][$meta];
 
     if ($meta == 'image') {
-      $domain = \ShiftCodesTK\SITE_DOMAIN;
-      $metaContent = "https://{$domain}/assets/img/metadata/{$metaContent}";
+      $meta_content = "https://{$site_domain}/assets/img/metadata/{$meta_content}";
     }
   ?>
 
-  <meta property="<?= "og:$meta"; ?>" content="<?= $metaContent; ?>">
+  <meta property="<?= "og:$meta"; ?>" content="<?= $meta_content; ?>">
 <?php endforeach; ?>
+
 <title><?= PAGE_SETTINGS['meta']['title']; ?></title>
 <!-- Canonical Page Location -->
-<meta name="canonical" href="https://<?= \ShiftCodesTK\SITE_DOMAIN . PAGE_SETTINGS['meta']['canonical']; ?>">
-<meta property="og:url" content="https://<?= \ShiftCodesTK\SITE_DOMAIN . PAGE_SETTINGS['meta']['canonical']; ?>">
+<meta name="canonical" href="https://<?= $site_domain . PAGE_SETTINGS['meta']['canonical']; ?>">
+<meta property="og:url" content="https://<?= $site_domain . PAGE_SETTINGS['meta']['canonical']; ?>">
 <!-- Browser Properties -->
 <link rel="manifest" href="/assets/manifests/<?= PAGE_SETTINGS['meta']['theme']; ?>.webmanifest">
 <!-- Custom Properties -->
