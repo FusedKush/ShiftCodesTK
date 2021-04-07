@@ -54,8 +54,7 @@
       </a>
       <a class="version" href="/updates">
         Version 
-        Version&nbsp;
-        <strong class="num" id="footer_ver"><?= TK_VERSION; ?></strong>
+        <strong class="num" id="footer_ver"><?= ShiftCodesTK\Config::getConfigurationValue('site_version'); ?></strong>
       </a>
     </div>
     <a class="return layer-target" id="footer_return" href="#">
