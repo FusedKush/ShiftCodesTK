@@ -3,7 +3,7 @@
     $urls = [];
 
     foreach($files as $file) {
-      $urls[] = "/assets/css/$file.css" . TK_VERSION_STR;
+      $urls[] = "/assets/css/$file.css" . \ShiftCodesTK\VERSION_QUERY_STR;
     }
 ?>
 <?php foreach($urls as $url) : ?>

@@ -17,7 +17,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/index.css<?= TK_VERSION_STR; ?>">
+    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/index.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>

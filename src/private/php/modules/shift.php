@@ -1106,6 +1106,4 @@
       }
     }
   })();
-
-  ShiftCodes::getInstance();
 ?>

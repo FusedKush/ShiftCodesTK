@@ -17,7 +17,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= TK_VERSION_STR; ?>">
+    <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
@@ -49,6 +49,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- local Scripts -->
-    <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>
 </html>

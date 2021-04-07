@@ -1645,9 +1645,6 @@
     }
   }
 
-  /** Initialization */
-  ShiftCodesTKDatabase::get_instance();
-
   /** Deprecated Functionality */
 
   /**
@@ -2155,8 +2152,4 @@
       return $this->con;
     }
   }
-  /**
-   * The ShiftCodesTK Database and all associated functionality
-   */
-  $_mysqli = new ShiftCodesTKDatabase_Old();
 ?>

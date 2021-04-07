@@ -58,6 +58,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/codes/new.js<?php echo TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/codes/new.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>
 </html>

@@ -23,7 +23,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/css/local/account.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <link href="/assets/css/local/account.css<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!--// Metadata \\-->
     <?php include_once('global/head.php'); ?>
   </head>
@@ -190,6 +190,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/account.js<?php echo TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/account.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>
 </html>

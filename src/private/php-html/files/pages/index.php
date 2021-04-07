@@ -17,7 +17,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/css/local/index.css<?= TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <link href="/assets/css/local/index.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!-- Google Metadata (Landing Page Only) -->
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s">
     <!--// Metadata \\-->
@@ -164,6 +164,6 @@
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/index.js<?= TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/index.js<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>
 </html>

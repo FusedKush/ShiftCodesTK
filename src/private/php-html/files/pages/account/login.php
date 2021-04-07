@@ -46,7 +46,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/css/local/login.css<?= TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <link href="/assets/css/local/login.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>

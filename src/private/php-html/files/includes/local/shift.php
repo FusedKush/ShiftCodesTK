@@ -24,8 +24,8 @@
 ?>
 
 <!-- SHiFT Resources -->
-<link href="/assets/css/local/shift.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
-<script async src="/assets/js/local/shift.js<?php echo TK_VERSION_STR; ?>"></script>
+<link href="/assets/css/local/shift.css<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
+<script async src="/assets/js/local/shift.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
 
 <header class="shift-header" id="shift_header">
   <div class="primary">

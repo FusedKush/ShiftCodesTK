@@ -25,8 +25,8 @@
   define('ERROR_NOTICE_DESCRIPTION', ERROR_NOTICE_ERROR['description']);
 ?>
 
-<link rel="stylesheet" href="/assets/css/shared/global.css<?= TK_VERSION_STR; ?>">
-<link rel="stylesheet" href="/assets/css/errordocs/error-notice.css<?= TK_VERSION_STR; ?>">
+<link rel="stylesheet" href="/assets/css/shared/global.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
+<link rel="stylesheet" href="/assets/css/errordocs/error-notice.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
 
 <title><?= ERROR_NOTICE_TITLE . ' - ShiftCodesTK'; ?></title>
   

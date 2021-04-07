@@ -1,5 +1,7 @@
 <?php
-  (function () use (&$page) {
+  function check_page_settings () {
+    GLOBAL $page;
+
     $defaults = [
       /**
        * Authentication settings
@@ -47,7 +49,6 @@
         'readOnlyProperties' => [ 'game', 'owner', 'limit' ]
       ]
     ];
-
     
     $settings = array_replace_recursive($defaults, $page ?? []);
     
@@ -57,7 +58,7 @@
     if (isset($settings['shift']['owner']) && $settings['shift']['owner'] == '$user') {
       $settings['shift']['owner'] = auth_user_id();
     }
-
+  
     /**
      * Settings for the current page
      */
@@ -76,7 +77,7 @@
       ];
       $onFailToast = PAGE_SETTINGS['auth']['onFailToast'];
       $loggedIn = auth_isLoggedIn();
-
+  
       // Authentication State does not match required state
       if ($required == 'auth' && !$loggedIn || $required == 'no-auth' && $loggedIn) {
         if ($required == 'auth') {
@@ -93,16 +94,16 @@
             'body' => 'You must be logged out to view this content.'
           ];
         }
-
+  
         if ($onFailToast) {
           $_SESSION['toasts'][] = array_replace_recursive($defaultToastProps, $onFailToast);
         }
-
+  
         response_redirect($onFailRedirect !== false ? $onFailRedirect : $defaultFailRedirect . '?continue=' . clean_url($_SERVER['REQUEST_URI']));
       }
     })();
-
+  
     // Session timestamp
     $_SESSION['timestamp'] = time();
-  })();  
+  }
 ?>

@@ -20,7 +20,7 @@
     <!-- Shared Styles -->
     <?php include_once('global/sharedStyles.php'); ?>
     <!-- Local Styles -->
-    <link href="/assets/css/local/dev/playground.css<?php echo TK_VERSION_STR; ?>" rel="stylesheet"></link>
+    <link href="/assets/css/local/dev/playground.css<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
@@ -255,7 +255,7 @@
     <?php include_once('global/afterContent.php'); ?>
     <!--// Scripts \\-->
     <!-- Local Scripts -->
-    <script async src="/assets/js/local/dev/playground.js<?php echo TK_VERSION_STR; ?>"></script>
+    <script async src="/assets/js/local/dev/playground.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
     <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
   </body>
