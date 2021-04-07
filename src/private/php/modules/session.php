@@ -7,6 +7,7 @@
   ini_set('session.gc_maxlifetime', 60 * 60 * 2);
   ini_set('session.sid_length', '64');
   ini_set('session.hash_function', 'sha256');
+  ini_set('session.save_path', \ShiftCodesTK\PRIVATE_PATHS['temp'] . '/sessions');
 
   if (!ShiftCodesTK\BUILD_INFORMATION['is_dev_branch']) {
     session_set_cookie_params([
