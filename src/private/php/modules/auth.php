@@ -157,6 +157,7 @@
       return $uniqueID;
     }
   }
+
   /**
    * Generate a hash for a string
    * 
