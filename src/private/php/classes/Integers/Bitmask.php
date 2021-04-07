@@ -122,7 +122,6 @@
      * - - - {@see Bitmask::add_flag_option} for more information on adding *Bitwise Flags* to the `Bitmask`.
      * - - - If omitted, a value will automatically be assigned to the flag based on its position in the list, starting at **1**.
      * - - *Flag Name* refers to the name of the flag. 
-     * - - - If the *Flag Value* is omitted, the method will search for a `constant` with the same *Flag Name*. If one is found, it will automatically inherit its value. 
      * - - If either the *Flag Value* or *Flag Name* match a value already in the same category, an *Error* will be emitted and the flag will be skipped.
      * - Multiple arrays can be provided to indicate a *Bitwise Flag Category*. Categories are organized in the following format:
      * - - > `?string` *Category Name* => `array` *Category Flags*
@@ -483,8 +482,7 @@
      * @param mixed|null $flag_value The value of the *Bitwise Flag*.
      * - The value **-1** acts to enable *all* of the provided flags when applied to the *Bitmask*. Only use this value if you want the behavior of all of the flags.
      * - The value **0** is not allowed, as it has no effect when applying it to the *Bitmask*.
-     * - If omitted, the method will search for a `constant` with the same `$flag_name`. If one is found, it will automatically inherit its value. 
-     * - If a constant was not found, a value will automatically be assigned to the flag based on its position in the list, starting at **1**.
+     * - If omitted, a value will automatically be assigned to the flag based on its position in the list, starting at **1**.
      * @param string $category The name of the *Bitwise Flag Category* the *Bitwise Flag* belongs to. Defaults to **::BITMASK_DEFAULT_CATEGORY**.
      * - If it has not been defined yet, it will automatically be created.
      * @return array|false Returns the new *Bitwise Flag* as it has been stored on success. If an error occurs, returns **false**.
@@ -502,18 +500,6 @@
             return $flag_value;
           }
           else {
-            $constNames = [
-              __CLASS__ . "\\{$flag_name}",
-              $flag_name,
-              __NAMESPACE__ . "\\{$flag_name}",
-            ];
-
-            foreach ($constNames as $constName) {
-              if (defined($constName)) {
-                return TypeConv::to_str(constant($constName));
-              }
-            }
-
             return self::get_bitwise_flag_value(
               count($flagList), 
               $flagList
