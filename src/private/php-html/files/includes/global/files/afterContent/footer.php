@@ -46,13 +46,14 @@
     </div>
     <div class="info">
       <a class="credit" href="/credits">
-        <span class="fas fa-code" title="Coded" aria-label="Coded"></span>
-        &nbsp;with&nbsp;
-        <span class="fas fa-heart" title="Love" aria-label="Love"></span>
-        &nbsp;by&nbsp;
+        <span class="fas fa-code" title="Coded" aria-label="Coded"></span> 
+        with 
+        <span class="fas fa-heart" title="Love" aria-label="Love"></span> 
+        by 
         <strong>Zach Vaughan</strong>
       </a>
       <a class="version" href="/updates">
+        Version 
         Version&nbsp;
         <strong class="num" id="footer_ver"><?= TK_VERSION; ?></strong>
       </a>
