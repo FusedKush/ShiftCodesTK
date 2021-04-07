@@ -53,6 +53,7 @@
       'patternMismatch' => '${param} does not match the required format.',
       'invalidDate' => '${param} is not a valid Date.',
       'invalidURL' => '${param} is not a valid URL.',
+      'invalidPath' => '${param} is not a valid File Path.'
     ]);
 
     /** @var int Matches are to be compared using *Loose Comparison* (`==`). The default behavior is to use *Strict Comparison* (`===`).
@@ -78,16 +79,12 @@
      */
     const MATCH_BLACKLIST = 8;
 
-    /** @var int Matches only *Absolute URLs*.
-     * - Valid for the `check_url()` function.
-     * - - @see Validations\check_url()
-     */
-    const URL_FULL = 1;
-    /** @var int Matches only *Relative URLs*.
-     * - Valid for the `check_url()` function.
-     * - - @see Validations\check_url()
-     */
-    const URL_RELATIVE = 2;
+    /** @var int Matches both *Absolute* and *Relative* URLs and Paths. */
+    const PATH_ANY = -1;
+    /** @var int Matches only *Absolute* URLs and Paths. */
+    const PATH_ABSOLUTE = 1;
+    /** @var int Matches only *Relative* URLs and Paths. */
+    const PATH_RELATIVE = 2;
 
     /** Check if a variable has been defined and is present.
      * 
@@ -436,25 +433,104 @@
         return false;
       }
     }
-    /** Check if a variable is a valid URL.
+    /** Check if a variable represents a valid URL.
+     * 
+     * This does not validate if the remote resource exists or not.
      * 
      * @param string $var The variable being evaluated.
-     * @param null|URL_FULL|URL_RELATIVE $type If provided, this indicates the *URL Type* that the `$var` must match: *Relative* or *Absolute*.
-     * @return bool Returns **true** if the `$var` is a valid URL and, if provided, matches the *URL Type* of `$type`. Otherwise, returns **false**.
+     * @param PATH_ANY|PATH_ABSOLUTE|PATH_RELATIVE $type Indicates the *URL Type* that the `$var` must match: *Relative*, *Absolute*, or either. Defaults to **PATH_ANY**.
+     * @return bool Returns **true** if the `$var` represents a valid URL and matches the `$type`. Otherwise, returns **false**.
      */
-    function check_url (string $var, int $type = null) {
+    function check_url (string $var, int $type = PATH_ANY) {
       $trimmedVar = Strings\trim($var);
       $patterns = [
         'full'     => '%^(?:(?:(?:https?|ftp):)?\/\/)?(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\x{00a1}-\x{ffff}][a-z0-9\x{00a1}-\x{ffff}_-]{0,62})?[a-z0-9\x{00a1}-\x{ffff}]\.)+(?:[a-z\x{00a1}-\x{ffff}]{2,}\.?))(?::\d{2,5})?(?:[\/?#]\S*)?$%iuS',
         'relative' => "%^(?:(?:\.|\/|#)+(?:[\w\d\-._~!$&'()*+,;=]+|$))+%i"
       ];
 
-      if (!$type || $type == URL_FULL) {
+      if ($type & PATH_ABSOLUTE) {
         if (check_pattern($trimmedVar, $patterns['full'])) {
           return true;
         }
       }
-      if (!$type || $type == URL_RELATIVE) {
+      if ($type & PATH_RELATIVE) {
+        if (check_pattern($trimmedVar, $patterns['relative'])) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+    /** Check if a variable represents a valid *File* or *Directory Path*.
+     * 
+     * This does not validate if the specified file or directory exists.
+     * 
+     * @param string $var The variable being evaluated.
+     * @param PATH_ANY|PATH_ABSOLUTE|PATH_RELATIVE $type Indicates the *URL Type* that the `$var` must match: *Relative*, *Absolute*, or either. Defaults to **PATH_ANY**.
+     * @return bool Returns **true** if the `$var` represents a valid File or Directory Path and matches the `$type`. Otherwise, returns **false**.
+     */
+    function check_path (string $var, int $type = PATH_ANY) {
+      $trimmedVar = Strings\trim($var);
+      $blacklistedCharacters = "
+        \/
+        \\\
+        \1-\31
+        \<
+        \>
+        \:
+        \\\"
+        \|
+        \?
+        \*
+        \r
+        \n";
+      $patterns = [
+        // 'full'     => "~ ^ ( (?: (?: \/|\|\.|[a-zA-Z]\:|file\:\/\/ ) (?: \/|\ ){0,2} ) (?: (?: [^\/\-\<\>\:\"\|\?\*\.]+ (?: \/|\ ){1,2} )+? ) ) ( [^\/\-\<\>\:\"\|\?\*]+? [^\/\-\<\>\:\"\|\?\*\ ] (?: \.[\w\d]+ ){0,1} ) $ ~i",
+        'full'     => <<<EOT
+          ~                                         # Opening Delimiter
+            ^                                       # Start of Line
+              (                                     # [1] Start of File Path Capture Group
+                (?:                                 # Start of Prefix Non-Capture Group
+                  (?:                               # Start of Prefixes Non-Capture Group
+                    \/|\\\|\.|[a-zA-Z]\:|file\:\/\/ # Supported Prefixes
+                  )                                 # End of Prefixes Non-Capture Group
+                  (?:                               # Start of Directory Separator Non-Capture Group
+                    \/|\\\                          # Directory Separators
+                  ){0,2}                            # End of Directory Separator Non-Capture Group
+                )                                   # End of Prefix Non-Capture Group
+                (?:                                 # Start of File Path Non-Capture Group
+                  (?:                               # Start of Directory-Separator Non-Capture Group
+                    [^{$blacklistedCharacters}\.]+  # One or More non-blacklisted Characters, including *Periods* (`.`)
+                    (?:                             # Start of Directory Separator Non-Capture Group
+                      \/|\\\                        # Directory Separators
+                    ){1,2}                          # End of Directory Separator Non-Capture Group
+                  )+?                               # End of Directory-Separator Non-Capture Group
+                )                                   # End of File Path Non-Capture Group
+              ){0,1}                                # [1] End of File Path Capture Group
+              (                                     # [2] Start of File Name Capture Group
+                [^{$blacklistedCharacters}]+?       # One or More non-blacklisted Characters, Lazy
+                [^{$blacklistedCharacters}\ ]       # One non-blacklisted Characters, including spaces.
+                (?:                                 # Start of File Extension Non-Capture Group
+                  \.[\w\d]+                         # File Extension
+                ){0,1}                              # End of File Extension Non-Capture Group
+              )                                     # [2] End of File Name Capture Group
+            $                                       # End of Line
+                                                    # Closing Delimiter
+                                                    # Pattern Flags
+          ~
+          ix
+        EOT,
+        'relative' => "%^(?:(?:\.|\/|#)+(?:[\w\d\-._~!$&'()*+,;=]+|$))+%i"
+      ];
+
+      // var_dump(\ShiftCodesTK\Strings\preg_replace($patterns['full'], [ '/#(.+)[\r\n]/', '/(?<!\\\)\s/' ], ''));
+
+      if ($type & PATH_ABSOLUTE) {
+        if (check_pattern($trimmedVar, $patterns['full'])) {
+          return true;
+        }
+      }
+      if ($type & PATH_RELATIVE) {
         if (check_pattern($trimmedVar, $patterns['relative'])) {
           return true;
         }

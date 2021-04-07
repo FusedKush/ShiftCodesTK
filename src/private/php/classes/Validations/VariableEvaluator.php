@@ -264,6 +264,16 @@
               }
             }
           })();
+          // Check Path
+          (function () use ($param, &$validationIssue) {
+            $path = $this->validations['check_path'] ?? null;
+    
+            if (isset($param) && isset($path)) {
+              if (!check_path($param, is_int($path) ? $path : null)) {
+                $validationIssue('invalidPath');
+              }
+            }
+          })();
         }
         // Invalid Type
         else {
