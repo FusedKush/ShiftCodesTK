@@ -9,7 +9,7 @@
   ini_set('session.hash_function', 'sha256');
   ini_set('session.save_path', \ShiftCodesTK\PRIVATE_PATHS['temp'] . '/sessions');
 
-  if (!ShiftCodesTK\BUILD_INFORMATION['is_dev_branch']) {
+  if (ShiftCodesTK\BUILD_INFORMATION['is_prod_branch']) {
     session_set_cookie_params([
       'lifetime' => 0,
       'domain'   => ShiftCodesTK\SITE_DOMAIN,
