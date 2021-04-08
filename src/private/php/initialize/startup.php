@@ -32,7 +32,7 @@
    define("ShiftCodesTK\VERSION_QUERY_STR", "?v=" . Config::getConfigurationValue('site_version'));
   })();
 
-  // Set Path & Timezone Defaults
+  // Set Configuration Values & Defaults
   (function () {
     set_include_path(
       PRIVATE_PATHS['php_includes']
@@ -41,6 +41,10 @@
       . PATH_SEPARATOR
       . get_include_path()
     );
+    
+    ini_set("log_errors", 1);
+    ini_set("error_log", \ShiftCodesTK\SERVER_ROOT . '/php_error_log');
+
     date_default_timezone_set('UTC');
   })();
 
