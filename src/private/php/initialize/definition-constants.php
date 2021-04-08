@@ -46,7 +46,7 @@
       $paths['forms'] = $paths['php'] . '/forms';
       $paths['html'] = $paths['root'] . '/php-html/';
       $paths['html_includes'] = $paths['html'] . '/.min/includes';
-      $paths['temp'] = dirname($_SERVER['DOCUMENT_ROOT'], 4) . '/tmp';
+      $paths['temp'] = dirname($_SERVER['DOCUMENT_ROOT'], 2) . '/tmp';
       
       /**
        * A list of private directory paths
