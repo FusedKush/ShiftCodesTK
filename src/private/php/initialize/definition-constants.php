@@ -73,24 +73,27 @@
   // Request Constants
   (function () {
     GLOBAL $__script_type;
-
-    /** @var int Represents a standard *PHP Script*, likely executing independently. */
-    define("ShiftCodesTK\SCRIPT_TYPE_SCRIPT", 0);
-    /** @var int Represents a Front-end *PHP-HTML Page*. */
-    define("ShiftCodesTK\SCRIPT_TYPE_PAGE", 1);
-    /** @var int Represents a *Front-end Request* for a *Backend Script*. */
-    define("ShiftCodesTK\SCRIPT_TYPE_REQUEST", 2);
-
-    /** @var int The type of script that is currently executing
-     * @var int The type of script [ 0 = script | 1 = page ]
-     */
-    define('SCRIPT_TYPE', strpos($_SERVER['REQUEST_URI'], '/assets/') === 0 ? 0 : 1);
-    /**
-     * @var int A `SCRIPT_TYPE_*` constant indicating the *Script Type* of the currently executing PHP Script.
-     */
-    define('ShiftCodesTK\SCRIPT_TYPE', $__script_type ?? \ShiftCodesTK\SCRIPT_TYPE_SCRIPT);
-
+    
     // Script Type
+    (function () use (&$__script_type) {
+      /** @var int Represents a standard *PHP Script*, likely executing independently. */
+      define("ShiftCodesTK\SCRIPT_TYPE_SCRIPT", 0);
+      /** @var int Represents a Front-end *PHP-HTML Page*. */
+      define("ShiftCodesTK\SCRIPT_TYPE_PAGE", 1);
+      /** @var int Represents a *Front-end Request* for a *Backend Script*. */
+      define("ShiftCodesTK\SCRIPT_TYPE_REQUEST", 2);
+  
+      /** @var int The type of script that is currently executing
+       * @var int The type of script [ 0 = script | 1 = page ]
+       */
+      define('SCRIPT_TYPE', strpos($_SERVER['REQUEST_URI'], '/assets/') === 0 ? 0 : 1);
+      /**
+       * @var int A `SCRIPT_TYPE_*` constant indicating the *Script Type* of the currently executing PHP Script.
+       */
+      define('ShiftCodesTK\SCRIPT_TYPE', $__script_type ?? \ShiftCodesTK\SCRIPT_TYPE_SCRIPT);
+
+      unset($__script_type);
+    })();
     // Token Constants
     (function () {
       /** @var string|false The Request Token Header if sent */
