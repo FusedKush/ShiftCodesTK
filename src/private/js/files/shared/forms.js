@@ -1102,7 +1102,7 @@
                 originalValue: elementValue
               };
 
-              edit.attr(element, 'list', attrName, JSON.stringify(newAttrValue));
+              edit.attr(element, 'list-add', attrName, JSON.stringify(newAttrValue));
               return true;
             }
             else if (type == 'remove' && attrValue !== false) {
@@ -2503,11 +2503,11 @@
                               : this.getField(form, props.info.name);
 
                 if (!options) {
-                  edit.attr(target, 'list', 'aria-describedby', alert.id);
+                  edit.attr(target, 'list-add', 'aria-describedby', alert.id);
                 }
                 else {
                   for (let option of options) {
-                    edit.attr(option, 'list', 'aria-describedby', alert.id);
+                    edit.attr(option, 'list-add', 'aria-describedby', alert.id);
                   }
                 }
 
@@ -2615,11 +2615,11 @@
                             : this.getField(form, props.info.name);
 
                   if (!options) {
-                    edit.attr(target, 'list', 'aria-describedby', alert.id);
+                    edit.attr(target, 'list-remove', 'aria-describedby', alert.id);
                   }
                   else {
                     for (let option of options) {
-                      edit.attr(option, 'list', 'aria-describedby', alert.id);
+                      edit.attr(option, 'list-remove', 'aria-describedby', alert.id);
                     }
                   }
         

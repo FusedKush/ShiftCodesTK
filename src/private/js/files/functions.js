@@ -1219,7 +1219,10 @@ const edit = {
    * - **add**, **update**: Add the attribute to the element or update the existing value. (`element.setAttribute()`)
    * - **remove**: Remove the attribute from the element. (`element.removeAttribute()`)
    * - **toggle**: Adds or Removes the attribute depending on its current state.
+   * - **list-add**: Adds `value` to the comma-separated list in the attribute's value. If the attribute does not yet exist, it will be created.
+   * - **list-remove**: Removes `value` from the comma-separated list in the attribute's value. If the list contains no more values, the attribute will be removed.
    * - **list**: Adds, updates, or removes an attribute with a comma-separated list as the value.
+   * - - {@deprecated Use options "list-add" & "list-remove" instead.}
    * @param {string} name The name of the attribute to be added or removed. Multiple classes can be added or removed at once by separating them with a *space*. 
    * - *Note: Removing a non-existent attribute **will not** throw an error.*
    * @param {string} val The value of the attribute to be set. This value does not need to be set for boolean attributes, such as *disabled*, and has no effect if `type` is set to **remove**.
@@ -1232,7 +1235,7 @@ const edit = {
       'type': type,
       'name': name,
       'val': val,
-      'validTypes': [ 'add', 'update', 'remove', 'toggle', 'list' ],
+      'validTypes': [ 'add', 'update', 'remove', 'toggle', 'list', 'list-add', 'list-remove' ],
       'callback': function () {
         const existingAttr = dom.get(elm, 'attr', name);
 
@@ -1246,29 +1249,42 @@ const edit = {
         else if (type == 'remove') {
           elm.removeAttribute(name);
         }
-        else if (type == 'list') {
-          // Add new attribute
+        else if (type == 'list-add') {
           if (!existingAttr) {
             edit.attr(elm, 'add', name, val);
           }
-          else {
-            // Add new value
-            if (existingAttr.indexOf(val) == -1) {
-              edit.attr(elm, 'update', name, `${existingAttr}, ${val}`);
+          else if (existingAttr.indexOf(val) == -1) {
+            edit.attr(elm, 'update', name, `${existingAttr}, ${val}`);
+          }
+        }
+        else if (type == 'list-remove') {
+          if (existingAttr && existingAttr.indexOf(val) == -1) {
+            const values = existingAttr.split(', ');
+  
+            values.splice(values.indexOf(val), 1);
+  
+            if (values.length > 0) {
+              edit.attr(elm, 'update', name, values.join(', '));
             }
-            // Remove value
             else {
-              const values = existingAttr.split(', ');
-
-              values.splice(values.indexOf(val), 1);
-
-              if (values.length > 0) {
-                edit.attr(elm, 'update', name, values.join(', '));
-              }
-              else {
-                edit.attr(elm, 'remove', name);
-              }
+              edit.attr(elm, 'remove', name);
             }
+          }
+        }
+        else if (type == 'list') {
+          console.warn(`Type option "list" has been deprecated. Use "list-add" and "list-remove" instead.
+            Args:
+              Elm ID: ${elm.id}
+              Type: ${type}
+              Name: ${name}
+              Value: ${val}`
+          );
+
+          if (!existingAttr || existingAttr.indexOf(val) == -1) {
+            edit.attr(elm, 'list-add', name, val);
+          }
+          else {
+            edit.attr(elm, 'list-remove', name, val);
           }
         }
 

@@ -931,7 +931,7 @@ ShiftCodesTK.layers = {
   
       for (let attr of updatedAttrs) {
         if (dom.has(target, 'attr', attr)) {
-          edit.attr(target, 'list', attr, layer.id);
+          edit.attr(target, 'list-add', attr, layer.id);
         }
       }
   
@@ -1346,7 +1346,7 @@ ShiftCodesTK.layers = {
           const currentControls = dom.get(layer, 'attr', 'aria-controls');
 
           if (!currentControls || currentControls.indexOf(ids.target) == -1) {
-            edit.attr(layer, 'list', 'aria-controls', ids.target);
+            edit.attr(layer, 'list-add', 'aria-controls', ids.target);
           }
         }
 
@@ -1495,7 +1495,7 @@ ShiftCodesTK.layers = {
             edit.attr(
               props.target, 
               listedAttributes.indexOf(attribute) != -1 
-                ? 'list'
+                ? 'list-add'
                 : 'update', 
               attribute, 
               attributes[attribute]
@@ -1748,7 +1748,7 @@ ShiftCodesTK.layers = {
         ];
 
         for (let attr of updatedAttrs) {
-          edit.attr(tooltipTarget, 'list', attr, tooltip.id);
+          edit.attr(tooltipTarget, 'list-add', attr, tooltip.id);
         }
 
         deleteElement(tooltip);

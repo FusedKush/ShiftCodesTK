@@ -95,14 +95,14 @@ function multiView_setup (multiView) {
                 const currentControls = dom.get(toggle, 'attr', 'aria-controls');
       
                 if (!currentControls || currentControls.indexOf(ids.target) == -1) {
-                  edit.attr(toggle, 'list', 'aria-controls', ids.target);
+                  edit.attr(toggle, 'list-add', 'aria-controls', ids.target);
                 }
               })();
               (function () {
                 const currentChildren = dom.get(target, 'attr', 'aria-owns');
       
                 if (!currentChildren || currentChildren.indexOf(ids.toggle) == -1) {
-                  edit.attr(target, 'list', 'aria-owns', ids.toggle);
+                  edit.attr(target, 'list-add', 'aria-owns', ids.toggle);
                 }
               })();
             }
