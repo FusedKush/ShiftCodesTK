@@ -5,6 +5,9 @@
 
   // Path Constants
   (function () {
+    /** @var string Represents the *Server Root* of ShiftCodesTK. */
+    define("ShiftCodesTK\SERVER_ROOT", dirname($_SERVER["DOCUMENT_ROOT"], 2));
+
     // Public Paths
     (function () {
       /**
@@ -15,7 +18,7 @@
        */
       $paths = [];
 
-      $paths['root'] = dirname($_SERVER["DOCUMENT_ROOT"]) . '/public';
+      $paths['root'] = ShiftCodesTK\SERVER_ROOT . '/src/public';
       $paths['assets'] = $paths['root'] . 'assets';
       $paths['requests'] = $paths['assets'] . 'requests';
 
@@ -34,19 +37,19 @@
     (function () {
       $paths = [];
 
-      $paths['root'] = dirname($_SERVER["DOCUMENT_ROOT"]) . '/private';
+      $paths['root'] = ShiftCodesTK\SERVER_ROOT . '/src/private';
       $paths['resources'] = $paths['root'] . '/resources';
       $paths['php'] = $paths['root'] . '/php';
       $paths['initialize'] = $paths['php'] . '/initialize';
       $paths['classes'] = $paths['php'] . '/classes';
-      $paths['vendor'] = dirname($_SERVER["DOCUMENT_ROOT"], 2) . '/vendor';
+      $paths['vendor'] = ShiftCodesTK\SERVER_ROOT . '/vendor';
       $paths['modules'] = $paths['php'] . '/modules';
       $paths['php_includes'] = $paths['php'] . '/includes';
       $paths['requests'] = $paths['php'] . '/requests';
       $paths['forms'] = $paths['php'] . '/forms';
       $paths['html'] = $paths['root'] . '/php-html/';
       $paths['html_includes'] = $paths['html'] . '/.min/includes';
-      $paths['temp'] = dirname($_SERVER['DOCUMENT_ROOT'], 2) . '/tmp';
+      $paths['temp'] = ShiftCodesTK\SERVER_ROOT . '/tmp';
       
       /**
        * A list of private directory paths
