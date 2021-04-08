@@ -18,16 +18,13 @@ do
       branchPublicPath="${branchDeploymentPath}/src/public"
     fi
 
-
     # Update Repository Permissions
     chmod -R 0700 "${repository}"
 
     # Deploy the repository
     git --work-tree="${branchDeploymentPath}" checkout -f "${branch}"
-
     # Copy Repository Information
-    cd "${repository}"
-    cp -r .git "{$branchDeploymentPath}"
+    cp -r .git "${branchDeploymentPath}"
 
     # Generate project files
     cd "${branchDeploymentPath}"
@@ -57,7 +54,6 @@ do
       -type f \
       -exec chmod -R 0744 {} \;
 
-    chmod 0700 "${branchDeploymentPath}/.git"
     chmod 0700 "${branchDeploymentPath}/node_modules"
     chmod 0700 "${branchDeploymentPath}/vendor"
     chmod 0700 "${branchPublicPath}/initialize.php"
