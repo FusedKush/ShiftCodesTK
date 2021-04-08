@@ -24,7 +24,7 @@ do
     # Deploy the repository
     git --work-tree="${branchDeploymentPath}" checkout -f "${branch}"
     # Copy Repository Information
-    cp -r .git "${branchDeploymentPath}"
+    cp -r ".git" "${branchDeploymentPath}"
 
     # Generate project files
     cd "${branchDeploymentPath}"
