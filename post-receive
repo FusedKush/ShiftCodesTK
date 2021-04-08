@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# When first deploying the project, the hook will need to be manually copied to `.git/hooks`
+# From then on, further deployments *should* automatically update the hook, if needed.
+
 while read oldrev newrev ref
 do
   branch=`echo $ref | cut -d/ -f3`
@@ -23,8 +26,10 @@ do
 
     # Deploy the repository
     git --work-tree="${branchDeploymentPath}" checkout -f "${branch}"
+    
     # Copy Repository Information
     cp -r "${repository}/.git" "${branchDeploymentPath}"
+    cp -r "${repository}/post-receive" "${repository}/.git/hooks/post-receive"
 
     # Generate project files
     cd "${branchDeploymentPath}"
