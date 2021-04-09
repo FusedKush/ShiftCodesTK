@@ -52,6 +52,17 @@ $roleColors : (                                // Role Color Definition List
   developer:             $role-developer
 );
 
+$color-generic-info:     #4c00ff;
+$color-generic-success:  #01d001;
+$color-generic-warning:  #ff6c00;
+$color-generic-danger:   #eb0c0c;
+$color-generic: (
+  info: $color-generic-info,
+  success: $color-generic-success,
+  warning: $color-generic-warning,
+  danger: $color-generic-danger,
+);
+
 /*** Functions ***/
 // Default Transition Timing
 @function trd($duration) {
