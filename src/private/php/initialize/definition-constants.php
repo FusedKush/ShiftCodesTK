@@ -3,74 +3,152 @@
    * The Global Definition Constants
    */
 
+  use ShiftCodesTK\Paths;
+
   // Path Constants
   (function () {
-    /** @var string Represents the *Server Root* of ShiftCodesTK. */
-    define("ShiftCodesTK\SERVER_ROOT", dirname($_SERVER["DOCUMENT_ROOT"], 2));
-
-    // Public Paths
+    // Base Paths
     (function () {
-      /**
-       * A list of public directory paths
-       * - *root* - The root `public` directory
-       * - *assets* - The public `assets` directory
-       * - *requests* - The public `requests` directory
-       */
-      $paths = [];
+      $base_paths = [];
 
-      $paths['root'] = ShiftCodesTK\SERVER_ROOT . '/src/public';
-      $paths['assets'] = $paths['root'] . 'assets';
-      $paths['requests'] = $paths['assets'] . 'requests';
+      $base_paths['root'] =     dirname($_SERVER["DOCUMENT_ROOT"], 2);
+      $base_paths['private'] =  "{$base_paths['root']}/src/private";
+      $base_paths['public'] =   "{$base_paths['root']}/src/public";
 
-      /**
-       * @var array ShiftCodesTK\PUBLIC_PATHS A list of public directory paths
+      /** @var array Represents paths to root directories of ShiftCodesTK.
        * 
-       * | Key | Path | Description |
-       * | --- | --- | -- |
-       * | *root* | `/public` | The root public directory where all public-facing resources are stored. |
-       * | *assets* | `/public/assets` | The public assets directory where site resources are stored. |
-       * | *requests* | `/public/assets/requests` | The public requests directory where client requests are sent. |
+       * | Name       | Description                             |
+       * | ---        | ---                                     |
+       * | `root`     | The *Server Root*.                      |
+       * | `private`  | The *Private Site Resources* directory. |
+       * | `public`   | The *Public Site Resources* directory.  |
        */
-      define("ShiftCodesTK\PUBLIC_PATHS", $paths);
+      define("ShiftCodesTK\Paths\BASE_PATHS", $base_paths);
     })();
-    // Private Paths
+    // General Paths
     (function () {
-      $paths = [];
+      $base_paths = Paths\BASE_PATHS;
+      $general_paths = [];
 
-      $paths['root'] = ShiftCodesTK\SERVER_ROOT . '/src/private';
-      $paths['resources'] = $paths['root'] . '/resources';
-      $paths['php'] = $paths['root'] . '/php';
-      $paths['initialize'] = $paths['php'] . '/initialize';
-      $paths['classes'] = $paths['php'] . '/classes';
-      $paths['vendor'] = ShiftCodesTK\SERVER_ROOT . '/vendor';
-      $paths['modules'] = $paths['php'] . '/modules';
-      $paths['php_includes'] = $paths['php'] . '/includes';
-      $paths['requests'] = $paths['php'] . '/requests';
-      $paths['forms'] = $paths['php'] . '/forms';
-      $paths['html'] = $paths['root'] . '/php-html/';
-      $paths['html_includes'] = $paths['html'] . '/.min/includes';
-      $paths['temp'] = ShiftCodesTK\SERVER_ROOT . '/tmp';
-      
-      /**
-       * A list of private directory paths
+      $general_paths['git'] =       "{$base_paths['root']}/.git";
+      $general_paths['cache'] =     "{$base_paths['root']}/cache";
+      $general_paths['logs'] =      "{$base_paths['root']}/logs";
+      $general_paths['temp'] =      "{$base_paths['root']}/tmp";
+      $general_paths['resources'] = "{$base_paths['private']}/resources";
+
+      /** @var array Represents paths to general directories of ShiftCodesTK.
        * 
-       * | Key | Path | Description |
-       * | --- | --- | -- |
-       * | *root* | `/private` | The root private directory where all private resources are stored. |
-       * | *resources* | `/private/resources` | The private Resources directory where backend resources are stored. |
-       * | *php* | `/private/php` | The main private PHP directory where all PHP Scripting resources are stored. |
-       * | *initialize* | `/private/php/initialize` | The private PHP Initialization directory where PHP Scripts required for initialization are stored. |
-       * | *modules* | `/private/php/modules` | The private PHP Scripts directory where all ShiftCodesTK modules are stored. |
-       * | *classes* | `/private/php/classes` | The private PHP Classes directory where all ShiftCodesTK PHP Class Definitions are stored. |
-       * | *vendor* | `/private/php/vendor` | The private PHP directory where all **Composer** package information is stored. |
-       * | *php_includes* | `/private/php/includes` | The private PHP Script Includes directory where PHP script snippets are stored. This is also used in the `set_include_path()`. |
-       * | *requests* | `/private/php/scripts/requests` | The private PHP Requests directory where PHP request scripts are stored. |
-       * | *forms* | `/private/php/scripts/forms` | The private PHP Forms directory where PHP form configurations are stored. |
-       * | *html* | `/private/php/php-html` | The private PHP-HTML directory where all HTML Pages are stored. |
-       * | *html_includes* | `/private/php/php-html/.min/includes` | The private PHP-HTML includes directory where HTML Page includes are stored. This is also used in the `set_include_path()`. |
-       * | *temp* | `../../../temp` | The temporary files directory. |
+       * | Name         | Description                                                 |
+       * | ---          | ---                                                         |
+       * | `git`        | The directory where *Git Repository Information* is stored. |
+       * | `cache`      | The directory where *Cached Resources* are stored.          |
+       * | `logs`       | The directory where various *Site Logs* are stored.         |
+       * | `temp`       | The directory where *Temporary Files* are stored.           |
+       * | `resources`  | The directory where general *Site Resources* are stored.    |
        */
-      define("ShiftCodesTK\PRIVATE_PATHS", $paths);
+      define("ShiftCodesTK\Paths\GENERAL_PATHS", $general_paths);
+    })();
+    // PHP Paths
+    (function () {
+      $base_paths = Paths\BASE_PATHS;
+      $php_paths = [];
+
+      $php_paths['main'] =              "{$base_paths['private']}/php";
+      $php_paths['initialize'] =        "{$php_paths['main']}/initialize";
+      $php_paths['classes'] =           "{$php_paths['main']}/classes";
+      $php_paths['modules'] =           "{$php_paths['main']}/modules";
+      $php_paths['includes'] =          "{$php_paths['main']}/includes";
+      $php_paths['frontend_handlers'] = "{$php_paths['main']}/frontend-handlers";
+      $php_paths['endpoints'] =         "{$php_paths['main']}/requests";
+      $php_paths['server_endpoint'] =   "{$base_paths['public']}/requests";
+      $php_paths['forms'] =             "{$php_paths['main']}/forms";
+      $php_paths['composer'] =          "{$base_paths['root']}/vendor";
+      $php_paths['phive'] =             "{$base_paths['root']}/tools";
+
+      /** @var array Represents paths to *PHP* resources.
+       * 
+       * | Name | Description |
+       * | --- | --- |
+       * | `main`               | The *Primary PHP Directory*.                                                    |
+       * | `initialize`         | The directory where *PHP Initialization Files* are stored.                      |
+       * | `classes`            | The directory where internal *PHP Class Definition Files* are stored.           |
+       * | `modules`            | The directory where internal *Module Definition Files* are stored.              |
+       * | `includes`           | The directory where *PHP Scripts* meant to be individually included are stored. |
+       * |                      | Part of the `PHP Include Path`.                                                 |
+       * | `frontend_handlers`  | The directory where *Frontend Handler Scripts* are stored.                      |
+       * | `endpoints`          | The directory where the individual *Backend Endpoints* are stored.              |
+       * | `server_endpoint`    | The *Primary Server Endpoint* that exposes the individual `endpoints`.          |
+       * | `forms`              | The directory where *Form `Objects`* from the `Forms` module are stored.        |
+       * | `composer`           | The `vendors` directory where *Composer Packages* are stored.                   |
+       * | `phive`              | The `tools` directory where *Phive PHARs* are stored.                           |
+       */
+      define("ShiftCodesTK\Paths\PHP_PATHS", $php_paths);
+    })();
+    // PHP-HTML Paths
+    (function () {
+      $base_paths = Paths\BASE_PATHS;
+      $html_paths = [];
+
+      $html_paths['main'] =     "{$base_paths['private']}/php-html";
+      $html_paths['original'] = "{$html_paths['main']}/files";
+      $html_paths['minified'] = "{$html_paths['main']}/.min";
+      $html_paths['final'] =    $base_paths['public'];
+      $html_paths['includes'] = "{$html_paths['minified']}/includes";
+
+      /** @var array Represents paths to *PHP-HTML* resources
+       * 
+       * | Name       | Description                                                               |
+       * | ---        | ---                                                                       |
+       * | `main`     | The *Primary PHP-HTML Directory*.                                         |
+       * | `original` | The directory where the *Original Files* are stored.                      |
+       * | `minified` | The directory where the *Minified Files* are stored.                      |
+       * | `final`    | The directory where the *Built Files* are deployed.                       |
+       * | `includes` | The directory where *PHP-HTML Files* intended to be included are stored.  |
+       * |            | Part of the `PHP Include Path`.                                               |
+       */
+      define("ShiftCodesTK\Paths\HTML_PATHS", $html_paths);
+    })();
+    // Asset Paths
+    (function () {
+      $base_paths = Paths\BASE_PATHS;
+      $asset_paths = [];
+      
+      $asset_paths['public'] = [];
+      $asset_paths['public']['main'] =      "{$base_paths['public']}/assets";
+      $asset_paths['public']['fonts'] =     "{$base_paths['public']}/fonts";
+      $asset_paths['public']['manifests'] = "{$base_paths['public']}/manifests";
+      $asset_paths['public']['requests'] =  "{$base_paths['public']}/requests";
+      
+      $asset_paths['private'] = [];
+      $asset_paths['private']['main'] = $base_paths['private'];
+      $asset_paths['private']['npm'] =  "{$base_paths['root']}/node-modules";
+
+      foreach ([ 'css', 'js', 'img' ] as $path) {
+        foreach ([ 'public', 'private' ] as $visibility) {
+          $asset_paths[$visibility][$path] = "{$asset_paths[$visibility]['main']}/{$path}";
+        }
+      }
+
+      /** @var array Represents paths to additional *Site Assets*.
+       * 
+       * | Name                                             | Description                                                   |
+       * | ---                                              | ---                                                           |
+       * | **`public`**: Represents *Public Asset Paths*    |                                                               |
+       * | `main`                                           | The *Primary Public Assets Directory*.                        |
+       * | `fonts`                                          | The directory where *Web Fonts* are stored.                   |
+       * | `manifests`                                      | The directory where *Web Manifests* are stored.               |
+       * | `requests`                                       | The directory where *Backend Requests* are sent.              |
+       * | `css`                                            | The directory where *Public CSS Files* are stored.            |
+       * | `js`                                             | The directory where *Public Javascript Files* are stored.     |
+       * | `img`                                            | The directory where *Public Images* are stored.               |
+       * | **`private`**: Represents *Private Asset Paths*  |                                                               |
+       * | `main`                                           | The *Primary Private Assets Directory*.                       |
+       * | `npm`                                            | The `node-modules` directory where *NPM Packages* are stored. |
+       * | `css`                                            | The directory where *Private CSS Files* are stored.           |
+       * | `js`                                             | The directory where *Private Javascript Files* are stored.    |
+       * | `img`                                            | The directory where *Private Images* are stored.              |
+       */
+      define("ShiftCodesTK\Paths\ASSET_PATHS", $asset_paths);
     })();
   })();
   // Request Constants

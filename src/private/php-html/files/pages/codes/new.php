@@ -46,7 +46,7 @@
     <!-- Main Content -->
     <main class="content-wrapper">
       <?php
-        include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/shift-code.php');
+        include(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/shift/shift-code.php');
 
         $form_shiftCode = getShiftCodeForm('add');
         $form_shiftCode->insertForm();

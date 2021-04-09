@@ -3,8 +3,9 @@
    * The Startup Tasks & Checks
    */
 
-  use ShiftCodesTK\Config;
-  use const ShiftCodesTK\PRIVATE_PATHS;
+  use ShiftCodesTK\Config,
+      ShiftCodesTK\PHPConfigurationFiles,
+      ShiftCodesTK\Paths;
 
   // Check for `define-secrets.php` & `define-config.php` definition files
   (function () {
@@ -14,7 +15,7 @@
     ];
 
     foreach ($files as $file) {
-      $filepath = PRIVATE_PATHS['resources'] . "/build-tools/{$file}";
+      $filepath = Paths\GENERAL_PATHS['resources'] . "/build-tools/{$file}";
   
       if (file_exists("{$filepath}.php")) {
         include("{$filepath}.php");
@@ -35,15 +36,15 @@
   // Set Configuration Values & Defaults
   (function () {
     set_include_path(
-      PRIVATE_PATHS['php_includes']
+      Paths\PHP_PATHS['includes']
       . PATH_SEPARATOR
-      . PRIVATE_PATHS['html_includes']
+      . Paths\HTML_PATHS['includes']
       . PATH_SEPARATOR
       . get_include_path()
     );
     
     ini_set("log_errors", 1);
-    ini_set("error_log", \ShiftCodesTK\SERVER_ROOT . '/php_error_log');
+    ini_set("error_log", Paths\GENERAL_PATHS['logs'] . '/php_error.log');
 
     date_default_timezone_set('UTC');
   })();

@@ -111,7 +111,7 @@
       $templateID = 'profile_card_template_card';
       $userTitle = "\${username}'s";
 
-      include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/account/update-profile.php');
+      include(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/account/update-profile.php');
     ?>
 
     <div

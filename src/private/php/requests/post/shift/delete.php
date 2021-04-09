@@ -1,5 +1,5 @@
 <?php
-  include_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/delete.php');
+  include_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/shift/delete.php');
   ;
   /** The form Response Object */
   $response = &$form_deleteShiftCode->findReferencedProperty('formSubmit->response');

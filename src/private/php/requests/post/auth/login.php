@@ -1,7 +1,7 @@
 <?php
   use ShiftCodesTK\Users\CurrentUser;
 
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/auth/login.php');
+  require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/auth/login.php');
 
   /** The form's response object */
   $response = &$form_authLogin->findReferencedProperty('formSubmit->response');

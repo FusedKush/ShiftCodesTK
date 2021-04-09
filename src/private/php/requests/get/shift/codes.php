@@ -5,7 +5,7 @@ $shiftCodes->send();
 exit;
 
 // // require_once('../../../../initialize.php');
-// require_once(\ShiftCodesTK\PRIVATE_PATHS['scripts'] . 'includes/shift_constants.php');
+// require_once('shift_constants.php');
 
 // /**
 //  * JSON response

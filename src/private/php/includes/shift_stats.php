@@ -1,6 +1,6 @@
 <?php
   (function () use (&$_mysqli) {
-    require_once(\ShiftCodesTK\PRIVATE_PATHS['php'] . '/includes/shift_constants.php');
+    require_once(\ShiftCodesTK\Paths\PHP_PATHS['includes'] . '/shift_constants.php');
 
     $stats = array_fill_keys(array_merge(['all'], array_keys(SHIFT_GAMES)), array_fill_keys(array_keys(SHIFT_DATES), 0));
 

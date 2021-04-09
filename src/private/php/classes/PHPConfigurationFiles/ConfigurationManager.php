@@ -145,7 +145,7 @@
         EOT;
       })();
       $temp_filename = (function () use ($file_contents, &$file_size) {
-        $temp_filename = tempnam(\ShiftCodesTK\PRIVATE_PATHS['temp'], $this->fileinfo['fileName']);
+        $temp_filename = tempnam(\ShiftCodesTK\Paths\GENERAL_PATHS['temp'], $this->fileinfo['fileName']);
         
         if ($temp_filename !== false) {
           $file_size = file_put_contents($temp_filename, $file_contents);

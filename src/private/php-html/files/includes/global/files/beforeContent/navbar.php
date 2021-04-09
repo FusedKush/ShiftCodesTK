@@ -147,7 +147,7 @@
                 <!-- Logout Button -->
                 <li>
                   <?php
-                    include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/auth/logout.php');
+                    include(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/auth/logout.php');
 
                     $form_authLogout->insertForm();
                   ?>

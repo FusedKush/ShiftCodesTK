@@ -2,7 +2,7 @@
   use ShiftCodesTK\Users,
       ShiftCodesTK\Strings;
 
-  include(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/profile-card.php');
+  include('local/profile-card.php');
 
   $userID = $_GET['user_id'] ?? false;
   $response = new ResponseObject();

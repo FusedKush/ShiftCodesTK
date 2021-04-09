@@ -1,4 +1,6 @@
 <?php
+  use ShiftCodesTK\Paths;
+
   $shift_game = PAGE_SETTINGS['shift']['game'];
   $badges = [
     ['name' => 'total',    'icon' => 'key'],
@@ -106,7 +108,7 @@
   <div class="slideout" hidden>
     <div class="content-wrapper">
       <?php
-        include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/sort-filter.php');
+        include(Paths\PHP_PATHS['forms'] . '/shift/sort-filter.php');
 
         getForm_shiftSortFilter($shift_game, isset(
                                               PAGE_SETTINGS['shift']['owner']) 
@@ -119,7 +121,7 @@
 <main class="feed content-wrapper">
   <div class="overlay" id="shift_overlay" >
     <!-- Spinner -->
-    <?php include(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+    <?php include('local/spinner.php'); ?>
     <div class="error" hidden aria-hidden="true">
       <strong>
         <div>No SHiFT Codes were found</div>
@@ -221,8 +223,8 @@
       </div>
       <ul class="choice-list">
         <?php
-          include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/toggle-visibility.php');
-          include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/delete.php');
+          include(Paths\PHP_PATHS['forms'] . '/shift/toggle-visibility.php');
+          include(Paths\PHP_PATHS['forms'] . '/shift/delete.php');
           $choices = [
             'code-actions' => [
               // 'share' => [
@@ -280,7 +282,7 @@
                     data-value="<?= $choice; ?>">
                     <span class="inline-box-icon icon fas <?= " {$options['icon']}"; ?>" aria-hidden="true"></span>
                     <span>&nbsp;&nbsp;<?= $displayChoice; ?></span>
-                    <?php include(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+                    <?php include('local/spinner.php'); ?>
                   </button>
                   <div class="layer tooltip" data-layer-pos="left" data-layer-delay="medium">
                     <?= $options['label']; ?>
@@ -578,7 +580,7 @@
             <!-- Redeem -->
             <div class="action redeem">
               <?php
-                include_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/redeem.php');
+                include_once(Paths\PHP_PATHS['forms'] . '/shift/redeem.php');
 
                 $form_redeemShiftCode->insertForm();
               ?>
@@ -624,7 +626,7 @@
       <div class="view edit" id="shift_code_view_edit">
         <div class="content-container">
           <?php
-            include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/shift-code.php');
+            include(Paths\PHP_PATHS['forms'] . '/shift/shift-code.php');
 
             $form_shiftCode = getShiftCodeForm('update');
             $form_shiftCode->insertForm();

@@ -1,7 +1,7 @@
 <?php
   use ShiftCodesTK\Users\CurrentUser;
 
-  include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/auth/logout.php');
+  include(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/auth/logout.php');
 
   $response = &$form_authLogout->findReferencedProperty('formSubmit->response');
 

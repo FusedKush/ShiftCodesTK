@@ -1,7 +1,7 @@
 <?php
   use ShiftCodesTK\Users\CurrentUser;
 
-  include_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/account/update-profile.php');
+  include_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/account/update-profile.php');
 
   $form = &$form_statPrivacy;
   $response = &$form->findReferencedProperty('formSubmit->response');

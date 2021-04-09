@@ -9,7 +9,7 @@
    **/
   final class Secrets {
     /** @var string The *Full Path* to the *Secrets File*. */
-    private const SECRETS_FILEPATH = PRIVATE_PATHS['resources'] . '/.secrets.php';
+    private const SECRETS_FILEPATH = Paths\GENERAL_PATHS['resources'] . '/.secrets.php';
 
     /** @var Secrets The current instance of the `Secrets` class. */
     private static $instance = null;

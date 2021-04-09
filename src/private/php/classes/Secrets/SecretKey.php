@@ -7,7 +7,7 @@
   /** The `SecretKey` is used to Encrypt and Decrypt stored `Secrets`. */
   final class SecretKey {
     /** @var string The *Full Path* to the *Secret Key File*; */
-    private const SECRET_KEY_FILEPATH = \ShiftCodesTK\PRIVATE_PATHS['resources'] . '/.secret-key.php';
+    private const SECRET_KEY_FILEPATH = \ShiftCodesTK\Paths\GENERAL_PATHS['resources'] . '/.secret-key.php';
 
     /** @var SecretKey The current instance of the `SecretKey` class. */
     private static $instance = null;

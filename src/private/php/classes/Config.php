@@ -1,6 +1,7 @@
 <?php
   namespace ShiftCodesTK;
-  use ShiftCodesTK\Strings,
+  use ShiftCodesTK\Paths,
+      ShiftCodesTK\Strings,
       ShiftCodesTK\PHPConfigurationFiles;
 
   /** 
@@ -10,7 +11,7 @@
     PHPConfigurationFiles\Interfaces\ConstantsInterface,
     PHPConfigurationFiles\Interfaces\StaticConfigurationValuesInterface {
     /** @var string The *Path* to the directory where Configuration Files are stored. */
-    public const CONFIG_FILES_PATH = PRIVATE_PATHS['resources'] . '/config';
+    public const CONFIG_FILES_PATH = Paths\GENERAL_PATHS['resources'] . '/config';
     /** @var string The *File Extension* of the Configuration Files. */
     public const CONFIG_FILES_EXT = '.php';
 
@@ -78,7 +79,7 @@
       if (!isset(self::$config_instance)) {
         self::$config_instance = new Config(
           new PHPConfigurationFiles\ConfigurationManager(
-            PRIVATE_PATHS['resources'] . '/.config-index.php', 
+            Paths\GENERAL_PATHS['cache'] . '/config-index.php', 
             new PHPConfigurationFiles\ConfigurationFile([
               'type'     => self::CONFIGURATION_TYPE_PROPERTY,
               'comment'  => "Represents an index of registered *Config Files*.",
@@ -99,7 +100,7 @@
 
         $index_config_files = function () use (&$config_file_index, &$instance) {
           $instance->indexConfigFiles();
-          $config_file_index = $this->configFileIndex;
+          $config_file_index = $instance->configFileIndex;
         };
         $get_config_files = function () use (&$get_config_files, &$has_indexed_config_files, &$config_file_index, &$index_config_files) {
           $config_files = [];

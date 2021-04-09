@@ -44,7 +44,7 @@
     <!-- Main Content -->
     <main class="content-wrapper">
       <?php
-        require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift-code.php');
+        require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/shift-code.php');
 
         $cleanParam = check_parameter('code', $_GET['code'], $shiftCodeForm['code_id']);
 

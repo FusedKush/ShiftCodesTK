@@ -983,14 +983,12 @@
             return "{$domain}/{$gameID}";
           })()
         ];
-        $templatePath = \ShiftCodesTK\PRIVATE_PATHS['php'] . '/shift_social_media_templates/';
+        $templatePath = \ShiftCodesTK\Paths\GENERAL_PATHS['resources'] . '/shift/social_media_templates/';
         $templateList = [
           'twitter_retweet',
           'twitter_tweet',
           'facebook'
         ];
-
-        var_dump($bindings);
 
         foreach ($templateList as $template) {
           $post = file_get_contents("{$templatePath}{$template}.txt");

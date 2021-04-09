@@ -1,5 +1,5 @@
 <?php
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['php_includes'] . '/shift_stats.php');
+  require_once('shift_stats.php');
 
   $response = new ResponseObject();
 

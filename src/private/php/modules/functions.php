@@ -1003,7 +1003,7 @@
    */
   function errorNotice ($code) {
     define('ERROR_NOTICE_CODE', $code);
-    include_once(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/error-notice.php');
+    include_once('local/error-notice.php');
   }
   function errorObject ($type, $parameter = null, $message = null, $providedValue = null, $inheritedValue = null) {
     $keys = [

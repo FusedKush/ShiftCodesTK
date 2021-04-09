@@ -1,6 +1,6 @@
 <?php
   // require_once('../../reinitialize.php');
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['php_includes'] . '/shift_constants.php');
+  require_once('shift_constants.php');
   
   $response = new ResponseObject();
   $params = (function () use (&$response) {

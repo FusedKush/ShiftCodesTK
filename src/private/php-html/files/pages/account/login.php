@@ -56,7 +56,7 @@
     <!-- Main Content -->
     <main class="no-header" data-webp='{"path": "/assets/img/banners/bl2/6", "alt": ".jpg", "type": "bg"}'>
       <?php
-        require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/auth/login.php');
+        require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/auth/login.php');
         $form_authLogin->insertForm();
       ?>
     </main>

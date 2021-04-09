@@ -1,5 +1,5 @@
 <?php
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['php_includes'] . '/shift_constants.php');
+  require_once('shift_constants.php');
 
   /**
    * Retrieves an Add SHiFT Code or Update SHiFT Code Form

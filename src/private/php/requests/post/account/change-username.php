@@ -1,5 +1,5 @@
 <?php
-  include_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/account/update-profile.php');
+  include_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/account/update-profile.php');
 
   $form = &$form_changeUsername;
   $response = &$form->findReferencedProperty('formSubmit->response');

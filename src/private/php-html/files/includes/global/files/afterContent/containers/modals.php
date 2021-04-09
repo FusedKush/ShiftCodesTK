@@ -8,7 +8,7 @@
       <div>
         <button class="modal-action modal-toggle prevent-onclose layer-target styled has-spinner" id="confirmation_modal_approve" data-action="approve">
           <span>Confirm</span>
-          <?php include(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+          <?php include('local/spinner.php'); ?>
         </button>
         <div class="layer tooltip" id="confirmation_modal_approve_tooltip" data-layer-delay="medium">
           <span>Approve this action</span>
@@ -17,7 +17,7 @@
       <div>
         <button class="modal-action modal-toggle layer-target styled button-effect text has-spinner" id="confirmation_modal_deny" data-action="deny">
           <span>Cancel</span>
-          <?php include(\ShiftCodesTK\PRIVATE_PATHS['html_includes'] . '/local/spinner.php'); ?>
+          <?php include('local/spinner.php'); ?>
         </button>
         <div class="layer tooltip" id="confirmation_modal_deny_tooltip" data-layer-delay="medium">
           <span>Deny this action</span>

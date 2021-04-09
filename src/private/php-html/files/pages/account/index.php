@@ -101,7 +101,7 @@
             </div>
             <div class="view" id="update_password_edit">
               <?php
-                require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/account/change-password.php');
+                require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/account/change-password.php');
 
                 $form_changePassword->insertForm();
               ?>
@@ -110,7 +110,7 @@
           <!-- Login Actions -->
           <div class="section login-actions">
           <?php
-            // require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . 'auth/logout.php');
+            // require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . 'auth/logout.php');
             // // $logoutForm = new FormBase([
             // //   'name'               => 'logout',
             // //   'action'             => '/assets/requests/forms/auth/logout',
@@ -159,7 +159,7 @@
           <!-- Danger Zone -->
           <div class="section danger-zone">
           <?php
-            // require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . 'account/danger-zone.php');
+            // require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . 'account/danger-zone.php');
 
             // // $dangerZoneForm->updateProperty('footer', [
             // //   'submit' => [

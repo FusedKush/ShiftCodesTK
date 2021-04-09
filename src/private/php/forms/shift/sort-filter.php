@@ -1,5 +1,5 @@
 <?php
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['php_includes'] . '/shift_constants.php');
+  require_once('shift_constants.php');
 
   /**
    * Generate the SHiFT Sort/Filter Form

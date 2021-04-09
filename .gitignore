@@ -6,6 +6,8 @@ node_modules/
 tools/
 vendor/
 phive.phar
+cache/
+logs/
 tmp/
 src/private/img/assets/*
 src/private/img/users/

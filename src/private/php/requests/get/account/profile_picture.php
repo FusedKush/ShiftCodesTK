@@ -43,7 +43,13 @@
         'ext' => $pathPieces[2]
       ];
 
-      return \ShiftCodesTK\PRIVATE_PATHS['root'] . "/img/users/profiles/${image['path']}/{$image['dirs']}/{$image['name']}/{$size}x{$size}.{$image['ext']}";
+      return \ShiftCodesTK\Paths\ASSET_PATHS['private']['img'] .
+        "/users
+        /profiles
+        /${image['path']}
+        /{$image['dirs']}
+        /{$image['name']}
+        /{$size}x{$size}.{$image['ext']}";
     })();
 
     if (file_exists($fullPath)) {

@@ -436,7 +436,7 @@
       <!-- Editing Views -->
       <?php if ($options['allow_editing'] && $options['show_actions'] && ($isTemplate || $isCurrentUser)) : ?>
         <?php
-          include(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/account/update-profile.php');
+          include(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/account/update-profile.php');
         ?>
 
         <!-- Change Username View -->

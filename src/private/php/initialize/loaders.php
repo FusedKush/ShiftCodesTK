@@ -3,10 +3,10 @@
    * The Class Autoloader & Module Loader
    */
 
-  use const ShiftCodesTK\PRIVATE_PATHS;
+  use const ShiftCodesTK\Paths\PHP_PATHS;
 
   // Class Autoloader
-  require(PRIVATE_PATHS['vendor'] . '/autoload.php');
+  require(PHP_PATHS['composer'] . '/autoload.php');
 
   // Module Loader
   /** @var array Represents the *Modules* that should be loaded. 
@@ -48,8 +48,8 @@
     }
 
     $module_group_path = $module_group === 'page_only'
-                         ? PRIVATE_PATHS['modules'] . '/page-only'
-                         : PRIVATE_PATHS['modules'];
+                         ? PHP_PATHS['modules'] . '/page-only'
+                         : PHP_PATHS['modules'];
 
     foreach ($module_list as $module) {
       require_once("{$module_group_path}/{$module}.php");
