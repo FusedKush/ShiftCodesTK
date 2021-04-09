@@ -504,7 +504,6 @@
 
       $property = new ConfigurationProperty([
         'name'        => $base_property,
-        'value'       => $property_value,
         'isEncrypted' => isset($secret_key)
       ]);
       $property->setValue($property_value, $secret_key);
@@ -581,16 +580,14 @@
 
       /** @var ConfigurationProperty */
       $contents = &$this->getConfigurationContents();
-      if (is_array($contents)) {
-        var_dump($this->contents);
-      }
       $last_modified = $contents->getProperties()['lastModified'];
 
       if (!isset($contents)) {
-        $this->changeConfigurationContents(new ConfigurationProperty());
+        $this->changeConfigurationContents();
       }
 
       $contents->setValue($property_value, $secret_key);
+      $this->listConfigurationValues(true);
       
       return $contents->getProperties()['lastModified'] !== $last_modified;
     }

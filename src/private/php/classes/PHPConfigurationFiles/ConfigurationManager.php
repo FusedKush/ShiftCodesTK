@@ -411,11 +411,9 @@
      * @return bool Returns **true** on success and **false** on failure.
      */
     public function addConfigurationValue (string $property_name, $property_value, string $secret_key = null): bool {
-      var_dump(\func_get_args());
       $result = $this->contents
                      ->addConfigurationValue(...\func_get_args());
 
-      var_dump($result);
       if ($result) {
         return $this->writeConfigurationFile() > 0;
       }
