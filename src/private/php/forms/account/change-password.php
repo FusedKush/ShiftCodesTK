@@ -10,7 +10,7 @@
     // ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/account/change-password',
+        'path'             => '/api/post/account/change-password',
       ],
       'spacing'         => 'vertical'
     ],

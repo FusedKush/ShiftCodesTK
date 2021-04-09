@@ -19,7 +19,7 @@
         // 'action'          => '#',
         'action'          => [
           'type'             => 'js',
-          'path'             => '/assets/requests/post/js/shift-sort-filter'
+          'path'             => '/api/post/js/shift-sort-filter'
         ],
         'spacing'         => 'vertical'
       ],

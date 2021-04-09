@@ -113,7 +113,7 @@
             // require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . 'auth/logout.php');
             // // $logoutForm = new FormBase([
             // //   'name'               => 'logout',
-            // //   'action'             => '/assets/requests/forms/auth/logout',
+            // //   'action'             => '/api/forms/auth/logout',
             // //   'result'             => [
             // //     'redirect' => [
             // //       'enabled'  => true,

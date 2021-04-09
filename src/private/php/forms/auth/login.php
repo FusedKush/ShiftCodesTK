@@ -9,7 +9,7 @@
     ],
     'formProperties'   => [
       'action'            => [
-        'path'               => '/assets/requests/post/auth/login'
+        'path'               => '/api/post/auth/login'
       ],
       'spacing'           => 'standard'
     ],

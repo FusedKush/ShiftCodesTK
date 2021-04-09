@@ -1,7 +1,7 @@
 <?php
   $dangerZoneForm = new FormBase([
     'name'               => 'logout',
-    'action'             => '/assets/requests/post/account/danger-zone',
+    'action'             => '/api/post/account/danger-zone',
     'title'              => 'Danger Zone',
     'result'             => [
       'redirect' => [

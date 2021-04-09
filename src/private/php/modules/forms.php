@@ -604,7 +604,7 @@
                 'SINGLE_BUTTON' => [
                   'formProperties' => [
                     'action'          => [
-                      'path'             => '/assets/requests/post/shift/redeem'
+                      'path'             => '/api/post/shift/redeem'
                     ],
                     'showAlerts'      => false,
                     'spacing'         => 'none'

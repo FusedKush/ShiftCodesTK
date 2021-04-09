@@ -7,7 +7,7 @@
     ],
     'formProperties' => [
       'action'         => [
-        'path'            => '/assets/requests/post/shift/toggle-visibilty'
+        'path'            => '/api/post/shift/toggle-visibilty'
       ],
       'spacing'        => 'none'
     ],

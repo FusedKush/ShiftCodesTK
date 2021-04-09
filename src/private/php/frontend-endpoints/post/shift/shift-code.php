@@ -1,6 +1,6 @@
 <?php
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['php_includes'] . '/shift_constants.php');
-  require_once(\ShiftCodesTK\PRIVATE_PATHS['forms'] . '/shift/shift-code.php');
+  require_once('shift_constants.php');
+  require_once(\ShiftCodesTK\Paths\PHP_PATHS['forms'] . '/shift/shift-code.php');
 
   /** The SHiFT Code Form */
   $form = (function () {
@@ -485,7 +485,7 @@
               $str .= ":{$_SERVER['SERVER_PORT']}";
             }
 
-            $str .= '/assets/requests/get/shift/codes';
+            $str .= '/api/get/shift/codes';
 
             return $str;
           })();

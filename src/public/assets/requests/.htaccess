@@ -1,5 +1,0 @@
-RewriteEngine on
-
-RewriteCond %{REQUEST_FILENAME} !-f
-
-RewriteRule ^(.*)$ handle-request.php?__request=$1 [L,QSA]

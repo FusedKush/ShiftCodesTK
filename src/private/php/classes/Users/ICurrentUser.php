@@ -791,7 +791,7 @@
           if (isset($_SERVER["HTTP_REFERER"])) {
             $url = Strings\slice($_SERVER['HTTP_REFERER'], Strings\strlen($_SERVER['HTTP_ORIGIN']));
           }
-          else if (!Strings\substr_check($_SERVER['REQUEST_URI'], '/assets/requests/')) {
+          else if (!Strings\substr_check($_SERVER['REQUEST_URI'], '/api/')) {
             $url = $_SERVER['REQUEST_URI'];
           }
 

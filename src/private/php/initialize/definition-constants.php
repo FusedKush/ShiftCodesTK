@@ -59,8 +59,8 @@
       $php_paths['modules'] =           "{$php_paths['main']}/modules";
       $php_paths['includes'] =          "{$php_paths['main']}/includes";
       $php_paths['frontend_handlers'] = "{$php_paths['main']}/frontend-handlers";
-      $php_paths['endpoints'] =         "{$php_paths['main']}/requests";
-      $php_paths['server_endpoint'] =   "{$base_paths['public']}/requests";
+      $php_paths['endpoints'] =         "{$php_paths['main']}/frontend-endpoints";
+      $php_paths['server_endpoint'] =   "{$base_paths['public']}/api";
       $php_paths['forms'] =             "{$php_paths['main']}/forms";
       $php_paths['composer'] =          "{$base_paths['root']}/vendor";
       $php_paths['phive'] =             "{$base_paths['root']}/tools";
@@ -76,7 +76,7 @@
        * | `includes`           | The directory where *PHP Scripts* meant to be individually included are stored. |
        * |                      | Part of the `PHP Include Path`.                                                 |
        * | `frontend_handlers`  | The directory where *Frontend Handler Scripts* are stored.                      |
-       * | `endpoints`          | The directory where the individual *Backend Endpoints* are stored.              |
+       * | `endpoints`          | The directory where the individual *Backend Request Endpoints* are stored.      |
        * | `server_endpoint`    | The *Primary Server Endpoint* that exposes the individual `endpoints`.          |
        * | `forms`              | The directory where *Form `Objects`* from the `Forms` module are stored.        |
        * | `composer`           | The `vendors` directory where *Composer Packages* are stored.                   |

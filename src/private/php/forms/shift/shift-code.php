@@ -14,7 +14,7 @@
       'formProperties' => [
         'action'          => [
           'type'             => 'ajax',
-          'path'             => '/assets/requests/post/shift/shift-code'
+          'path'             => '/api/post/shift/shift-code'
         ]
       ],
       'formFooter'     => [

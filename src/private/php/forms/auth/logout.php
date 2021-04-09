@@ -8,7 +8,7 @@
     ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/auth/logout'
+        'path'             => '/api/post/auth/logout'
       ]
     ],
     'formResult'     => [

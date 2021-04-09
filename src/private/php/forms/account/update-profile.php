@@ -11,7 +11,7 @@
     ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/account/change-username'
+        'path'             => '/api/post/account/change-username'
       ],
       'spacing'         => 'vertical'
     ],
@@ -89,7 +89,7 @@
     ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/account/role-details',
+        'path'             => '/api/post/account/role-details',
         'type'             => 'js'
       ],
       'spacing'         => 'vertical'
@@ -205,7 +205,7 @@
     ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/account/update-stats-privacy'
+        'path'             => '/api/post/account/update-stats-privacy'
       ],
       'spacing'         => 'vertical'
     ],
@@ -289,7 +289,7 @@
   //   ],
   //   'formProperties' => [
   //     'action'          => [
-  //       'path'             => '/assets/requests/post/account/update-profile'
+  //       'path'             => '/api/post/account/update-profile'
   //     ],
   //     'spacing'         => 'vertical'
   //   ],

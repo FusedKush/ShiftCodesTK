@@ -7,7 +7,7 @@
     ],
     'formProperties' => [
       'action'          => [
-        'path'             => '/assets/requests/post/shift/delete'
+        'path'             => '/api/post/shift/delete'
       ] 
     ],
     'formFooter'     => [
