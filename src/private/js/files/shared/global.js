@@ -166,7 +166,7 @@ var requestToken = {
    */
   check: function (callback) {
     newAjaxRequest({
-      file: '/assets/requests/get/token',
+      file: '/api/get/token',
       callback: function (responseString) {
         let token = requestToken.get();
         let response = tryJSONParse(responseString);
@@ -790,8 +790,8 @@ function updateClientCursorProperties (event) {
         },
         /** @var {object} ShiftCodesTK.dayjs_managers.interval The interval in which the `dayjs_managers` run. */
         interval: {
-          /** @var {int} ShiftCodesTK.dayjs_managers.interval.duration The amount of time, in *milliseconds*, between executions. */
-          duration: 150000,
+          /** @var {int} ShiftCodesTK.dayjs_managers.interval.duration The amount of time, in *minutes*, between updates. */
+          duration: 5,
           /** @var {(string|null)} ShiftCodesTK.dayjs_managers.interval.id The current *Interval ID* of the manager interval, if applicable. */
           id: null,
 
@@ -804,7 +804,7 @@ function updateClientCursorProperties (event) {
               return false;
             }
   
-            this.id = setInterval(ShiftCodesTK.dayjs_managers.refresh_all_elements, this.duration);
+            this.id = setInterval(ShiftCodesTK.dayjs_managers.refresh_all_elements, this.duration * 60000);
             return true;
           },
           /** Pause the `dayjs_managers` interval
@@ -1170,7 +1170,7 @@ function updateClientCursorProperties (event) {
           user_id: ''
         },
         request: {
-          path: '/assets/requests/get/account/profile-card',
+          path: '/api/get/account/profile-card',
           callback: (response) => {
             if (response && response.payload !== undefined) {
               if (response.payload[0]) {
