@@ -489,7 +489,7 @@
     return StringObj::alias('add_plural', ...func_get_args());
   }
 
-  /** An *alias* of `StringObj::trim()`, bool $return_string_array = false
+  /** An *alias* of `StringObj::trim()`
    * 
    * > Trim whitespace, or other characters, from the beginning and/or end of the string.
    * @see StringObj::trim()

@@ -1118,6 +1118,10 @@
       })();
       $string = preg_replace($this->string, $patterns, '');
 
+      if (substr_check($charlist, $this->char(-1))) {
+        $string = slice($string, 0, -1);
+      }
+
       return $this->handle_modify_return($string);
     }
     /** Collapse whitespace, or other characters, within the string.
