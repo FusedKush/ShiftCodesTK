@@ -23,6 +23,7 @@ src/public/assets/js
 !.cpanel.yml
 !.phpdoc-md
 !src/public/initialize.php
+!src/public/api/
 !src/public/assets/**/*.php
 !src/private/img/assets/rewards
 !src/private/resources/build-tools/**/*.template
