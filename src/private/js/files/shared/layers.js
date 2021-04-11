@@ -106,6 +106,7 @@ ShiftCodesTK.layers = {
   
           if (triggers) {
             let allowedTriggers = [
+              'none',
               'focus',
               'primary-click',
               'secondary-click'
@@ -729,7 +730,6 @@ ShiftCodesTK.layers = {
         function toggleState () {  
           if (props.target) {
             if (props.type == 'dropdown' || props.type == 'panel') {
-              
               // Toggle Pressed State
               if (props.triggers.indexOf('focus') == -1 || dom.has(props.target, 'class', 'auto-press')) {
                 edit.attr(props.target, 'update', 'aria-pressed', newState);
@@ -1567,7 +1567,7 @@ ShiftCodesTK.layers = {
    * - - *lazyFollow* `boolean` - If **true**, the tooltip will only follow the cursor on the axis it's positioned on. Required `useCursor` & `followCurso` to be **true** to have any effect.
    * - - *pos* `null|"top"|"right"|"bottom"|"left" - Indicates how the tooltip is positioned relative to the `tooltipTarget`. Some values may be incompatible with `align`.
    * - - *useCursor* `boolean` - If **true**, the tooltip will use the *mouse cursor's position* (while inside of the `tooltipContent`) to position the tooltip. 
-   * - *triggers* `array` - A list of triggers for the tooltip. Valid options include *focus*, *primary-click* & *secondary-click*. 
+   * - *triggers* `array` - A list of triggers for the tooltip. Valid options include *focus*, *primary-click*, *secondary-click*, and *none*. 
    * @return boolean Returns **true** on success, or **false** if an error occurred.
    */
   updateTooltip (tooltipTarget, tooltipContent = null, tooltipOptions = {}) {
