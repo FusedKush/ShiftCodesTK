@@ -5,7 +5,8 @@
 
   use ShiftCodesTK\Config,
       ShiftCodesTK\PHPConfigurationFiles,
-      ShiftCodesTK\Paths;
+      ShiftCodesTK\Paths,
+      ShiftCodesTK\Strings;
 
   // Check for `define-secrets.php` & `define-config.php` definition files
   (function () {
@@ -199,7 +200,9 @@
                   if (isset($branch_log)) {
                     $common_properties = array_replace_recursive($common_properties, [
                       'commit'      => $branch_log['commit'],
-                      'parent'      => $branch_log['parent'],
+                      'parent'      => !Strings\preg_test($branch_log['parent'], '/^0+$/')
+                                       ? $branch_log['parent']
+                                       : null,
                       'author'      => [
                         'full_name'   => (function () use ($branch_log) {
                           $last_name = isset($branch_log['last'])
@@ -210,7 +213,7 @@
                         })(),
                         'first_name'  => $branch_log['first'],
                         'last_name'   => $branch_log['last'],
-                        'address'     => ShiftCodesTK\Strings\slice($branch_log['address'], 1, -1)
+                        'address'     => Strings\slice($branch_log['address'], 1, -1)
                       ],
                       'timestamp'   => (
                         (new DateTime(
@@ -236,7 +239,16 @@
                 $remote_log = $branch_logs['remote'] ?? null;
     
                 if (isset($build_log)) {
-                  $build_props['commit_message'] = \ShiftCodesTK\Strings\trim(file_get_contents("{$git_path}/COMMIT_EDITMSG"));
+                  // Commit Message
+                  (function () use (&$build_props, $git_path) {
+                    $commit_message_path = "{$git_path}/COMMIT_EDITMSG";
+
+                    if (file_exists($commit_message_path)) {
+                      $build_props['commit_message'] = \ShiftCodesTK\Strings\trim(
+                        file_get_contents($commit_message_path)
+                      );
+                    }
+                  })();
     
                   if (isset($remote_log)) {
                     $build_props['status'] = (function () use ($branch_logs, $build_log, $remote_log) {

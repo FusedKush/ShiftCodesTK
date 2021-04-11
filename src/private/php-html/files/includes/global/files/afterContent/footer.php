@@ -64,7 +64,9 @@
             'full_commit'   => $last_commit['commit'],
             'last_commit'   => Strings\slice($last_commit['commit'], 0, 7),
             'full_parent'   => $last_commit['parent'],
-            'parent_commit' => Strings\slice($last_commit['parent'], 0, 7)
+            'parent_commit' => isset($last_commit['parent'])
+                               ? Strings\slice($last_commit['parent'], 0, 7)
+                               : null
           ];
           $up2date = $last_commit['status'] !== 'ahead-of-remote';
         ?>
@@ -151,35 +153,39 @@
             <span class="parent">
               <dt hidden="true" aria-hidden="false">Parent:</dt>
               <dd>
-                <?php if (isset($last_commit['parent'])) : ?>
                   <code class="layer-target">
-                    <?php if ($up2date) : ?>
-                      <a 
-                        class="styled" 
-                        href="<?= \ShiftCodesTK\BUILD_INFORMATION['repository'] . "/commit/{$commits['full_parent']}"; ?>"
-                        target="_blank"
-                        rel="external noopener"
-                      >
+                    <?php if (isset($last_commit['parent'])) : ?>
+                      <?php if ($up2date) : ?>
+                        <a 
+                          class="styled" 
+                          href="<?= \ShiftCodesTK\BUILD_INFORMATION['repository'] . "/commit/{$commits['full_parent']}"; ?>"
+                          target="_blank"
+                          rel="external noopener"
+                        >
+                          <?= $commits['parent_commit']; ?>
+                        </a>
+                      <?php else : ?>
                         <?= $commits['parent_commit']; ?>
-                      </a>
+                      <?php endif; ?>
                     <?php else : ?>
-                      <?= $commits['parent_commit']; ?>
+                      <span class="unavailable">N/A</span>
                     <?php endif; ?>
                   </code>
                   <div class="layer tooltip" data-layer-delay="long">
                     <strong>Parent Commit</strong>:
                     <br>
-                    <?= $commits['full_parent']; ?>
+                    <?php if (isset($last_commit['parent'])) : ?>
+                      <?= $commits['full_parent']; ?>
 
-                    <?php if ($up2date) : ?>
-                      <br>
-                      <br>
-                      <div class="link-notice">Click to view Commit Details on <em>Github</em>.</div>
+                      <?php if ($up2date) : ?>
+                        <br>
+                        <br>
+                        <div class="link-notice">Click to view Commit Details on <em>Github</em>.</div>
+                      <?php endif; ?>
+                    <?php else : ?>
+                      <i>Commit does not have a Parent</i>
                     <?php endif; ?>
                   </div>
-                <?php else : ?>
-                  <code class="unavailable">---</code>
-                <?php endif; ?>
               </dd>
             </span>
             <span class="track">
@@ -245,7 +251,9 @@
               </dd>
             </span>
           </div>
-          <pre class="section commit-message"><?= $last_commit['commit_message']; ?></pre>
+          <?php if (isset($last_commit['commit_message']) && !empty($last_commit['commit_message'])) : ?>
+            <pre class="section commit-message"><?= $last_commit['commit_message']; ?></pre>
+          <?php endif; ?>
         </dl>
       </div>
     </div>

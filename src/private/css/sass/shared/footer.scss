@@ -157,6 +157,9 @@
         &.timeline {
           @include flexbox(c, sb);
     
+          .parent .unavailable {
+            opacity: 0.35;
+          }
           .track {
             @include flexbox();
             flex: 1;
