@@ -21,20 +21,20 @@
     };
 
     if (!isset($endpoint)) {
-      $invalid_endpoint(404, 'No endpoint was specified.');
+      $invalid_endpoint(404, 'No endpoint was specified');
     }
     else if ((strpos($endpoint, '/get/') !== false && !is_method('GET')) || (strpos($endpoint, '/post/') !== false && !is_method('POST'))) {
-      $invalid_endpoint(-1, 'An invalid Request Method was used.');
+      $invalid_endpoint(-1, 'An invalid Request Method was used');
     }
     else if (REQUEST_TOKEN !== $_SESSION['token'] && $endpoint !== 'get/token') {
-      $invalid_endpoint(401, 'Missing or Invalid Request Token.');
+      $invalid_endpoint(401, 'Missing or Invalid Request Token');
     }
     
     $endpoint = \ShiftCodesTK\Paths\PHP_PATHS['endpoints'] . "/{$endpoint}";
     $endpoint = strpos($endpoint, '.php') === false ? "$endpoint.php" : $endpoint;
 
     if (!file_exists($endpoint)) {
-      $invalid_endpoint(404, 'The specified endpoint does not exist.');
+      $invalid_endpoint(404, 'The specified endpoint does not exist');
     }
 
     return $endpoint;
