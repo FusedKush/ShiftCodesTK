@@ -36,6 +36,12 @@
       $general_paths['temp'] =      "{$base_paths['root']}/tmp";
       $general_paths['resources'] = "{$base_paths['private']}/resources";
 
+      foreach ([ 'cache', 'logs', 'temp' ] as $directory) {
+        if (!file_exists($directory)) {
+          mkdir($directory, 0700);
+        }
+      }
+
       /** @var array Represents paths to general directories of ShiftCodesTK.
        * 
        * | Name         | Description                                                 |
