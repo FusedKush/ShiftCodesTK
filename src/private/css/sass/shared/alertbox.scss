@@ -1,0 +1,58 @@
+@import "../partials/_globals";
+@import "../partials/_fontAwesome.scss";
+
+.alertbox {
+  $alertbox-radius: 8px;
+  $alertbox-padding: 12px;
+  $alertbox-icons: (
+    info: 'info-circle',
+    success: 'check',
+    warning: 'exclamation-triangle',
+    danger: 'exclamation-circle',
+  );
+  $alertbox-icon-size: 1.5em;
+  $alertbox-border-width: 1.5px;
+
+  @include flexbox();
+  @include ready;
+  padding: $alertbox-padding * 0.5 0;
+  
+  &.full-width {
+    width: 100%;
+    border-top: bd($alertbox-border-width);
+    border-bottom: bd($alertbox-border-width);
+  }
+  &:not(.full-width) {
+    border: bd($alertbox-border-width);
+    border-radius: $alertbox-radius;
+
+    &::before {
+      border-radius: $alertbox-radius;
+    }
+  }
+
+  @each $name, $color in $color-generic {
+    &.#{$name} {
+      background-color: $color;
+      border-color: $color;
+
+      .icon {
+        @include faIcon(map-get($alertbox-icons, $name));
+      }
+    }
+  }
+
+  &::before {
+    @include flexbox(s, s);
+    @include fill(true, tpb(0.65));
+  }
+
+  .icon {
+    font-size: 1.5em;
+    padding: $alertbox-padding $alertbox-padding;
+  }
+  .dismiss {
+    padding: $alertbox-padding;
+    font-size: 1.25em;
+  }
+}
