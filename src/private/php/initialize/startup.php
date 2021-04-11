@@ -27,10 +27,318 @@
 
   // Define Runtime Constants
   (function () {
+    // `ShiftCodesTK\BUILD_INFORMATION`
+    (function () {
+      $build_info = (function () {
+        $build_info = [];
+        $cache_file = new PHPConfigurationFiles\ConfigurationManager(
+          Paths\GENERAL_PATHS['cache'] . '/build-information.php',
+          new PHPConfigurationFiles\ConfigurationFile([
+            'type'      => PHPConfigurationFiles\ConfigurationFile::CONFIGURATION_TYPE_ARRAY,
+            'comment'   => "Represents a cached version of the `BUILD_INFORMATION` constant."
+          ])
+        );
+        $git_path = Paths\GENERAL_PATHS['git'];
+
+        if (file_exists($git_path)) {
+          $head = file_get_contents("{$git_path}/HEAD");
+          $current_branch = trim(preg_replace("%(.*?\/){2}%", "", $head));
+          $head_commit = \ShiftCodesTK\Strings\trim(file_get_contents("{$git_path}/refs/heads/{$current_branch}"));
+
+          if ($cache_file->configurationValueExists('head_commit') && $cache_file->getConfigurationValue('head_commit') === $head_commit) {
+            $build_info = $cache_file->getConfigurationValue('build_information');
+          }
+          else {
+            // General Information
+            (function () use (&$build_info) {
+              $build_info = array_merge($build_info, [
+                'repository'  => 'https://github.com/FusedKush/ShiftCodesTK'
+              ]);
+            })();
+            // Branch Information
+            (function () use (&$build_info, $git_path, $current_branch) {
+              $branch_info = [
+                'current_branch'  => null,
+                'prod_branch'     => 'master',
+                'is_prod_branch'  => null
+              ];
+    
+              if (file_exists($git_path)) {
+                $branch_info = array_replace($branch_info, [
+                  'current_branch'  => $current_branch,
+                  'is_prod_branch'  => $current_branch === $branch_info['prod_branch']
+                ]);
+              }
+    
+              $build_info = array_merge($build_info, [
+                'branch' => $branch_info
+              ]);
+            })();
+            // Last Commit Information
+            (function () use (&$build_info, $git_path) {
+              $last_commit = [];
+              $current_branch = $build_info['branch']['current_branch'];
+              $branch_logs = (function () use ($git_path, $current_branch) {
+                $branch_logs = [];
+                $branch_paths = [
+                  'build'   => "heads/{$current_branch}",
+                  'remote'  => "remotes/origin/{$current_branch}"
+                ];
+                $log_section_names = [
+                  'parent',
+                  'commit',
+                  'first',
+                  'last',
+                  'address',
+                  'ts',
+                  'tz',
+                  'event'
+                ];
+                
+                foreach ($branch_paths as $branch_type => $branch_path) {
+                  $log_path = "{$git_path}/logs/refs/{$branch_path}";
+    
+                  if (file_exists($log_path)) {
+                    $file_contents = (function () use ($log_path) {
+                      $line = '';
+                      $file = fopen($log_path, 'r');
+                      $cursor = -1;
+                      $char = "";
+                      $char_list = [
+                        "\n",
+                        "\r"
+                      ];
+          
+                      $seek = function ($decrement = true) use (&$file, &$cursor, &$char) {
+                        if ($decrement) {
+                          $cursor--;
+                        }
+          
+                        fseek($file, $cursor, SEEK_END);
+                        $char = fgetc($file);
+                      };
+          
+                      $seek(false);
+          
+                      // Trim trailing newlines
+                      while (in_array($char, $char_list, true)) {
+                        $seek();
+                      }
+          
+                      // Find File Start / First Newline
+                      $char_list[] = false;
+          
+                      while (!in_array($char, $char_list, true)) {
+                        $line = "{$char}{$line}";
+                        $seek();
+                      }
+        
+                      fclose($file);
+                      
+                      return $line;
+                    })();
+                    $log_sections = (function () use ($file_contents) {
+                      $log_sections = [];
+                      $pattern =
+                        "/" .                         // Opening Delimiter
+                          "([\w\d]+)\ " .             // [1] Parent Commit         
+                          "([\w\d]+)\ " .             // [2] Commit Hash
+                          "([^\s]+)\ "  .             // [3] Author First Name
+                          "(?:([^\s]+)\ ){0,1}" .     // [4] Author Last Name (Optional)
+                          "(\<[^\s]+\>)\ " .          // [5] Author Address
+                          "(\d+)\ " .                 // [6] Timestamp
+                          "((?:\-|\+){0,1}\d{4})" .   // [7] Timezone
+                          "\s*(.+)$" .                // [8] Event Details
+                        "/u";                         // Closing Delimiter
+                      // $pattern = <<<EOT
+                      //   /                       # Opening Delimiter
+                      //     (?:([\w\d]+)\ )       # [1] Parent Commit
+                      //     (?:([\w\d]+)\ )       # [2] Commit
+                      //     (?:([^\s]+)\ )        # [3] Author First Name
+                      //     (?:([^\s]+)\ ){0,1}   # [4] Author Last Name
+                      //     (?:(\<[^\s]+\>)\ )    # [5] Author Address
+                      //     (?:(\d+)\ )           # [6] Timestamp
+                      //     (?:((?:-){0,1}\d{4})) # [7] Timezone 
+                      //     (.+)$                 # [8] Event
+                      //                           # Closing Delimiter
+                      //   /ux
+                      // EOT;
+        
+                      preg_match($pattern, $file_contents, $log_sections, PREG_UNMATCHED_AS_NULL);
+                      array_splice($log_sections, 0, 1);
+        
+                      return $log_sections;
+                    })();
+        
+                    $branch_logs[$branch_type] = array_combine($log_section_names, $log_sections);
+                  }
+                  else {
+                    $branch_logs[$branch_type] = null;
+                  }
+                }
+    
+                return $branch_logs;
+              })();
+    
+              // Common Properties
+              (function () use (&$last_commit, $branch_logs) {
+                foreach ($branch_logs as $branch_type => $branch_log) {
+                  $common_properties = [
+                    'commit'      => null,
+                    'parent'      => null,
+                    'author'      => [
+                      'full_name'   => null,
+                      'first_name'  => null,
+                      'last_name'   => null,
+                      'address'     => null
+                    ],
+                    'timestamp'   => null,
+                    'description' => null
+                  ];
+    
+                  if (isset($branch_log)) {
+                    $common_properties = array_replace_recursive($common_properties, [
+                      'commit'      => $branch_log['commit'],
+                      'parent'      => $branch_log['parent'],
+                      'author'      => [
+                        'full_name'   => (function () use ($branch_log) {
+                          $last_name = isset($branch_log['last'])
+                                      ? "{$branch_log['last']} "
+                                      : "";
+        
+                          return "{$branch_log['first']} {$last_name}{$branch_log['address']}";
+                        })(),
+                        'first_name'  => $branch_log['first'],
+                        'last_name'   => $branch_log['last'],
+                        'address'     => ShiftCodesTK\Strings\slice($branch_log['address'], 1, -1)
+                      ],
+                      'timestamp'   => (
+                        (new DateTime(
+                          "@{$branch_log['ts']}", 
+                          new DateTimeZone($branch_log['tz'])
+                        ))
+                        ->format('c')
+                      ),
+                      'description' => $branch_log['event']
+                    ]);
+                  }
+    
+                  $last_commit[$branch_type] = $common_properties;
+                }
+              })();
+              // Build Properties 
+              (function () use (&$last_commit, $branch_logs, $git_path) {
+                $build_props = [
+                  'commit_message'  => null,
+                  'status'          => null
+                ];
+                $build_log = $branch_logs['build'] ?? null;
+                $remote_log = $branch_logs['remote'] ?? null;
+    
+                if (isset($build_log)) {
+                  $build_props['commit_message'] = \ShiftCodesTK\Strings\trim(file_get_contents("{$git_path}/COMMIT_EDITMSG"));
+    
+                  if (isset($remote_log)) {
+                    $build_props['status'] = (function () use ($branch_logs, $build_log, $remote_log) {
+                      if ($build_log['commit'] === $remote_log['commit']) {
+                        return "up-to-date";
+                      }
+                      else if ($build_log['commit'] === $remote_log['parent']) {
+                        return "behind-remote";
+                      }
+                      else if ($build_log['parent'] === $remote_log['commit']) {
+                        return "ahead-of-remote";
+                      }
+                      else {
+                        $timestamps = (function () use ($branch_logs) {
+                          $timestamps = [];
+        
+                          foreach ([ 'build', 'remote' ] as $log_type) {
+                            $branch_log = $branch_logs[$log_type];
+        
+                            $timestamps[$log_type] = (new DateTime("@{$branch_log['ts']}"))->getTimestamp();
+                          }
+        
+                          return $timestamps;
+                        })();
+          
+                        if ($timestamps['build'] > $timestamps['remote']) { 
+                          return "ahead-of-remote"; 
+                        }
+                        else if ($timestamps['build'] < $timestamps['remote']) { 
+                          return "behind-remote"; 
+                        }
+                        else { 
+                          return "up-to-date"; 
+                        }
+                      }
+    
+                    })();
+                  }
+                }
+    
+                $last_commit['build'] = array_merge($last_commit['build'], $build_props);
+              })();
+    
+              $build_info = array_replace_recursive($build_info, [
+                'last_commit' => $last_commit
+              ]);
+            })();
+
+            if (!$cache_file->configurationValueExists('head_commit')) {
+              $cache_file->addConfigurationValue('head_commit', $head_commit);
+              $cache_file->addConfigurationValue('build_information', $build_info);
+            }
+            else {
+              $cache_file->updateConfigurationValue('head_commit', $head_commit);
+              $cache_file->updateConfigurationValue('build_information', $build_info);
+            }
+          }
+        }
+
+        return $build_info;
+      })();
+
+      /** @var array Information about the *Current Build* of ShiftCodesTK.
+       * 
+       * Most Property Values will have a value of **null** if they could not be retrieved.
+       * 
+       * - *repository* `string`: The URL of the *Remote Repository*.
+       * - *branch* `array`: Information about the *Current Branch*.
+       * - - *current_branch* `string`: The name of the *Current Branch*.
+       * - - *prod_branch* `string`: The name of the *Production Branch*.
+       * - - *is_prod_branch* `bool`: Indicates if the `$current_branch` is the `$prod_branch`.
+       * - *last_commit* `array`: Information about the most recent *Commit*.
+       * - - *build* `array`: Commit details for the *Current Build*.
+       * - - - *commit* `string`: The *Commit Hash* of the last commit.
+       * - - - *parent* `string|null`: The Commit Hash of the *Parent Commit*, if available.
+       * - - - *author* `array`: Information about the *Author* of the last commit.
+       * - - - - *full_name* `string`: The *Full Display Name* of the Author.
+       * - - - - *first_name* `string`: The Author's *First Name*.
+       * - - - - *last_name* `string|null`: The Author's *Last Name*, if provided.
+       * - - - - *address* `string`: The Author's *Email Address*.
+       * - - - *timestamp* `string`: The *Timestamp* of when the changes were *Committed*.
+       * - - - *description* `string`: The description of the event on the Build.
+       * - - - *commit_message* `string`: The *Commit Message* of the last commit.
+       * - - - *status* `"up-to-date"|"behind-remote"|"ahead-of-remote"`: Indicates the current *Status* of the Build in relation to the *Remote*.
+       * - - *remote* `array`: Commit details for the *Remote Repository*.
+       * - - - *See `build`* for more information on the shared properties.
+       * - - - *commit* 
+       * - - - *parent*
+       * - - - *author* 
+       * - - - - *full_name* 
+       * - - - - *first_name* 
+       * - - - - *last_name*
+       * - - - - *address* 
+       * - - - *timestamp* 
+       * - - - *description* `string`: The description of the event on the Remote.
+       */
+      define('ShiftCodesTK\BUILD_INFORMATION', $build_info);
+    })();
     /**
    * @var string The *Version Number Query String* to be used when loading resources.
    */
-   define("ShiftCodesTK\VERSION_QUERY_STR", "?v=" . Config::getConfigurationValue('site_version'));
+    define("ShiftCodesTK\VERSION_QUERY_STR", "?v=" . Config::getConfigurationValue('site_version'));
   })();
 
   // Set Configuration Values & Defaults
@@ -127,6 +435,8 @@
   // Initialization Tasks
   (function () {
     GLOBAL $_mysqli;
+
+    session_init();
     
     // Database Initialization
     ShiftCodesTKDatabase::get_instance();

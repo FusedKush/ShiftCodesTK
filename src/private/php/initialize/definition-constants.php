@@ -270,51 +270,6 @@
       define('ShiftCodesTK\DATE_TIMEZONES', $tzList);
     })();
   })();
-  // `ShiftCodesTK\BUILD_INFORMATION`
-  (function () {
-    $build_info = (function () {
-      $build_info = [
-        'branch'        => null,
-        'is_prod_branch' => null,
-        'last_commit'   => [
-          'hash'           => null,
-          'time'           => null,
-          'message'        => null,
-        ]
-      ];
-      $gitPath = (dirname($_SERVER["DOCUMENT_ROOT"], 2)) . "/.git";
-
-      if (file_exists($gitPath)) {
-        $head = file_get_contents("{$gitPath}/HEAD");
-        $branch = trim(preg_replace("%(.*?\/){2}%", "", $head));
-        $branch_path = "{$gitPath}/refs/heads/{$branch}";
-  
-        $build_info = array_replace_recursive($build_info, [
-          'branch'        => $branch,
-          'is_prod_branch' => $branch === 'master',
-          'last_commit'   => [
-            'hash'    => trim(file_get_contents($branch_path)),
-            'time'    => date(DATE_ISO8601, filemtime($branch_path)),
-            'message' => trim(file_get_contents("{$gitPath}/COMMIT_EDITMSG"))
-          ]
-        ]);
-      }
-
-      return $build_info;
-    })();
-
-    /** @var array Information about the *Current Build* of ShiftCodesTK.
-     * 
-     * Property Values will be **null** if they could not be retrieved.
-     * 
-     * | Property | Type | Description |
-     * | --- | --- | --- |
-     * | *branch* | `string` | The name of the current *Build Branch*. |
-     * | *is_prod_branch* | `bool` | Indicates if the current `branch` is a *Production Branch* (**true**), or a *Development Branch* (**false**). |
-     * | *last_commit* | `array` | Information related to the last *Branch Commit*. |
-     */
-    define('ShiftCodesTK\BUILD_INFORMATION', $build_info);
-  })();
 
   /** @var array ShiftCodesTK User Roles */
   define("AUTH_ROLES", (function () {
