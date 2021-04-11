@@ -184,6 +184,7 @@
 
         &.wrapped .layer-content {
           white-space: normal;
+          word-wrap: break-word;
           min-width: $maxTooltipWidth;
         }
 

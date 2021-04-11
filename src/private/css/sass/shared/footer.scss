@@ -59,7 +59,15 @@
         @include animation(1.5s, $count: infinite);
       }
     }
-    .version { font-size: 0.9em; }
+    .version { 
+      font-size: 0.9em;
+
+      .commit-hash {
+        font-size: 0.9em;
+        padding-left: 3px;
+        opacity: 0.65;
+      }
+    }
     .credit, .version { padding: 4px 8px; }
   }
   .return {
@@ -81,11 +89,6 @@
   .credit, .version, .return {
     @include mouseState(click) { transform: scale(0.85); }
   }
-  .devtools-message {
-    @include flexbox;
-    padding: 8px;
-    @include colors(tpw(0.5), tpb(0.4));
-  }
 
   @media screen and (max-width: 539px) {
     .social, .return  { grid-row: 2; }
@@ -99,4 +102,84 @@
     .info             { grid-column: 2; }
     .return           { grid-column: 3; }
   }
+}
+.layers .layer.panel#footer_ver_commit_details {
+  $commit-panel-padding: 12px;
+
+  .layer-content .content-container {
+    @include flexbox(none, none, $direction: c);
+    padding: 0;
+
+    code {
+      cursor: default;
+    }
+    .title {
+      @include flexbox($wrap: true);
+      margin-bottom: 0;
+      background-color: tpb(0.35);
+      
+      .commit-hash {
+        padding: $commit-panel-padding;
+        width: 100%;
+        text-align: center;
+        font-style: italic;
+      }
+      .alertbox {
+        font-size: 0.8em;
+        // padding: 8px;
+      }
+    }
+    .body {
+      padding: $commit-panel-padding;
+  
+      .section {
+        width: 100%;
+  
+        &:not(:last-child) {
+          margin-bottom: $commit-panel-padding / 2;
+        }
+  
+        &.signature {
+          @include flexbox(c, sb);
+    
+          .version {
+            font-weight: bold;
+          }
+          .timestamp {
+            opacity: 0.5;
+    
+            @include mouseState(hover) {
+              cursor: default;
+              opacity: 0.75;
+            }
+          }
+        }
+        &.timeline {
+          @include flexbox(c, sb);
+    
+          .track {
+            @include flexbox();
+            flex: 1;
+            margin: 0 $commit-panel-padding / 2;
+            border-bottom: 2px dotted tpw(0.25);
+
+            .status {
+              position: absolute;
+              bottom: 1.5px;
+              font-size: 0.75em;
+              opacity: 0.5;
+              cursor: default;
+            }
+          }
+        }
+        &.commit-message {
+          margin: 0;
+          font-size: 0.9em;
+        }
+      }
+    }
+  }
+}
+.layer.tooltip .link-notice {
+  font-size: 0.85em;
 }
