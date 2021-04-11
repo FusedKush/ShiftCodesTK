@@ -74,7 +74,7 @@
           /** @property `int` The Interval ID of the update interval */
           intervalID: 0,
           /** @property `int` Indicates in *minutes* how long between update polls */
-          intervalDuration: 2,
+          intervalDuration: 5,
           /** @property `object` Stores the first and last update check timestamps */
           updateStats: {
             /** @property `int` The timestamp of the first update check */
@@ -215,7 +215,7 @@
             }
 
             return newAjaxRequest({
-              file: '/assets/requests/get/shift/updates',
+              file: '/api/get/shift/updates',
               params: {
                 'last_check': node_modules.dayjs.utc(updateCheck.updateStats.last).format(),
                 'game_id': shiftObj.getResultProp('game')
@@ -1601,7 +1601,7 @@
           //   // }
   
           //   // const requestObject = newAjaxRequest({
-          //   //   file: '/assets/requests/get/shift/codes',
+          //   //   file: '/api/get/shift/codes',
           //   //   params: shiftCodeParams,
           //   //   callback: handleFetchShiftCodesResponse
           //   // });
@@ -1731,7 +1731,7 @@
             const requestConfiguration = {
               type: 'pagination',
               request: {
-                path: '/assets/requests/get/shift/codes',
+                path: '/api/get/shift/codes',
                 callback: handleFetchShiftCodesResponse,
                 params: {
                   get_result_set_data: true,
@@ -1805,7 +1805,7 @@
             const requestName = 'GetShiftCode';
             const requestConfiguration = {
               request: {
-                path: '/assets/requests/get/shift/codes',
+                path: '/api/get/shift/codes',
                 params: {
                   game: null,
                   status: [ 'active', 'expired', 'hidden' ],

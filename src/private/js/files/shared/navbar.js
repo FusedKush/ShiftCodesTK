@@ -95,7 +95,7 @@ function lpbUpdate (progress, interval = false, additionalOptions = {}) {
       // })();
 
       // Site Settings
-      // ShiftCodesTK.forms.registerHook('/assets/requests/post/js/update-site-settings', 'afterSubmit', function (form, formData, formProps, response) {
+      // ShiftCodesTK.forms.registerHook('/api/post/js/update-site-settings', 'afterSubmit', function (form, formData, formProps, response) {
       //   ShiftCodesTK.toasts.newToast({
       //     settings: {
       //       id: 'site_settings_updated_toast',

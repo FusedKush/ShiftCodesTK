@@ -461,7 +461,7 @@
             else {
               ShiftCodesTK.requests.request({
                 type: 'GET',
-                path: '/assets/requests/get/account/profile-card-data',
+                path: '/api/get/account/profile-card-data',
                 parameters: {
                   user_id: user
                 },
@@ -560,7 +560,7 @@
             username: ''
           },
           request: {
-            path: '/assets/requests/get/account/check_username_availability',
+            path: '/api/get/account/check_username_availability',
             callback: (response) => {
               if (response && response.payload !== undefined) {
                 if (response.payload === false) {
