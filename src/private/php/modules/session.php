@@ -11,7 +11,18 @@
     ini_set('session.gc_maxlifetime', 60 * 60 * 2);
     ini_set('session.sid_length', '64');
     ini_set('session.hash_function', 'sha256');
-    ini_set('session.save_path', ShiftCodesTK\Paths\GENERAL_PATHS['temp'] . '/sessions');
+
+    // Save Path
+    (function () {
+      $save_path = ShiftCodesTK\Paths\GENERAL_PATHS['temp'] . '/sessions';
+
+      if (!file_exists($save_path)) {
+        mkdir($save_path, 0700);
+      }
+
+      ini_set('session.save_path', $save_path);
+    })();
+
   
     if (ShiftCodesTK\BUILD_INFORMATION['branch']['is_prod_branch']) {
       session_set_cookie_params([
