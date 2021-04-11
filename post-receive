@@ -27,7 +27,8 @@ do
     # Deploy the repository
     git --work-tree="${branchDeploymentPath}" checkout -f "${branch}"
     
-    # Copy Repository Information
+    # Fetch & Copy Repository Information
+    git fetch origin
     cp -r "${repository}/.git" "${branchDeploymentPath}"
     cp -r "${repository}/post-receive" "${repository}/.git/hooks/post-receive"
 
