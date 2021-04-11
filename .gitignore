@@ -22,8 +22,8 @@ src/public/assets/js
 !.node-version
 !.cpanel.yml
 !.phpdoc-md
+!src/private/img/assets/rewards
+!src/private/resources/build-tools/**/*.template
 !src/public/initialize.php
 !src/public/api/
 !src/public/assets/**/*.php
-!src/private/img/assets/rewards
-!src/private/resources/build-tools/**/*.template

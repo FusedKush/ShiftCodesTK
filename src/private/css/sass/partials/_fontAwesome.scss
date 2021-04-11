@@ -74,7 +74,7 @@ $faIcons: (
   user                       : f007,
   users                      : f0c0,
   user-slash                 : f506
-  );
+);
 // Styling Configuration
 @mixin faStyles ($style) {
   @if $style == fab {
