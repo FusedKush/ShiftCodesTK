@@ -439,15 +439,16 @@
     }
     /** Update the *Configuration Property* of the Configuration File
      * 
-     * Requires the *Configuration File Type* to be `{@see ::CONFIGURATION_TYPE_PROPERTY}`
-     * 
+     * @param string|null $property_name The *Property Name* of the Configuration Value being updated. 
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_PROPERTY}`, this argument is ignored, and can be omitted.
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
      * @param mixed $property_value The new value of the property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
      */
-    public function updateConfigurationValue ($property_value, string $secret_key = null): bool {
+    public function updateConfigurationValue (string $property_name = null, $property_value, string $secret_key = null): bool {
       $result = $this->contents
                      ->updateConfigurationValue(...\func_get_args());
 

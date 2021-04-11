@@ -29,6 +29,7 @@
     ): bool;
 
     public function updateConfigurationValue (
+      string $property_name = null,
       $property_value, 
       string $secret_key = null
     ): bool;

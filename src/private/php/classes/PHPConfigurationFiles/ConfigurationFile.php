@@ -567,29 +567,54 @@
     }
     /** Update the *Configuration Property* of the Configuration File
      * 
-     * Requires the *Configuration File Type* to be `{@see ::CONFIGURATION_TYPE_PROPERTY}`
-     * 
+     * @param string|null $property_name The *Property Name* of the Configuration Value being updated. 
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_PROPERTY}`, this argument is ignored, and can be omitted.
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
      * @param mixed $property_value The new value of the property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
+     * @throws \Error if `$property_name` does not exist.
      */
-    public function updateConfigurationValue ($property_value, string $secret_key = null): bool {
-      $this->validateConfigurationType(self::CONFIGURATION_TYPE_PROPERTY, true, true);
+    public function updateConfigurationValue ($property_name = null, $property_value, string $secret_key = null): bool {
+      if (!isset($property_name)) {
+        if (!$this->validateConfigurationType(self::CONFIGURATION_TYPE_PROPERTY, true)) {
+          if (!isset($property_name)) {
+            throw new \ArgumentCountError("The \"Property Name\" argument must be provided when the Configuration File Type is \"{$this->type}\".");
+          }
+        }
+      }
 
-      /** @var ConfigurationProperty */
       $contents = &$this->getConfigurationContents();
-      $last_modified = $contents->getProperties()['lastModified'];
-
+      
       if (!isset($contents)) {
         $this->changeConfigurationContents();
       }
-
-      $contents->setValue($property_value, $secret_key);
-      $this->listConfigurationValues(true);
       
-      return $contents->getProperties()['lastModified'] !== $last_modified;
+      if ($this->type === self::CONFIGURATION_TYPE_PROPERTY) {
+
+        $last_modified = $contents->getProperties()['lastModified'];
+        $contents->setValue($property_value, $secret_key);
+        $this->listConfigurationValues(true);
+
+        return $contents->getProperties()['lastModified'] !== $last_modified;
+      }
+      else {
+        $base_property = self::getBasePropertyName($property_name);
+
+        if (!$this->configurationValueExists($base_property)) {
+          throw new \Error("Property Value \"{$base_property}\" does not exist.");
+        }
+
+        /** @var ConfigurationProperty */
+        $property = &$contents[$base_property];
+        $last_modified = $property->getProperties()['lastModified'];
+
+        $property->setValue($property_value, $secret_key);
+
+        return $property->getProperties()['lastModified'] !== $last_modified;
+      }
     }
   }
 ?>

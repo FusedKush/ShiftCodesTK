@@ -62,7 +62,7 @@
       $original_token = self::getKey();
 
       $instance->keyManager
-               ->updateConfigurationValue($token);
+               ->updateConfigurationValue(null, $token);
 
       return $original_token !== self::getKey();
     }

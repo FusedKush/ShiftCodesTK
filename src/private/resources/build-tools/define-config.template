@@ -63,7 +63,7 @@
    */
 
   // Site Maintenance (Adding a *Single-Property Config File*)
-  Config::updateConfigurationValue(false, null, 'site_maintenance');
+  Config::updateConfigurationValue('site_maintenance', false);
 
   // General Config Property (Adding a Config Value to a *Multi-Property Config File*, Example)
   // Config::addConfigurationValue('general.foo', 'foobarbaz');

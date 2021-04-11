@@ -161,7 +161,7 @@
       $file_extension = Strings\escape_reg(self::CONFIG_FILES_EXT, '/');
 
       $instance->configFileIndex
-               ->updateConfigurationValue([]);
+               ->updateConfigurationValue(null, []);
 
       foreach ($directory_contents as $index => $filename) {
         if (Strings\preg_test($filename, "/{$file_extension}$/")) {
@@ -231,7 +231,7 @@
       }
 
       $index[$alias] = $indexed_properties;
-      $config_file_index->updateConfigurationValue($index);
+      $config_file_index->updateConfigurationValue(null, $index);
 
       return true;
     }
@@ -250,7 +250,7 @@
       }
 
       unset($index[$alias]);
-      $config_file_index->updateConfigurationValue($index);
+      $config_file_index->updateConfigurationValue(null, $index);
 
       return true;
     }
@@ -472,28 +472,30 @@
     }
     /** Update the *Configuration Property* of a Config File
      * 
-     * Requires the *Configuration File Type* of the Config File to be `{@see ::CONFIGURATION_TYPE_PROPERTY}`
-     * 
+     * @param string|null $property_name The *Property Name* of the Configuration Value being updated. 
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_PROPERTY}`, this argument is ignored, and can be omitted.
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
      * @param mixed $property_value The new value of the property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
-     * @param string The *Alias* of the *Config File* being updated. 
      * @return bool Returns **true** on success and **false** on failure.
      * @throws \ArugmentCountError if the `$config_file` is not provided.
      */
     public static function updateConfigurationValue (
+      string $property_name = null,
       $property_value, 
-      string $secret_key = null, 
-      string $config_file = null
+      string $secret_key = null
     ): bool {
-      if (!isset($config_file)) {
+      $property_name_pieces = self::getConfigurationPropertyNamePieces($property_name);
+
+      if (!isset($property_name_pieces['file'])) {
         throw new \ArgumentCountError("A Config File was not provided.");
       }
       
-      $config_file_obj = self::getConfigFile($config_file, true);
+      $config_file_obj = self::getConfigFile($property_name_pieces['file'], true);
 
-      return $config_file_obj->updateConfigurationValue($property_value, $secret_key);
+      return $config_file_obj->updateConfigurationValue($property_name_pieces['property'], $property_value, $secret_key);
     }
 
     /** Initialize the `Config` 
