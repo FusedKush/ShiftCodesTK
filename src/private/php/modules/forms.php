@@ -4479,7 +4479,7 @@
               //               <span class="dot"></span>
               //               <span class="dot"></span>
               //             </div>';
-              $markup .= file_get_contents('local/spinner.php');
+              $markup .= file_get_contents('local/spinner.php', true);
             }
           })();
           $markup .= "</button>";
