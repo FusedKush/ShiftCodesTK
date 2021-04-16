@@ -37,7 +37,6 @@
       'users'
     ],
     'page_only' => [
-      'pageSettings', 
       'shiftStats'
     ]
   ];

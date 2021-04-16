@@ -462,7 +462,7 @@
     \ShiftCodesTK\PageConfiguration\PageConfigurationFramework\Framework::init();
     
     if (ShiftCodesTK\SCRIPT_TYPE === ShiftCodesTK\SCRIPT_TYPE_PAGE) {
-      check_page_settings();
+      $_SESSION['timestamp'] = time();
       get_shift_stats();
     }
   })();
