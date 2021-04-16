@@ -486,7 +486,18 @@
                                                       # Ending Delimiter
       /xx
     EOT
-  ]);
-  /** @var string The domain the live site resides on */
-  define("ShiftCodesTK\SITE_DOMAIN", 'shiftcodestk.com');
+		];
+		/** @var string The domain the live site resides on */
+		const SITE_DOMAIN = 'shiftcodestk.com';
+		/** @var array A list of *Site Themes* and their associated *Hex Color Codes*. */
+		const THEME_COLORS = [
+			'main' => '#foo',
+			'bl1'  => '#dc143c',
+			'bl2'  => '#ff4500',
+			'tps'  => '#1e90ff',
+			'bl3'  => '#ffa900'
+		];
+		/** @var string The *Hex Color Code* representing the *Primary Background Color* of the site. */
+		const SITE_BACKGROUND_COLOR = '#0f1d2c';
+	}
 ?>
