@@ -170,7 +170,7 @@
 
         $this->mysqli = new \mysqli(...array_values(\ShiftCodesTK\Secrets::getSecret('db')));
         $this->check_mysqli_errors(true);
-        $this->mysqli->select_db(\ShiftCodesTK\BUILD_INFORMATION['is_prod_branch'] ? "ShiftCodesTK" : "ShiftCodesTK_beta");
+        $this->mysqli->select_db(\ShiftCodesTK\BUILD_INFORMATION['branch']['is_prod_branch'] ? "ShiftCodesTK" : "ShiftCodesTK_beta");
   
         // Set Session Timezone to UTC
         (function () {
