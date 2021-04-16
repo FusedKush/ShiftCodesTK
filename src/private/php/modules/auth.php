@@ -165,7 +165,7 @@
    * @return string Returns the generated hash.
    */
   function hash_string ($string) {
-    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::get_secret('hash'));
+    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::getSecret('hash'));
   }
   /**
    * Determine if two hashed strings match.
