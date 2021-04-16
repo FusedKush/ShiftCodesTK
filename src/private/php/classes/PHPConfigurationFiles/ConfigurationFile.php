@@ -280,6 +280,49 @@
 
       return true;
     }
+    /** Get the *Properties* of a `ConfigurationProperty`.
+     * 
+     * @param string|null $property_name The *Property Name* of the Configuration Value being updated. 
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_PROPERTY}`, this argument is ignored, and can be omitted.
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
+     * @return array Returns an `array` representing the *Properties* of the `$property_name` on success:
+     * - `name`
+     * - `value` *(Returns the raw value. Use `getConfigurationValue()` instead if you need to *Decrypt* the value before retrieval.)*
+     * - `isEncrypted`
+     * - `lastModified`
+     * @throws \ArgumentCountError if `$property_name` is omitted and the *Configuration File Type* is `CONFIGURATION_TYPE_PROPERTY`.
+     */
+    public function getConfigurationValueProperties (string $property_name = null): array {
+      if (!isset($property_name)) {
+        if (!$this->validateConfigurationType(self::CONFIGURATION_TYPE_PROPERTY, true)) {
+          if (!isset($property_name)) {
+            throw new \ArgumentCountError("The \"Property Name\" argument must be provided when the Configuration File Type is \"{$this->type}\".");
+          }
+        }
+      }
+
+      $contents = &$this->getConfigurationContents();
+      
+      if (!isset($contents)) {
+        $this->changeConfigurationContents();
+      }
+      
+      if ($this->type === self::CONFIGURATION_TYPE_PROPERTY) {
+        return $contents->getProperties();
+      }
+      else {
+        $base_property = self::getBasePropertyName($property_name);
+
+        if (!$this->configurationValueExists($base_property)) {
+          throw new \Error("Property Value \"{$base_property}\" does not exist.");
+        }
+
+        /** @var ConfigurationProperty */
+        $property = &$contents[$base_property];
+
+        return $property->getProperties();
+      }
+    }
     
     /** List all of the stored *Configuration Values*
      * 
@@ -336,9 +379,6 @@
         foreach ($traversable as $property => $value) {
           $full_property_name = $parent_property . self::CONFIGURATION_PROPERTY_DELIMITER . $property;
   
-          if ($value instanceof ConfigurationProperty) {
-            $values[] = $full_property_name;
-          }
           if (is_array($value) || is_object($value)) {
             $check_traversable($value, $full_property_name);
           }
@@ -487,7 +527,9 @@
      * 
      * @param string $property_name The *Property Name* of the Configuration Value. 
      * - Cannot already exist within the *Configuration File*.
-     * @param mixed $property_value The *Property Value* of the Configuration Value.  If the `$secret_key` is provided, this **must** be a `string`, `array`, or `object`.
+     * @param mixed $property_value The *Property Value* of the Configuration Value. 
+     * - If the `$secret_key` is provided, this **must** be a `string`, `array`, or `object`.
+     * - All `object` values **must** implement the `__set_state()` *Magic Method*.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
@@ -572,6 +614,7 @@
      * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
      * @param mixed $property_value The new value of the property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
+     * - All `object` values **must** implement the `__set_state()` *Magic Method*.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
@@ -587,18 +630,16 @@
       }
 
       $contents = &$this->getConfigurationContents();
+      $properties = $this->getConfigurationValueProperties($property_name);
+      $last_modified = $properties['lastModified'];
       
       if (!isset($contents)) {
         $this->changeConfigurationContents();
       }
       
       if ($this->type === self::CONFIGURATION_TYPE_PROPERTY) {
-
-        $last_modified = $contents->getProperties()['lastModified'];
         $contents->setValue($property_value, $secret_key);
         $this->listConfigurationValues(true);
-
-        return $contents->getProperties()['lastModified'] !== $last_modified;
       }
       else {
         $base_property = self::getBasePropertyName($property_name);
@@ -609,12 +650,10 @@
 
         /** @var ConfigurationProperty */
         $property = &$contents[$base_property];
-        $last_modified = $property->getProperties()['lastModified'];
-
         $property->setValue($property_value, $secret_key);
-
-        return $property->getProperties()['lastModified'] !== $last_modified;
       }
+
+      return $this->getConfigurationValueProperties($property_name)['lastModified'] !== $last_modified;
     }
   }
 ?>

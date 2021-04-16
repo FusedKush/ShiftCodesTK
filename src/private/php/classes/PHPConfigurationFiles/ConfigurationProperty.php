@@ -64,8 +64,6 @@
 
     /** Get an `array` representing the properties of the Configuration Property.
      * 
-     * Note that the `::$value` will still be encrypted if `::$isEncrypted` is true. You can use `::getValue()` to retrieve the decrypted value.
-     * 
      * @return array Returns an `array` representing the Configuration Property.
      * - `name`
      * - `value` *(Returns the raw value. Use `getValue()` instead if you need to *Decrypt* the value before retrieval.)*
@@ -152,6 +150,7 @@
      * @param mixed $new_value The *New Value* of the Configuration Property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
      * - - If an `array` or `object` is provided, `string` *Array Keys* or *Public Object Properties* will be Encrypted using the `$secret_key`. 
+     * - All `object` values **must** implement the `__set_state()` *Magic Method*.
      * @param string|null $secret_key If provided, the `$new_value` will be *Encrypted* using this Secret Key. If you need to generate a Secret Key, see `ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generate_secret_key()`.
      * @return mixed Returns the *New Value* of the Configuration Property on success. If a `$secret_key` was provided, this value will be *Encrypted*. Otherwise, it should be identical to `$new_value`.
      * @throws \TypeError if a `$secret_key` is provided and `$new_value` is not a `string`.

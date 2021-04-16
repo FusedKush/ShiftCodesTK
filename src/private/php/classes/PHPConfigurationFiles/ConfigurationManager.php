@@ -135,7 +135,7 @@
 
           return "";
         })();
-        $contents = var_export($this->contents, true);
+        $contents = safe_var_export($this->contents, true, true);
 
         return <<<EOT
         <?php
@@ -267,6 +267,7 @@
       }
     }
 
+    
     /** Get the *Configuration Properties* of the Configuration File.
      * 
      * @return array Returns an `Associative Array` representing the *Configuration Properties* of the Configuration File:
@@ -364,6 +365,21 @@
 
       return false;
     }
+    /** Get the *Properties* of a `ConfigurationProperty`.
+     * 
+     * @param string|null $property_name The *Property Name* of the Configuration Value being updated. 
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_PROPERTY}`, this argument is ignored, and can be omitted.
+     * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
+     * @return array Returns an `array` representing the *Properties* of the `$property_name` on success:
+     * - `name`
+     * - `value` *(Returns the raw value. Use `getConfigurationValue()` instead if you need to *Decrypt* the value before retrieval.)*
+     * - `isEncrypted`
+     * - `lastModified`
+     */
+    public function getConfigurationValueProperties (string $property_name = null): array {
+      return $this->contents
+                  ->getConfigurationValueProperties($property_name);
+    }
     
     /** List all of the stored *Configuration Values*
      * 
@@ -405,7 +421,9 @@
      * 
      * @param string $property_name The *Property Name* of the Configuration Value. 
      * - Cannot already exist within the *Configuration File*.
-     * @param mixed $property_value The *Property Value* of the Configuration Value.  If the `$secret_key` is provided, this **must** be a `string`, `array`, or `object`.
+     * @param mixed $property_value The *Property Value* of the Configuration Value. 
+     * - If the `$secret_key` is provided, this **must** be a `string`, `array`, or `object`.
+     * - All `object` values **must** implement the `__set_state()` *Magic Method*.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
@@ -444,6 +462,7 @@
      * - If the *Configuration File Type* is `{@see ::CONFIGURATION_TYPE_ARRAY}` or `{@see ::CONFIGURATION_TYPE_ARRAY}`, this argument **must** be provided.
      * @param mixed $property_value The new value of the property.
      * - If a `$secret_key` is provided, this value **must** be a `string`, `array`, or `object`.
+     * - All `object` values **must** implement the `__set_state()` *Magic Method*.
      * @param string|null $secret_key If provided, a *Secret Key* used to *Encrypt* the `$property_value` when storing it.
      * - If you need a Secret Key, you can use `{@see ShiftCodesTK\Auth\Crypto\SecretKeyCrypto::generateSecretKey()}` to generate one.
      * @return bool Returns **true** on success and **false** on failure.
