@@ -1155,14 +1155,59 @@
 
     return $fileData;
   }
-  // function var_export_pretty ($var, $return = true) {
-  //   $exportedVar = (new ShiftCodesTK\Strings\StringObj(var_export($var, true)));
-  //     ->preg_replace([
-  //       'array (',
-  //       ', )'
-  //     ])
 
-  // }
+  /** A safer (stricter) wrapper for {@see \var_export()}
+   *
+   * The changes between this function and `var_export()` are as follows:
+   * - {@see \Closure}s are not allowed, as they cannot be exported nor do they implement the `__set_state()` method.
+   * - All `object`s, the `$var` itself and/or a child of an `array` or `object`, **must** implement the `__set_state()` method.
+   *
+   * @param mixed $var The variable to be exported.
+   * @param bool $return Indicates if the *Exported `$var`* should be *Returned* (`true`) or *Output* (`false`). Defaults to **false**.
+   * @param bool $throw_error Indicates if an `Error` should be thrown if the `$var` cannot be exported.
+   * @return string|true|null If `$return` is **true**, returns the *Exported `$var`.
+   * If `$return` if **false**, *outputs* the `$var` and returns **true**.
+   * If an error occurs, returns **null**.
+   * @throws \Error if the `$var` could not be exported and `$throw_error` is **true**.
+   */
+	function safe_var_export ($var, bool $return = false, bool $throw_error = false): ?string {
+  	$check_properties = function (&$subvar) use (&$check_properties, $throw_error) {
+  		if (is_object($subvar) || is_array($subvar)) {
+				if (is_object($subvar) && !method_exists($subvar, '__set_state')) {
+					$error_message = (function () use ($subvar) {
+            if (!($subvar instanceof Closure)) {
+              $class_name = get_class($subvar);
+  
+              if (\ShiftCodesTK\Strings\substr_pos($class_name, "class@anonymous") === 0) {
+                $class_name = 'Anonymous Class';
+              }
+  
+              return "Class \"{$class_name}\" must implement the \"__set_state()\" method to be exported.";
+            }
+            else {
+              return "Closures cannot be exported.";
+            }
+					})();
+
+					if ($throw_error) {
+						throw new \Error($error_message);
+					}
+					else {
+						trigger_error($error_message, E_USER_WARNING);
+						return null;
+					}
+				}
+
+				foreach ((array) $subvar as $property => &$value) {
+          $check_properties($value);
+				}
+			}
+		};
+
+		$check_properties($var);
+
+		return var_export($var, $return);
+	}
   /**
    * Remove extraneous whitespace from a string
    *
