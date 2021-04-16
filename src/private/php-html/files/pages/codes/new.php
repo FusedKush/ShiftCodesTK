@@ -1,23 +1,16 @@
 <?php
-  $page = [
-    'auth' => [
-      'requireState' => 'auth',
-      'onFailToast' => [
-        'content' => [
-          'body' => 'You must be logged in to submit a SHiFT Code.'
-        ]
-      ]
-    ],
-    'meta' => [
-      'title'       => 'Submit a SHiFT Code - ShiftCodesTK',
-      'description' => 'Submit a SHiFT Code to ShiftCodesTK',
-      'canonical'   => '/codes/new',
-      'image'       => 'tps/7',
-      'theme'       => 'main'
-    ]
-  ];
+  require_once(dirname(__DIR__) . '/initialize.php');
 
-  require_once('../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('codes/new'))
+    ->setTitle('Submit a SHiFT Code')
+    ->setGeneralInfo(
+      'Submit a SHiFT Code to ShiftCodesTK',
+      'tps/7'
+    )
+    ->setUserLoginCondition(true)
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">

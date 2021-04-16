@@ -1,23 +1,23 @@
 <?php
-  $page = [
-    'auth' => [
-      'requireState' => 'auth',
-      'onFailToast' => [
+  require_once(dirname(__DIR__) . '/initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+  (function () {
+    $page_configuration = (new PageConfiguration('codes/add'))
+      ->setTitle('Edit SHiFT Code')
+      ->setGeneralInfo(
+        'Edit a SHiFT Code on ShiftCodesTK',
+        'tps/7'
+      );
+    $page_configuration->setUserLoginCondition(true, true)
+      ->setFailureToast([
         'content' => [
           'body' => 'You must be logged in to edit a SHiFT Code.'
         ]
-      ]
-    ],
-    'meta' => [
-      'title'       => 'Edit a SHiFT Code - ShiftCodesTK',
-      'description' => 'Edit a SHiFT Code to ShiftCodesTK',
-      'canonical'   => '/codes/add',
-      'image'       => 'tps/7',
-      'theme'       => 'main'
-    ]
-  ];
-
-  require_once('../initialize.php');
+      ]);
+    $page_configuration->saveConfiguration();
+  })();
 
   if (!isset($_GET['code'])) {
     response_redirect('/codes/');

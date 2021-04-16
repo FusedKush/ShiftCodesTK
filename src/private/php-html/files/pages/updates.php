@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Updates - ShiftCodesTK',
-    'description' => 'Recent changes and updates to ShiftCodesTK',
-    'canonical'   => '/updates',
-    'image'       => 'bl2/5',
-    'theme'       => 'main'
-  ];
-
   require_once('initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('updates'))
+    ->setTitle('Updates')
+    ->setGeneralInfo(
+      'Recent changes and updates to ShiftCodesTK',
+      'bl2/5'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

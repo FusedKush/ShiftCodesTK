@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'About us - ShiftCodesTK',
-    'description' => 'ShiftCodesTK: Less time Scrolling, More time Gaming',
-    'canonical'   => '/about-us',
-    'image'       => 'bl2/3',
-    'theme'       => 'main'
-  ];
-
   require_once('initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('about-us'))
+    ->setTitle('About us')
+    ->setGeneralInfo(
+      'ShiftCodesTK: Less time Scrolling, More time Gaming',
+      'bl2/3'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

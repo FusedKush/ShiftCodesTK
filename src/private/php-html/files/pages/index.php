@@ -1,32 +1,33 @@
 <?php 
-  $page['meta'] = [
-    'title'       => 'ShiftCodesTK',
-    'description' => 'SHiFT Codes for Borderlands',
-    'canonical'   => '',
-    'image'       => 'bl3/6',
-    'theme'       => 'main'
-  ]; 
-
   require_once('initialize.php');
+  
+  use ShiftCodesTK\PageConfiguration;
+  use const ShiftCodesTK\VERSION_QUERY_STR;
+
+  (new PageConfiguration('index'))
+    ->setTitle('ShiftCodesTK', false)
+    ->setGeneralInfo(
+      'SHiFT Codes for Borderlands',
+      'bl3/6'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <!--// Styles \\-->
-    <!-- Shared Styles -->
+		
     <?php include_once('global/sharedStyles.php'); ?>
-    <!-- Local Styles -->
-    <link href="/assets/css/local/index.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
-    <!-- Google Metadata (Landing Page Only) -->
+		
+    <link href="/assets/css/local/index.css<?= VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s">
-    <!--// Metadata \\-->
+		
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
-    <!--// Before-Content Includes \\-->
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
+	
     <?php include_once('global/beforeContent.php'); ?>
-    <!-- Main Content -->
+		
     <main class="no-header">
       <?php 
         $games = [
@@ -158,12 +159,10 @@
         </div>
       </section>
     </main>
-    <!--// After-Content Includes \\-->
+		
     <?php include_once('global/afterContent.php'); ?>
-    <!--// Scripts \\-->
-    <!-- Shared Scripts -->
     <?php include_once('global/sharedScripts.php'); ?>
-    <!-- Local Scripts -->
-    <script async src="/assets/js/local/index.js<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
+		
+    <script async src="/assets/js/local/index.js<?= VERSION_QUERY_STR; ?>"></script>
   </body>
 </html>

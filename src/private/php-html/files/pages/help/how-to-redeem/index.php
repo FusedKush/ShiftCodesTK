@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'How to Redeem SHiFT Codes - ShiftCodesTK',
-    'description' => 'How to redeem SHiFT Codes in Borderlands',
-    'canonical'   => '/help/how-to-redeem',
-    'image'       => 'bl3/4',
-    'theme'       => 'main'
-  ];
+  require_once(dirname(__DIR__, 2) . '/initialize.php');
 
-  require_once('../../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/how-to-redeem/index'))
+    ->setTitle('How to Redeem SHiFT Codes')
+    ->setGeneralInfo(
+      'How to redeem SHiFT Codes in Borderlands',
+      'tps/4'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

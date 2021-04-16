@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'FAQ - ShiftCodesTK',
-    'description' => 'Answers to some frequently asked questions',
-    'canonical'   => '/help/faq',
-    'image'       => 'tps/4',
-    'theme'       => 'main'
-  ];
+  require_once(dirname(__DIR__) . '/initialize.php');
 
-  require_once('../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/faq'))
+    ->setTitle('FAQ')
+    ->setGeneralInfo(
+      'Answers to some frequently asked questions',
+      'tps/4'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

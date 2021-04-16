@@ -1,17 +1,16 @@
 <?php
-  // $page['auth'] = [
-  //   'requireState'   => 'auth',
-  //   'onFailRedirect' => '/'
-  // ];
-  $page['meta'] = [
-    'title'       => 'Development Hub - ShiftCodesTK',
-    'description' => 'Resources related to the development of ShiftCodesTK',
-    'canonical'   => '/dev/',
-    'image'       => 'bl3/2',
-    'theme'       => 'main'
-  ];
-
   include_once('../initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+  
+  (new PageConfiguration('dev/index'))
+    ->setTitle('Development Hub')
+    ->setGeneralInfo(
+      'Resources related to the development of ShiftCodesTK',
+      'bl3/2'
+    )
+    ->setUserLoginCondition(true)
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +22,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

@@ -1,13 +1,16 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'How to Redeem: TPS - ShiftCodesTK',
-    'description' => 'How to redeem SHiFT Codes in Borderlands: The Pre-Sequel',
-    'canonical'   => '/help/how-to-redeem/tps',
-    'image'       => 'tps/6',
-    'theme'       => 'tps'
-  ];
+  require_once(dirname(__DIR__, 2) . '/initialize.php');
 
-  require_once('../../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/how-to-redeem/tps'))
+    ->setTitle('How to Redeem: TPS')
+    ->setGeneralInfo(
+      'How to redeem SHiFT Codes in Borderlands: The Pre-Sequel',
+      'tps/6',
+      'tps'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +24,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="tps">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

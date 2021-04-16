@@ -1,19 +1,19 @@
 <?php
-  use ShiftCodesTK\Users\CurrentUser,
+  include_once(dirname(__DIR__) . '/initialize.php');
+
+  use ShiftCodesTK\PageConfiguration,
+      ShiftCodesTK\PHPConfigurationFiles,
+      ShiftCodesTK\Users\CurrentUser,
       ShiftCodesTK\Strings;
 
-  $page['meta'] = [
-    'title'       => 'My Account - ShiftCodesTK',
-    'description' => 'View and Manage your account on ShiftCodesTK',
-    'canonical'   => '/account/',
-    'image'       => 'bl3/2',
-    'theme'       => 'main'
-  ];
-  $page['auth'] = [
-    'requireState'   => 'auth'
-  ];
-
-  include_once('../initialize.php');
+	(new PageConfiguration('account/index'))
+    ->setTitle('My Account')
+		->setGeneralInfo(
+			'View and Manage your account on ShiftCodesTK',
+			'bl3/2'
+		)
+		->setUserLoginCondition(true)
+		->saveConfiguration();
   ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -27,7 +27,7 @@
     <!--// Metadata \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

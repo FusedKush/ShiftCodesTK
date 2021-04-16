@@ -1,29 +1,42 @@
 <?php
-  $page['auth'] = [
-    'requireState'   => 'auth',
-    // 'onFailRedirect' => '/'
-    'onFailToast' => [
-      'content' => [
-        'body' => 'You must be logged in to view your submitted SHiFT Codes.'
-      ]
-    ]
-  ];
-  $page['meta'] = [
-    'title'       => 'My SHiFT Codes - ShiftCodesTK',
-    'description' => 'SHiFT Codes you have submitted to ShiftCodesTK',
-    'canonical'   => '/codes/',
-    'image'       => 'bl3/2',
-    'theme'       => 'main'
-  ];
-  $page['shift'] = [
-    'game'               => null,
-    'owner'              => '$user',
-    'order'              => 'newest',
-    'status'             => [ 'active', 'expired', 'hidden' ],
-    'readOnlyProperties' => [ 'limit' ]
-  ];
+  include_once(dirname(__DIR__) . '/initialize.php');
+
+  use ShiftCodesTK\PageConfiguration,
+      ShiftCodesTK\PageConfiguration\ShiftConfiguration,
+      ShiftCodesTK\Users\CurrentUser;
   
-  include_once('../initialize.php');
+
+  (function () {
+    $page_configuration = (new PageConfiguration('codes/index'))
+      ->setTitle('My SHiFT Codes')
+      ->setGeneralInfo(
+        'SHiFT Codes you have submitted to ShiftCodesTK',
+        'bl3/2'
+      )
+      ->setShiftConfiguration(
+        new ShiftConfiguration([
+          'game'  => null,
+          'owner' =>  CurrentUser::is_logged_in()
+                      ? CurrentUser::get_current_user()->user_id
+                      : null,
+          'order' => ShiftConfiguration::ORDER_NEWEST,
+          'status' => [
+            ShiftConfiguration::STATUS_ACTIVE,
+            ShiftConfiguration::STATUS_EXPIRED,
+            ShiftConfiguration::STATUS_HIDDEN,
+          ]
+        ], [
+          'limit'
+        ])
+      );
+    $page_configuration->setUserLoginCondition(true, true)
+      ->setFailureToast([
+        'content' => [
+          'body' => 'You must be logged in to view your submitted SHiFT Codes.'
+        ]
+      ]);
+    $page_configuration->saveConfiguration();
+  })();
 ?>
 <!DOCTYPE html>
 <html lang="en">

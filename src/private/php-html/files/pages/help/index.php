@@ -1,13 +1,16 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Help Center - ShiftCodesTK',
-    'description' => 'ShiftCodesTK Help and Support Hub',
-    'canonical'   => '/help/',
-    'image'       => 'tps/5',
-    'theme'       => 'main'
-  ];
+  // require_once('../initialize.php');
+  require_once(dirname(__DIR__) . '/initialize.php');
 
-  require_once('../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/index'))
+    ->setTitle('Help Center')
+    ->setGeneralInfo(
+      'ShiftCodesTK Help and Support Hub',
+      'tps/5'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +24,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <?php
       $articles = [
         [

@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Clearing your System Cache - ShiftCodesTK',
-    'description' => 'How to clear your system cache on PC, Xbox, or Playstation',
-    'canonical'   => '/help/clearing-your-system-cache',
-    'image'       => 'tps/3',
-    'theme'       => 'main'
-  ];
+  require_once(dirname(__DIR__) . '/initialize.php');
 
-  require_once('../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/clearing-your-system-cache'))
+    ->setTitle('Clearing your System Cache')
+    ->setGeneralInfo(
+      'How to clear your system cache on PC, Xbox, or Playstation',
+      'tps/3'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

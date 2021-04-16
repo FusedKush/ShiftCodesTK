@@ -1,16 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Development Playground - ShiftCodesTK',
-    'description' => 'A testing ground and reference list for elements and their associated styles & functionality.',
-    'canonical'   => '/dev/playground',
-    'image'       => 'bl1/4',
-    'theme'       => 'main'
-  ];
-  $page['auth'] = [
-    'requireState'   => 'auth'
-  ];
-
   require_once('../initialize.php');
+
+  (new \ShiftCodesTK\PageConfiguration('dev/playground'))
+    ->setTitle('Development Playground')
+    ->setGeneralInfo( 
+      'A testing ground for elements and their associated styles & functionality', 
+      'bl1/4'
+    )
+    ->setUserLoginCondition(true)
+    ->setUserRoleCondition('Developer')
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,6 +34,14 @@
         <div class="view php-tests" data-view="Scratchpad">
           <div class="title">
             <h2>Scratchpad</h2>
+            <ul class="styled">
+              <?php 
+                var_dump(\ShiftCodesTK\PageConfiguration::getCurrentPageConfiguration());
+              ?>
+              <li><code data-relative-date="2021-03-13T08:00:00+07:00">A Date...</code></li>
+              <li><code data-calendar-date="2021-03-13T08:00:00+07:00">A Date...</code></li>
+              <li><code data-calendar-date="2021-03-13T08:00:00+07:00" data-calendar-date-locale="timezone.expanded">A Date...</code></li>
+            </ul>
           </div>
         </div>
         <div class="view buttons" data-view="Buttons">

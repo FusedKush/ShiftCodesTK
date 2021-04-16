@@ -1,28 +1,30 @@
 <?php
-  use ShiftCodesTK\Paths;
+  use ShiftCodesTK\Paths,
+      ShiftCodesTK\PageConfiguration,
+      ShiftCodesTK\Users\CurrentUser,
+      ShiftCodesTK\Strings;
 
-  $shift_game = PAGE_SETTINGS['shift']['game'];
-  $badges = [
-    ['name' => 'total',    'icon' => 'key'],
-    ['name' => 'new',      'icon' => 'star'],
-    ['name' => 'expiring', 'icon' => 'exclamation-triangle']
-  ];
+  $__shift = [];
+  $__shift['page_configuration'] = \ShiftCodesTK\PageConfiguration::getCurrentPageConfiguration();
+  $__shift['shift_configuration'] = $__shift['page_configuration']->getShiftConfiguration()
+                                                                  ->getProperties();
+  $__shift['badges'] = (function () {
+    $badges = [
+      ['name' => 'total',    'icon' => 'key'],
+      ['name' => 'new',      'icon' => 'star'],
+      ['name' => 'expiring', 'icon' => 'exclamation-triangle']
+    ];
 
-  foreach ($badges as &$badge) {
-    $badge['cap'] = ucfirst($badge['name']);
-  }
+    foreach ($badges as &$badge) {
+      $badge['cap'] = ucfirst($badge['name']);
+    }
 
+    return $badges;
+  })();
 
-  $testCode = (ShiftCodes::getInstance()->getCodes([
-    // 'code' => '119358692826',
-    'code' => '119358592325',
-    'limit' => 1,
-    'page'  => 1, 
-    'getResultSetData' => true,
-    'returnFullResponse' => true,
-    'getFlagCounts' => true
-  ]));
-  // var_dump(ShiftCodes::getInstance()->getSocialMediaPosts(), ShiftCodes::getInstance());
+  $__shift = (new Strings\StringArrayObj($__shift))
+                ->encode_html()
+                ->get_array();
 ?>
 
 <!-- SHiFT Resources -->
@@ -33,7 +35,7 @@
   <div class="primary">
     <div class="content-wrapper">
       <div class="section badges">
-        <?php foreach($badges as &$badge) : ?>
+        <?php foreach($__shift['badges'] as &$badge) : ?>
           <?php
             $count = 0 ;
             $classes = ['badge', $badge['name'], 'inactive', 'layer-target'];
@@ -79,11 +81,18 @@
         <?php endforeach; ?>
       </div>
       <div class="section buttons">
-        <?php if (auth_isLoggedIn()) : ?>
+        <?php if (CurrentUser::is_logged_in()) : ?>
+          <?php
+            $game_id = $__shift['shift_configuration']['game'];
+            $game_name = $game_id != 'all' 
+                         ? "?game={$game_id}" 
+                         : '';
+          ?>
+
           <a
             class="layer-target button color theme"
             id="shift_header_new"
-            href="/codes/new<?= $shift_game != 'all' ? "?game={$shift_game}" : ''; ?>"
+            href="/codes/new<?= $game_name; ?>"
             aria-label="Submit a new SHiFT Code">
             <span class="fas fa-plus-circle"></span>
             &nbsp;New
@@ -110,10 +119,14 @@
       <?php
         include(Paths\PHP_PATHS['forms'] . '/shift/sort-filter.php');
 
-        getForm_shiftSortFilter($shift_game, isset(
-                                              PAGE_SETTINGS['shift']['owner']) 
-                                              && PAGE_SETTINGS['shift']['owner'] !== false 
-                                              && PAGE_SETTINGS['shift']['owner'] == auth_user_id())->insertForm();
+        $code_owner = $__shift['shift_configuration']['owner'];
+
+        getForm_shiftSortFilter(
+          $__shift['shift_configuration']['game'], 
+          (isset($code_owner) 
+            && $code_owner !== false 
+            && $code_owner === CurrentUser::get_current_user()->user_id)
+        )->insertForm();
       ?>
     </div>
   </div>
@@ -136,7 +149,7 @@
   <div 
     class="shift-code-list" 
     id="shift_code_list" 
-    <?= " data-shift=" . json_encode(PAGE_SETTINGS['shift']); ?>
+    <?= " data-shift=" . json_encode($__shift['shift_configuration']); ?>
     >
   </div>
   <div 

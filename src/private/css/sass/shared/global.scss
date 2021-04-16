@@ -541,14 +541,21 @@ header.main {
       padding: 8px 12px;
       transition: transform 0.8s;
     }
-    .separator { opacity: 0.5; }
-    .separator, b.crumb { cursor: default; }
-    .separator, .crumb {
+    .separator { 
+      opacity: 0.5;
+    }
+    .separator, .breadcrumb.current-page { 
+      cursor: default;
+    }
+    .separator, .breadcrumb {
       @include spacing(4px, 4px 8px);
       line-height: 1;
       background-color: tpw(0.25);
       border: bd(1.5px, tpw(0.5));
       border-radius: 4px;
+    }
+    .separator, .breadcrumb.current-page {
+      font-weight: bold;
     }
   }
 }

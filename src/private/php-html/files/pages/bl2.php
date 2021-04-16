@@ -1,16 +1,20 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Borderlands 2 - ShiftCodesTK',
-    'description' => 'SHiFT Codes for Borderlands 2',
-    'canonical'   => '/bl2',
-    'image'       => 'bl2/1',
-    'theme'       => 'bl2'
-  ];
-  $page['shift'] = [
-    'game'  => 'bl2'
-  ];
-
   include_once('initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('bl2'))
+    ->setTitle('Borderlands 2')
+    ->setGeneralInfo(
+      'SHiFT Codes for Borderlands 2',
+      'bl2/1',
+      'bl2'
+    )
+    ->setShiftConfiguration(
+      new \ShiftCodesTK\PageConfiguration\ShiftConfiguration([
+        'game' => 'bl2'
+      ]))
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +26,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl2">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

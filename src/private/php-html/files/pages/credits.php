@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Credits - ShiftCodesTK',
-    'description' => 'The people and projects that make ShiftCodesTK possible',
-    'canonical'   => '/credits',
-    'image'       => 'tps/2',
-    'theme'       => 'main'
-  ];
-
   require_once('initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+	(new PageConfiguration('credits'))
+    ->setTitle('Credits')
+		->setGeneralInfo(
+			'The people and projects that make ShiftCodesTK possible',
+			'tps/2'
+		)
+		->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

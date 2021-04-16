@@ -1,16 +1,21 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'Borderlands: TPS - ShiftCodesTK',
-    'description' => 'SHiFT Codes for Borderlands: The Pre-Sequel',
-    'canonical'   => '/tps',
-    'image'       => 'tps/1',
-    'theme'       => 'tps'
-  ];
-  $page['shift'] = [
-    'game'  => 'tps'
-  ];
-
   include_once('initialize.php');
+
+  use ShiftCodesTK\PageConfiguration;
+
+	(new PageConfiguration('bl3'))
+    ->setTitle('Borderlands: TPS')
+		->setGeneralInfo(
+			'SHiFT Codes for Borderlands: The Pre-Sequel',
+			'tps/1',
+      'tps'
+		)
+		->setShiftConfiguration(
+			new \ShiftCodesTK\PageConfiguration\ShiftConfiguration([
+				'game' => 'tps'
+			])
+		)
+		->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +27,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="tps">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

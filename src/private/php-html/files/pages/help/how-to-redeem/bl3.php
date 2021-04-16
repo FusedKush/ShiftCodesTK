@@ -1,13 +1,16 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'How to Redeem: BL2 - ShiftCodesTK',
-    'description' => 'How to redeem SHiFT Codes in Borderlands 3',
-    'canonical'   => '/help/how-to-redeem/bl3',
-    'image'       => 'bl3/3',
-    'theme'       => 'bl3'
-  ];
+  require_once(dirname(__DIR__, 2) . '/initialize.php');
 
-  require_once('../../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/how-to-redeem/bl3'))
+    ->setTitle('How to Redeem: BL3')
+    ->setGeneralInfo(
+      'How to redeem SHiFT Codes in Borderlands 3',
+      'bl3/3',
+      'bl3'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +24,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="bl3">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->

@@ -1,13 +1,15 @@
 <?php
-  $page['meta'] = [
-    'title'       => 'How to Redeem: Online - ShiftCodesTK',
-    'description' => 'How to redeem SHiFT Codes on the Borderlands website',
-    'canonical'   => '/help/how-to-redeem/borderlands-website',
-    'image'       => 'bl1/3',
-    'theme'       => 'main'
-  ];
+  require_once(dirname(__DIR__, 2) . '/initialize.php');
 
-  require_once('../../initialize.php');
+  use ShiftCodesTK\PageConfiguration;
+
+  (new PageConfiguration('help/how-to-redeem/borderlands-website'))
+    ->setTitle('How to Redeem: GOTY')
+    ->setGeneralInfo(
+      'How to redeem SHiFT Codes on the Borderlands website',
+      'bl1/3'
+    )
+    ->saveConfiguration();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +23,7 @@
     <!--// Markup \\-->
     <?php include_once('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Header -->
