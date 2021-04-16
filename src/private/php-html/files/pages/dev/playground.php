@@ -34,14 +34,9 @@
         <div class="view php-tests" data-view="Scratchpad">
           <div class="title">
             <h2>Scratchpad</h2>
-            <ul class="styled">
-              <?php 
-                var_dump(\ShiftCodesTK\PageConfiguration::getCurrentPageConfiguration());
-              ?>
-              <li><code data-relative-date="2021-03-13T08:00:00+07:00">A Date...</code></li>
-              <li><code data-calendar-date="2021-03-13T08:00:00+07:00">A Date...</code></li>
-              <li><code data-calendar-date="2021-03-13T08:00:00+07:00" data-calendar-date-locale="timezone.expanded">A Date...</code></li>
-            </ul>
+            <?php
+              var_dump("Nothing yet...");
+            ?>
           </div>
         </div>
         <div class="view buttons" data-view="Buttons">
