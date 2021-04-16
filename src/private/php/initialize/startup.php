@@ -458,6 +458,7 @@
     $_mysqli = new ShiftCodesTKDatabase_Old();
     
     ShiftCodes::getInstance();
+    \ShiftCodesTK\Users\init();
     \ShiftCodesTK\PageConfiguration\PageConfigurationFramework\Framework::init();
     
     if (ShiftCodesTK\SCRIPT_TYPE === ShiftCodesTK\SCRIPT_TYPE_PAGE) {
