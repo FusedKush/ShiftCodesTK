@@ -44,12 +44,7 @@
       ];
 
       return \ShiftCodesTK\Paths\ASSET_PATHS['private']['img'] .
-        "/users
-        /profiles
-        /${image['path']}
-        /{$image['dirs']}
-        /{$image['name']}
-        /{$size}x{$size}.{$image['ext']}";
+        "/users/profiles/${image['path']}/{$image['dirs']}/{$image['name']}/{$size}x{$size}.{$image['ext']}";
     })();
 
     if (file_exists($fullPath)) {
