@@ -179,103 +179,120 @@
        */
       define('ShiftCodesTK\SCRIPT_TYPE', $__script_type ?? \ShiftCodesTK\SCRIPT_TYPE_SCRIPT);
 
-      unset($__script_type);
-    })();
-    // Token Constants
-    (function () {
-      /** @var string|false The Request Token Header if sent */
-      define('TOKEN_HEADER', $_SERVER[ 'HTTP_X_REQUEST_TOKEN'] ?? false);
-      // `ShiftCodesTK\REQUEST_TOKEN`
-      (function () {
-        $requestToken = (function () {
-          if ($token = $_SERVER['HTTP_X_REQUEST_TOKEN'] ?? null) {
-            return $token;
-          }
-          else if ($token = $_POST['_auth_token'] ?? null) {
-            return $token;
-          }
-          else if ($token = $_GET['_request_token'] ?? null) {
-            return $token;
-          }
-    
-          return false;
-        })();
-  
-        /** @var string|false If sent with the request, this is the *Request Token* used to conduct the request. */
-        define('ShiftCodesTK\REQUEST_TOKEN', $requestToken);
-      })();
-    })();
-  })();
-  // Date Constants
-  (function () {
-    /** @var array A list of preset date formats for use with `DateTimeInterface->format()`.
-     * 
-     * | Key | Format |
-     * | --- | --- |
-     * | *date* | `Y-m-d` |
-     * | *time* | `H:i:s` |
-     * | *date_time* | `Y-m-d H:i:s` |
-     * | *full_date_time* | `Y-m-d H:i:s.u` |
-     * | *iso* | `Y-m-d\TH:i:sO` |
-     */
-    define('ShiftCodesTK\DATE_FORMATS', [
-      'date'           => 'Y-m-d',
-      'time'           => 'H:i:s',
-      'date_time'      => 'Y-m-d H:i:s',
-      'full_date_time' => "Y-m-d H:i:s.u",
-      'iso'            => \DateTimeInterface::ISO8601
-    ]);
-    // `ShiftCodesTK\DATE_TIMEZONES`
-    (function () {
-      $names = \DateTimeZone::listIdentifiers();
-      $utc = new \DateTime('now', new \DateTimeZone('UTC'));
-      $timezones = [];
-      $tzList = [];
-  
-      foreach ($names as $name) {
-        $timezone = new \DateTimeZone($name);
-        $offset = $timezone->getOffset($utc);
-  
-        $timezones[] = [
-          'offset' => $offset,
-          'name'   => $name,
-          'abbr'   => (function () use ($timezone, $name, $offset) {
-            $abbrs = $timezone->getTransitions();
-  
-            foreach ($abbrs as $abbr => $abbrData) {
-              if ($abbrData['offset'] == $offset) {
-                return $abbrData['abbr'];
-              }
-            }
-  
-            return false;
-          })()
-        ];
-      }
-  
-      usort($timezones, function ($a, $b) {
-        if ($a['offset'] == $b['offset']) {
-          return strcmp($a['name'], $b['name']);
-        }
-        else {
-          return $a['offset'] - $b['offset'];
-        }
-      });
-  
-      foreach ($timezones as $timezone) {
-        $prettyName = str_replace('_', ' ', $timezone['name']);
-        $sign = ($timezone['offset'] > 0) ? '+' : '-';
-        $offset = gmdate('H:i', abs($timezone['offset']));
-  
-        $tzList[$timezone['name']] = "(UTC {$sign}{$offset}) {$prettyName}" . ($timezone['abbr'] ? " ({$timezone['abbr']})" : "");
-      } 
-  
-      /**
-       * A sorted list of *Timezones* and their respective *Display Names*.
-       */
-      define('ShiftCodesTK\DATE_TIMEZONES', $tzList);
-    })();
-  })();
+				unset($__script_type);
+			})();
+			// Token Constants
+			(function () {
+				/** @var string|false The Request Token Header if sent */
+				define('TOKEN_HEADER', $_SERVER[ 'HTTP_X_REQUEST_TOKEN'] ?? false);
+				// `ShiftCodesTK\REQUEST_TOKEN`
+				(function () {
+					$requestToken = (function () {
+						if ($token = $_SERVER['HTTP_X_REQUEST_TOKEN'] ?? null) {
+							return $token;
+						}
+						else if ($token = $_POST['_auth_token'] ?? null) {
+							return $token;
+						}
+						else if ($token = $_GET['_request_token'] ?? null) {
+							return $token;
+						}
+
+						return false;
+					})();
+
+					/** @var string|false If sent with the request, this is the *Request Token* used to conduct the request. */
+					define('ShiftCodesTK\REQUEST_TOKEN', $requestToken);
+				})();
+			})();
+			// Request Scheme
+			(function () {
+				$scheme = $_SERVER['REQUEST_SCHEME']
+					?? strtolower(
+						preg_replace(
+							$_SERVER['SERVER_PROTOCOL'],
+							'%\/[\d\.]+$%',
+							'',
+							1
+						)
+					);
+				
+				/** @var "HTTP"|"HTTPS" Represents the *HTTP Request Scheme* of the Request. */
+				define("ShiftCodesTK\REQUEST_SCHEME", $scheme);
+			})();
+			/** @var string The name of the *Query Parameter* that contains the *Backlink* for some router redirects. */
+			define("ShiftCodesTK\ROUTER_REDIRECT_BACKLINK_PARAMETER", 'continue');
+		})();
+		// Date Constants
+		(function () {
+			/** @var array A list of preset date formats for use with `DateTimeInterface->format()`.
+			 *
+			 * | Key | Format |
+			 * | --- | --- |
+			 * | *date* | `Y-m-d` |
+			 * | *time* | `H:i:s` |
+			 * | *date_time* | `Y-m-d H:i:s` |
+			 * | *full_date_time* | `Y-m-d H:i:s.u` |
+			 * | *iso* | `Y-m-d\TH:i:sO` |
+			 */
+			define('ShiftCodesTK\DATE_FORMATS', [
+				'date'           => 'Y-m-d',
+				'time'           => 'H:i:s',
+				'date_time'      => 'Y-m-d H:i:s',
+				'full_date_time' => "Y-m-d H:i:s.u",
+				'iso'            => \DateTimeInterface::ISO8601
+			]);
+			// `ShiftCodesTK\DATE_TIMEZONES`
+			(function () {
+				$names = \DateTimeZone::listIdentifiers();
+				$utc = new \DateTime('now', new \DateTimeZone('UTC'));
+				$timezones = [];
+				$tzList = [];
+
+				foreach ($names as $name) {
+					$timezone = new \DateTimeZone($name);
+					$offset = $timezone->getOffset($utc);
+
+					$timezones[] = [
+						'offset' => $offset,
+						'name'   => $name,
+						'abbr'   => (function () use ($timezone, $name, $offset) {
+							$abbrs = $timezone->getTransitions();
+
+							foreach ($abbrs as $abbr => $abbrData) {
+								if ($abbrData['offset'] == $offset) {
+									return $abbrData['abbr'];
+								}
+							}
+
+							return false;
+						})()
+					];
+				}
+
+				usort($timezones, function ($a, $b) {
+					if ($a['offset'] == $b['offset']) {
+						return strcmp($a['name'], $b['name']);
+					}
+					else {
+						return $a['offset'] - $b['offset'];
+					}
+				});
+
+				foreach ($timezones as $timezone) {
+					$prettyName = str_replace('_', ' ', $timezone['name']);
+					$sign = ($timezone['offset'] > 0) ? '+' : '-';
+					$offset = gmdate('H:i', abs($timezone['offset']));
+
+					$tzList[$timezone['name']] = "(UTC {$sign}{$offset}) {$prettyName}" . ($timezone['abbr'] ? " ({$timezone['abbr']})" : "");
+				}
+
+				/**
+				 * A sorted list of *Timezones* and their respective *Display Names*.
+				 */
+				define('ShiftCodesTK\DATE_TIMEZONES', $tzList);
+			})();
+		})();
 
   /** @var array ShiftCodesTK User Roles */
   define("AUTH_ROLES", (function () {

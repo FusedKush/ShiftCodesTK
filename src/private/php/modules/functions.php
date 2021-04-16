@@ -1,14 +1,33 @@
 <?php
+  use ShiftCodesTK\Strings;
+
   /* Header Functions */
   /**
    * Redirect to a specified page
    * 
    * @param string $url The url to redirect to.
    * - *Note: The URL is **not** automatically URL Encoded*
-   * @return exit
+   * @param bool $include_backlink Indicates if the *Current URL* should be appended to the `$url` using the {@see \ShiftCodesTK\ROUTER_REDIRECT_BACKLINK_PARAMETER} query parameter.
+   * @return exit Redirects the request and exits the script.
    */
-  function response_redirect($url) {
-    header("Location: $url");
+  function response_redirect($url, bool $include_backlink = false) {
+    $redirect_url = $url;
+
+    if ($include_backlink) {
+      $redirect_parameter = \ShiftCodesTK\ROUTER_REDIRECT_BACKLINK_PARAMETER;
+      $current_url = Strings\encode_url($_SERVER['REQUEST_URI']);
+
+      if (!Strings\preg_test($redirect_url, '%\?[^\s]+$%')) {
+        $redirect_url .= "?";
+      }
+      else {
+        $redirect_url .= "&";
+      }
+      
+      $redirect_url .= "{$redirect_parameter}={$current_url}";
+    }
+
+    header("Location: {$redirect_url}");
     exit();
   }
   /**
