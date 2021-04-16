@@ -307,10 +307,8 @@
       }
 
       if ($property !== false) {
-        $propertyValue = $this->last_result->$property ?? null;
-
-        if (isset($propertyValue)) {
-          return $propertyValue;
+        if (property_exists($this->last_result, $property)) {
+          return $this->last_result->$property;
         }
         else {
           trigger_error("\"{$property}\" is not a valid Result Property.");

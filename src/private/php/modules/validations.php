@@ -204,7 +204,7 @@
       try {
         $result = true;
         $caseInsensitive = ($flags & MATCH_CASE_SENSITIVE) == 0 || ($flags & MATCH_HASH > 0);
-        $checkMatch = function ($var_to_check) use ($matches, $flags, &$result, $caseInsensitive) {
+        $checkMatch = function ($var_to_check) use ($matches, $flags, $caseInsensitive) {
           $comparisonVar = is_string($var_to_check) && $caseInsensitive
                            ? Strings\transform($var_to_check, Strings\TRANSFORM_LOWERCASE)
                            : $var_to_check;
@@ -236,12 +236,7 @@
             } 
           }
 
-          if (($flags & MATCH_BLACKLIST) == 0) {
-            return false;
-          }
-          else if (($flags & MATCH_BLACKLIST) > 0) {
-            return true;
-          }
+          return ($flags & MATCH_BLACKLIST) > 0;
         };
 
         if (is_array($var)) {
@@ -256,6 +251,8 @@
         else {
           return $checkMatch($var);
         }
+        
+        return true;
       }
       catch (\Throwable $exception) {
         return false;
