@@ -293,7 +293,7 @@
     return StringObj::alias('lastchar', ...\func_get_args());
   }
   /** An *alias* of `StringObj::split()`.
-   * 
+   *
    * > Convert a string's characters to an array.
    * @see StringObj::split()
    * 
@@ -314,7 +314,7 @@
    * @param string $delimiter The delimiter to split the `string` by.
    * @param int|null $limit The maximum number of splits to be performed.
    * @param bool $return_string_array Indicates if the return value should be a `StringArrayObj` instead of an `array`.
-   * @return array|StringArrayObj`false Returns an `array` or `StringArrayObj` of substrings created by splitting the `string` by the `$delimiters` on success. Returns **false** if `$delimiters` is an *Empty `String`*.
+   * @return array|StringArrayObj|false Returns an `array` or `StringArrayObj` of substrings created by splitting the `string` by the `$delimiters` on success. Returns **false** if `$delimiters` is an *Empty `String`*.
    */
   function explode (string $string, string $delimiters, int $limit = null, bool $return_string_array = false) {
     return StringObj::alias('explode', ...\func_get_args());
