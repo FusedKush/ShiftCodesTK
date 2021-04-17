@@ -23,11 +23,10 @@
 	);
 	
 	array_walk_recursive($__metadata, function (&$value, $key) {
-		if ($key !== 'configuration' && $key !== 'themes') {
+		if ($key !== 'configuration') {
 			$value = Strings\encode_html($value);
 		}
 	});
-	
 ?>
 
 <!-- Standard Metadata -->
@@ -50,7 +49,7 @@
 <meta name="tk-bg-color" content="<?= $__metadata['bg']; ?>">
 <meta name="tk-request-token" content="<?= $__metadata['token']; ?>">
 <!-- Theme Colors -->
-<meta name="tk-theme-colors" content=<?= $__metadata['themes']; ?>>
+<meta name="tk-theme-colors" content="<?= $__metadata['themes']; ?>">
 
 <!-- Page-Specific Properties -->
 <!-- Facebook & Twitter Properties -->

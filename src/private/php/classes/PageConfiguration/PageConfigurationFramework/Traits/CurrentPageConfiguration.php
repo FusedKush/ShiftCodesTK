@@ -26,12 +26,17 @@
     }
     /** Get the `PageConfiguration` object representing the *Current Page*
      * 
-     * @return PageConfiguration Returns the `PageConfiguration` object representing the *Current Page*
+     * @return PageConfiguration|null Returns the `PageConfiguration` object representing the *Current Page*, or **null** if one has not been defined.
      */
-    public static function getCurrentPageConfiguration (): PageConfiguration {
+    public static function getCurrentPageConfiguration (): ?PageConfiguration {
     	$current_page = self::getCurrentPage();
+      $configuration = self::getConfiguration($current_page, false);
 
-      return self::getConfiguration($current_page, false);
+      if (!$configuration) {
+        return null;
+      }
+
+      return $configuration;
     }
 
 		/** Check if the `PageConfiguration` belongs to the *Current Page*.

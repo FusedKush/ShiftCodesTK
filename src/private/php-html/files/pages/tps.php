@@ -3,7 +3,7 @@
 
   use ShiftCodesTK\PageConfiguration;
 
-	(new PageConfiguration('bl3'))
+	(new PageConfiguration('tps'))
     ->setTitle('Borderlands: TPS')
 		->setGeneralInfo(
 			'SHiFT Codes for Borderlands: The Pre-Sequel',
