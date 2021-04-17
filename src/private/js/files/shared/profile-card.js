@@ -283,7 +283,7 @@
               const profilePicturePath = userData.user_data.profile_picture;
 
               if (flags & cardObj.CARD_HIDE_PROFILE_PICTURE) {
-                deleteElement(profileCard);
+                deleteElement(profilePicture);
               }
               else {
                 const img = dom.find.child(profilePicture, 'tag', 'img');
@@ -327,7 +327,19 @@
 
             // Roles
             if (userData.user_data.roles) {
-              for (let element of dom.find.child(profileCard, 'class', 'section roles').childNodes) {
+              let children = dom.find.children(
+                dom.find.child(
+                  profileCard, 
+                  'class', 
+                  'section roles'
+                ), 
+                'attr', 
+                'data-role'
+              );
+
+
+              for (let i = (children.length - 1); i >= 0; i--) {
+                let element = children[i];
                 let role = dom.get(element, 'attr', 'data-role');
 
                 if (role) {
