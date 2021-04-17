@@ -138,6 +138,18 @@
 
     img { @include multiProp(inherit, sizing); }
   }
+  .right {
+    .btn {
+      overflow: hidden;
+      padding: 0;
+      
+      img {
+        @include multiProp(36px, sizing);
+        box-shadow: 0 0 5px tpb(0.5);
+        border-radius: 50%;
+      }
+    }
+  }
 
   // Loader Progress Bar
   .loader.progress-bar {
@@ -178,18 +190,18 @@
   margin: 8px 16px;
 
   &.dropdown {
-    .title{
+    .title {
       @include flexbox($hAlign: none);
       opacity: 1;
       padding: 0;
       // background-color: tpb(0.25);
       background-color: $site-color-light;
-      
       font-size: 1em;
     }
 
     .profile-card {
-      padding: 12px;
+      width: 100%;
+      padding: 8px 12px;
       border-radius: 8px 8px 0 0;
     }
     // .profile-picture {
