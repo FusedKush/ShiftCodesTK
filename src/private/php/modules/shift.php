@@ -1,4 +1,6 @@
 <?php
+  use ShiftCodesTK\Users\CurrentUser;
+
   // SHiFT Code Management
   (function () {
     /**
@@ -855,13 +857,21 @@
                 (function () use ($code, &$states) {
                   $ownerID = $code['owner_id'];
                   $user = &$states['user'];
+                  $currentUserID = CurrentUser::is_logged_in()
+                    ? CurrentUser::get_current_user()->user_id
+                    : null;
                   
                   // Redemption state
                   $user['hasRedeemed'] = ($code['is_redeemed'] ?? -1) == 1;
                   // Owner Permission
-                  $user['isOwner'] = ($ownerID == auth_user_id());
+                  $user['isOwner'] = ($ownerID === $currentUserID);
                   // Editing Permission
-                  $user['canEdit'] = ($ownerID == auth_user_id() || auth_user_roles()['admin']);
+                  $user['canEdit'] = (
+                    $ownerID === $currentUserID 
+                    || (CurrentUser::is_logged_in() 
+                      && CurrentUser::get_current_user()->has_role('Admin')
+                    )
+                  );
                 })(); 
               })();
 

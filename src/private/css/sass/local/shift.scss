@@ -513,9 +513,6 @@ main {
                 .copy-to-clipboard:not(:focus) { opacity: 0; }
               }
               @include mouseState(hover) {
-                .platform-list li {
-                  transform: translateY(15%);
-                }
                 .copy-to-clipboard             { opacity: 1; }
               }
               @include mouseState(click)       { opacity: 0.75; }
@@ -523,7 +520,6 @@ main {
               .content {
                 @include classTheme(bc);
                 border: 1.5px solid;
-                // border-radius: 0 4px 4px 0;
                 border-radius: 8px;
                 
                 &::before {
