@@ -12,20 +12,13 @@
    * 
    * ## Using Existing Config Values ##
    * You can copy any existing *Config Files* to the `/src/private/resources/config` directory.
-   * Some *Config Files* may be Version Controlled and available when fetching a fresh copy of the build.
+   * Some *Config Files* are Version Controlled and available when fetching a fresh copy of the build.
    * 
-   * The following files *should* be bundled with the build, and always available:
-   * | Alias | Filename | Exposed *Config Values* |
-   * | --- | --- | --- |
-   * | *site_version* | `site-version.php` | `site_version` |
-   * 
-   * ## Defining New Config Values ##
-   * You can manually define any additional *Config Files* and *Config Values* using this script.
-   * 
-   * The following files are required, but *are not bundled* with the build. You will need to manually define them.
-   * | Alias | Filename | Exposed *Config Values* |
-   * | --- | --- | --- |
-   * | *site_maintenance* | `.site-maintenance.php` | `site_maintenance` |
+   * The following files are bundled with the build, and always available:
+   * | Alias            | Filename              | Exposed *Config Values*                   |
+   * | ---              | ---                   | ---                                       |
+   * | *site_version*   | `site-version.php`    | `site_version`                            |
+   * | *service_status* | `service-status.php`  | `service_maintenance`, `allow_dev_builds` |
    */
  
   /**
@@ -33,25 +26,23 @@
    * 
    * To store *Config Values*, you need a *Config File* to store them to. 
    * 
-   * You can use the method below to create any *Config Files* you need.
+   * The examples below illustrate how to create any *Config Files* you need.
    */
 
-  // Site Maintenance (Single-Property Config File)
-  Config::addConfigFile([
-    'filename' => 'site_maintenance.php',
-    'alias'    => 'site_maintenance',
-    'type'     => Config::CONFIGURATION_TYPE_PROPERTY,
-    'comment'  => "Indicates if *Site-Wide Maintenance* is currently in effect.
-    
-    When **true**, all incoming requests will be denied and return a `503` Status Code."
-  ]);
-
-  // General Config (Multiple-Property Config File, Example)
+  // Site Version (Single-Property Config File)
   // Config::addConfigFile([
-  //   'filename' => 'general.php',
-  //   'alias'    => 'general',
+  //   'filename' => 'site_version.php',
+  //   'alias'    => 'site_version',
+  //   'type'     => Config::CONFIGURATION_TYPE_PROPERTY,
+  //   'comment'  => "Represents the current version of ShiftCodesTK."
+  // ]);
+
+  // Service Status (Multi-Property Config File)
+  // Config::addConfigFile([
+  //   'filename' => 'service-status.php',
+  //   'alias'    => 'service_status',
   //   'type'     => Config::CONFIGURATION_TYPE_ARRAY,
-  //   'comment'  => "A general *Config File* where miscellaneous Config Values can be stored."
+  //   'comment'  => "Represents the *Service Status* of ShiftCodesTK."
   // ]);
 
   /**
@@ -59,12 +50,13 @@
    * 
    * Once you have created the *Config File* the *Config Values* will be stored to, you can then add them.
    * 
+   * The examples below illustrate how to create the *Config Values* you need.
    * You can use the method below to create any *Config Values* you need.
    */
 
-  // Site Maintenance (Adding a *Single-Property Config File*)
-  Config::updateConfigurationValue('site_maintenance', false);
+  // Site Version (Adding to a *Single-Property Config File*)
+  // Config::updateConfigurationValue('site_version', '2.0.0');
 
-  // General Config Property (Adding a Config Value to a *Multi-Property Config File*, Example)
-  // Config::addConfigurationValue('general.foo', 'foobarbaz');
+  // Service Status (Adding to a *Multi-Property Config File*)
+  // Config::addConfigurationValue('service_status.service_maintenance', false);
 ?>
