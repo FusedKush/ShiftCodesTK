@@ -221,18 +221,25 @@
       $image = $this->image;
       $request_scheme = REQUEST_SCHEME;
       $site_domain = SITE_DOMAIN;
-      $images_dir = Strings\str_replace(
-      	Paths\ASSET_PATHS['public']['img'],
-				Paths\ASSET_PATHS['public']['main'],
-				"{$request_scheme}://{$site_domain}/assets"
-			);
 
       switch ($format) {
         case GeneralConfigurationConstants::IMAGE_FORMAT_DEFAULT :
           return $image;
         case GeneralConfigurationConstants::IMAGE_FORMAT_BANNER :
+          $images_dir = Strings\str_replace(
+            Paths\ASSET_PATHS['public']['img'],
+            Paths\ASSET_PATHS['public']['main'],
+            "/assets"
+          );
+          
           return "{$images_dir}/banners/{$image}";
         case GeneralConfigurationConstants::IMAGE_FORMAT_METADATA :
+          $images_dir = Strings\str_replace(
+            Paths\ASSET_PATHS['public']['img'],
+            Paths\ASSET_PATHS['public']['main'],
+            "{$request_scheme}://{$site_domain}/assets"
+          );
+        
           return "{$images_dir}/metadata/{$image}";
         default :
           throw new UnexpectedValueException("\"{$format}\" is not a valid Image Path Format.");
