@@ -2,6 +2,7 @@
 (function () {
   const interval = setInterval(() => {
     const isReady = typeof ShiftCodesTK !== 'undefined' 
+                    && typeof ShiftCodesTK.local !== 'undefined'
                     && typeof node_modules !== 'undefined'
                     && ShiftCodesTK.forms.isLoaded
                     && ShiftCodesTK.requests.isLoaded
@@ -1033,7 +1034,7 @@
                       formats.dates = {};
                       formats.dates.date = 'MMM DD, YYYY';
                       formats.dates.expandedDate = 'MMMM DD, YYYY';
-                      formats.dates.time = 'h:mm A zz';
+                      formats.dates.time = 'h:mm A z';
                       formats.dates.full = `${formats.dates.date} ${formats.dates.time}`;
                       formats.dates.expanded = `${formats.dates.expandedDate} ${formats.dates.time}`;
                       /** Calendar Date Formats */
