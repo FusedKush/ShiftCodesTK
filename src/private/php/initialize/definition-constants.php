@@ -35,8 +35,10 @@
 			$general_paths['resources'] = "{$base_paths['private']}/resources";
 
 			foreach ([ 'cache', 'logs', 'temp' ] as $directory) {
-				if (!file_exists($directory)) {
-					mkdir($directory, 0700);
+				$directory_path = $general_paths[$directory];
+
+				if (!file_exists($directory_path)) {
+					mkdir($directory_path, 0700);
 				}
 			}
 
