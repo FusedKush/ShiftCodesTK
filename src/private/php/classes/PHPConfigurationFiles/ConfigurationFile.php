@@ -69,7 +69,7 @@
      * @throws \UnexpectedValueException if `$required_type` is not a valid Configuration File Type.
      * @throws \BadMethodCallException if $throw_errors` is **true** and the current *Configuration File Type* does or does not match the `$required_type`.
      */
-    protected function validateConfigurationType (string $required_type, bool $is_required = true, bool $throw_errors = false) {
+    public function validateConfigurationType (string $required_type, bool $is_required = true, bool $throw_errors = false) {
       $current_type = $this->type;
       $is_valid_type = (function () use ($required_type, $is_required, $current_type) {
         if (!Validations\check_match($required_type, self::CONFIGURATION_TYPES_LIST)) {
@@ -588,6 +588,12 @@
         throw new \Error("Property Value \"{$base_property}\" does not exist.");
       }
 
+      $updated_index = $this->removeConfigurationValueFromIndex($base_property);
+
+      if (!$updated_index) {
+        return false;
+      }
+
       if (is_array($contents)) {
         unset($contents[$base_property]);
       }
@@ -598,11 +604,7 @@
       $updated_contents = $this->changeConfigurationContents($contents);
       
       if ($updated_contents) {
-        $updated_index = $this->removeConfigurationValueFromIndex($base_property);
-
-        if ($updated_index) {
-          return !$this->configurationValueExists($base_property);
-        }
+        return !$this->configurationValueExists($base_property);
       }
 
       return false;
