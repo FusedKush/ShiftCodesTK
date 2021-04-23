@@ -69,7 +69,7 @@
    * @param int $random_length The desired length of the new Token. Values below **2** are treated as **2**.
    * @return string Returns the new String Token.
    */
-  function random_token ($random_length = 64) {
+  function random_token ($random_length = 64): string {
     $getKey = function ($keyLength) {
       if (function_exists('random_bytes')) {
         return bin2hex(random_bytes($keyLength / 2));
@@ -158,14 +158,15 @@
     }
   }
 
-  /**
-   * Generate a hash for a string
+  /** Generate a hash for a string
    * 
    * @param string $string The string to be hashed.
+   * @param string $algo The *Hashing Algorithm* to use.
+   * - {@see \hash_hmac_algos()}
    * @return string Returns the generated hash.
    */
-  function hash_string ($string) {
-    return hash_hmac('sha256', $string, \ShiftCodesTK\Secrets::getSecret('hash'));
+  function hash_string (string $string, string $algo = 'sha256'): string {
+    return hash_hmac($algo, $string, \ShiftCodesTK\Secrets::getSecret('hash'));
   }
   /**
    * Determine if two hashed strings match.
@@ -174,7 +175,7 @@
    * @param string $comparison_hash The hash to be compared against the `$known_hash`.
    * @return boolean Returns **true** if the provided hashes match or **false** if they do not.
    */
-  function check_hash_string ($known_hash, $comparison_hash) {
+  function check_hash_string ($known_hash, $comparison_hash): bool {
     return hash_equals($known_hash, $comparison_hash);
   }
   /**
@@ -184,7 +185,7 @@
    * - The maximum length is 72 characters.
    * @return string|false Returns the *hashed password* on success. If an error occurs, returns **false**.
    */
-  function hash_password ($password) {
+  function hash_password (string $password) {
     if (strlen($password) > 72) {
       return false;
     }
@@ -198,7 +199,7 @@
    * @param string $pw_hash The hashed password.
    * @return boolean Returns **true** if the password matches the hash, or **false** if it does not.
    */
-  function check_hash_password ($pw_guess, $pw_hash) {
+  function check_hash_password ($pw_guess, $pw_hash): bool {
     return password_verify($pw_guess, $pw_hash);
   }
 ?>
