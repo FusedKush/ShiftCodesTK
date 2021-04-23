@@ -453,6 +453,13 @@
      */
     public static function addConfigurationValue (string $property_name, $property_value, string $secret_key = null): bool {
       $config_file = self::getConfigFile($property_name, true);
+      $config_file->getConfigurationFile()
+        ->validateConfigurationType(
+          \ShiftCodesTK\PHPConfigurationFiles\ConfigurationFile::CONFIGURATION_TYPE_PROPERTY,
+          false,
+          true
+        );
+
       $file_property_name = self::getConfigurationPropertyNamePieces($property_name)['property'];
 
       return $config_file->addConfigurationValue($file_property_name, $property_value, $secret_key);
