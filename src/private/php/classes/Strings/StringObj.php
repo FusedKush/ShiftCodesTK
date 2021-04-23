@@ -785,35 +785,45 @@
 
       if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
         $string = (function () use ($transformation, $string) {
-          switch ($transformation) {
-            case TRANSFORM_LOWERCASE:
-              return \strtolower($string);
-            case TRANSFORM_UPPERCASE:
-              return \strtoupper($string);
-            case TRANSFORM_CAPITALIZE_WORDS:
-              return \ucwords($string);
-            case TRANSFORM_CAPITALIZE_FIRST:
-              return \ucfirst($string);
+          if ($transformation === TRANSFORM_UPPERCASE) {
+            return \strtoupper($string);
           }
+          
+          $string = strtolower($string);
+  
+          if ($transformation === TRANSFORM_CAPITALIZE_WORDS) {
+            return \ucwords($string);
+          }
+          else if ($transformation === TRANSFORM_CAPITALIZE_FIRST) {
+            return \ucfirst($string);
+          }
+          
+          return $string;
         })();
       }
       else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
         $string = (function () use ($transformation, $string) {
-          $caseConsts = [
-            TRANSFORM_LOWERCASE        => MB_CASE_LOWER,
-            TRANSFORM_UPPERCASE        => MB_CASE_UPPER,
-            TRANSFORM_CAPITALIZE_WORDS => MB_CASE_TITLE
-          ];
-
-          if ($transformation != TRANSFORM_CAPITALIZE_FIRST) {
-            return \mb_convert_case($this->string, $caseConsts[$transformation], $this->encoding);
+          $convert = function ($mode) {
+            return \mb_convert_case($this->string, $mode, $this->encoding);
+          };
+          
+          if ($transformation === TRANSFORM_UPPERCASE) {
+            return $convert(MB_CASE_UPPER);
           }
-          else {
+          
+          $string = $convert(MB_CASE_LOWER);
+  
+          if ($transformation === TRANSFORM_CAPITALIZE_WORDS) {
+            return $convert(MB_CASE_TITLE);
+          }
+          else if ($transformation === TRANSFORM_CAPITALIZE_FIRST) {
             $chars = $this->split();
             $chars[0] = \mb_strtoupper($chars[0], $this->encoding);
 
             return \implode('', $chars);
           }
+          
+          return $string;
         })();
       }
 
