@@ -11,7 +11,7 @@
   ];
 
   foreach ($__initialization_files as $filename) {
-    include(dirname($_SERVER["DOCUMENT_ROOT"]) . "/private/php/initialize/{$filename}.php");
+    include(__DIR__ . "/initialize/{$filename}.php");
   }
 
   unset($__initialization_files);
