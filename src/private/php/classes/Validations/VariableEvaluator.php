@@ -47,6 +47,7 @@
      * - - - - `check_pattern`
      * - - - - `check_date`
      * - - - - `check_url`
+     * - - - - `check_path`
      * - - *Check Arguments* is an `array` made up of the *Arguments* of the *Validation Check* being performed.
      * - - - The first argument of each *Validation Check* (`$var`) does not need to be provided.
      */
@@ -204,7 +205,7 @@
             if (isset($param) && isset($match)) {
               $matchResult = false;
 
-              if (is_array_associative($match)) {
+              if (array_key_exists('matches', $match)) {
                 $matchResult = check_match($param, $match['matches'], $match['flags']);
               }
               else {
