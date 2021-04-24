@@ -12,7 +12,7 @@
     use ConfigurationManager,
         SecurityConfiguration;
 
-    /** @var ConfigurationManager The `ConfigurationManager` responsible for the *Configuration Directory*. */
+    /** @var \ShiftCodesTK\PHPConfigurationFiles\ConfigurationManager The `ConfigurationManager` responsible for the *Configuration Directory*. */
     protected static $directoryManager = null;
     /** @var array The *Local* Configuration Directory. */
     protected static $localDirectory = [];
@@ -157,8 +157,6 @@
         
         // Cache Validation
         if ($scan_page) {
-          /** @var PageConfiguration $cached_configuration */
-          $cached_configuration = self::$directoryManager->getConfigurationValue($pagename);
           $last_cache_modified = $cached_configuration->getLastModificationTime();
           $cache_expiration = (TimestampInt::create_from(
             TimestampInt::TS_TYPE_DATETIME,

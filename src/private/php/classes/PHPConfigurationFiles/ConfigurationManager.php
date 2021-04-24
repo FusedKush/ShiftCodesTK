@@ -200,27 +200,6 @@
      */
     public function regenerateConfigurationFile (): bool {
       $regenerated_file = (function () {
-        try {
-          $default_options = (function () {
-            $default_options = self::DEFAULT_CONFIGURATION_OPTIONS;
-  
-            unset($default_options['version']);
-  
-            return $default_options;
-          })();
-          $options = [];
-  
-          foreach ($default_options as $option => $default_value) {
-            if (\property_exists($this, $option)) {
-              $options[$option] = $this->$option;
-            }
-          }
-  
-          return new ConfigurationFile($options);
-        }
-        catch (\Throwable $exception) {
-          return false;
-        }
         $regenerated_file = $this->contents
                                  ->regenerateConfigurationFile();
   
