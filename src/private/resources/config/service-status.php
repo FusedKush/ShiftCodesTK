@@ -25,14 +25,14 @@ return ShiftCodesTK\PHPConfigurationFiles\ConfigurationFile::__set_state(array(
        'name' => 'service_maintenance',
        'value' => false,
        'isEncrypted' => false,
-       'lastModified' => '175471184924125',
+       'lastModified' => '1619222971734580',
     )),
     'allow_dev_builds' => 
     ShiftCodesTK\PHPConfigurationFiles\ConfigurationProperty::__set_state(array(
        'name' => 'allow_dev_builds',
        'value' => true,
        'isEncrypted' => false,
-       'lastModified' => '175471212515008',
+       'lastModified' => '1619222971736156',
     )),
   ),
    'configurationValueIndex' => 

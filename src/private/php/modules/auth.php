@@ -1,7 +1,8 @@
 <?php
   /** The namespace for authentication mechanisms, such as hashing and generating random identifiers. */
   namespace ShiftCodesTK\Auth;
-  use \ShiftCodesTK\Strings;
+  use \ShiftCodesTK\Strings,
+      \ShiftCodesTK\Timestamps;
 
   /** 
    * @var int The *Unique Token* of the ID will be a *Numeric ID*.
@@ -112,7 +113,7 @@
    */
   function random_unique_id ($total_length = 16, $identifier = '', int $flags = UNIQUE_ID_TYPE_ID|UNIQUE_ID_IDNT_LEFT) {
     $uniqueID = '';
-    $timestamp = (string) tktime();
+    $timestamp = (string) Timestamps\tktime();
     $currentLength = Strings\strlen($timestamp . $identifier);
 
     if ($currentLength <= $total_length) {

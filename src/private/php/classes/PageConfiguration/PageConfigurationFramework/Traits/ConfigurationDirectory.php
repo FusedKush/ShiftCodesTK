@@ -166,8 +166,8 @@
               ->get_as(TimestampInt::TS_TYPE_DATETIME)
               ->add(new \DateInterval('P1W'))
           ));
-  
-          if ($cache_expiration->less(\ShiftCodesTK\Timestamps\tktime())) {
+
+          if ($cache_expiration->less(\ShiftCodesTK\Timestamps\time())) {
             $scanned_configuration = self::scanPageForConfiguration($pagename);
             $scanned_hash = $scanned_configuration->getConfigurationHash();
             $cached_hash = $cached_configuration->getConfigurationHash();
