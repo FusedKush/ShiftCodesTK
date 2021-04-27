@@ -60,16 +60,17 @@
         'requestProtocol'       => 'SERVER_PROTOCOL',
         'requestMethod'         => 'REQUEST_METHOD',
         'resourceURI'           => 'REQUEST_URI',
-        'resourcePath'          => 'SCRIPT_NAME',
         'resourceFilepath'      => 'SCRIPT_FILENAME',
         'requestTime'           => 'REQUEST_TIME_FLOAT'
       ];
       
+      // Basic Properties
       foreach ($basic_properties as $property => $server_property) {
         if (array_key_exists($server_property, $_SERVER)) {
           $this->$property = $_SERVER[$server_property];
         }
       }
+      // Request Headers
       foreach ($_SERVER as $property => $value) {
         if (Strings\substr_pos($property, 'HTTP_') === 0) {
           $property_name = RouterFramework::getStandardizedHeaderName(
@@ -79,7 +80,7 @@
           $this->requestHeaders[$property_name] = $value;
         }
       }
-      
+      // Request Properties
       $this->requestScheme = $_SERVER['REQUEST_SCHEME']
         ?? strtolower(
           preg_replace(
@@ -104,12 +105,15 @@
         }
         return false;
       })();
+      
+      // Resource Properties
       $this->resourceType = defined('ShiftCodesTK\Router\RESOURCE_TYPE')
         ? \ShiftCodesTK\Router\RESOURCE_TYPE
         : RequestInfoConstants::RESOURCE_TYPE_SCRIPT;
-      $this->resourceName = Strings\preg_replace($this->resourceURI, '%^.+?\/(.+$)$%', '$1');
-      $this->resourceFilename = Strings\preg_replace($this->resourcePath, '%^.+?\/(.+$)$%', '$1');
-      
+      $this->resourcePath = Strings\preg_replace($_SERVER['SCRIPT_NAME'], '%\.[\w\d]+$%', '');
+      $this->resourceFilename = Strings\preg_replace($_SERVER['SCRIPT_NAME'], '%^.+?\/(.+$)$%', '$1');
+      $this->resourceName = Strings\preg_replace($this->resourceFilename, '%\.[\w\d]+$%', '');
+  
       return true;
     }
   
