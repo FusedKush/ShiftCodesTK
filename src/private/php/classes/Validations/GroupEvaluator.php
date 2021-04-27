@@ -67,7 +67,7 @@
     /** Get the last result of a *Variable Evaluation*.
      * 
      * @param string|false $property The name of a specific `EvaluationResult` Property to be retrieved. Defaults to **"result"**.
-     * - Valid properties include `variable`, `key`, `result`, `warnings`, and `errors`.
+     * - Valid properties include `variables`, `key`, `result`, `warnings`, and `errors`.
      * - If **false**, the full `EvaluationResult` object will be returned.
      * @return mixed Returns the previous `EvaluationResult`, or a property from it, on success. Returns **null** if an Evaluation has not been performed yet, or if the provided `$property` is invalid.
      */
