@@ -109,8 +109,12 @@
      * Sends the response
      */
     public function send() {
-      response_type('application/json');
-      response_http($this->status_code);
+      $router = \ShiftCodesTK\Router::newRouter();
+      
+      $router->contentType('application/json');
+      $router->setResponseStatus($this->status_code);
+      $router->route(false);
+      
       echo json_encode($this);
     }
     /**

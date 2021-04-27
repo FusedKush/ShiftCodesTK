@@ -20,7 +20,10 @@
   })();
 
   if (!isset($_GET['code'])) {
-    response_redirect('/codes/');
+    $route = \ShiftCodesTK\Router::newRouter();
+    
+    $route->location('/codes/');
+    $route->route();
   }
 ?>
 <!DOCTYPE html>

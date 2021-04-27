@@ -109,20 +109,21 @@
       })();
 
       if (!$result) {
-        if ($handle_failure && $page_configuration->isCurrentPage()) {  
+        if ($handle_failure && $page_configuration->isCurrentPage()) {
+          $router = \ShiftCodesTK\Router::newRouter();
+        
           if ($this->failureToast !== false) {  
             \addSessionToast($this->failureToast);
           }
 
           if ($this->failureRedirect) {
-            \response_redirect(
-              $this->failureRedirect,
-              $this->includeBacklink
-            );
+            $router->location($this->failureRedirect, $this->includeBacklink);
           }
           else {
-            response_http(401, true);
+            $router->setResponseStatus(401);
           }
+          
+          $router->route();
         }
 
         return false;
