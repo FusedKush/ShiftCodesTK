@@ -369,6 +369,7 @@
     date_default_timezone_set('UTC');
   })();
 
+    \ShiftCodesTK\Router\RouterFramework::init();
   // Perform Startup Checks
   (function () {
     // Check Maintenance Status
