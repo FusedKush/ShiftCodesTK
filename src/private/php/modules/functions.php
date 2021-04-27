@@ -966,52 +966,6 @@
     return $removedSessionToast;
   }
 
-  /** Array Functions */
-  /**
-   * Determine if an array has *String*, *Non-Sequential*, or *Non-Zero-Indexed Keys*.
-   * 
-   * @param array $array The array to check.
-   * @return boolean Returns **true** if `$array` is considered an `Associative Array`. Otherwise, returns **false**.
-   */
-  function is_array_associative (array $array) {
-    if (is_array($array)) {
-      $arrayCount = count($array);
-
-      if ($arrayCount > 0) {
-        if (array_keys($array) !== range(0, $arrayCount - 1)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
-  }
-  /**
-   * Get the first value from an array
-   * 
-   * @param array $array The target array. Can be either an `Indexed Array` or an `Associative Array`
-   * @return mixed On success, returns the first value from the `$array`. If `$array` is empty, returns **null**.
-   */
-  function array_value_first (array $array) {
-    foreach ($array as $value) {
-      return $value;
-    }
-
-    return null;
-  }
-  /**
-   * Get the last value from an array
-   * 
-   * @param array $array The target array. Can be either an `Indexed Array` or an `Associative Array`
-   * @return mixed On success, returns the last value from the `$array`. If `$array` is empty, returns **null**.
-   */
-  function array_value_last (array $array) {
-    if (empty($array)) {
-      return null;
-    }
-
-    return current(array_slice($array, -1, 1, true));
-  }
 
   /* Misc Functions */
   /**

@@ -25,6 +25,7 @@
       'functions', 
       'integers',
       'strings', 
+      'arrays',
       'response', 
       'timestamps',
       'validations', 
