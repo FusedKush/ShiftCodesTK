@@ -38,7 +38,10 @@
      * The *Getter* is invoked when the `$location` is omitted, and the *Setter* when it is included.
      *
      * @param string|null $location The *Redirect Location* as a Relative or Absolute URL.
+     * @param bool $include_backlink Indicates if the *Current URL* should be sent with the redirect using the {@see LocationConstants::REDIRECT_BACKLINK}.
+     * Defaults to **false**.
      * @param bool $external Indicates if the `$location` is permitted to be an *External URL*.
+     * Defaults to **false**.
      * @return string|null As a *Getter*, returns the *Redirect Location* as a `string`, or **null** if one has not been set.
      * As a *Setter*, returns the new *Redirect Location* on success, and **null** on failure.
      * @throws \UnexpectedValueException if the `$location` is not a valid *Relative* or *Absolute URL*.
