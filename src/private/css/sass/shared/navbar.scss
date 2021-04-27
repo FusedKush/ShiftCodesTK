@@ -1,186 +1,126 @@
 @import "../partials/_globals";
 
-// Show when loaded
-.navbar-container {
-  @include ready;
-}
 // Navbar / Progress Bar Container
 .navbar-container {
-  z-index: zOrder(navbar);
-  overflow: hidden;
-}
-.navbar {
+  @include ready; 
+  $navbar_height: 64px;
+
   position: fixed;
   @include pull(t, lr);
-  height: 64px;
+  height: $navbar_height;
+  z-index: zOrder(navbar);
 
   &[data-at-top="true"] {
-    &::before        { opacity: 0; }
-
-    .bubble-dynamic { background-color: $bbl-light; }
+    .loader.progress-bar {
+      @include theme(c, bg);
+    }
+    .navbar {
+      &::before {
+        opacity: 0;
+      }
+  
+      .bubble-dynamic {
+        background-color: $bbl-light;
+      }
+    }
   }
   &[data-at-top="false"] {
-    &::before        { opacity: 1; }
-
-    .bubble-dynamic { background-color: $bbl-dark; }
-  }
-
-  &::before {
-    @include fill(true);
-    @include theme(bg);
-
-    transition: background-color 0.4s ease-out, opacity $trd, transform $trd;
-  }
-
-  .content-wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: 64px;
-    @include multiProp(100%, sizing);
-  }
-  // Positioning
-  & {
-    $columns: (
-      left: 1,
-      center: 2,
-      right: 3
-      );
-    $names: (
-      left: start,
-      center: center,
-      right: end
-      );
-
-    @each $columnN, $columnC in $columns {
-      .#{$columnN} {
-        grid-column: $columnC;
-        justify-self: map-get($names, $columnN);
+    .loader.progress-bar {
+      @include multiProp(#fff, colors);
+    }
+    .navbar {
+      background-color: #000;
+      box-shadow: 0 0 10px tpb(0.5);
+  
+      &::before {
+        opacity: 1;
       }
-    }
-  }
-  li {
-    display: inline-block;
-    height: 100%;
-  }
-  .btn {
-    @include flexbox;
-    height: 100%;
-    min-width: 64px;
-    padding: 16px;
-
-    @include mouseState(noHover) {
-      &:not([data-pressed]), &[data-pressed="false"] {
-        .fas         { opacity: 0.75; }
-        .logo::after { opacity: 0; }
-      }
-    }
-    @at-root %btnHover {
-      .fas, .logo::after { opacity: 1; }
-    }
-    @include mouseState(hover) { @extend %btnHover; }
-    &[data-pressed="true"]     { @extend %btnHover; }
-  }
-  .fas { font-size: 26px; }
-  .brand {
-    @include flexbox($type: inline);
-    height: 64px;
-    padding: 12px 16px;
-    font-size: 1.5em;
-
-    @mixin brandBorder($hover, $click) {
-      @if $hover == $click {
-        .name {
-          &::before, &::after { opacity: $hover; }
-        }
-      }
-      @else {
-        .name {
-          &::before { opacity: $hover; }
-          &::after  { opacity: $click; }
-        }
-      }
-    }
-    @include mouseState(noHover) {
-      @include brandBorder(0, 0);
-    }
-    @include mouseState(hover) {
-      @include brandBorder(1, 0);
-    }
-    @include mouseState(click) {
-      @include brandBorder(0, 1);
-    }
-
-    .name {
-      padding: 4px 0;
-
-      &::before, &::after {
-        @include fill(true);
-        border-bottom: bd(2px);
-      }
-      &::before { @include theme(bc); }
-      &::after  { border-color: #fff; }
-
-      .focus { @include theme(c); }
-    }
-  }
-  .logo {
-    @include flexbox;
-    @include bgImg;
-    @include multiProp(26px, sizing);
-
-    &::after {
-      position: absolute;
-      @include multiProp(calc(100% + 4px), sizing);
-      border: bd(2px, #fff);
-      border-radius: 50%;
-      content: "";
-    }
-
-    img { @include multiProp(inherit, sizing); }
-  }
-  .right {
-    .btn {
-      overflow: hidden;
-      padding: 0;
-      
-      img {
-        @include multiProp(36px, sizing);
-        box-shadow: 0 0 5px tpb(0.5);
-        border-radius: 50%;
+  
+      .bubble-dynamic {
+        background-color: $bbl-dark;
       }
     }
   }
 
   // Loader Progress Bar
   .loader.progress-bar {
-    $dur: 0.4s;
+    $loader_bar_duration: 0.4s;
 
     position: absolute;
     height: 3px;
     background-color: transparent;
     opacity: 0;
-    transition: opacity $dur linear;
+    z-index: zOrder(popup);
+    transition: opacity $loader_bar_duration ease-out;
 
     &.is-loading {
       opacity: 1;
       transition: none;
+
+      .progress {
+        transition: width $loader_bar_duration ease, color 0.4s ease;
+      }
     }
 
     .progress {
       @include progressBarShadow(10px);
       transition: none;
-
-      @at-root {
-        // Progress Bar Color
-        $sel: unquote(".loader.progress-bar .progress");
-
-        .navbar {
-          &[data-at-top="true"] #{$sel}  { @include theme(c, bg); }
-          &[data-at-top="false"] #{$sel} { @include multiProp(#fff, colors); }
+      @include theme(c, bg);
+    }
+  }
+  .navbar {
+    height: 100%;
+    width: 100%;
+  
+    &::before {
+      @include fill(true);
+      @include theme(bg);
+  
+      transition: background-color 0.4s ease-out, opacity $trd, transform $trd;
+    }
+  
+    // Navbar
+    .content-wrapper {
+      @include flexbox();
+      @include multiProp(100%, sizing);
+  
+      li {
+        @include flexbox($type: inline);
+        flex: 1;
+        height: 100%;
+  
+        &.left {
+          justify-content: flex-start;
         }
-        // Animations
-        .loader.progress-bar.is-loading .progress {
-          transition: width $dur ease, color 0.4s ease;
+        &.right {
+          justify-content: flex-end;
+        }
+      }
+      .icon {
+        @include flexbox();
+        @include multiProp(60%, sizing);
+        border-radius: 50%;
+
+        .fas {
+          font-size: 2em;
+        }
+      }
+      button, a {
+        @include multiProp($navbar_height, sizing);
+
+        @include mouseState(noHover) {
+          &:not([aria-pressed="true"]) {
+            .fas { 
+              opacity: 0.75; 
+            }
+          }
+        }
+  
+        img {
+          @include multiProp(calc(100% - 2px), sizing);
+          border-radius: inherit;
+          box-sizing: content-box;
+          border: bd(1px, tpb(0.25));
         }
       }
     }
@@ -194,7 +134,6 @@
       @include flexbox($hAlign: none);
       opacity: 1;
       padding: 0;
-      // background-color: tpb(0.25);
       background-color: $site-color-light;
       font-size: 1em;
     }
@@ -204,21 +143,6 @@
       padding: 8px 12px;
       border-radius: 8px 8px 0 0;
     }
-    // .profile-picture {
-    //   @include flexbox;
-    //   @include multiProp(42px, sizing);
-    //   background-color: tpw(0.15);
-    //   border: bd(1.5px, tpw(0.5));
-    //   border-radius: 50%;
-    //   margin-right: 12px;
-    // }
-    // .user_id {
-    //   font-size: 0.75em;
-    //   opacity: 0.5;
-    // }
-    // .user_name, .user_id {
-    //   cursor: text;
-    // }
     li {
       .box-icon {
         display: inline-flex;
@@ -227,40 +151,4 @@
     }
   }
 }
-.dropdown-menu.account-menu {
-  margin: 16px;
 
-  .title {
-    @include flexbox($hAlign: none);
-    padding: 0;
-    background-color: tpb(0.25);
-    opacity: 1;
-    font-size: 1em;
-
-    .profile-card {
-      width: 100%;
-      padding: 12px;
-    }
-  }
-  // .profile-picture {
-  //   @include flexbox;
-  //   @include multiProp(42px, sizing);
-  //   background-color: tpw(0.15);
-  //   border: bd(1.5px, tpw(0.5));
-  //   border-radius: 50%;
-  //   margin-right: 12px;
-  // }
-  // .user_id {
-  //   font-size: 0.75em;
-  //   opacity: 0.5;
-  // }
-  // .user_name, .user_id {
-  //   cursor: text;
-  // }
-  li {
-    .box-icon {
-      display: inline-flex;
-      margin-right: 16px
-    }
-  }
-}

@@ -1,10 +1,10 @@
 <?php
-    $files = [ 'browserify-bundle', 'functions', 'shared-scripts' ];
-    $urls = [];
+  $files = [ 'browserify-bundle', 'functions', 'shared-scripts' ];
+  $urls = [];
 
-    foreach($files as $file) {
-      $urls[] = "/assets/js/$file.js" . \ShiftCodesTK\VERSION_QUERY_STR;
-    }
+  foreach($files as $file) {
+    $urls[] = "/assets/js/$file.js" . \ShiftCodesTK\VERSION_QUERY_STR;
+  }
 ?>
 <?php foreach($urls as $url) : ?>
   <script async src="<?= $url; ?>"></script>

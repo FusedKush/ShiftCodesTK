@@ -7,7 +7,7 @@ function updNav () {
   //   document.body.scrollTop
   // ];
   let pos = ShiftCodesTK.client.scroll;
-  let nav = document.getElementById("navbar");
+  let nav = document.getElementById("navbar_container");
   let themeColor = {
     'setting': getMetaTag('theme-color'),
     'background': getMetaTag('tk-bg-color').content,
@@ -27,7 +27,7 @@ function updNav () {
 function lpbUpdate (progress, interval = false, additionalOptions = {}) {
   let settings = {
     duration: 400,
-    buffer: 100
+    buffer: 200
   };
       settings.total = settings.duration + settings.buffer;
   let options = mergeObj(additionalOptions, { interval: interval, resetOnZero: true });

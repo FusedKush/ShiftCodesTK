@@ -722,7 +722,7 @@ function updateClientCursorProperties (event) {
 // Immediate Functions & Event Listeners
 (function () {
   let interval = setInterval (() => {
-    if (typeof globalFunctionsReady === 'boolean' && typeof node_modules !== 'undefined') {
+    if (typeof globalFunctionsReady !== 'undefined' && typeof node_modules !== 'undefined') {
       clearInterval(interval);
 
       // Local Functions
