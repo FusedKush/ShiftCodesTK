@@ -113,7 +113,7 @@
 
       $secret_key = $instance->secretKey::getKey();
       
-      return $manager->updateConfigurationValue($secret_value, $secret_key);
+      return $manager->updateConfigurationValue($secret_name, $secret_value, $secret_key);
     }
     /** Remove a stored *Secret*
      * 
