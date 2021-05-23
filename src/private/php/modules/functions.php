@@ -1110,7 +1110,7 @@
    * @returns string Returns the specified letter if val is 1 or an empty string if number is any other value
    */
   function checkPlural ($val, $letter = 's') {
-    if ($val != 1) { return 's'; }
+    if ($val != 1) { return $letter; }
     else           { return ''; }
   }
   /**
