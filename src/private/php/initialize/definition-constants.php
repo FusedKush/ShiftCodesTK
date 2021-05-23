@@ -32,6 +32,7 @@
 			$general_paths['cache'] =     "{$base_paths['root']}/cache";
 			$general_paths['logs'] =      "{$base_paths['root']}/logs";
 			$general_paths['temp'] =      "{$base_paths['root']}/tmp";
+			$general_paths['utils'] = 		"{$base_paths['root']}/utils";
 			$general_paths['resources'] = "{$base_paths['private']}/resources";
 
 			foreach ([ 'cache', 'logs', 'temp' ] as $directory) {
@@ -50,6 +51,7 @@
 			 * | `cache`      | The directory where *Cached Resources* are stored.          |
 			 * | `logs`       | The directory where various *Site Logs* are stored.         |
 			 * | `temp`       | The directory where *Temporary Files* are stored.           |
+			 * | `utils`			| Utility scripts and resources to aid in development. 				|
 			 * | `resources`  | The directory where general *Site Resources* are stored.    |
 			 */
 			define("ShiftCodesTK\Paths\GENERAL_PATHS", $general_paths);

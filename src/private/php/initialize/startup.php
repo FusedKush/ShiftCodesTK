@@ -8,7 +8,7 @@
       ShiftCodesTK\Paths,
       ShiftCodesTK\Strings;
 
-  // Check for `define-secrets.php` & `define-config.php` definition files
+  // Check for `php-defs`
   (function () {
     $files = [
       'define-secrets',
@@ -16,7 +16,7 @@
     ];
 
     foreach ($files as $file) {
-      $filepath = Paths\GENERAL_PATHS['resources'] . "/build-tools/{$file}";
+      $filepath = Paths\GENERAL_PATHS['utils'] . "/php-defs/{$file}";
   
       if (file_exists("{$filepath}.php")) {
         include("{$filepath}.php");

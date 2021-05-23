@@ -2,28 +2,28 @@
 .*
 .*/**/*
 *.code-workspace
-node_modules/
-tools/
-vendor/
-phive.phar
 cache/
 logs/
-tmp/
+node_modules/
+phive.phar
 src/private/img/assets/*
 src/private/img/users/
-src/private/resources/build-tools/**/*
 src/public/**/*.php
 src/public/dev/docs/
 src/public/assets/css
 src/public/assets/js
+tmp/
+tools/
+utils/php-defs/**/*
+vendor/
 
 # Allow
+!.cpanel.yml
 !.htaccess
 !.node-version
-!.cpanel.yml
 !.phpdoc-md
 !src/private/img/assets/rewards
-!src/private/resources/build-tools/**/*.template
 !src/public/initialize.php
 !src/public/api/
 !src/public/assets/**/*.php
+!utils/php-defs/**/*.template
