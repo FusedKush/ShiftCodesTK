@@ -165,9 +165,7 @@
         if (!$this->required) {
           $result->warnings[] = errorObject($validationIssue, $key, $validationMessage, $providedParameter, $this->default_value);
 
-          if ($this->default_value !== null) {
-            $param = $this->default_value;
-          }
+          $param = $this->default_value;
         }
         else {
           $result->result = false;
