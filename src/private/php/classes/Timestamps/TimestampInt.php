@@ -52,10 +52,20 @@
         if (is_int($var) || is_string($var) && is_numeric($var)) {
           $baseFullDigits = Strings\strlen(self::get_current_timestamp()->get_int());
           $varDigits = Strings\strlen($var);
-
-          return ($baseFullDigits - $varDigits) <= 1
-                 ? 6
-                 : 3;
+          $digitDiff = $baseFullDigits - $varDigits;
+          
+          if ($digitDiff === 0) {
+            return 6;
+          }
+          else if (($varDigits * 1.5) > $baseFullDigits) {
+            return 3;
+          }
+          
+          return 0;
+          
+//          return ($baseFullDigits - $varDigits) <= 1
+//                 ? 6
+//                 : 3;
         }
         else {
           $invalidTypeError();
@@ -213,14 +223,17 @@
     /** Set the *Timestamp Integer* of the `TimestampInt`.
      * 
      * @param string|int $timestamp The timestamp to be set. Must be an `int` or *String `Int`*.
-     * @param int $precision If it has already been determined, the *Millisecond Precision* of the `$timestamp`. This property should be omitted if the *Timestamp Precision* should automatically be determined.
+     * @param int $precision If it has already been determined, the *Millisecond Precision* of the `$timestamp`.
+     * This property should be omitted if the *Timestamp Precision* should automatically be determined.
      * @return bool Returns **true** on success and **false** on failure.
      */
     public function set_timestamp ($timestamp, $precision = null) {
       $precisionValue = $precision ?? self::get_timestamp_precision(self::TS_TYPE_INT, $timestamp);
 
       if ($precisionValue !== false) {
-        if ($precisionValue === 3 || $precisionValue === 6) {
+        $allowed_precisions = [ 0, 3, 6 ];
+      
+        if (in_array($precision, $allowed_precisions)) {
           $result = $this->set_int($timestamp);
   
           if ($result !== false) {
