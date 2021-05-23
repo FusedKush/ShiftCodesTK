@@ -233,10 +233,10 @@ const tasks = (function () {
             loadMaps: true
           },
           write: function (sourceDir, destDir, filename) {
-            let path = plugins.path.relative(`${destDir}`, `${files.js.sourcemaps}/${filename}`);
+            let path = plugins.path.relative(destDir, `${destDir}/sourcemaps/${filename}`);
             let options = {
               includeContent: false,
-              sourceRoot: plugins.path.relative(files.js.sourcemaps, sourceDir),
+              sourceRoot: plugins.path.relative(`${destDir}/sourcemaps`, sourceDir),
               destPath: destDir
             };
   
@@ -259,11 +259,11 @@ const tasks = (function () {
             const destDir = files.js.generated;
 
             return plugins.js.browserify(
-              `${files.root.rootdir}/browserify.js`,
-                {
-                  standalone: 'node_modules'
-                }
-            )
+                `${files.root.rootdir}/browserify.js`,
+                  {
+                    standalone: 'node_modules'
+                  }
+              )
               .bundle()
               .pipe(plugins.vinyl_source(`browserify-bundle.js`))
               .pipe(plugins.vinyl_buffer())
