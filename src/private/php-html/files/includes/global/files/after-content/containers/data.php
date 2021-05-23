@@ -20,9 +20,9 @@
       <div class="server-side-toast">
         <?= json_encode($toast, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK); ?>
       </div>
-    <?php endforeach; ?>
-    <?php
-      $_SESSION['toasts'] = [];
+    <?php 
+      endforeach; 
+      removeSessionToast(true);
     ?>
   </div>
 </div>

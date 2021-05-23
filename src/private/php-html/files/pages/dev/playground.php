@@ -17,17 +17,17 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/sharedStyles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
     <!-- Local Styles -->
     <link href="/assets/css/local/dev/playground.css<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!--// Markup \\-->
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
-  <body data-theme="main">
+  <body data-theme="<?= array_rand(\ShiftCodesTK\THEME_COLORS); ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/beforeContent.php'); ?>
+    <?php include('global/before-content.php'); ?>
     <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <div class="multi-view" data-view="playground-categories" data-view-type="tabs">
@@ -254,11 +254,11 @@
       </div>
     </template>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/afterContent.php'); ?>
+    <?php include('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Local Scripts -->
     <script async src="/assets/js/local/dev/playground.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
     <!-- Shared Scripts -->
-    <?php include_once('global/sharedScripts.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
   </body>
 </html>

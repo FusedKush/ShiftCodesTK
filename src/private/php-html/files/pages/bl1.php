@@ -22,16 +22,16 @@
   <head>
     <meta charset="utf-8">
 
-    <?php include_once('global/sharedStyles.php'); ?>
+    <?php include_once('global/shared-styles.php'); ?>
     <?php include_once('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
-    <?php include_once('global/beforeContent.php'); ?>
+    <?php include_once('global/before-content.php'); ?>
     <?php include_once('global/main-header.php'); ?>
 
     <?php include_once('local/shift.php'); ?>
 
-    <?php include_once('global/afterContent.php'); ?>
-    <?php include_once('global/sharedScripts.php'); ?>
+    <?php include_once('global/after-content.php'); ?>
+    <?php include_once('global/shared-scripts.php'); ?>
   </body>
 </html>

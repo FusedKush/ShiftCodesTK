@@ -6,7 +6,7 @@
   <div class="primary content-wrapper">
     <div class="social">
       <?php
-        $footerLinks = [
+        $__footerLinks = [
           'facebook' => [
             'classes' => [ 'wrapped' ],
             'href'    => 'https://www.facebook.com/ShiftCodesTK',
@@ -28,7 +28,7 @@
         ];
       ?>
 
-      <?php foreach ($footerLinks as $link => $props) : ?>
+      <?php foreach ($__footerLinks as $link => $props) : ?>
         <div class="layer-container">
           <a
             class="external-link-icon layer-target <?= " {$link}"; ?>"
@@ -42,11 +42,11 @@
             <?= $props['tooltip']; ?>
           </div>
         </div>
-      <?php endforeach; ?>
+      <?php 
+        endforeach; 
+        unset($__footerLinks);
+      ?>
       <!-- End of Footer Links Loop -->
-      <!-- <a class="external-link-icon facebook" href="https://www.facebook.com/ShiftCodesTK" rel="external noopener" target="_blank" title="ShiftCodesTK on Facebook (External Link)" aria-label="ShiftCodesTK on Facebook (External Link)"><span class="external fas fa-external-link-square-alt"></span><span class="icon fab fa-facebook-square"></span></a>
-      <a class="external-link-icon twitter" href="https://twitter.com/ShiftCodesTK" rel="external noopener" target="_blank" title="ShiftCodesTK on Twitter (External Link)" aria-label="ShiftCodesTK on Twitter (External Link)"><span class="external fas fa-external-link-square-alt"></span><span class="icon fab fa-twitter-square"></span></a>
-      <a class="external-link-icon report" href="https://github.com/FusedKush/ShiftCodesTK/issues" rel="external noopener" target="_blank" title="Report an Issue (External Link)" aria-label="Report an Issue (External Link)"><span class="external fas fa-external-link-square-alt"></span><span class="icon fas fa-bug"></span></a> -->
     </div>
     <div class="info">
       <a class="credit" href="/credits">
@@ -56,7 +56,7 @@
         by 
         <strong>Zach Vaughan</strong>
       </a>
-      <a class="version" href="/updates" aria-label="">
+      <a class="version" href="#/updates">
         <?php
           $last_commit = \ShiftCodesTK\BUILD_INFORMATION['last_commit']['build'];
           $site_version = ShiftCodesTK\Config::getConfigurationValue('site_version');

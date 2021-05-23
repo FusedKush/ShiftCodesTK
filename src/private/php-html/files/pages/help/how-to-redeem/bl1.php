@@ -18,7 +18,7 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/sharedStyles.php'); ?>
+    <?php include_once('global/shared-styles.php'); ?>
     <!-- Local Styles -->
     <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
     <!--// Markup \\-->
@@ -26,7 +26,7 @@
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/beforeContent.php'); ?>
+    <?php include_once('global/before-content.php'); ?>
     <!-- Main Header -->
     <?php include_once('global/main-header.php'); ?>
     <!-- Main Content -->
@@ -46,10 +46,10 @@
     <!-- Support Footer -->
     <?php include_once('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/afterContent.php'); ?>
+    <?php include_once('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('global/sharedScripts.php'); ?>
+    <?php include_once('global/shared-scripts.php'); ?>
     <!-- local Scripts -->
     <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>
