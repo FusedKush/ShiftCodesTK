@@ -159,7 +159,7 @@
         </div>
       EOT;
 
-      $template = Strings\collapse($template);
+      $template = \trim($template);
 
       /** @var string Represents a *Form Alert Element*, used for communicating issues with the form. */
       define("ShiftCodesTK\Forms\ALERT_TEMPLATE", $template);
