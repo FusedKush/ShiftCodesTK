@@ -6,7 +6,8 @@
   use ShiftCodesTK\Config,
       ShiftCodesTK\PHPConfigurationFiles,
       ShiftCodesTK\Paths,
-      ShiftCodesTK\Strings;
+      ShiftCodesTK\Strings, 
+      ShiftCodesTK\Router;
 
   // Check for `php-defs`
   (function () {
@@ -348,8 +349,8 @@
       define('ShiftCodesTK\BUILD_INFORMATION', $build_info);
     })();
     /**
-   * @var string The *Version Number Query String* to be used when loading resources.
-   */
+     * @var string The *Version Number Query String* to be used when loading resources.
+     */
     define("ShiftCodesTK\VERSION_QUERY_STR", "?v=" . Config::getConfigurationValue('site_version'));
   })();
 
@@ -368,83 +369,7 @@
 
     date_default_timezone_set('UTC');
   })();
-
-    \ShiftCodesTK\Router\RouterFramework::init();
-  // Perform Startup Checks
-  (function () {
-    // Check Maintenance Status
-    if (Config::getConfigurationValue('site_maintenance')) {
-      response_http(-4, true);
-    }
-
-    // Check that cookies are enabled
-    (function () {
-      /**
-       * The names of the testing cookies and query string parameters
-       */
-      $vars = [
-        'test'    => 'co_t',
-        'failed'  => 'co_f',
-        'checked' => 'co_c',
-      ];
   
-      /**
-       * Retrieve the URL of the current page for redirects
-       * 
-       * @param boolean $queryParam The query string parameter to append to the URL
-       * @return string Returns the updated URL of the current page
-       */
-      $getURL = function ($queryParam) use ($vars) {
-        $url = $_SERVER['SCRIPT_NAME'];
-  
-        // Remove filename
-        $url = str_replace('.php', '', $url);
-  
-        // Add query string parameter
-        if (strpos($url, "{$queryParam}=1") === false) {
-          foreach ($vars as $type => $var) {
-            $url = preg_replace("/(\?|\&)$var=1/", "", $url);
-          } 
-  
-          $url .= strpos($url, '?') === false ? '?' : '&';
-          $url .= "{$queryParam}=1";
-        }
-  
-        return $url;
-      };
-  
-      // Perform cookie test
-      if (!isset($_GET[$vars['checked']])) {
-        if (!$_COOKIE || isset($_GET[$vars['test']]) && $_GET[$vars['test']] == 1) {
-          updateCookie($vars['test'], 1, [ 'expires' => 'PT10M' ]);
-  
-          // Redirect required before testing cookie
-          if (!isset($_GET[$vars['test']]) && !isset($_GET[$vars['failed']])) {
-            response_redirect($getURL($vars['test']));
-          }
-          // Cookies are disabled
-          else if (isset($_GET[$vars['failed']]) && $_GET[$vars['failed']] == 1) {
-            response_http(-6, true);
-          }
-          // Test is cookie was set
-          else {
-            if (getCookie($vars['test'])) {
-              deleteCookie($vars['test']);
-              response_redirect($getURL($vars['checked']));
-            }
-            // Cookies are disabled
-            else {
-              response_redirect($getURL($vars['failed']));
-            }
-          }
-        }
-        else if ($_COOKIE && isset($_GET[$vars['failed']]) && $_GET[$vars['failed']] == 1) {
-          response_redirect($getURL($vars['checked']));
-        }
-      }
-    })();
-  })();
-
   // Initialization Tasks
   (function () {
     GLOBAL $_mysqli;
@@ -457,7 +382,9 @@
      * The ShiftCodesTK Database and all associated functionality
      */
     $_mysqli = new ShiftCodesTKDatabase_Old();
-    
+
+    // Initialization Methods
+    \ShiftCodesTK\Router\RouterFramework::init();
     ShiftCodes::getInstance();
     \ShiftCodesTK\Users\init();
     \ShiftCodesTK\PageConfiguration\PageConfigurationFramework\Framework::init();
@@ -466,5 +393,99 @@
       $_SESSION['timestamp'] = time();
       get_shift_stats();
     }
+  })();
+
+  // Perform Startup Checks
+  (function () {
+    $router = Router::newRouter();
+
+    // Check Service Status
+    if (Config::getConfigurationValue('service_status.service_maintenance')) {
+      $router->setResponseStatus(-4);
+      $router->route();
+    }
+    else if (!\ShiftCodesTK\BUILD_INFORMATION['branch']['is_prod_branch'] && !Config::getConfigurationValue('service_status.allow_dev_builds')) {
+      $router->setResponseStatus(403, 'Dev Builds are not permitted.');
+      $router->location('https://' . Router::SITE_DOMAIN, false, true);
+      $router->route();
+    }
+
+    // Check that cookies are enabled
+    (function () use (&$router) {
+      /**
+       * The names of the testing cookies and query string parameters
+       */
+      $vars = [
+        'test'    => 'co_t',
+        'failed'  => 'co_f',
+        'checked' => 'co_c',
+      ];
+      $query_params = $router->getRequestProperties()
+        ->getRequestData('GET');
+      $cookies = $router->getRequestProperties()
+        ->getRequestData('COOKIE');
+  
+      /**
+       * Retrieve the URL of the current page for redirects
+       * 
+       * @param boolean $queryParam The query string parameter to append to the URL
+       * @return string Returns the updated URL of the current page
+       */
+      $getURL = function ($queryParam) use ($vars, &$router) {
+        $url = $router->getRequestProperties()
+          ->getRequestInfo('resourceURI');
+  
+        // Add query string parameter
+        if (strpos($url, "{$queryParam}=1") === false) {
+          foreach ($vars as $type => $var) {
+            $url = preg_replace("/(\?|\&)$var=1/", "", $url);
+          }
+  
+          $url .= strpos($url, '?') === false ? '?' : '&';
+          $url .= "{$queryParam}=1";
+        }
+  
+        return $url;
+      };
+  
+      // Perform cookie test
+      if (!isset($query_params[$vars['checked']])) {
+        if (!$cookies || isset($query_params[$vars['test']]) && $query_params[$vars['test']] == 1) {
+          updateCookie(
+            $vars['test'],
+            1,
+            [ 'expires' => 'PT10M' ]
+          );
+  
+          // Redirect required before testing cookie
+          if (!isset($query_params[$vars['test']]) && !isset($query_params[$vars['failed']])) {
+            $router->location($getURL($vars['test']));
+            $router->route();
+          }
+          // Cookies are disabled
+          else if (isset($query_params[$vars['failed']]) && $query_params[$vars['failed']] == 1) {
+            $router->setResponseStatus(-5);
+            $router->route();
+          }
+          // Test is cookie was set
+          else {
+            if (getCookie($vars['test'])) {
+              deleteCookie($vars['test']);
+              $router->location($getURL($vars['checked']));
+            }
+            // Cookies are disabled
+            else {
+              $router->location($getURL($vars['failed']));
+            }
+            
+            $router->route();
+          }
+        }
+        else if (isset($query_params[$vars['failed']]) && $query_params[$vars['failed']] == 1) {
+          $router->location($getURL($vars['checked']));
+          $router->route();
+        }
+      }
+    })();
   })();
 ?>
