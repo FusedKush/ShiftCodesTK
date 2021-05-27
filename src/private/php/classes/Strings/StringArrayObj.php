@@ -5,266 +5,67 @@
    * 
    * - The array can be retrieved via any of the following methods:
    * - - Invoking the `StringArrayObj` like a `function`.
-   * - - Invoking the `get_array()` method.
+   * - - Invoking the {@see StringArrayObj::getArray()} method.
    **/
-  class StringArrayObj implements StringInterface {
-    use SupportChecker;
+  class StringArrayObj implements Interfaces\StringInterface {
+    use Traits\StringMode,
+        Traits\EditingMode,
+        Traits\SupportTester;
 
-    /**  @var int When *modifying* the `array`, updates the `array` and returns the `StringArrayObj` for method chaining. This is the default behavior. 
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_CHAIN = 1;
-    /**  @var int When *modifying* the `array`, updates and returns the `array`.
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_STANDARD = 2;
-    /**  @var int When *modifying* the `array`, makes a *copy* of the `array` before updating and returning it. 
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_COPY = 4;
-
-    /** @var bool Indicates if the full `$array` should be returned when calling *Query Methods*, instead of just the `string_array`. Non-string items return **null**. */
-    private $return_full_array = false;
-    /** @var int An `EDITING_MODE_` class constant indicating the *Editing Mode* to be used when *modifying* the `$array`. */
-    private $editing_mode = self::EDITING_MODE_CHAIN;
-    /** @var int A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$array` strings. */
-    private $string_mode = self::STRING_MODE_AUTO;
+    /** @var bool Indicates if the full `$array` should be returned when calling *Query Methods*, instead of just the `stringArray`. Non-string items return **null**. */
+    private $returnFullArray = false;
     /** @var bool Indicates if errors thrown by `$array` strings should be output. */
     private $verbose = false;
 
-    /** @var array 
-     * An `array` made up of `StringObj`'s for each of the string values of the `$array`.
-     * - You can use `set_string_array()` ({@see set_string_array()}) to update this property.
-     **/
-    private $string_array = [];
-    /** @var bool Indicates if `$string_array` has more recent data than `$array`. */
-    private $has_new_data = false;
+    /** @var StringObj[] An `array` made up of `StringObj`'s for each of the string values of the `$array`. **/
+    private $stringArray = [];
+    /** @var bool Indicates if `$stringArray` has more recent data than `$array`. */
+    private $hasNewData = false;
 
-    /** @var array 
-     * The original, unmodified `$array`.
-     * - You can use `get_array()` ({@see get_array()}) with the `$return_original` argument set to **true** to retrieve this property.
-     * - You can use `set_array()` ({@see set_array()}) to set or update this property.
-     **/
-    protected $original_array = [];
-    /** @var array 
-     * The current array, after any modifications.
-     * - You can use `get_array()` ({@see get_array()}) to retrieve this property.
-     * - You can use `set_array()` ({@see set_array()}) to set or update this property.
-     **/
+    /** @var array The original, unmodified `$array`. **/
+    protected $originalArray = [];
+    /** @var array The current array, after any modifications. **/
     protected $array = [];
-    
-    /** Methods */
-    /** Retrieve a property from the `StringArrayObj`
+
+    /** Change the behavior preferences of the `StringArrayObj`
      * 
-     * @param string $property The name of the property to retrieve 
-     * @return mixed Returns the value of the property on success. Returns **null** if the property does not exist.
+     * @param string $option The option being changed.
+     * - Valid options include `returnFullArray` & `verbose`.
+     * @param bool $preference The new preference of the `$option`.
+     * @return bool Returns `true` on success. 
+     * @throws \UnexpectedValueException if the `$option` is invalid.
      */
-    // public function __get ($property) {
-    //   if (get_object_vars($this)[$property] ?? false) {
-    //     $propertyValue = $this->$property;
-
-    //     if ($property == 'array') {
-    //       $stringArrayValues = (function () {
-    //         $array = $this->string_array;
-
-    //         \array_walk_recursive($array, function (&$arr_value, $arr_key) {
-    //           $arr_value = $arr_value->get_string();
-    //         });
-
-    //         return $array;
-    //       })();
-    //       $this->array = \array_replace_recursive($this->array, $stringArrayValues);
-    //     }
-
-    //     return $this->$property;
-    //   }
-
-    //   return null;
-    // }
-    /** Set a property from the `StringArrayObj`
-     * 
-     * @param string $property The name of the property to set.
-     * @param mixed $value The new value of the property.
-     * @return mixed Returns the new value of the property on success. Returns **null** if the property does not exist, or if it cannot be set.
-     * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$value` is not a valid value.
-     */
-    // public function __set ($property, $value) {
-    //   if (isset($this->$property)) {
-    //     $editableProperties = [
-    //       'array',
-    //       'return_full_array',
-    //       'editing_mode',
-    //       'string_mode',
-    //       'verbose'
-    //     ];
-
-    //     if (array_search($property, $editableProperties) !== false) {
-    //       if ($property == 'array') {
-    //         $constraints = new \ValidationProperties([
-    //           'type'     => 'array'
-    //         ]);
-
-    //         if (!$constraints->check_parameter($value)['valid']) {
-    //           throw new \UnexpectedValueException("\"{$value}\" is not a valid array.");
-    //         }
-
-    //         $this->array = $value;
-    //         $this->original_array = $this->array;
-    //         $this->string_array = (function () {
-    //           $filterArray = function ($array) use (&$filterArray) {
-    //             $resultArray = $array;
-
-    //             foreach ($resultArray as $arr_key => &$arr_value) {
-    //               $keepItem = (function () use (&$arr_value, &$filterArray) {
-    //                 if (\is_array($arr_value)) {
-    //                   $arr_value = $filterArray($arr_value);
-    //                   return true;
-    //                 }
-    
-    //                 return is_string($arr_value);
-    //               })();
-
-    //               if ($keepItem) {
-    //                 if (is_string($arr_value)) {
-    //                   $arr_value = new StringObj($arr_value, $this->editing_mode, $this->string_mode);
-    //                 }
-    //               }
-    //               else {
-    //                 unset($resultArray[$arr_key]);
-    //               }
-    //             }
-
-    //             return $resultArray;
-    //           };
-
-    //           return $filterArray($this->array);
-    //         })();
-    //       }
-    //       else if ($property == 'editing_mode') {
-    //         $constraints = new \ValidationProperties([
-    //           'required'    => true,
-    //           'type'        => 'integer',
-    //           'validations' => [
-    //             'match'        => [
-    //               self::EDITING_MODE_CHAIN,
-    //               self::EDITING_MODE_STANDARD,
-    //               self::EDITING_MODE_COPY
-    //             ]
-    //           ]
-    //         ]);
-
-    //         if (!$constraints->check_parameter($value)['valid']) {
-    //           throw new \UnexpectedValueException("\"{$value}\" is not a valid Editing Mode.");
-    //         }
-
-    //         $this->editing_mode = $value;
-    //       }
-    //       else if ($property == 'string_mode') {
-    //         $constraints = new \ValidationProperties([
-    //           'required'    => true,
-    //           'type'        => 'integer',
-    //           'validations' => [
-    //             'match'        => [
-    //               self::STRING_MODE_AUTO,
-    //               self::STRING_MODE_STRING,
-    //               self::STRING_MODE_MB_STRING
-    //             ]
-    //           ]
-    //         ]);
-
-    //         if (!$constraints->check_parameter($value)['valid']) {
-    //           throw new \UnexpectedValueException("\"{$value}\" is not a valid String Mode.");
-    //         }
-
-    //         $this->string_mode = $value;
-    //       }
-    //       else {
-    //         $this->$property = $value;
-    //       }
-
-    //       return $this->$property;
-    //     }
-    //   }
-
-    //   return null;
-    // }
-    /** Invoking the `StringArrayObj` returns the `$array`.
-     * 
-     * @return string Returns the value of the `$array`.
-     */
-    public function __invoke () {
-      return $this->get_array();
-    }
-    /** Initialize a new `StringArrayObj` 
-     * 
-     * @param string $array The array to be used.
-     * @param array $options An `Associative Array` of options to be passed to the `StringArrayObj`:
-     * - `bool $return_full_array` Return the full `$array` when calling *Query Methods* on the array, instead of just the `string_array`. Non-string items return **null**.
-     * - - This does not affect any of the `MANIPULATION_METHODS`, or any methods that return a `bool`.
-     * - `int $editing_mode` An `EDITING_MODE_` class constant indicating the *Editing Mode* to be used when *modifying* the `$array`.
-     * - - Methods that modify the array can be found in the `MANIPULATION_METHODS` class constant.
-     * 
-     * | Mode | Description |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Updates the `string` and returns the `StringArrayObj` for method chaining. This is the default behavior |
-     * | `EDITING_MODE_STANDARD` | Updates and returns the `array` |
-     * | `EDITING_MODE_COPY` | Makes a *copy* of the `array` before updating and returning it. |
-     * - - This option affects the behavior of any methods that manipulate the array strings.
-     * `int $string_mode` A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$array` strings.
-     * 
-     * | Mode | Description |
-     * | --- | --- |
-     * | `STRING_MODE_AUTO` | Attempts to detect the appropriate mode to use for all of the strings. |
-     * | `STRING_MODE_STRING` | Indicates that *String Mode* should be used for all of the strings. |
-     * | `STRING_MODE_MB_STRING` | Indicates that *Multi-Byte String Mode* should be used for all of the strings. |
-     * - `bool $verbose` Indicates if errors thrown by `$array` strings should be output.
-     * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$array` is not a *array* or if `$string_mode` is not a valid *String Mode*.
-     */
-    public function __construct (array $array, array $options = []) {
-      $optionsList = [ 
-        'return_full_array', 
-        'editing_mode', 
-        'string_mode', 
-        'verbose' 
+    private function changePreference (string $option, bool $preference): bool {
+      $option_list = [
+        'returnFullArray',
+        'verbose'
       ];
-      
-      foreach ($optionsList as $option) {
-        $optionValue = $options[$option] ?? null;
 
-        if (isset($optionValue)) {
-          // $this->__set($option, $optionValue);
-          $this->$option = $optionValue;
-        }
+      if (!in_array($option, $option_list, true)) {
+        throw new \UnexpectedValueException("\"{$option}\" is not a valid option.");
       }
 
-      // $this->__set('array', $array);
-      $this->set_array($array);
-
-      return $this;
+      $this->$option = $preference;
+      return true;
     }
-
-    /** Set or Update the `string_array` of the array.
+    
+    /** Set or Update the `stringArray` of the array.
      * 
      * @param array $array The updated array.
-     * @return bool Returns **true** on success and **false** on failure.
-     * @throws UnexpectedValueException if `$array` is not an `array`.
+     * @return bool Returns `true` on success and `false` on failure.
      */
-    private function set_string_array (array $array) {
-      if (!is_array($array)) {
-        throw new \UnexpectedValueException("\"{$array}\" is not a valid array.");
-      }
-
-      $filterArray = function ($filter_array) use (&$filterArray) {
+    private function setStringArray (array $array): bool {
+      $filter_array = function ($arr) use (&$filter_array) {
         $result = [];
 
-        foreach ($filter_array as $arr_key => $arr_value) {
-          $keepItem = (function () use ($arr_value, $arr_key, &$filterArray, &$result) {
+        foreach ($arr as $arr_key => $arr_value) {
+          $keep_item = (function () use ($arr_value, $arr_key, &$filter_array, &$result) {
             if (\is_array($arr_value)) {
               if (!empty($arr_value)) {
-                $filteredArray = $filterArray($arr_value);
+                $filtered_arr = $filter_array($arr_value);
 
-                if (!empty($filteredArray)) {
-                  $result[$arr_key] = $filteredArray;
+                if (!empty($filtered_arr)) {
+                  $result[$arr_key] = $filtered_arr;
                   return true;
                 }
               }
@@ -273,9 +74,13 @@
             return is_string($arr_value);
           })();
 
-          if ($keepItem) {
+          if ($keep_item) {
             if (is_string($arr_value)) {
-              $result[$arr_key] = new StringObj($arr_value, $this->editing_mode, $this->string_mode);
+              $result[$arr_key] = new StringObj(
+                $arr_value, 
+                $this->editingMode, 
+                $this->getStringMode()
+              );
             }
           }
           else {
@@ -288,21 +93,21 @@
         return $result;
       };
 
-      $this->string_array = $filterArray($array);
+      $this->stringArray = $filter_array($array);
 
       return true;
     }
-    /** Get the `string_array` of the array.
+    /** Get the {@see StringArrayObj::stringArray} of the array.
      * 
      * @param bool $return_objects Indicates if the `StringObj` objects for each string are to be returned instead of the strings themselves.
-     * @return array Returns the `string_array`, the values determined by `$return_objects`.
+     * @return array Returns the `$stringArray`, the values determined by `$return_objects`.
      */
-    private function get_string_array ($return_objects = false) {
-      $array = $this->string_array;
+    private function getStringArray ($return_objects = false): array {
+      $array = $this->stringArray;
 
       if (!$return_objects) {
         \array_walk_recursive($array, function (&$arr_value, $arr_key) {
-          $arr_value = $arr_value->get_string();
+          $arr_value = $arr_value->getString();
         });
         unset($arr_value);
       }
@@ -311,56 +116,55 @@
     }
     /** Execute a *`StringObj` Method* on the `$array` strings.
      * 
-     * @param string $method The name of the `StringObj` *Method* being executed. Only *public* `StringObj` methods can be called.
-     * @param bool $concat_results Indicates if the results should be *Concatenated*, returning a single result. Only valie for *Query Methods* that return an `int` or `bool`.
+     * @param string $method The name of the `StringObj` *Method* being executed. 
+     * Only *public* `StringObj` methods can be called.
+     * @param bool $concat_results Indicates if the results should be *Concatenated*, returning a single result. 
+     * Only valid for *Query Methods* that return an `int` or `bool`.
      * @param mixed $args The `$method` *Arguments*.
-     * @return mixed Returns the results of the `$method`. 
-     * 
-     * | Method Type | `$concat_results` | Return Value |
-     * | --- | --- | --- |
-     * | Query | **false** | Returns an `Associative Array` representing the results of each `StringObj` method query. |
-     * | Query | **true** | Returns an `int` or `bool` representing the result of all `StringObj` method queries. |
-     * | Manipulation | --- | Returns the `StringArrayObj` if the *Editing Mode* is `EDITING_MODE_CHAIN`. Otherwise, returns the updated `array`. |
+     * @return mixed Returns the results of invoking the `$method` on success. 
      * @throws \UnexpectedValueException if `$method` is an invalid or blacklisted method.
      */
-    private function exec_on_strings ($method, $concat_results = false, ...$args) {
+    private function execOnStrings ($method, $concat_results = false, ...$args) {
       $blacklist = [];
+      $editing_mode = $this->getEditingMode();
+      $result_value = null;
 
       if ($concat_results) {
-        $resultValue = 0;
+        $result_value = 0;
       }
 
-      $processArray = function ($array) use (&$processArray, $method, $concat_results, $args, &$resultValue) {
+      $process_array = function ($array) use (&$process_array, $method, $concat_results, $args, &$result_value) {
         $result = [];
 
         foreach ($array as $arr_key => $arr_value) {
           if (is_array($arr_value)) {
-            $processedValue = $processArray($arr_value);
+            $processed_value = $process_array($arr_value);
 
-            if ($concat_results && $processedValue === false) {
+            if ($concat_results && $processed_value === false) {
               return false;
             }
             
-            $result[$arr_key] = $processedValue;
+            $result[$arr_key] = $processed_value;
             continue;
           }
 
           try {
-            if (!is_callable($arr_value)) {
-              // var_dump($array, $this->string_array);
+            if (!($arr_value instanceof StringObj)) {
+              continue;
             }
+
             $operationResult = $arr_value->$method(...$args);
 
             if ($concat_results) {
               if (is_bool($operationResult)) {
-                $resultValue = $operationResult;
+                $result_value = $operationResult;
 
                 if (!$operationResult) {
                   return false;
                 }
               }
               else if (is_int($operationResult)) {
-                $resultValue += $operationResult;
+                $result_value += $operationResult;
               }
             }
             else {
@@ -379,10 +183,11 @@
             continue;
           }
         }
+
         unset($arr_value);
 
         if ($concat_results) {
-          return $resultValue;
+          return $result_value;
         }
 
         return $result;
@@ -395,308 +200,326 @@
         throw new \UnexpectedValueException("\"{$method}\" cannot be called.");
       };
 
-      $results = $processArray($this->string_array);
+      $results = $process_array($this->stringArray);
 
       if (array_search($method, self::MANIPULATION_METHODS) !== false) {
-        if ($this->editing_mode != self::EDITING_MODE_COPY) {
-          $this->has_new_data = true;
+        if ($editing_mode != self::EDITING_MODE_COPY) {
+          $this->hasNewData = true;
         }
   
-        switch ($this->editing_mode) {
+        switch ($editing_mode) {
           case self::EDITING_MODE_CHAIN:
             return $this;
           case self::EDITING_MODE_STANDARD:
-            if (!$this->return_full_array) {
+            if (!$this->returnFullArray) {
               return $results;
             }
             else {
-              return $this->get_array();
+              return $this->getArray();
             }
           case self::EDITING_MODE_COPY:
             return $results;
         }
       }
-      else if ($concat_results || !$this->return_full_array) {
+      else if ($concat_results || !$this->returnFullArray) {
         return $results;
       }
-      else if ($this->return_full_array) {
-        $fullArray = $this->get_array();
+      else if ($this->returnFullArray) {
+        $full_array = $this->getArray();
 
-        array_walk_recursive($fullArray, function (&$arr_value, $arr_key) {
+        array_walk_recursive($full_array, function (&$arr_value, $arr_key) {
           $arr_value = null;
         });
         unset($arr_value);
 
-        $fullArray = array_replace_recursive($fullArray, $results);
-        return $fullArray;
+        $full_array = array_replace_recursive($full_array, $results);
+        return $full_array;
       }
     }
 
     /** Set or update the array
      * 
      * @param array $array The array being set. 
-     * @return bool Returns **true** on success and **false** on failure.
-     * @throws \UnexpectedValueException if `$array` is not an array.
+     * @return bool Returns `true` on success and `false` on failure.
      */
-    public function set_array (array $array) {
-      if (!is_array($array)) {
-        throw new \UnexpectedValueException("\"{$array}\" is not a valid array.");
-      }
-
+    public function setArray (array $array): bool {
       $this->array = $array;
-      $this->original_array = $array;
-      $this->set_string_array($array);
+      $this->originalArray = $array;
+      $this->setStringArray($array);
+
+      return true;
     }
     /** Retrieve the current or original array
      * 
      * @param bool $return_original Indicates if the *Original Array* should be returned instead of the current one.
-     * @return array Returns the `array` or `original_array` depending on the value of `$return_original`.
+     * @return array Returns the current or original array depending on the value of `$return_original`.
      */
-    public function get_array ($return_original = false): array {
-      if ($this->has_new_data) {
-        $this->has_new_data = false;
-        $this->array = \array_replace_recursive($this->array, $this->get_string_array());
+    public function getArray ($return_original = false): array {
+      if ($this->hasNewData) {
+        $this->hasNewData = false;
+        $this->array = \array_replace_recursive($this->array, $this->getStringArray());
       }
 
       if (!$return_original) {
         return $this->array;
       }
       else {
-        return $this->original_array;
+        return $this->originalArray;
       }
     }
     /** Join the array elements with a string
      * 
      * Unlike the native `implode()` function, this method supports *Indexed*, *Associative*, and *Multi-Dimensional Arrays*, as well as array elements of any type.
      * When joining the array elements, they are joined in the order they are encountered. Sub-arrays are joined before the next element in the main array.
-     * Depending on the value of `$strings_only`, `string` and potentially `int`, `float`, and `bool` array elements are joined together with a string. All other array elements are silently ignored. 
      * 
-     * @param string $glue The string used to separate joined array items. Defaults to an *Empty `String`*.
+     * Depending on the value of `$strings_only`; `string` and potentially `int`, `float`, and `bool` array elements are joined together with a string. 
+     * All other array elements are silently ignored. 
+     * 
+     * @param string $glue The string used to separate joined array items. 
+     * Defaults to an *Empty `String`*.
      * @param bool $strings_only Indicates if *string-like* array elements should also be joined together. 
-     * - If **false**, `int`, `float`, and `bool` array elements will be *cast* to a `string` and joined together, in addition to the native `string` elements. This is the default behavior.
-     * - If **true**, only native `string` array elements will be joined together. 
-     * @param bool $return_string_obj Indicates if a `StringObj` for the joined string should be returned instead of just the string.
-     * @return string|StringObj Returns a `string` or `StringObj` representing the joined array.
+     * - If `false`, `int`, `float`, and `bool` array elements will be *cast* to a `string` and joined together, in addition to the native `string` elements. This is the default behavior.
+     * - If `true`, only native `string` array elements will be joined together. 
+     * @return string Returns a `string` representing the joined array.
      */
-    public function implode (string $glue = '', $strings_only = false, $return_string_obj = false) {
-      $string = (function () use ($glue, $strings_only) {
-        $array = $this->get_array();
-        $string = '';
-        $glueCharset = (function () use ($glue) {
-          $charset = split($glue);
-          $charset = array_unique($charset);
+    public function implode (string $glue = '', $strings_only = false): string {
+      $array = $this->getArray();
+      $string = '';
+      $glue_charset = (function () use ($glue) {
+        $charset = split($glue);
+        $charset = array_unique($charset);
 
-          return implode('', $charset);
-        })();
-
-        array_walk_recursive($array, function ($arr_value, $arr_key) use (&$string, $glue, $strings_only) {
-          if (is_string($arr_value) || (!$strings_only && (is_numeric($arr_value) || is_bool($arr_value)))) {
-            $string .= (string) "{$arr_value}{$glue}";
-          }
-        });
-
-        $string = trim($string, STR_SIDE_RIGHT, $glueCharset);
-
-        return $string;
+        return implode('', $charset);
       })();
 
-      if (!$return_string_obj) {
-        return $string;
-      }
-      else {
-        return new StringObj($string, $this->editing_mode, $this->string_mode);
-      }
+      array_walk_recursive($array, function ($arr_value, $arr_key) use (&$string, $glue, $strings_only) {
+        if (is_string($arr_value) || (!$strings_only && (is_numeric($arr_value) || is_bool($arr_value)))) {
+          $string .= (string) "{$arr_value}{$glue}";
+        }
+      });
+
+      $string = trim($string, STR_SIDE_RIGHT, $glue_charset);
+
+      return $string;
     }
 
     /** Check the encoding for each of the strings
      * 
-     * - You can use `check_all_encodings()` to test if all of the strings match the provided encoding.
-     * 
-     * @see StringObj::check_encoding()
+     * You can use {@see StringArrayObj::checkAllEncodings()} to test if all of the strings match the provided encoding.
      * 
      * @param string $encoding The *String Encoding* to check the strings for.
-     * @param bool $throw_error If **true**, throws an `Error` if any of the provided strings do not match the encoding of `$encoding`.
-     * @return array Returns an `array` repesenting if each of the strings matching the specified `$encoding`.
-     * @throws \Error If `$throw_error` is **true**, throws an `Error` if one of the provided strings does not match the encoding of `$encoding`.
+     * @param bool $throw_error If `true`, throws an `Error` if any of the provided strings do not match the encoding of `$encoding`.
+     * @return bool[] Returns an `array` of `bool` values repesenting if each of the strings matching the specified `$encoding`.
+     * @throws \Error If `$throw_error` is `true`, throws an `Error` if one of the provided strings does not match the encoding of `$encoding`.
+     * @see StringObj::checkEncoding()
      */
-    public function check_encoding (string $encoding = ENCODING_UTF_8, bool $throw_error = false): array {
-      return $this->exec_on_strings('check_encoding', false, ...func_get_args());
+    public function checkEncoding (
+      string $encoding = ENCODING_UTF_8, 
+      bool $throw_error = false
+    ): array {
+      return $this->execOnStrings('checkEncoding', false, ...func_get_args());
     }
     /** Check the encoding for all of the strings
      * 
-     * - You can use `check_encodings()` to individually test each of the strings against the provided encoding.
-     * 
-     * @see StringObj::check_encoding()
+     * You can use {@see StringArrayObj::checkEncodings()} to individually test each of the strings against the provided encoding.
      * 
      * @param string $encoding The *String Encoding* to check the strings for.
-     * @param bool $throw_error If **true**, throws an `Error` if any of the provided strings do not match the encoding of `$encoding`.
-     * @return bool Returns **true** if all provided strings match the *String Encoding* of `$encoding`.
-     * @throws \Error If `$throw_error` is **true**, throws an `Error` if one of the provided strings does not match the encoding of `$encoding`.
+     * @param bool $throw_error If `true`, throws an `Error` if any of the provided strings do not match the encoding of `$encoding`.
+     * @return bool Returns `true` if all provided strings match the *String Encoding* of `$encoding`.
+     * @throws \Error If `$throw_error` is `true`, throws an `Error` if one of the provided strings does not match the encoding of `$encoding`.
+     * @see StringObj::checkEncoding()
      */
-    public function check_all_encodings (string $encoding = ENCODING_UTF_8, bool $throw_error = false): bool {
-      return $this->exec_on_strings('check_encoding', true, ...func_get_args());
+    public function checkAllEncodings (
+      string $encoding = ENCODING_UTF_8, 
+      bool $throw_error = false
+    ): bool {
+      return $this->execOnStrings('checkEncoding', true, ...func_get_args());
     }
     /** Attempt to get the encoding for all of the strings
      * 
-     * @see StringObj::get_encoding()
-     * 
-     * @return array|false Returns an `array` representing the *Encoding* for each of the `$array` strings on success, or **false** if the encoding could not be detected for the string.
+     * @return string[]|null[] Returns an `array` of `string` or `null` values representing the *Encoding* for each of the `$array` strings.
+     * @see StringObj::getEncoding()
      */
-    public function get_encoding () {
-      return $this->exec_on_strings('get_encoding', false, ...func_get_args());
+    public function getEncoding (): ?array {
+      return $this->execOnStrings('getEncoding', false, ...func_get_args());
+    }
+
+    /** Get the *Resolved String Mode* of each of the strings
+     * 
+     * @return int[]|null[] Returns an `array` of `int` or `null` values representing the *Resolved String Mode* of the strings.
+     * @see StringObj::getResolvedStringMode()
+     */
+    public function getResolvedStringMode(): array {
+      return $this->execOnStrings('getResolvedStringMode', false, ...func_get_args());
     }
 
     /** Get the length of the strings
      * 
+     * @return int[] Returns an `array` of `int` values representing the the number of characters in each of the `$array` strings.
      * @see StringObj::strlen()
-     * 
-     * @return array Returns an `array` representing the the number of characters in each of the `$array` strings.
      */
     public function strlen (): array {
-      return $this->exec_on_strings('strlen', false, ...func_get_args());
+      return $this->execOnStrings('strlen', false, ...func_get_args());
     }
     /** Get the total length of all the strings
      * 
-     * @see StringObj::strlen()
-     * 
      * @return int Returns an `int` representing the total number of characters in all of the `$array` strings.
+     * @see StringObj::strlen()
      */
-    public function strlen_all (): int {
-      return $this->exec_on_strings('strlen', true, ...func_get_args());
+    public function strlenAll (): int {
+      return $this->execOnStrings('strlen', true, ...func_get_args());
     }
     /** Retrieve a character in each of the strings
      * 
+     * @param int $char Indicates the *Character Position* within each of the `$array` strings to be retrieved. 
+     * Positive values are relative to the *start* of the string and negative values relative to the *end*.
+     * @return string[] Returns an `array` of `string` values representing the character found in each of the `$array` strings at `$char`. 
      * @see StringObj::char()
-     * 
-     * @param int $char Indicates the *Character Position* within each of the `$array` strings to be retrieved. Positive values are relative to the *start* of the string and negative values relative to the *end*.
-     * @return array Returns an `array` representing the character found in each of the `$array` strings at `$char`. 
      */
     public function char ($char = 1): array {
-      return $this->exec_on_strings('char', false, ...func_get_args());
+      return $this->execOnStrings('char', false, ...func_get_args());
     }
     /** Get the first character of each of the strings
      * 
+     * @return string[] Returns an `array` of `string` values representing the first character found in each of the `$array` strings.
      * @see StringObj::firstchar()
-     * 
-     * @return array Returns an `array` representing the first character found in each of the `$array` strings.
      */
     public function firstchar (): array {
-      return $this->exec_on_strings('firstchar', false, ...func_get_args());
+      return $this->execOnStrings('firstchar', false, ...func_get_args());
     }
     /** Get the last character of each of the strings
      * 
+     * @return string[] Returns an `array` of `string` values representing the last character found in each of the `$array` strings.
      * @see StringObj::lastchar()
-     * 
-     * @return array Returns an `array` representing the last character found in each of the `$array` strings.
      */
     public function lastchar (): array {
-      return $this->exec_on_strings('lastchar', false, ...func_get_args());
+      return $this->execOnStrings('lastchar', false, ...func_get_args());
     }
     /** Convert the characters in each of the strings to an array.
      * 
-     * @see StringObj::split()
-     * 
      * @param int $length The maximum length of each character chunk.
-     * @param bool $return_string_array Indicates if the return value should be a `StringArrayObj` instead of an `array`.
-     * @return array|StringArrayObj|false On success, returns an `array` or `StringArrayObj` for each string made up of its characters. If `$length` is less than *1*, returns **false**.
+     * @param bool $return_stringArray Indicates if the return value should be a `StringArrayObj` instead of an `array`.
+     * @return array[]|null On success, returns an `array` for each string made up of its characters. 
+     * If `$length` is less than *1*, returns `null`.
+     * @see StringObj::split()
      */
-    public function split (int $length = 1, bool $return_string_array = false) {
-      return $this->exec_on_strings('split', false, ...func_get_args());
+    public function split (int $length = 1, bool $return_stringArray = false): ?array {
+      return $this->execOnStrings('split', false, ...func_get_args());
     }
     /** Split each of the strings by another string.
      * 
-     * @see StringObj::explode()
-     * 
-     * @param string $delimiter The delimiter to split the `string` by. Can be a string of delimiter characters, or a *Regular Expression Pattern*.
+     * @param string $delimiter The delimiter to split the `string` by. 
+     * Can be a string of delimiter characters, or a *Regular Expression Pattern*.
      * @param int|null $limit The maximum number of splits to be performed.
-     * @param bool $return_string_array Indicates if the return value should be a `StringArrayObj` instead of an `array`.
-     * @return array|StringArrayObj|false Returns an `array` or `StringArrayObj` of substrings created by splitting the `string` by the `$delimiters` for each of the provided strings on success. If `$delimiters` is an *Empty `String`*, returns **false**.
+     * @return array[]|null Returns an `array` of substrings created by splitting the `string` by the `$delimiters` for each of the provided strings on success. 
+     * If `$delimiters` is an *Empty `String`*, returns `null`.
+     * @see StringObj::explode()
      */
-    public function explode (string $delimiter = ' ', int $limit = null, bool $return_string_array = false) {
-      return $this->exec_on_strings('explode', false, ...func_get_args());
+    public function explode (string $delimiter = ' ', int $limit = null): ?array {
+      return $this->execOnStrings('explode', false, ...func_get_args());
     }
 
     /** Extract a slice from each of the strings.
      * 
-     * This does *not* change the strings. To change strings, use the `slice()` method.
-     * - @see StringArrayObj::slice()
+     * This does *not* change the strings. 
+     * To change strings, use the {@see StringArrayObj::slice()} method.
      * 
-     * @see StringObj::substr()
-     * 
-     * @param int $start Where the slice begins. A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
+     * @param int $start Where the slice begins. 
+     * A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
      * @param int|null $length Indicates the maximum length of the slice.
-     * @param bool $throw_errors If **true**, an `OutOfRangeException` will be thrown if the provided arguments are invalid, instead of simply returning an *Empty `String`.
-     * @return string Returns a slice of the `string` on success. If the `string` is less than `$start` characters long, or `$length` is *negative* and tries to truncate more characters than are available, returns an *Empty `String`*.
-     * @throws \OutOfRangeException If `$throw_errors` is **true**, an `OutOfRangeException` will be thrown if the provided arguments are invalid.
+     * @param bool $throw_errors If `true`, an `OutOfRangeException` will be thrown if the provided arguments are invalid, instead of simply returning an *Empty `String`*.
+     * @return string[] Returns an `array` of `string` values representing a slice of each of the strings. 
+     * If a string is less than `$start` characters long, or `$length` is *negative* and tries to truncate more characters than are available, returns an *Empty `String`*.
+     * @throws \OutOfRangeException If `$throw_errors` is `true`, an `OutOfRangeException` will be thrown if the provided arguments are invalid.
+     * @see StringObj::substr()
      */
-    public function substr (int $start = 0, int $length = null, bool $throw_errors = false) {
-      return $this->exec_on_strings('substr', false, ...func_get_args());
+    public function substr (
+      int $start = 0, 
+      int $length = null, 
+      bool $throw_errors = false
+    ): array {
+      return $this->execOnStrings('substr', false, ...func_get_args());
     }
     /** Finds the first or last occurrence of a substring within each of the strings
      * 
-     * @see StringObj::substr_pos()
-     * 
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag.
-     * @param int $offset The search offset. A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
+     * @param int $offset The search offset. 
+     * A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
      * @param int $flags A bitmask integer representing the search flags.
-     * @return int|false On success, returns the *first* or *last occurrence* of the *needle* within the *haystack*, dependent on the provided `$flags`. If the *needle* was not found, returns **false**.
+     * @return int[]|null[] On success, returns an `array` of `int` or `null` values representing the *first* or *last occurrence* of the *needle* within the *haystack* for each of the strings, dependent on the provided `$flags`. 
+     * @see StringObj::substrPos()
      */
-    public function substr_pos (string $search, int $offset = 0, int $flags = 0) {
-      return $this->exec_on_strings('substr_pos', false, ...func_get_args());
+    public function substrPos (string $search, int $offset = 0, int $flags = 0): array {
+      return $this->execOnStrings('substrPos', false, ...func_get_args());
     }
     /** Checks for the presence of substring within each of the strings
      * 
-     * - You can use `substr_check_all()` to test if the substring is present within all of the substrings.
+     * You can use {@see StringArrayObj::substrCheckAll()} to test if the substring is present within all of the substrings.
      *
-     * @see StringObj::substr_check()
-     *  
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag.
-     * @param int $offset The search offset. A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
+     * @param int $offset The search offset. 
+     * A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
      * @param int $flags A bitmask integer representing the search flags.
-     * @return array Returns an `array` representing the presence of the *needles* within the *haystacks* of each `$array` string, dependent on the provided `$flags`. Returns **false** if the string was not.
+     * @return bool[] Returns an `array` representing the presence of the *needles* within the *haystacks* of each `$array` string, dependent on the provided `$flags`. 
+     * @see StringObj::substrCheck()
      */
-    public function substr_check (string $search, int $offset = 0, int $flags = 0): array {
-      return $this->exec_on_strings('substr_check', false, ...func_get_args());
+    public function substrCheck (string $search, int $offset = 0, int $flags = 0): array {
+      return $this->execOnStrings('substrCheck', false, ...func_get_args());
     }
     /** Checks for the presence of substring within all of the strings
      * 
-     * - You can use `substr_check()` to individually check each of the strings for the presence of the substring.
+     * You can use {@see StringArrayObj::substrCheck()} to individually check each of the strings for the presence of the substring.
      *
-     * @see StringObj::substr_check()
-     *  
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag.
-     * @param int $offset The search offset. A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
+     * @param int $offset The search offset. 
+     * A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
      * @param int $flags A bitmask integer representing the search flags.
-     * @return bool Returns **true** if the *needles* were found in each of the *haystacks*, dependent on the provided `$flags`. Returns **false** if it was not.
+     * @return bool Returns `true` if the *needles* were found in each of the *haystacks*, dependent on the provided `$flags`. 
+     * Otherwise, returns `false`.
+     * @see StringObj::substrCheck()
      */
-    public function substr_check_all (string $search, int $offset = 0, int $flags = 0): bool {
-      return $this->exec_on_strings('substr_check', true, ...func_get_args());
+    public function substrCheckAll (
+      string $search, 
+      int $offset = 0, 
+      int $flags = 0
+    ): bool {
+      return $this->execOnStrings('substrCheck', true, ...func_get_args());
     }
     /** Counts the number of substring occurrences within each of the strings
      * 
-     * @see StringObj::substr_count()
-     * 
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag:
-     * @param int $offset The search offset. A positive offset countrs from the beginning of the *haystack*, while a negative offset counts from the end.
+     * @param int $offset The search offset. 
+     * A positive offset countrs from the beginning of the *haystack*, while a negative offset counts from the end.
      * @param int $length The maximum length after the specified offset to search for the substring. 
      * @param int $flags A bitmask integer representing the search flags.
-     * @return array Returns an `array` representing the number of times the *needles* occur in each of the *haystacks*, dependent on the provided `$flags`.
+     * @return int[] Returns an `array` of `int` values representing the number of times the *needles* occur in each of the *haystacks*, dependent on the provided `$flags`.
+     * @see StringObj::substrCount()
      */
-    public function substr_count (string $search, int $offset = 0, int $length = null, int $flags = 0): array {
-      return $this->exec_on_strings('substr_count', false, ...func_get_args());
+    public function substrCount (
+      string $search, 
+      int $offset = 0, 
+      int $length = null, 
+      int $flags = 0
+    ): array {
+      return $this->execOnStrings('substrCount', false, ...func_get_args());
     }
     /** Counts the number of substring occurrences within all of the strings
      * 
-     * @see StringObj::substr_count()
-     * 
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag:
-     * @param int $offset The search offset. A positive offset countrs from the beginning of the *haystack*, while a negative offset counts from the end.
+     * @param int $offset The search offset. 
+     * A positive offset countrs from the beginning of the *haystack*, while a negative offset counts from the end.
      * @param int $length The maximum length after the specified offset to search for the substring. 
      * @param int $flags A bitmask integer representing the search flags.
      * @return int Returns an `int` representing the number of times the *needles* occur in all of the provided *haystacks*, dependent on the provided `$flags`.
+     * @see StringObj::substrCount()
      */
-    public function substr_count_all (string $search, int $offset = 0, int $length = null, int $flags = 0): int {
-      return $this->exec_on_strings('substr_count', true, ...func_get_args());
+    public function substrCountAll (
+      string $search, 
+      int $offset = 0, 
+      int $length = null, 
+      int $flags = 0
+    ): int {
+      return $this->execOnStrings('substrCount', true, ...func_get_args());
     }
 
     /** Perform a *Regular Expression Match* on each of the strings
@@ -704,331 +527,295 @@
      * @param string $pattern The *Regular Expression Pattern*.
      * @param int $flags An integer representing the Search Flags.
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return array|StringArrayObj Returns an `array` or `StringArrayObj` representing the search results for each of the strings, formatted by the provided `$flags`. If the `$pattern` doesn't match the `string`, returns **false**.
+     * @return array[]|null[] Returns an `array` of `array` or `null` values representing the search results for each of the strings, formatted by the provided `$flags`. If the `$pattern` doesn't match the `string`, returns `false`.
+     * @see StringObj::pregMatch()
      */
-    public function preg_match (string $pattern, int $flags = 0, int $offset = 0): array {
-      return $this->exec_on_strings('preg_match', false, ...func_get_args());
+    public function pregMatch (string $pattern, int $flags = 0, int $offset = 0): array {
+      return $this->execOnStrings('pregMatch', false, ...func_get_args());
     }
     /** Test if each of the strings matches a *Regular Expression*
      * 
-     * - You can use `preg_test_all()` to test if all of the strings match the regular expression.
-     * 
-     * @see StringObj::preg_test()
+     * You can use {@see StringArrayObj::pregTestAll()} to test if all of the strings match the regular expression.
      * 
      * @param string $pattern The *Regular Expression Pattern*.
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return array Returns an `array` with a `bool` representing if each of the `$array` strings matches the provided `$pattern`, or **false** if it does not.
+     * @return array Returns an `array` with `bool` values representing if each of the `$array` strings matches the provided `$pattern`.
+     * @see StringObj::pregTest()
      */
-    public function preg_test (string $pattern, int $offset = 0): array {
-      return $this->exec_on_strings('preg_test', false, ...func_get_args());
+    public function pregTest (string $pattern, int $offset = 0): array {
+      return $this->execOnStrings('pregTest', false, ...func_get_args());
     }
     /** Test if all of the strings match a *Regular Expression*
      * 
-     * - You can use `preg_test()` to individually test each of the strings against the regular expression.
+     * You can use {@see StringArrayObj::pregTest()} to individually test each of the strings against the regular expression.
      * 
-     * @see StringObj::preg_test()
+     * @see StringObj::pregTest()
      * 
      * @param string $pattern The *Regular Expression Pattern*.
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return bool Returns **true** if all of the strings match the provided `$pattern`, or **false** if they does not.
+     * @return bool Returns `true` if all of the strings match the provided `$pattern`, or `false` if they do not.
      */
-    public function preg_test_all (string $pattern, int $offset = 0): bool {
-      return $this->exec_on_strings('preg_test', true, ...func_get_args());
+    public function pregTestAll (string $pattern, int $offset = 0): bool {
+      return $this->execOnStrings('pregTest', true, ...func_get_args());
     }
 
     /** Transform the capitalization of each of the strings
      * 
-     * @see StringObj::transform()
-     * 
      * @param int $transformation A `TRANSFORM_*` constant indicating how the strings are to be transformed.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
      * @throws \TypeError Throws a `TypeError` if `$transformation` is invalid.
+     * @see StringObj::transform()
      */
     public function transform (int $transformation) {
-      return $this->exec_on_strings('transform', false, ...func_get_args());
+      return $this->execOnStrings('transform', false, ...func_get_args());
     }
-    /** Slice each of the strings into a piece.
+    /** Change the *Case Styling* of the string
      * 
-     * This *changes* the strings. To simply retrieve a slice of each string, use the `substr()` method.
-     * - @see StringArrayObj::substr()
+     * @param int $casing_style A `CASING_STYLE_*` namespace constant indicating how the string is to be cased.
+     * - See {@see CASING_STYLE_LIST}
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @throws \TypeError Throws a `TypeError` if `$casing_style` is invalid.
+     * @see StringObj::changeCase()
+     */
+    public function changeCase (int $casing_style) {
+      return $this->execOnStrings('changeCase', false, ...func_get_args());
+    }
+    /** Slice each of the strings into a piece
      * 
-     * - To split strings using substrings, use the `str_replace()` method.
-     * - To split strings using complex searches and replacements, use the `preg_replace()` method.
+     * This *modifies* the strings. 
+     * - To simply retrieve a slice of each string, use the {@see StringArrayObj::substr()} method.
+     * - To split strings using substrings, use the {@see StringArrayObj::strReplace()} method.
+     * - To split strings using complex searches and replacements, use the {@see StringArrayObj::pregReplace()} method.
      * 
-     * @see StringObj::slice()
-     * 
-     * @param int $start Where the slice begins. A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
+     * @param int $start Where the slice begins. 
+     * A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
      * @param int $length The length of the slice.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::slice()
      */
     public function slice (int $start = 0, int $length = null) {
-      return $this->exec_on_strings('slice', false, ...func_get_args());
+      return $this->execOnStrings('slice', false, ...func_get_args());
     }
     /** Replace all occurrences of a search string with a replacement string within each of the strings
      * 
-     * - To split strings into pieces every variable number of characters, use the `slice()` method.
-     * - To split strings using more complex searches and replacements, use the `preg_replace()` method.
+     * - To split strings into pieces every variable number of characters, use the {@see StringArrayObj::slice()} method.
+     * - To split strings using more complex searches and replacements, use the {@see StringArrayObj::pregReplace()} method.
      * 
      * @param string|array $search The Search *Needle*, provided as a single `string`, or as an `array` of needles.
      * @param string|array $replacement The replacement value for each `$search` match, provided as a single `string`, or as an `array` of replacements.
      * @param bool $case_insensitive Indicates if the `$search` match(es) should be matched *Case Insensitively*.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::strReplace()
      */
-    public function str_replace ($search, $replacement, $case_insensitive = false) {
-      return $this->exec_on_strings('str_replace', false, ...func_get_args());
+    public function strReplace ($search, $replacement, $case_insensitive = false) {
+      return $this->execOnStrings('strReplace', false, ...func_get_args());
     }
-    /** Perform a *Global Regular Expression Match* on each of the strings
+    /** Perform a *Global Regular Expression Replacement* on each of the strings
      * 
-     * - To split strings into pieces every variable number of characters, use the `slice()` method.
-     * - To split strings using simple substrings, use the `str_replace()` method.
+     * - To split strings into pieces every variable number of characters, use the {@see StringArrayObj::slice()} method.
+     * - To split strings using simple substrings, use the {@see StringArrayObj::strReplace()} method.
      * 
-     * @see StringObj::preg_replace()
      * 
      * @param string|array $pattern The *Regular Expression Pattern*. 
      * @param string|array|callback $replacement The value to replace each string matched by the `$pattern` with. 
      * @param int $limit The maximum number of replacements that can be done for each `$pattern`. **-1** indicates that there is no limit to the number of replacements performed.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::pregReplace()
      * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if any of the follow issues occur:
-     * - The `$replacement` is an `array` that contains an element that is not a `string` or `callable` function.
+     * - The `$replacement` is an `array` that contains an element that is not a valid `string` or `callable` function.
      * - The `$replacement` contains a mixture of `strings` and `callable` functions.
-     * @throws \Exception if an error occurred while invoking `preg_replace()`, `preg_replace_callback()`, or `preg_replace_callback_array()`.
+     * @throws \Exception if an error occurred while invoking `\preg_replace()`, `\preg_replace_callback()`, or `\preg_replace_callback_array()`.
      */
-    public function preg_replace ($pattern, $replacement, $limit = -1) {
-      return $this->exec_on_strings('preg_replace', false, ...func_get_args());
+    public function pregReplace ($pattern, $replacement, $limit = -1) {
+      return $this->execOnStrings('pregReplace', false, ...func_get_args());
     }
     /** Appends a plural letter to each of the strings depending on the value of a given number.
      *
-     * @param int $value The value to be evaluated. If this value equals **1**, a plural letter will be appended to each of the strings.
-     * @param bool $apostrophe Indicates if an *apostrophe* (`'`) should be included with the plural letter.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param int $value The value to be evaluated. 
+     * If this value does not equal **1**, the `$plural_letter` will be appended to each of the strings.
+     * @param bool $apostrophe Indicates if an *apostrophe* (`'`) should be included with the `$plural_value`.
+     * @param string $plural_value The plural value to append to the string.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::addPlural()
      */
-    public function add_plural (int $value, $apostrophe = false) {
-      return $this->exec_on_strings('add_plural', false, ...func_get_args());
+    public function addPlural (
+      int $value, 
+      bool $apostrophe = false,
+      string $plural_letter = 's'
+    ) {
+      return $this->execOnStrings('addPlural', false, ...func_get_args());
     }
 
     /** Trim whitespace, or other characters, from the beginning and/or end of each of the strings.
      * 
-     * @see StringObj::trim()
-     * 
-     * @param STR_SIDE_BOTH|STR_LEFT|STR_RIGHT $trim_side A `STR_SIDE_*` constant indicating which sides(s) of the string are to be trimmed.
+     * @param int $trim_side A `STR_SIDE_*` constant indicating which sides(s) of the string are to be trimmed.
      * @param string $charlist The list of characters that will be trimmed from the string.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::trim()
      */
     public function trim (int $trim_side = STR_SIDE_BOTH, string $charlist = " \n\r\t\v\s") {
-      return $this->exec_on_strings('trim', false, ...func_get_args());
+      return $this->execOnStrings('trim', false, ...func_get_args());
     }
     /** Collapse whitespace, or other characters, within each of the strings.
      * 
-     * @see StringObj::collapse()
-     * 
      * @param string $charlist The list of characters that will be collapsed in the string.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::collapse()
      */
     public function collapse (string $charlist = " \n\r\t\v\s") {
-      return $this->exec_on_strings('collapse', false, ...func_get_args());
+      return $this->execOnStrings('collapse', false, ...func_get_args());
     }
     /** Pad each of the strings to a certain length with another string
      * 
-     * @see StringObj::pad()
-     * 
      * @param int $padding_length The desired length of the strings.
      * @param string $padding The padding string used to pad the string.
-     * @param STR_SIDE_BOTH|STR_SIDE_LEFT|STR_SIDE_RIGHT $padding_side A `STR_SIDE_*` constant indicating which side(s) of the strings are to be padded.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param int $padding_side A `STR_SIDE_*` constant indicating which side(s) of the strings are to be padded.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::pad()
      */
-    public function pad (int $padding_length, string $padding = ' ', int $padding_side = STR_SIDE_RIGHT) {
-      return $this->exec_on_strings('pad', false, ...func_get_args());
+    public function pad (
+      int $padding_length, 
+      string $padding = ' ', 
+      int $padding_side = STR_SIDE_RIGHT
+    ) {
+      return $this->execOnStrings('pad', false, ...func_get_args());
     }
     /** Split each of the strings into smaller chunks
      * 
      * @param int $chunk_length The length of a single chunk.
      * @param string $separator The separator character(s) to be placed between chunks.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::chunk()
      */
     public function chunk (int $chunk_length = 76, string $separator = "\r\n") {
-      return $this->exec_on_strings('chunk', false, ...func_get_args());
+      return $this->execOnStrings('chunk', false, ...func_get_args());
     }
 
     /** Convert HTML Characters in each of the strings into *HTML Entities*
      * 
-     * @see StringObj::encode_html()
-     * 
      * @param bool $encode_everything Indicates if all characters with HTML Character Entity equivalents should be encoded, instead of just the special characters.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::encodeHTML()
      */
-    public function encode_html (bool $encode_everything = false) {
-      return $this->exec_on_strings('encode_html', false, ...func_get_args());
+    public function encodeHTML (bool $encode_everything = false) {
+      return $this->execOnStrings('encodeHTML', false, ...func_get_args());
     }
     /** Convert *HTML Entities* in each of the strings back to their equivalent HTML Characters. 
      * 
-     * @see StringObj::decode_html()
-     * 
-     * @param bool $encode_everything Indicates if all HTML Character Entities should be decoded, instead of just the special characters.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param bool $decode_everything Indicates if all HTML Character Entities should be decoded, instead of just the special characters.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::decodeHTML()
      */
-    public function decode_html (bool $decode_everything = false) {
-      return $this->exec_on_strings('decode_html', false, ...func_get_args());
+    public function decodeHTML (bool $decode_everything = false) {
+      return $this->execOnStrings('decodeHTML', false, ...func_get_args());
     }
     /** Strip HTML & PHP tags from each of the strings
      * 
-     * @see StringObj::strip_tags()
-     * 
-     * @param null|int|array|string $allowed_tags A list of whitelisted tags. Can be a predefined `STRIP_TAGS_*` constant, custom `string`, or custom `array`. **Null** strips all tags.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param null|int|array|string $allowed_tags A list of whitelisted tags. 
+     * - Can be a predefined `STRIP_TAGS_*` constant, custom `string`, or custom `array`. 
+     * - Passing `null` will strip all tags.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
      * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$allowed_tags` is not of a valid format.
+     * @see StringObj::stripTags()
      */
-    public function strip_tags ($allowed_tags = null) {
-      return $this->exec_on_strings('strip_tags', false, ...func_get_args());
+    public function stripTags ($allowed_tags = null) {
+      return $this->execOnStrings('stripTags', false, ...func_get_args());
     }
     /** Converts special characters in each of the strings to their equivalent URL Character Codes.
      * 
-     * @see StringObj::encode_url()
-     * 
      * @param bool $legacy_encode Indicates if *Legacy URL Encoding* should be performed, determining which specification should be followed when encoding the URL.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::encodeURL()
      */
-    public function encode_url (bool $legacy_encode = false) {
-      return $this->exec_on_strings('encode_url', false, ...func_get_args());
+    public function encodeURL (bool $legacy_encode = false) {
+      return $this->execOnStrings('encode_url', false, ...func_get_args());
     }
     /** Converts URL Character Codes in each of the strings back to their equivalent special characters.
      * 
-     * @see StringObj::decode_url()
-     * 
-     * @param bool $legacy_decode Indicates if *Legacy URL Decoding* should be performed, determining which specification should be followed when decoding the URL:
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param bool $legacy_decode Indicates if *Legacy URL Decoding* should be performed, determining which specification should be followed when decoding the URL.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::decodeURL()
      */
-    public function decode_url (bool $legacy_decode = false) {
-      return $this->exec_on_strings('decode_url', false, ...func_get_args());
+    public function decodeURL (bool $legacy_decode = false) {
+      return $this->execOnStrings('decodeURL', false, ...func_get_args());
     }
     /** Encode each of the strings to be used as an identifier
      * 
-     * @see StringObj::encode_id()
-     * 
-     * @param int $encoding_style An `ENCODE_ID_*` constant indicating how the string will be encoded.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param int $casing_style An `ENCODE_ID_*` constant indicating how the string will be encoded.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::encodeID()
      */
-    public function encode_id ($encoding_style = ENCODE_ID_SNAKE_CASE) {
-      return $this->exec_on_strings('encode_id', false, ...func_get_args());
+    public function encodeID ($casing_style = CASING_STYLE_SNAKE_CASE) {
+      return $this->execOnStrings('encodeID', false, ...func_get_args());
     }
     /** Escape each of the strings for use in a *Regular Expression*.
      * 
-     * @param null|string $delimiter The *Expression Delimiter* to also be escaped.
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @param null|string $delimiter The *Expression Delimiter* which will also be escaped.
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
+     * @see StringObj::escapeReg()
      */
-    public function escape_reg ($delimiter = null) {
-      return $this->exec_on_strings('escape_reg', false, ...func_get_args());
+    public function escapeReg ($delimiter = null) {
+      return $this->execOnStrings('escapeReg', false, ...func_get_args());
     }
     /** Escape each of the strings for use in a SQL Query Statement.
      * 
-     * @see StringObj::escape_sql()
-     * 
-     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringArrayObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `array`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `array`. |
+     * @return StringArrayObj|array Returns a `StringArrayObj` or `array` depending on the {@see StringArrayObj::$editingMode}.
      * @throws \RuntimeException Throws a `RuntimeException` if the method is called before the `Database` module has been loaded.
+     * @see StringObj::escapeSQL()
      */
-    public function escape_sql () {
-      return $this->exec_on_strings('escape_sql', false, ...func_get_args());
+    public function escapeSQL () {
+      return $this->execOnStrings('escapeSQL', false, ...func_get_args());
+    }
+
+    /** Invoking the `StringArrayObj` returns the {@see StringArrayObj::$array}.
+     * 
+     * @return string Returns the value of the `$array`.
+     */
+    public function __invoke () {
+      return $this->getArray();
+    }
+    /** Initialize a new `StringArrayObj` 
+     * 
+     * @param string $array The array to be used.
+     * @param array $options An `Associative Array` of options to be passed to the `StringArrayObj`:
+     * - `bool $return_full_array` Return the full `$array` when calling *Query Methods* on the array, instead of just the `stringArray`. Non-string items return **null**.
+     * - - This does not affect any of the `MANIPULATION_METHODS`, or any methods that return a `bool`.
+     * - `int $editing_mode` An `EDITING_MODE_*` class constant indicating the *Editing Mode* to be used when *modifying* the `$array`.
+     * - - {@see StringArrayObj::EDITING_MODE_LIST} for the list of Editing Modes.
+     * - - Methods that modify the array can be found in the `MANIPULATION_METHODS` class constant.
+     * - `int $string_mode` A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$array` strings.
+     * - - {@see StringArrayObj::STRING_MODE_LIST} for the list of String Modes.
+     * - `bool $verbose` Indicates if errors thrown by `$array` strings should be output.
+     */
+    public function __construct (array $array, array $options = []) {
+      $optionsList = [ 
+        'return_full_array', 
+        'editing_mode', 
+        'string_mode', 
+        'verbose' 
+      ];
+      
+      foreach ($optionsList as $option) {
+        $optionValue = $options[$option] ?? null;
+
+        if (isset($optionValue)) {
+          switch ($option) {
+            case 'string_mode' :
+              $this->setStringMode($optionValue);
+              break;
+            case 'editing_mode' :
+              $this->setEditingMode($optionValue);
+              break;
+            default :
+              $this->changePreference($option, $optionValue);
+              break;
+          }
+        }
+      }
+
+      $this->setArray($array);
+
+      return $this;
     }
   }
 ?>

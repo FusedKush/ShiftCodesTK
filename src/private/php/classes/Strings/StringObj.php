@@ -9,23 +9,12 @@
    * - - Invoking the `StringObj` like a `function`.
    * - - Invoking the `get_string()` method.
    **/
-  class StringObj implements StringInterface {
-    use SupportChecker;
+  class StringObj implements Interfaces\StringInterface {
+    use Traits\StringMode,
+        Traits\EditingMode,
+        Traits\SupportTester;
 
-    /**  @var int When *modifying* the `string`, updates the `string` and returns the `StringObj` for method chaining. This is the default behavior. 
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_CHAIN = 1;
-    /**  @var int When *modifying* the `string`, updates and returns the `string`.
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_STANDARD = 2;
-    /**  @var int When *modifying* the `string`, makes a *copy* of the `string` before updating and returning it. 
-     * - Provided in the `__construct()` and used for the `$editing_mode` property.
-     **/
-    public const EDITING_MODE_COPY = 4;
-
-    /** @var int A list of Character Sets supported by the `encode_html()` and `decode_html()` methods and functions. */
+    /** @var int A list of Character Sets supported by the `encodeHtml()` and `decode_Html()` methods and functions. */
     public const HTML_ENCODING_SUPPORTED_ENCODINGS = [
       'ISO-8859-1',
       'ISO8859-1',
@@ -63,162 +52,52 @@
       'MacRoman'
     ];
 
-    /**  @var STRING_MODE_STRING|STRING_MODE_MB_STRING Indicates the *Resolved String Mode* currently being used for the `$string`. 
-     * - If `$string_mode` is not set to `STRING_MODE_AUTO`, uses the value of `$string_mode`.
-     * - If `$string_mode` is set to `STRING_MODE_AUTO`, infers one of the other values from the `$string`.
-     **/
-    private $resolved_string_mode = self::STRING_MODE_STRING;
-    /** @var string The original, unmodified `$string`. */
-    private $original_string = '';
-    /** @var string Indicates the detected *Encoding* of the `$string`, if available. */
+    /** @var string The original, unmodified {@see StringObj::$string}. */
+    private $originalString = '';
+    /** @var string Indicates the detected *Encoding* of the {@see StringObj::$string}, if available. */
     private $encoding = '';
     
-    /** @var int Indicates the *Editing Mode* to be used when *modifying* the `$string`. */
-    protected $editing_mode = self::EDITING_MODE_CHAIN;
-    /** @var int Indicates the *String Mode* to be used for the `$string`. */
-    protected $string_mode = self::STRING_MODE_AUTO;
     /** @var string The current string, after any modifications. */
     protected $string = '';
+
+    /** Execute an aliased string method
+     * 
+     * @param string $method_name The name of the *aliased method*.
+     * @param mixed $args The arguments to be passed to the *aliased method*. The string being evaluated should be passed as the first argument.
+     * @return mixed Returns the value of the *aliased method*
+     * @throws UnexpectedValueException Throws an `UnexpectedValueException` if `$method_name` is not a valid method name.
+     */
+    public static function alias ($method_name, ...$args) {
+      $blacklist = [
+        'pregCheckPattern',
+        'handleModifyReturn'
+      ];
+      $string = array_shift($args);
+      $string_obj = new StringObj($string, self::EDITING_MODE_STANDARD);
+
+      if (!method_exists(get_class($string_obj), $method_name)) {
+        throw new \UnexpectedValueException("\"{$method_name}\" is not a valid method to be aliased.");
+      }
+      if (array_search($method_name, $blacklist) !== false) {
+        throw new \UnexpectedValueException("\"{$method_name}\" cannot be aliased.");
+      };
+
+      return $string_obj->$method_name(...$args);
+    }
     
-    /** Methods */
-    /** Retrieve a property from the `StringObj`
-     * 
-     * @param string $property The name of the property to retrieve 
-     * @return mixed Returns the value of the property on success. Returns **null** if the property does not exist.
-     */
-    public function __get ($property) {
-      if (isset($this->$property)) {
-        return $this->$property;
-      }
-
-      return null;
-    }
-    /** Set a property from the `StringObj`
-     * 
-     * @param string $property The name of the property to set.
-     * @param mixed $value The new value of the property.
-     * @return mixed Returns the new value of the property on success. Returns **null** if the property does not exist, or if it cannot be set.
-     * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$value` is not a valid value.
-     */
-    public function __set ($property, $value) {
-      if (isset($this->$property)) {
-        $editableProperties = [
-          'editing_mode',
-          'string_mode',
-          'string'
-        ];
-
-        if (array_search($property, $editableProperties) !== false) {
-          if ($property == 'string') {
-            if (!Validations\check_type($value, 'string')) {
-              throw new \UnexpectedValueException("\"{$value}\" is not a valid string.");
-            }
-
-            $this->string = $value;
-            $this->original_string = $this->string;
-            $this->encoding = $this->get_encoding();
-            $this->check_string_mode();
-          }
-          else if ($property == 'string_mode') {
-            $isValidValue = Validations\check_var($value)
-                            && Validations\check_type($value, 'int')
-                            && Validations\check_match($value, [
-                              self::STRING_MODE_AUTO,
-                              self::STRING_MODE_STRING,
-                              self::STRING_MODE_MB_STRING
-                            ]);
-
-            if (!$isValidValue) {
-              throw new \UnexpectedValueException("\"{$value}\" is not a valid String Mode.");
-            }
-
-            $this->string_mode = $value;
-            $this->check_string_mode();
-          }
-          else if ($property == 'editing_mode') {
-            $isValidValue = Validations\check_var($value)
-                            && Validations\check_type($value, 'int')
-                            && Validations\check_match($value, [
-                              self::EDITING_MODE_CHAIN,
-                              self::EDITING_MODE_STANDARD,
-                              self::EDITING_MODE_COPY
-                            ]);
-
-            if (!$isValidValue) {
-              throw new \UnexpectedValueException("\"{$value}\" is not a valid Editing Mode.");
-            }
-
-            $this->editing_mode = $value;
-          }
-          else {
-            $this->$property = $value;
-          }
-        }
-
-        return $this->$property;
-      }
-
-      return null;
-    }
-    /** Casting the `StringObj` as a string returns the `$string`.
-     * 
-     * @return string Returns the value of the `$string`.
-     */
-    public function __toString () {
-      return $this->get_string();
-    }
-    /** Invoking the `StringObj` returns the `$string`.
-     * 
-     * @return string Returns the value of the `$string`.
-     */
-    public function __invoke () {
-      return $this->get_string();
-    }
-    /** Initialize a new `StringObj` 
-     * 
-     * @param string $string The string to be used.
-     * @param int $editing_mode An `EDITING_MODE_` class constant indicating the *Editing Mode* to be used when *modifying* the `$string`.
-     * - Methods that modify the string can be found in the `MANIPULATION_METHODS` class constant.
-     * 
-     * | Mode | Description |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Updates the `string` and returns the `StringObj` for method chaining. This is the default behavior |
-     * | `EDITING_MODE_STANDARD` | Updates and returns the `string` |
-     * | `EDITING_MODE_COPY` | Makes a *copy* of the `string` before updating and returning it. |
-     * - This option affects the behavior of any methods that manipulate the string.
-     * @param int $string_mode A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$string`.
-     * 
-     * | Mode | Description |
-     * | --- | --- |
-     * | `STRING_MODE_AUTO` | Attempts to detect the appropriate mode to use for the string. |
-     * | `STRING_MODE_STRING` | Indicates that *String Mode* should be used. |
-     * | `STRING_MODE_MB_STRING` | Indicates that *Multi-Byte String Mode* should be used. |
-     * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$string` is not a *string* or if `$string_mode` is not a valid *String Mode*.
-     */
-    public function __construct (string $string, int $editing_mode = self::EDITING_MODE_CHAIN, int $string_mode = self::STRING_MODE_AUTO) {
-      $args = [ 'editing_mode', 'string_mode', 'string' ];
-
-      foreach ($args as $arg) {
-        if (isset($$arg)) {
-          $this->__set($arg, $$arg);
-        }
-      }
-
-      return $this;
-    }
-
     /** Checks a *Regular Expression* or group of expressions to ensure they are compatible with *Multi-Byte Strings*.
      * 
      * @param string|array $pattern The *Regular Expression Pattern* to check or an `array` of patterns to be checked. 
      * @return string|array Returns the *Regular Expression Pattern* or `array` of patterns that were checked. If the string is in *Multi-Byte Mode*, the patterns were updated accordingly.
      */
-    private function preg_check_pattern ($pattern) {
-      $updatedPattern = $pattern;
+    private function pregCheckPattern ($pattern) {
+      $updated_pattern = $pattern;
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      $getPattern = function ($pattern_string) {
+      $get_pattern = function ($pattern_string) use ($resolved_string_mode) {
         $str = $pattern_string;
 
-        if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+        if ($resolved_string_mode === self::STRING_MODE_MB_STRING) {
           // Add Unicode Modifier
           $str .= 'u';
           
@@ -229,30 +108,30 @@
         return $str;
       };
 
-      if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+      if ($resolved_string_mode === self::STRING_MODE_MB_STRING) {
         if (is_string($pattern)) {
-          $updatedPattern = $getPattern($updatedPattern);
+          $updated_pattern = $get_pattern($updated_pattern);
         }
         else if (is_array($pattern)) {
-          foreach ($updatedPattern as &$regex) {
-            $regex = $getPattern($regex);
+          foreach ($updated_pattern as &$regex) {
+            $regex = $get_pattern($regex);
           }
         }
       }
 
-      return $updatedPattern;
+      return $updated_pattern;
     }
-    /** Handles the Return Value of a *String Manipulation Method* based on the current `$editing_mode`.
+    /** Handles the Return Value of a *String Manipulation Method* based on the current {@see StringObj::$editingMode}.
      * 
      * @param string $string The modified string.
-     * @return StringObj|string Returns the modified `StringObj` or `string` depending on the current `$editing_mode`.
+     * @return StringObj|string Returns the modified `StringObj` or `string` depending on the current `$editingMode`.
      */
-    private function handle_modify_return (string $string) {
-      if ($this->editing_mode != self::EDITING_MODE_COPY) {
+    private function handleModifyReturn (string $string) {
+      if ($this->editingMode != self::EDITING_MODE_COPY) {
         $this->string = $string;
       }
 
-      switch ($this->editing_mode) {
+      switch ($this->editingMode) {
         case self::EDITING_MODE_CHAIN:
           return $this;
         case self::EDITING_MODE_STANDARD:
@@ -261,25 +140,39 @@
           return $string;
       }
     }
-    /** Create a `StringArrayObj` for a given array, taking into account the `editing_mode` and `string_mode` properties of the current `StringObj`.
+
+    /** Create a `StringArrayObj` for a given array, taking into account the {@see StringObj::$editingMode} and {@see StringObj::stringMode} properties of the current `StringObj`.
      * 
      * @param array $array The array being evaluated.
      * @return StringArrayObj Returns the new `StringArrayObj` on success.
      */
-    private function get_string_array (array $array) {
+    public function getStringArray (array $array) {
       return new StringArrayObj($array, [
-        'editing_mode' => $this->editing_mode,
-        'string_mode' => $this->string_mode
+        'editing_mode'  => $this->editingMode,
+        'string_mode'   => $this->getStringMode()
       ]);
     }
-
     /** Retrieve the current or original string
      * 
      * @param bool $return_original Indicates if the *Original String* should be returned instead of the current one.
-     * @return string Returns the `string` or `original_string` depending on the value of `$return_original`.
+     * @return string Returns the current or original string depending on the value of `$return_original`.
      */
-    public function get_string ($return_original = false): string {
-      return $this->__get(!$return_original ? 'string' : 'original_string');
+    public function getString ($return_original = false): string {
+      return !$return_original
+        ? $this->string
+        : $this->originalString;
+    }
+    /** Set or update the string
+     * 
+     * @param string $string The string being set.
+     * @return bool Returns `true` on success and `false` on failure.
+     */
+    public function setString (string $string): bool {
+      $this->string = $string;
+      $this->originalString = $string;
+      $this->encoding = $this->getEncoding();
+
+      return true;
     }
 
     /** Check the encoding for the string
@@ -289,7 +182,10 @@
      * @return bool Returns **true** if the string matches the *String Encoding* of `$encoding`.
      * @throws \Error If `$throw_error` is **true**, throws an `Error` if the string does not match the encoding of `$encoding`.
      */
-    public function check_encoding (string $encoding = ENCODING_UTF_8, bool $throw_error = false): bool {
+    public function checkEncoding (
+      string $encoding = ENCODING_UTF_8, 
+      bool $throw_error = false
+    ): bool {
       $result = \mb_check_encoding($this->string, $encoding);
   
       if (!$result && $throw_error) {
@@ -300,41 +196,36 @@
     }
     /** Attempt to get the encoding for the string
      * 
-     * @return string|false Returns the *Encoding* of the string on success, or **false** if the encoding could not be detected.
+     * @return string|null Returns the *Encoding* of the string on success, or `null` if the encoding could not be detected.
      */
-    public function get_encoding () {
-      $encoding_list = [
-        ENCODING_ASCII,
-        ENCODING_UTF_8,
-        ENCODING_ISO_8859_1
-      ];
-  
-      foreach ($encoding_list as $encoding) {
-        if ($this->check_encoding($encoding)) {
+    public function getEncoding (): ?string {
+      foreach (ENCODING_LIST as $encoding) {
+        if ($this->checkEncoding($encoding)) {
           return $encoding;
         }
       }
   
-      return \mb_detect_encoding($this->string, $encoding_list, true);
+      $result = \mb_detect_encoding($this->string, ENCODING_LIST, true);
+
+      return $result !== false
+        ? $result
+        : null;
     }
-    /** Checks and updates the `$resolved_string_mode` for the `$string`.
+    
+    /** Get the *Resolved String Mode* of the string
      * 
-     * @return STRING_MODE_STRING|STRING_MODE_MB_STRING Returns the new *Resolved String Mode*.
+     * @return int|null Returns an `int` representing the *Resolved String Mode* of the string.
+     * Returns `null` if the *Resolved String Mode* could not be determined.
      */
-    public function check_string_mode () {
-      if ($this->string_mode == self::STRING_MODE_AUTO) {
-        if (array_search($this->encoding, [ ENCODING_ASCII, ENCODING_ISO_8859_1 ]) !== false) {
-          $this->resolved_string_mode = self::STRING_MODE_STRING;
-        }
-        else {
-          $this->resolved_string_mode = self::STRING_MODE_MB_STRING;
-        }
-      }
-      else {
-        $this->resolved_string_mode = $this->string_mode;
+    public function getResolvedStringMode(): ?int {
+      $string_mode = $this->getStringMode();
+      $encoding = $this->getEncoding();
+
+      if (!$encoding) {
+        return null;
       }
 
-      return $this->resolved_string_mode;
+      return self::determineResolvedStringMode($string_mode, $encoding);
     }
 
     /** Get the length of the string
@@ -342,7 +233,7 @@
      * @return int Returns the number of characters in the `string`.
      */
     public function strlen (): int {
-      return $this->resolved_string_mode == self::STRING_MODE_STRING
+      return $this->getResolvedStringMode() === self::STRING_MODE_STRING
              ? \strlen($this->string)
              : \mb_strlen($this->string, $this->encoding);
     }
@@ -351,7 +242,8 @@
      * @param int $char Indicates the *Character Position* within the `string` of the character to be retrieved.
      * - A positive value indicates the character position relative to the *start* of the string, while a negative values are relative to the *end*.
      * - **1** refers to the first character in the string, while **-1** refers to the last. **0** is treated as **1**.
-     * @return string Returns the character found in the `string` at `$char`. If `$char` exceeds the length of the `string`, returns an *Empty `String`*.
+     * @return string Returns the character found in the string at `$char`. 
+     * If `$char` exceeds the length of the string, returns an *Empty `String`*.
      */
     public function char ($char = 1): string {
       $charVal = $char;
@@ -367,14 +259,14 @@
     }
     /** Get the first character of the string
      * 
-     * @return string Returns the first character found in the `string`.
+     * @return string Returns the first character found in the string.
      */
     public function firstchar (): string {
       return $this->char(1);
     }
     /** Get the last character of the string
      * 
-     * @return string Returns the last character found in the `string`.
+     * @return string Returns the last character found in the string.
      */
     public function lastchar (): string {
       return $this->char(-1);
@@ -382,31 +274,35 @@
     /** Convert the string's characters to an array.
      * 
      * @param int $length The maximum length of each character chunk.
-     * @param bool $return_string_array Indicates if the return value should be a `StringArrayObj` instead of an `array`.
-     * @return array|StringArrayObj|false On success, returns an `array` or `StringArrayObj` made up of the characters of the `string` depending on the value of `$return_string_array`. If `$length` is less than *1*, returns **false**.
+     * @return array|null On success, returns an `array` made up of the characters of the `string`. 
+     * - If `$length` is less than *1*, returns `null`.
      * - If `$length` is greater than the length of the `string`, the entire string will be returned as the only element of the array.
      */
-    public function split (int $length = 1, bool $return_string_array = false) {
-      $result = (function () use ($length) {
-        if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
-          return \str_split($this->string, $length);
-        }
-        else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
-          if (function_exists('mb_str_split')) {
-            return \mb_str_split($this->string, $length, $this->encoding);
-          }
-          else {
-            return $this->preg_match("/(.|\r|\n){{$length}}|(.|\r|\n){1,5}$/", PREG_GLOBAL_SEARCH|PREG_RETURN_FULL_MATCH);
-          }
-        }
-      })();
+    public function split (int $length = 1): ?array {
+      $array = [];
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      if (!$return_string_array) {
-        return $result;
+      if ($length < 1) {
+        return null;
       }
-      else {
-        return $this->get_string_array($result);
+
+      if ($resolved_string_mode == self::STRING_MODE_STRING) {
+        $array = \str_split($this->string, $length);
       }
+      else if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
+        if (function_exists('mb_str_split')) {
+          $array = \mb_str_split($this->string, $length, $this->encoding);
+        }
+        else {
+          $array = $this->pregMatch("/(.|\r|\n){{$length}}|(.|\r|\n){1,5}$/", PREG_GLOBAL_SEARCH|PREG_RETURN_FULL_MATCH);
+        }
+      }
+
+      if (!is_array($array)) {
+        $array = null;
+      }
+
+      return $array;
     }
     /** Split the string by another string.
      * 
@@ -415,19 +311,18 @@
      * - If positive, the result array will only contain up to this number of substrings. The last substring will contain the remainder of the `string`.
      * - If negative, all substrings except the last `$limit` are returned.
      * - If **0**, this argument is treated as **1**.
-     * @param bool $return_string_array Indicates if the return value should be a `StringArrayObj` instead of an `array`.
-     * @return array|StringArrayObj|false Returns an `array` or `StringArrayObj` of substrings created by splitting the `string` by the `$delimiters` on success. 
+     * @return array|null Returns an `array` of substrings created by splitting the `string` by the `$delimiters` on success. 
      * - If `$delimiters` contains a value not contained within the `string`, returns an `array` containing the full `string`.
-     * - If `$delimiters` is an *Empty `String`*, returns **false**.
+     * - If `$delimiters` is an *Empty `String`*, returns `null`.
      * - If a negative `$limit` is provided and truncates more than the total number of results, returns an *Empty `Array`*.
      */
-    public function explode (string $delimiter = ' ', int $limit = null, bool $return_string_array = false) {
+    public function explode (string $delimiter = ' ', int $limit = null): ?array {
       $result = [];
-      $isRegularExpression = (function () use ($delimiter) {
-        $delimitersObj = new StringObj($delimiter);
+      $is_regex = (function () use ($delimiter) {
+        $delimiters_obj = new StringObj($delimiter);
 
-        if ($patternDelimiters = $delimitersObj->preg_match('/^([^\w\d\s]).+([^\w\d\s])$/', PREG_RETURN_SUB_MATCHES)) {
-          if ($patternDelimiters[0] == $patternDelimiters[1]) {
+        if ($pattern_delimiters = $delimiters_obj->pregMatch('/^([^\w\d\s]).+([^\w\d\s])$/', PREG_RETURN_SUB_MATCHES)) {
+          if ($pattern_delimiters[0] == $pattern_delimiters[1]) {
             if (@\preg_match($delimiter, '') !== false) {
               return true;
             }
@@ -436,34 +331,34 @@
 
         return false;
       })();
-      $execArgs = (function () use ($delimiter, $limit, $isRegularExpression) {
-        $execArgs = [
-          $isRegularExpression
-            ? $this->preg_check_pattern($delimiter)
+      $exec_args = (function () use ($delimiter, $limit, $is_regex) {
+        $exec_args = [
+          $is_regex
+            ? $this->pregCheckPattern($delimiter)
             : $delimiter, 
           $this->string
         ];
 
         if (isset($limit) && $limit >= 0) {
           if ($limit === 0) {
-            $execArgs[] = 1;
+            $exec_args[] = 1;
           }
           else {
-            $execArgs[] = $limit;
+            $exec_args[] = $limit;
           }
         }
 
-        return $execArgs;
+        return $exec_args;
       })();
 
       if (empty($delimiter)) {
         return false;
       }
-      if (!$isRegularExpression) {
-        $result = \explode(...$execArgs);
+      if (!$is_regex) {
+        $result = \explode(...$exec_args);
       }
       else {
-        $result = \preg_split(...$execArgs);
+        $result = \preg_split(...$exec_args);
       }
 
       if (isset($limit) && $limit < 0) {
@@ -475,8 +370,7 @@
 
     /** Extract a slice from the `string`
      * 
-     * This does *not* change the string. To change string, use the `slice()` method.
-     * - @see StringObj::slice()
+     * This does *not* change the string. To change string, use the {@see StringObj::slice()} method.
      * 
      * @param int $start Where the slice begins. 
      * - A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
@@ -485,19 +379,25 @@
      * - A *negative length* indicates the number of characters from the end of the `string` to be omitted.
      * - If omitted, the slice will continue from the `$start` to the end of the `string`.
      * @param bool $throw_errors If **true**, an `OutOfRangeException` will be thrown if the provided arguments are invalid, instead of simply returning an *Empty `String`.
-     * @return string Returns a slice of the `string` on success. If the `string` is less than `$start` characters long, or `$length` is *negative* and tries to truncate more characters than are available, returns an *Empty `String`*.
+     * @return string Returns a slice of the `string` on success. 
+     * If the `string` is less than `$start` characters long, or `$length` is *negative* and tries to truncate more characters than are available, returns an *Empty `String`*.
      * @throws \OutOfRangeException If `$throw_errors` is **true**, an `OutOfRangeException` will be thrown if the provided arguments are invalid.
      */
-    public function substr (int $start = 0, int $length = null, bool $throw_errors = false) {
+    public function substr (
+      int $start = 0, 
+      int $length = null, 
+      bool $throw_errors = false
+    ): string {
       try {
         $strlen = $this->strlen();
-        $args = (function () use ($start, $length) {
+        $resolved_string_mode = $this->getResolvedStringMode();
+        $args = (function () use ($start, $length, $resolved_string_mode) {
           $args = [ $this->string, $start ];
   
           if (isset($length)) {
             $args[] = $length;
           }
-          if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+          if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
             $args[] = $this->encoding;
           }
   
@@ -511,7 +411,7 @@
           throw new \OutOfRangeException("The Start Position is {$start}, but the string is only {$strlen} characters long and the Length is trying to remove {$length} characters.");
         }
   
-        $result = $this->resolved_string_mode == self::STRING_MODE_STRING
+        $result = $resolved_string_mode == self::STRING_MODE_STRING
                ? \substr(...$args)
                : \mb_substr(...$args);
   
@@ -533,61 +433,71 @@
     /** Finds the first or last occurrence of a substring within a string
      * 
      * @param string $search A string, its usage determined by the presence or absense of the `SUBSTR_SEARCH_AS_HAYSTACK` flag:
-     * - If the `SUBSTR_SEARCH_AS_HAYSTACK` flag is omitted, `$search` is used as the *needle*, with `string` as the *haystack*. Searches for the first or last occurrence of the `$search` substring within `string`.
-     * - If the `SUBSTR_SEARCH_AS_HAYSTACK` flag is present, `$search` is used as the *haystack*, with `string` as the *needle*. Searches for the first or last occurrence of the `string` substring within `$search`.
+     * - If the `SUBSTR_SEARCH_AS_HAYSTACK` flag is omitted, `$search` is used as the *needle*, with the string as the *haystack*. 
+     * Searches for the first or last occurrence of the `$search` substring within `string`.
+     * - If the `SUBSTR_SEARCH_AS_HAYSTACK` flag is present, `$search` is used as the *haystack*, with the string as the *needle*. 
+     * Searches for the first or last occurrence of the `string` substring within `$search`.
      * @param int $offset The search offset. 
      * - A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. This effect is *reversed* if the `SUBSTR_GET_LAST_OCCURRENCE` flag is present.
      * @param int $flags A bitmask integer representing the search flags:
-     * - @see Strings\SUBSTR_SEARCH_AS_HAYSTACK
-     * - @see Strings\SUBSTR_GET_LAST_OCCURRENCE
-     * - @see Strings\SUBSTR_CASE_INSENSITIVE
-     * | Flag | Description |
-     * | --- | --- |
-     * | `SUBSTR_SEARCH_AS_HAYSTACK` | The `$search` will be treated as the *haystack*. Searches for the `string` substring within the `$search`. |
-     * | `SUBSTR_GET_LAST_OCCURRENCE` | The *last matching occurrence* of the **needle** within the **haystack** will be returned. |
-     * | `SUBSTR_CASE_INSENSITIVE` | The search will be *case-insensitive*. |
-     * @return int|false On success, returns the *first* or *last occurrence* of the *needle* within the *haystack*, dependent on the provided `$flags`. If the *needle* was not found, returns **false**.
+     * - {@see Strings\SUBSTR_SEARCH_AS_HAYSTACK}
+     * - {@see Strings\SUBSTR_GET_LAST_OCCURRENCE}
+     * - {@see Strings\SUBSTR_CASE_INSENSITIVE}
+     * @return int|null On success, returns the *first* or *last occurrence* of the *needle* within the *haystack*, dependent on the provided `$flags`.
+     *  If the *needle* was not found, returns `null`.
      */
-    public function substr_pos (string $search, int $offset = 0, int $flags = 0) {
-      $searchAsHaystack = ($flags & SUBSTR_SEARCH_AS_HAYSTACK) != 0;
-      $getLastOccurrence = ($flags & SUBSTR_GET_LAST_OCCURRENCE) != 0;
-      $caseInsensitive = ($flags & SUBSTR_CASE_INSENSITIVE) != 0;
-      $needle = !$searchAsHaystack
+    public function substrPos (
+      string $search, 
+      int $offset = 0, 
+      int $flags = 0
+    ): ?int {
+      $search_as_haystack = ($flags & SUBSTR_SEARCH_AS_HAYSTACK) != 0;
+      $get_last_occurrence = ($flags & SUBSTR_GET_LAST_OCCURRENCE) != 0;
+      $case_insensitive = ($flags & SUBSTR_CASE_INSENSITIVE) != 0;
+      $needle = !$search_as_haystack
                 ? $search
                 : $this->string;
-      $haystack = !$searchAsHaystack
+      $haystack = !$search_as_haystack
                   ? $this->string
                   : $search;
+      $result = null;
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      if ($caseInsensitive) {
-        $needle = (new StringObj($needle))->transform(TRANSFORM_LOWERCASE)();
-        $haystack = (new StringObj($haystack))->transform(TRANSFORM_LOWERCASE)();
+      if ($case_insensitive) {
+        $needle = transform($needle, TRANSFORM_LOWERCASE);
+        $haystack = transform($haystack, TRANSFORM_LOWERCASE);
       }
 
       // String Mode
-      if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
+      if ($resolved_string_mode == self::STRING_MODE_STRING) {
         $args = [ $haystack, $needle, $offset ];
 
         // Get First Occurrence
-        if ($getLastOccurrence) {
-          return \strpos(...$args);
+        if ($get_last_occurrence) {
+          $result = \strpos(...$args);
         }
         // Get Last Occurrence
         else {
-          return \strrpos(...$args);
+          $result = \strrpos(...$args);
         }
       }
       // Multi-Byte String Mode
-      else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+      else if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
         $args = [ $haystack, $needle, $offset, $this->encoding ];
 
-        if ($getLastOccurrence) {
-          return \mb_strpos(...$args);
+        if ($get_last_occurrence) {
+          $result = \mb_strpos(...$args);
         }
         else {
-          return \mb_strrpos(...$args);
+          $result = \mb_strrpos(...$args);
         }
       }
+
+      if (!is_int($result)) {
+        $result = null;
+      }
+
+      return $result;
     }
     /** Checks for the presence of substring within a string
      * 
@@ -597,16 +507,17 @@
      * @param int $offset The search offset. 
      * - A positive offset counts from the beginning of the *haystack*, while a negative offset counts from the end. 
      * @param int $flags A bitmask integer representing the search flags:
-     * - @see Strings\SUBSTR_SEARCH_AS_HAYSTACK
-     * - @see Strings\SUBSTR_CASE_INSENSITIVE
-     * | Flag | Description |
-     * | --- | --- |
-     * | `SUBSTR_SEARCH_AS_HAYSTACK` | The `$search` will be treated as the *haystack*. Searches for the `string` substring within the `$search`. |
-     * | `SUBSTR_CASE_INSENSITIVE` | The search will be *case-insensitive*. |
-     * @return bool Returns **true** if the *needle* was found in the *haystack*, dependent on the provided `$flags`. Returns **false** if it was not.
+     * - {@see Strings\SUBSTR_SEARCH_AS_HAYSTACK}
+     * - {@see Strings\SUBSTR_CASE_INSENSITIVE}
+     * @return bool Returns **true** if the *needle* was found in the *haystack*, dependent on the provided `$flags`. 
+     * Otherwise, returns `false`.
      */
-    public function substr_check (string $search, int $offset = 0, int $flags = 0): bool {
-      return $this->substr_pos($search, $offset, $flags) !== false;
+    public function substrCheck (
+      string $search, 
+      int $offset = 0, 
+      int $flags = 0
+    ): bool {
+      return $this->substrPos($search, $offset, $flags) !== false;
     }
     /** Counts the number of substring occurrences within a string
      * 
@@ -618,36 +529,38 @@
      * @param int $length The maximum length after the specified offset to search for the substring. 
      * - Outputs a warning if the `$offset` plus the `$length` is greater than the *haystack length*.
      * @param int $flags A bitmask integer representing the search flags:
-     * - @see Strings\SUBSTR_SEARCH_AS_HAYSTACK
-     * - @see Strings\SUBSTR_CASE_INSENSITIVE
-     * | Flag | Description |
-     * | --- | --- |
-     * | `SUBSTR_SEARCH_AS_HAYSTACK` | The `$search` will be treated as the *haystack*. Searches for the `string` substring within the `$search`. |
-     * | `SUBSTR_CASE_INSENSITIVE` | The search will be *case-insensitive*. |
+     * - {@see Strings\SUBSTR_SEARCH_AS_HAYSTACK}
+     * - {@see Strings\SUBSTR_CASE_INSENSITIVE}
      * @return int Returns the number of times the *needle* occurs in the *haystack*, dependent on the provided `$flags`.
      */
-    public function substr_count (string $search, int $offset = 0, int $length = null, int $flags = 0): int {
-      $searchAsHaystack = ($flags & SUBSTR_SEARCH_AS_HAYSTACK) != 0;
-      $caseInsensitive = ($flags & SUBSTR_CASE_INSENSITIVE) != 0;
-      $needle = !$searchAsHaystack
+    public function substrCount (
+      string $search, 
+      int $offset = 0, 
+      int $length = null, 
+      int $flags = 0
+    ): int {
+      $search_as_haystack = ($flags & SUBSTR_SEARCH_AS_HAYSTACK) != 0;
+      $case_insensitive = ($flags & SUBSTR_CASE_INSENSITIVE) != 0;
+      $needle = !$search_as_haystack
                 ? $search
                 : $this->string;
-      $haystack = !$searchAsHaystack
+      $haystack = !$search_as_haystack
                   ? $this->string
                   : $search;
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      if ($caseInsensitive) {
-        $needle = (new StringObj($needle))->transform(TRANSFORM_LOWERCASE)();
-        $haystack = (new StringObj($haystack))->transform(TRANSFORM_LOWERCASE)();
+      if ($case_insensitive) {
+        $needle = transform($needle, TRANSFORM_LOWERCASE);
+        $haystack = transform($haystack, TRANSFORM_LOWERCASE);
       }
       if (isset($offset) && isset($length)) {
-        if (($offset + $length) > (new StringObj($haystack))->strlen()) {
+        if (($offset + $length) > strlen($haystack)) {
           trigger_error("The \"offset\" plus the \"length\" exceeds the length of the search haystack.", E_USER_WARNING);
         }
       }
 
       // String Mode
-      if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
+      if ($resolved_string_mode == self::STRING_MODE_STRING) {
         $args = (function () use ($haystack, $needle, $offset, $length) {
           $args = [ $haystack, $needle, $offset ];
 
@@ -661,7 +574,7 @@
         return \substr_count(...$args);
       }
       // Multi-Byte String Mode
-      else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+      else if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
         return \mb_substr_count($haystack, $needle, $this->encoding);
       }
     }
@@ -671,30 +584,28 @@
      * @param string $pattern The *Regular Expression Pattern*.
      * - You **cannot** use the `g` (`PCRE_GLOBAL`) modifier. To perform a *global search*, pass the `PREG_GLOBAL_SEARCH` flag to `$flags`.
      * - You should **not** specify the `u` (`PCRE_UTF8`) modifier, as it is automatically added as needed.
-     * @param int $flags An integer representing the Search Flags:
-     * 
-     * | Flag | Description |
-     * | --- | --- |
-     * | `PREG_GLOBAL_SEARCH` | Performs a *Global Search*, like the `g` modifier was used. |
-     * | `PREG_RETURN_FULL_MATCH` | Returns only the *full pattern match*. |
-     * | `PREG_RETURN_SUB_MATCHES` | Returns only the *matched subpatterns*. |
-     * | `PREG_RETURN_STRING_ARRAY_OBJ` | Returns a `StringArrayObj` representing the matches instead of an `array`. |
-     * | `PREG_OFFSET_CAPTURE` | Each returned match will include the *offset* (in bytes) as the second item in the array. |
-     * | | ```[ [ 'foobarbaz', 0 ], [ 'bar', 3 ] ]```
-     * | `PREG_UNMATCHED_AS_NULL` | Instead of unmatched subpatterns being reported as an *empty string*, they will be reported as **null**. |
-     * | | ```[ 'foobar', 'foo', 'bar', NULL ]```
+     * @param int $flags A `PREG_*` constant integer representing the Search Flags.
+     * - {@see PREG_GLOBAL_SEARCH}
+     * - {@see PREG_RETURN_FULL_MATCH}
+     * - {@see PREG_RETURN_SUB_MATCHES}
+     * - {@see PREG_OFFSET_CAPTURE}
+     * - {@see PREG_UNMATCHED_AS_NULL}
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return array|StringArrayObj|false 
+     * @return array|null 
      * - On success, returns an `array` or `StringArrayObj` made up of the search results, formatted by the provided `$flags`. 
      * - - The first item contains the text that matched the full pattern, with subsequent items containing the text that matches a captured subpattern.
      * - - If the `PREG_RETURN_FULL_MATCH` flag was passed, only the *full pattern match* will be returned.
      * - - If the `PREG_RETURN_SUB_MATCHES` flag was passed, only the *matched subpatterns* will be returned.
      * - - If the `PREG_OFFSET_CAPTURE` flag was passed, each match will include the *offset* (in bytes).
      * - - If the `PREG_UNMATCHED_AS_NULL` flag was passed, unmatched subpatterns will be reported as **null**, instead of as an *empty string*.
-     * - If the `$pattern` doesn't match the `string`, returns **false**.
+     * - If the `$pattern` doesn't match the `string`, returns `null`.
      */
-    public function preg_match (string $pattern, int $flags = 0, int $offset = 0) {
-      $pattern_str = $this->preg_check_pattern($pattern);
+    public function pregMatch (
+      string $pattern, 
+      int $flags = 0, 
+      int $offset = 0
+    ): ?array {
+      $pattern_str = $this->pregCheckPattern($pattern);
       $pattern_flags = (function () use ($flags) {
         $used_flags = [ PREG_OFFSET_CAPTURE, PREG_UNMATCHED_AS_NULL ];
         $pattern_flags = 0;
@@ -739,15 +650,10 @@
           return $matches;
         })();
 
-        if (($flags & PREG_RETURN_STRING_ARRAY_OBJ) === 0) {
-          return $result;
-        }
-        else {
-          return $this->get_string_array($result);
-        }
+        return $result;
       }
 
-      return false;
+      return null;
     }
     /** Test if the string matches a *Regular Expression*
      * 
@@ -755,35 +661,23 @@
      * - You **cannot** use the `g` (`PCRE_GLOBAL`) modifier for testing a pattern.
      * - You should **not** specify the `u` (`PCRE_UTF8`) modifier, as it is automatically added as needed.
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return bool Returns **true** if the `string` matches the `$pattern`, or **false** if it does not.
+     * @return bool Returns `true` if the string matches the `$pattern`, or `false` if it does not.
      */
-    public function preg_test (string $pattern, int $offset = 0): bool {
-      return $this->preg_match($pattern, 0, $offset) !== false;
+    public function pregTest (string $pattern, int $offset = 0): bool {
+      return $this->pregMatch($pattern, 0, $offset) !== null;
     }
 
     /** Transform the capitalization of the `string`
      * 
-     * @param TRANSFORM_LOWERCASE|TRANSFORM_UPPERCASE|TRANSFORM_CAPITALIZE_WORDS|TRANSFORM_CAPITALIZE_FIRST $transformation Indicates how the string is to be transformed:
-     * 
-     * | Transformation | Description | 
-     * | --- | --- |
-     * | `TRANSFORM_LOWERCASE` | Transforms the entire string to *lowercase*. |
-     * | `TRANSFORM_UPPERCASE` | Transforms the entire string to *uppercase* |
-     * | `TRANSFORM_CAPITALIZE_WORDS` | Transforms the first character of each word in the string to *uppercase* |
-     * | `TRANSFORM_CAPITALIZE_FIRST` | Transforms the first character of the string to *uppercase*. |
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. |
-     * @throws \TypeError Throws a `TypeError` if `$transformation` is invalid.
+     * @param int $transformation A `TRANSFORM_*` constant value indicating how the string is to be transformed.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editing_mode}.
+     * @throws \TypeError if `$transformation` is invalid.
      */
     public function transform (int $transformation) {
       $string = $this->string;
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
+      if ($resolved_string_mode == self::STRING_MODE_STRING) {
         $string = (function () use ($transformation, $string) {
           if ($transformation === TRANSFORM_UPPERCASE) {
             return \strtoupper($string);
@@ -801,7 +695,7 @@
           return $string;
         })();
       }
-      else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+      else if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
         $string = (function () use ($transformation, $string) {
           $convert = function ($mode) {
             return \mb_convert_case($this->string, $mode, $this->encoding);
@@ -827,15 +721,48 @@
         })();
       }
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
-    /** Slice the `string` into a piece.
+    /** Change the *Case Styling* of the string
      * 
-     * This *changes* the string. To simply retrieve a slice of the `string`, use the `substr()` method.
-     * - @see StringObj::substr()
+     * @param int $casing_style A `CASING_STYLE_*` namespace constant indicating how the string is to be cased.
+     * - See {@see CASING_STYLE_LIST}
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
+     * @throws \TypeError Throws a `TypeError` if `$casing_style` is invalid.
+     */
+    public function changeCase (int $casing_style) {
+      if (!Validations\check_match($casing_style, CASING_STYLE_LIST)) {
+        throw new \TypeError("\"{$casing_style}\" is not a valid Casing Style Integer.");
+      }
+
+      $string = $this->string;
+      $replacement = function ($matches) use ($casing_style) {
+        switch ($casing_style) {
+          case CASING_STYLE_SNAKE_CASE:
+            return "_{$matches[1]}";
+          case CASING_STYLE_CAMEL_CASE:
+            return transform($matches[1], TRANSFORM_UPPERCASE);
+          case CASING_STYLE_PASCAL_CASE:
+            return transform($matches[1], TRANSFORM_UPPERCASE);
+          case CASING_STYLE_KEBAB_CASE:
+            return "-{$matches[1]}";
+        }
+      };
+
+      $string = preg_replace($string, '/\s+([\w\d])/', $replacement);
+
+      if ($casing_style == CASING_STYLE_PASCAL_CASE) {
+        $string = transform($string, TRANSFORM_CAPITALIZE_FIRST);
+      }
+
+      return $this->handleModifyReturn($string);
+    }
+    /** Slice the string into a piece
      * 
-     * - To split a string using substrings, use the `str_replace()` method.
-     * - To split a string using complex searches and replacements, use the `preg_replace()` method.
+     * This *modifies* the string. 
+     * - To simply retrieve a slice of the string, use the {@see StringObj::substr()} method.
+     * - To split a string using substrings, use the {@see StringObj::strReplace()} method.
+     * - To split a string using complex searches and replacements, use the {@see StringObj::pregReplace()} method.
      * 
      * @param int $start Where the slice begins. 
      * - A *positive offset* counts from the beginning of the `string`, while a *negative offset* counts from the end.
@@ -843,31 +770,14 @@
      * - A *positive length* indicates the maximum number of characters after the specified `$start` to include in the slice. 
      * - A *negative length* indicates the number of characters from the end of the `string` to be omitted.
      * - If omitted, the slice will continue from the `$start` to the end of the `string`.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. |
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
     public function slice (int $start = 0, int $length = null) {
       $slice = $this->substr($start, $length);
 
-      // if ($slice === false) {
-      //   $strlen = $this->strlen();
-
-      //   if ($strlen < $start) {
-      //     throw new \OutOfRangeException("The Start Position is {$start}, but the string is only {$strlen} characters long.");
-      //   }
-      //   else if (isset($length) && (0 > $length) && (($strlen - $start) + $length) < 0) {
-      //     throw new \OutOfRangeException("The Start Position is {$start}, but the string is only {$strlen} characters long and the Length is trying to remove {$length} characters.");
-      //   }
-      // }
-
-      return $this->handle_modify_return($slice);
+      return $this->handleModifyReturn($slice);
     }
-    /** Replace all occurrences of a search string with a replacement string within the string
+    /** Replace all occurrences of a search string within the string
      * 
      * - To split a string into pieces every variable number of characters, use the `slice()` method.
      * - To split a string using more complex searches and replacements, use the `preg_replace()` method.
@@ -875,29 +785,26 @@
      * @param string|array $search The Search *Needle*, provided as a single `string`, or as an `array` of needles.
      * @param string|array $replacement The replacement value for each `$search` match, provided as a single `string`, or as an `array` of replacements.
      * - The values of both `$search` and `$replacement` determine how the `string` is transformed:
-     * 
-     * | `$search` | `$replacement` | Behavior |
-     * | --- | --- | --- |
-     * | `string` | `string` | All occurrences of the `$search` string will be replaced by the `$replacement` string. | 
-     * | `array` | `string` | All `$search` matches will be replaced by the `$replacement` string. |
-     * | `string` | `array` | All occurrences of the `$search` string will be replaced by the first `$replacement` value. |
-     * | `array` | `array` | All `$search` matches will be replaced by the corresponding `$replacement` value. Elements are processed first to last. | 
-     * | | | If `$search` has fewer values than `$replacement`, the extra `$replacement` values will be discarded. |
-     * | | | If `$replacement` has fewer values than `$search`, the extra `$search` matches will be ignored. |
+     * - - If both arguments are `strings`, 
+     * all occurrences of the `$search` string will be replaced by the `$replacement` string.
+     * - - If the `$search` is an `array` and the `$replacement` a `string`, 
+     * all `$search` matches will be replaced by the `$replacement` string.
+     * - - If the `$search` is a `string` and the `$replacement` an `array`,
+     * all occurrences of the `$search` string will be replaced by the first `$replacement` value.
+     * - - If both arguments are `arrays`, 
+     * all `$search` matches will be replaced by the corresponding `$replacement` value.
+     * - - - Elements are processed first to last.
+     * - - - If `$search` has fewer values than `$replacement`, the extra `$replacement` values will be discarded.
+     * - - - If `$replacement` has fewer values than `$search`, the extra `$search` matches will be ignored.
      * @param bool $case_insensitive Indicates if the `$search` match(es) should be matched *Case Insensitively*.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. |
+     * Defaults to `false`.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function str_replace ($search, $replacement, $case_insensitive = false) {
+    public function strReplace ($search, $replacement, $case_insensitive = false) {
       $string = $this->string;
       $count = 0;
-      $execArgs = (function () use ($search, $replacement, &$count) {
-        $execArgs = [ 
+      $exec_args = (function () use ($search, $replacement, &$count) {
+        $exec_args = [ 
           $search, 
           $replacement, 
           $this->string, 
@@ -905,77 +812,74 @@
         ];
 
         if (is_string($search) && is_array($replacement)) {
-          $execArgs[0] = [ $search ];
+          $exec_args[0] = [ $search ];
         }
         if (is_array($search) && \is_array($replacement)) {
           if (count($search) > count($replacement)) {
-            $execArgs[0] = array_slice($search, 0, count($replacement));
+            $exec_args[0] = array_slice($search, 0, count($replacement));
           }
         }
 
-        return $execArgs;
+        return $exec_args;
       })();
       
       if (!$case_insensitive) {
-        $string = \str_replace(...$execArgs);      
+        $string = \str_replace(...$exec_args);      
       }
       else {
-        $string = \str_ireplace(...$execArgs);
+        $string = \str_ireplace(...$exec_args);
       }
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
-    /** Perform a *Global Regular Expression Match* on the string
+    /** Perform a *Global Regular Expression Replacement* on the string
      * 
-     * - To split a string into pieces every variable number of characters, use the `slice()` method.
-     * - To split a string using simple substrings, use the `str_replace()` method.
+     * - To split a string into pieces every variable number of characters, use the {@see StringObj::slice()} method.
+     * - To split a string using simple substrings, use the {@see StringObj::strReplace()} method.
      * 
      * @param string|array $pattern The *Regular Expression Pattern*. 
-     * - This can be a single pattern in the form of a `string`, or multiple patterns in the form of an `array`. See `$replacement` for more information on multiple pattern behavior.
+     * - This can be a single pattern in the form of a `string`, or multiple patterns in the form of an `array`. 
+     * See `$replacement` for more information on multiple pattern behavior.
      * - The `g` (`PCRE_GLOBAL`) modifier does not need to be used, as the replacement is *global* by default.
      * - You should **not** specify the `u` (`PCRE_UTF8`) modifier, as it is automatically added as needed.
      * @param string|array|callback $replacement The value to replace each string matched by the `$pattern` with. 
-     * - The replacement strings may contain references to a captured subpattern using the `\n` or `$n` syntax, with `n` being an integer from 0-99 that refers to the `n`th capture group from the `$pattern`.
-     * - - `\0` or `$0` refers to the string matched by the whole pattern.
-     * - - Captured subpatterns are counted from left to right, starting from **1**.
-     * - - The `${n}` syntax can be used when a backreference is immediately followed by a number. E.g. `${1}1`
-     * - This argument has two usages which *cannot be mixed*.
-     * - - In the first usage, a replacement `string` is provided:
-     * - - - If `$pattern` is also a `string`, strings matched by the pattern will be replaced by the `$replacement` string.
-     * - - - If `$pattern` is an `array`, all pattern matches will be replaced by the `$replacement` string.
-     * - - - You can also specify multiple replacements as an `array` of replacement `strings`.
-     * - - - - If `$pattern` is a `string`, strings matched by the pattern will be replaced by the first `$replacement` string.
-     * - - - - If `$pattern` is also an `array`, each `$pattern` match will be replaced by its `$replacement` counterpart.
-     * - - - - - If there are fewer `$pattern` elements than `$replacement` elements, all extra `$replacement` strings won't be used.
-     * - - - - - If there are fewer `$replacement` elements than `$pattern` elements, all extra `$pattern` matches remain unchanged. 
-     * - - In the second usage, a replacement `callback` is provided.
-     * - - - > `handler ( array $matches ): string`
-     * - - - The callback is provided a single argument: the `$matches` of the `$pattern`. The first element is the string matched by the whole pattern, the second the first subpattern match, and so on.
-     * - - - The callback should return the replacement as a `string`.
-     * - - - If `$pattern` is also a `string`, strings matched by the pattern will be passed to the `$replacement` callback.
-     * - - - If `$pattern` is an `array`, all pattern matches will be passed to the `$replacement` callback.
-     * - - - You can also specify multiple callbacks as an `array` of replacement `callbacks`.
-     * - - - - If `$pattern` is a `string`, strings matched by the pattern will be passed to the first `$replacement` callback.
-     * - - - - If `$pattern` is also an `array`, each `$pattern` match will be passed to its `$replacement` callback counterpart.
-     * - - - - - If there are fewer `$pattern` elements than `$replacement` elements, all extra `$replacement` callbacks won't be used.
-     * - - - - - If there are fewer `$replacement` callbacks than `$pattern` elements, all extra `$pattern` matches remain unchanged. 
-     * @param int $limit The maximum number of replacements that can be done for each `$pattern`. **-1** indicates that there is no limit to the number of replacements performed.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
      * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. |
+     * The replacement strings may contain references to a captured subpattern using the `\n` or `$n` syntax, with `n` being an integer from 0-99 that refers to the `n`th capture group from the `$pattern`.
+     * - `\0` or `$0` refers to the string matched by the whole pattern.
+     * - Captured subpatterns are counted from left to right, starting from **1**.
+     * - The `${n}` syntax can be used when a backreference is immediately followed by a number. E.g. `${1}1`
+     * 
+     * This argument has two usages which *cannot be mixed*.
+     * - In the first usage, a replacement `string` is provided:
+     * - - If `$pattern` is also a `string`, strings matched by the pattern will be replaced by the `$replacement` string.
+     * - - If `$pattern` is an `array`, all pattern matches will be replaced by the `$replacement` string.
+     * - - You can also specify multiple replacements as an `array` of replacement `strings`.
+     * - - - If `$pattern` is a `string`, strings matched by the pattern will be replaced by the first `$replacement` string.
+     * - - - If `$pattern` is also an `array`, each `$pattern` match will be replaced by its `$replacement` counterpart.
+     * - - - - If there are fewer `$pattern` elements than `$replacement` elements, all extra `$replacement` strings won't be used.
+     * - - - - If there are fewer `$replacement` elements than `$pattern` elements, all extra `$pattern` matches remain unchanged. 
+     * - In the second usage, a replacement `callback` is provided.
+     * - - > `handler ( array $matches ): string`
+     * - - The callback is provided a single argument: the `$matches` of the `$pattern`. The first element is the string matched by the whole pattern, the second the first subpattern match, and so on.
+     * - - The callback should return the replacement as a `string`.
+     * - - If `$pattern` is also a `string`, strings matched by the pattern will be passed to the `$replacement` callback.
+     * - - If `$pattern` is an `array`, all pattern matches will be passed to the `$replacement` callback.
+     * - - You can also specify multiple callbacks as an `array` of replacement `callbacks`.
+     * - - - If `$pattern` is a `string`, strings matched by the pattern will be passed to the first `$replacement` callback.
+     * - - - If `$pattern` is also an `array`, each `$pattern` match will be passed to its `$replacement` callback counterpart.
+     * - - - - If there are fewer `$pattern` elements than `$replacement` elements, all extra `$replacement` callbacks won't be used.
+     * - - - - If there are fewer `$replacement` callbacks than `$pattern` elements, all extra `$pattern` matches remain unchanged. 
+     * @param int $limit The maximum number of replacements that can be done for each `$pattern`. **-1** indicates that there is no limit to the number of replacements performed.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if any of the follow issues occur:
-     * - The `$replacement` is an `array` that contains an element that is not a `string` or `callable` function.
+     * - The `$replacement` is an `array` that contains an element that is not a valid `string` or `callable` function.
      * - The `$replacement` contains a mixture of `strings` and `callable` functions.
-     * @throws \Exception if an error occurred while invoking `preg_replace()`, `preg_replace_callback()`, or `preg_replace_callback_array()`.
+     * @throws \Exception if an error occurred while invoking `\preg_replace()`, `\preg_replace_callback()`, or `\preg_replace_callback_array()`.
      */
-    public function preg_replace ($pattern, $replacement, $limit = -1) {
+    public function pregReplace ($pattern, $replacement, $limit = -1) {
       $string = $this->string;
-      $replacementType = (function () use ($replacement) {
-        $checkVar = function ($var) {
+      $replacement_type = (function () use ($replacement) {
+        $check_var = function ($var) {
           if (is_string($var)) {
             return 'STRING';
           }
@@ -983,58 +887,58 @@
             return 'CALLBACK';
           }
           else {
-            throw new \TypeError("Replacements must be in the form of a String or Callback Function.");
+            throw new \UnexpectedValueException("Replacements must be in the form of a String or Callback Function.", 1);
           }
         };
 
         if (is_array($replacement)) {
-          return $checkVar($replacement[0]);
+          return $check_var($replacement[0]);
         }
         else {
-          return $checkVar($replacement);
+          return $check_var($replacement);
         }
       })();
       /** Formatted/Updated Arguments */
       $args = [
-        'pattern'     => $this->preg_check_pattern($pattern),
-        'replacement' => (function () use ($pattern, $replacement, $replacementType) {
+        'pattern'     => $this->pregCheckPattern($pattern),
+        'replacement' => (function () use ($pattern, $replacement, $replacement_type) {
           $arg = $replacement;
-          $definedType = null;
+          $defined_type = null;
 
           // Check replacement values
           if (is_array($replacement)) {
-            foreach ($replacement as $replacementIndex => $replacementValue) {
-              $replacementNum = $replacementIndex + 1;
-              $type = (function () use ($replacementNum, $replacementValue) {
-                if (is_string($replacementValue)) {
+            foreach ($replacement as $replacement_index => $replacement_value) {
+              $replacement_num = $replacement_index + 1;
+              $type = (function () use ($replacement_num, $replacement_value) {
+                if (is_string($replacement_value)) {
                   return 'String';
                 }
-                else if (is_callable($replacementValue)) {
+                else if (is_callable($replacement_value)) {
                   return 'Callback Function';
                 }
                 else {
-                  throw new \UnexpectedValueException("Replacement #{$replacementNum} is not a String or Callback Function.");
+                  throw new \UnexpectedValueException("Replacement #{$replacement_num} is not a String or Callback Function.", 1);
                 }
               })();
 
-              if (!isset($definedType)) {
-                $definedType = $type;
+              if (!isset($defined_type)) {
+                $defined_type = $type;
               }
-              else if ($type != $definedType) {
-                throw new \UnexpectedValueException("Replacements cannot be a mixture of Strings and Callback Functions. Replacement #{$replacementNum} is a {$type} while the previous replacements are {$definedType}s.");
+              else if ($type != $defined_type) {
+                throw new \UnexpectedValueException("Replacements cannot be a mixture of Strings and Callback Functions. Replacement #{$replacement_num} is a {$type} while the previous replacements are {$defined_type}s.", 2);
               }
             }
           }
           else if (!is_string($replacement) && !is_callable($replacement)) {
-            throw new \UnexpectedValueException("Replacement is not a String or Callback Function.");
+            throw new \UnexpectedValueException("Replacement is not a String or Callback Function.", 1);
           }
 
           if (is_array($pattern) && is_array($replacement)) {
-            $replacementValue = $replacementType == 'STRING'
+            $replacement_value = $replacement_type == 'STRING'
                                 ? '$0'
                                 : function ($matches) { return $matches[0]; };
 
-            $arg = array_pad($arg, count($pattern), $replacementValue);
+            $arg = array_pad($arg, count($pattern), $replacement_value);
           }
 
           return $arg;
@@ -1042,10 +946,10 @@
       ];
       $count = 0;
 
-      if ($replacementType == 'STRING') {
+      if ($replacement_type == 'STRING') {
         $string = \preg_replace($args['pattern'], $args['replacement'], $string, $limit, $count);
       }
-      else if ($replacementType == 'CALLBACK') {
+      else if ($replacement_type == 'CALLBACK') {
         if (!is_array($replacement)) {
           $string = \preg_replace_callback($args['pattern'], $args['replacement'], $string, $limit, $count);
         }
@@ -1073,55 +977,59 @@
         throw new \Exception("An error occurred while attempting to modify the string.");
       }
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
-    /** Appends a plural letter to the string depending on the value of a given number.
+    /** Appends a plural value to the string depending on the value of a given number.
      *
-     * @param int $value The value to be evaluated. If this value is not equal to **1**, a plural letter will be appended to the string.
+     * @param int $value The value to be evaluated. 
+     * If this value is not equal to **1**, a plural letter will be appended to the string.
      * @param bool $apostrophe Indicates if an *apostrophe* (`'`) should be included with the plural letter.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. |
+     * @param string $plural_value The plural value to append to the string.
+     * Defaults to the letter `s`.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function add_plural (int $value, $apostrophe = false) {
-      $string = ($value !== 1
-                ? ($apostrophe
-                  ? "{$this->string}'s"
-                  : "{$this->string}s"
-                )
-                : $this->string);
+    public function addPlural (
+      int $value, 
+      bool $apostrophe = false, 
+      string $plural_value = "s"
+    ) {
+      $string = $this->string;
 
-      return $this->handle_modify_return($string);
+      if ($value !== 1) {
+        if ($apostrophe) {
+          $string .= "'";
+        }
+
+        $string .= $plural_value;
+      }
+
+      return $this->handleModifyReturn($string);
     }
 
     /** Trim whitespace, or other characters, from the beginning and/or end of the string.
      * 
-     * @param STR_SIDE_BOTH|STR_LEFT|STR_RIGHT $trim_side A `STR_SIDE_*` constant indicating which sides(s) of the string are to be trimmed.
+     * @param int $trim_side A `STR_SIDE_*` constant indicating which sides(s) of the string are to be trimmed.
+     * - See {@see STR_SIDE_LIST} for the list of options.
      * @param string $charlist The list of characters that will be trimmed from the string.
      * - By default, the `$charlist` is a list of whitespace characters: ` \n\r\t\v\s`.
      * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided, with the exception of the *Tilde* (`~`).
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
+     * @throws \UnexpectedValueException if `$trim_side` is not a valid Trim Side `int`.
      */
     public function trim (int $trim_side = STR_SIDE_BOTH, string $charlist = " \n\r\t\v\s") {
+      if (!in_array($trim_side, STR_SIDE_LIST)) {
+        throw new \UnexpectedValueException("\"{$trim_side}\" is not a valid Trim Side Int.");
+      }
+
       $patterns = (function () use ($trim_side, $charlist) {
         $patterns = [];
-        $charlistStr = str_replace($charlist, '~', '\~');
+        $charlist_str = str_replace($charlist, '~', '\~');
 
         if ($trim_side == STR_SIDE_LEFT) {
-          $patterns[] = "~^[{$charlistStr}]+~";
+          $patterns[] = "~^[{$charlist_str}]+~";
         }
         if ($trim_side == STR_SIDE_RIGHT) {
-          $patterns[] = "~[{$charlistStr}]+$~";
+          $patterns[] = "~[{$charlist_str}]+$~";
         }
 
         return $patterns;
@@ -1132,28 +1040,22 @@
         $string = slice($string, 0, -1);
       }
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Collapse whitespace, or other characters, within the string.
      * 
      * @param string $charlist The list of characters that will be collapsed in the string.
      * - By default, the `$charlist` is a list of whitespace characters: ` \n\r\t\v\s`.
      * - Any Character or Escaped Character supported by a *Regular Expression Character Set* can be provided, with the exception of the *Tilde* (`~`).
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
     public function collapse (string $charlist = " \n\r\t\v\s") {
-      $charlistStr = str_replace($charlist, '~', '\~');
-      $string = preg_replace($this->string, "/[{$charlistStr}]{2,}/", function ($matches) {
+      $charlist_str = str_replace($charlist, '~', '\~');
+      $string = preg_replace($this->string, "/[{$charlist_str}]{2,}/", function ($matches) {
         return $matches[0][0];
       });
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Pad the string to a certain length with another string
      * 
@@ -1161,41 +1063,55 @@
      * - If negative, less than, or equal to the *length* of the `string`, no padding will be inserted.
      * @param string $padding The padding string used to pad the string.
      * - The `$padding` may be truncated if the required number of characters can't be evenly divided by its length.
-     * @param STR_SIDE_BOTH|STR_SIDE_LEFT|STR_SIDE_RIGHT $padding_side A `STR_SIDE_*` constant indicating which side(s) of the string are to be padded.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @param int $padding_side A `STR_SIDE_*` constant indicating which side(s) of the string are to be padded.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function pad (int $padding_length, string $padding = ' ', int $padding_side = STR_SIDE_RIGHT) {
+    public function pad (
+      int $padding_length, 
+      string $padding = ' ', 
+      int $padding_side = STR_SIDE_RIGHT
+    ) {
       $string = $this->string;
-      $funcPaddingSide = (function () use ($padding_side) {
-        $funcPaddingSide = [
+      $func_padding_side = (function () use ($padding_side) {
+        $func_padding_side = [
           STR_SIDE_BOTH  => STR_PAD_BOTH,
           STR_SIDE_LEFT  => STR_PAD_LEFT,
           STR_SIDE_RIGHT => STR_PAD_RIGHT
         ];
 
-        return $funcPaddingSide[$padding_side];
+        return $func_padding_side[$padding_side];
       })();
+      $resolved_string_mode = $this->getResolvedStringMode();
 
-      if ($this->resolved_string_mode == self::STRING_MODE_STRING) {
-        $string = \str_pad($string, $padding_length, $padding, $funcPaddingSide);
+      if ($resolved_string_mode == self::STRING_MODE_STRING) {
+        $string = \str_pad(
+          $string, 
+          $padding_length, 
+          $padding, 
+          $func_padding_side
+        );
       }
-      else if ($this->resolved_string_mode == self::STRING_MODE_MB_STRING) {
+      else if ($resolved_string_mode == self::STRING_MODE_MB_STRING) {
         if (function_exists('mb_str_pad')) {
-          $string = \mb_str_pad($string, $padding_length, $padding, $funcPaddingSide, $this->encoding);
+          $string = \mb_str_pad(
+            $string, 
+            $padding_length, 
+            $padding, 
+            $func_padding_side, 
+            $this->encoding
+          );
         }
         else {
           $calculatedLength = (function () use ($padding_length) {
-            $strObj = new StringObj($this->string, StringObj::EDITING_MODE_CHAIN, StringObj::STRING_MODE_STRING);
+            $strObj = new StringObj(
+              $this->string, 
+              StringObj::EDITING_MODE_CHAIN, 
+              StringObj::STRING_MODE_STRING
+            );
 
             $length = $strObj->strlen();
 
-            $strObj->string_mode = StringObj::STRING_MODE_MB_STRING;
+            $strObj->setStringMode(StringObj::STRING_MODE_MB_STRING);
             $length -= $strObj->strlen();
 
             $length += $padding_length;
@@ -1203,23 +1119,22 @@
             return $length;
           })(); 
 
-          $string = \str_pad($string, $calculatedLength, $padding, $funcPaddingSide);
+          $string = \str_pad(
+            $string, 
+            $calculatedLength, 
+            $padding, 
+            $func_padding_side
+          );
         }
       }
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Split the string into smaller chunks
      * 
      * @param int $chunk_length The length of a single chunk.
      * @param string $separator The separator character(s) to be placed between chunks.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
     public function chunk (int $chunk_length = 76, string $separator = "\r\n") {
       $string = $this->string;
@@ -1227,7 +1142,7 @@
       $string = $this->split($chunk_length);
       $string = implode($separator, $string);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
 
     /** Convert HTML Characters in the string into *HTML Entities*
@@ -1235,23 +1150,18 @@
      * Encodes the following characters:
      * 
      * | Character Name | Character | HTML Entity |
-     * | --- | --- | --- |
-     * | Ampersand | `&` | `&amp;` |
-     * | Double Quote | `"` | `&quot;` |
-     * | Single Quote | `'` | `&apos;` |
-     * | Less Than | `<` | `&lt;` |
-     * | Greater Than | `>` | `&gt;` |
+     * | ---            | ---       | ---         |
+     * | Ampersand      | `&`       | `&amp;`     |
+     * | Double Quote   | `"`       | `&quot;`    |
+     * | Single Quote   | `'`       | `&apos;`    |
+     * | Less Than      | `<`       | `&lt;`      |
+     * | Greater Than   | `>`       | `&gt;`      |
      * 
      * @param bool $encode_everything Indicates if all characters with HTML Character Entity equivalents should be encoded, instead of just the special characters.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * Defaults to `false`.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function encode_html (bool $encode_everything = false) {
+    public function encodeHTML (bool $encode_everything = false) {
       $encoding = (function () {
         $encoding = $this->encoding != ENCODING_ASCII
                     ? $this->encoding
@@ -1268,30 +1178,25 @@
                 ? \htmlspecialchars($this->string, ENT_HTML5|ENT_QUOTES, $encoding)
                 : \htmlentities($this->string, ENT_QUOTES, $encoding);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Convert *HTML Entities* in the string back to their equivalent HTML Characters. 
      * 
      * Decodes the following characters:
      * 
-     * | HTML Entity | Character | Character Name |
-     * | --- | --- | --- |
-     * | `&amp;` | `&` | Ampersand |
-     * | `&quot;` | `"` | Double Quote |
-     * | `&apos;` | `'` | Single Quote |
-     * | `&lt;` | `<` | Less Than |
-     * | `&gt;` | `>` | Greater Than |
+     * | HTML Entity  | Character | Character Name  |
+     * | ---          | ---       | ---             |
+     * | `&amp;`      | `&`       | Ampersand       |
+     * | `&quot;`     | `"`       | Double Quote    |
+     * | `&apos;`     | `'`       | Single Quote    |
+     * | `&lt;`       | `<`       | Less Than       |
+     * | `&gt;`       | `>`       | Greater Than    |
      * 
-     * @param bool $encode_everything Indicates if all HTML Character Entities should be decoded, instead of just the special characters.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @param bool $decode_everything Indicates if all HTML Character Entities should be decoded, instead of just the special characters.
+     * Defaults to `false`.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function decode_html (bool $decode_everything = false) {
+    public function decodeHTML (bool $decode_everything = false) {
       $encoding = (function () {
         $encoding = $this->encoding != ENCODING_ASCII
                     ? $this->encoding
@@ -1308,11 +1213,13 @@
                 ? \htmlspecialchars_decode($this->string, ENT_QUOTES)
                 : \html_entity_decode($this->string, ENT_QUOTES, $encoding);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Strip HTML & PHP tags from the string
      * 
-     * @param null|int|array|string $allowed_tags A list of whitelisted tags. Can be one of multiple values:
+     * @param null|int|array|string $allowed_tags A list of whitelisted tags. 
+     * 
+     * Can be one of multiple values:
      * - Passing **null** will strip all tags from the string.
      * - An `int` representing a *Preset Tag Threshold*:
      * - - @see Strings\STRIP_TAGS_STRICT
@@ -1322,17 +1229,11 @@
      * - - E.g. `[ 'div', 'span', 'p' ]`
      * - A `string` made up of the whitelisted tags.
      * - - E.g. `<div><span><p>`
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$allowed_tags` is not of a valid format.
      */
-    public function strip_tags ($allowed_tags = null) {
-      $tagList = (function () use ($allowed_tags) {
+    public function stripTags ($allowed_tags = null) {
+      $tag_list = (function () use ($allowed_tags) {
         $thresholds = [
           STRIP_TAGS_STRICT => [
             'div',
@@ -1365,12 +1266,12 @@
         if (!isset($allowed_tags)) {
           return null;
         }
-        else if (is_int($allowed_tags) && isset($thresholds[$allowed_tags]) || is_array($allowed_tags)) {
+        else if ((is_int($allowed_tags) && isset($thresholds[$allowed_tags])) || is_array($allowed_tags)) {
           $tags = [];
 
           if (is_int($allowed_tags)) {
-            foreach ($thresholds as $const => $tresholdTags) {
-              $tags = array_merge($tags, $tresholdTags);
+            foreach ($thresholds as $const => $threshold_tags) {
+              $tags = array_merge($tags, $threshold_tags);
 
               if ($const == $allowed_tags) {
                 break;
@@ -1390,34 +1291,23 @@
         throw new \UnexpectedValueException("\"{$allowed_tags}\" is not a valid Tag Threshold Constant, Array, or String.");
       })();
 
-      try {
-        $string = \strip_tags($this->string, $tagList);
+      $string = \strip_tags($this->string, $tag_list);
 
-        return $this->handle_modify_return($string);
-      }
-      catch (\Throwable $exception) {
-        throw new \UnexpectedValueException("\"{$allowed_tags}\" is not a valid Tag Threshold Constant, Array, or String.");
-      }
+      return $this->handleModifyReturn($string);
     }
     /** Converts special characters in the string to their equivalent URL Character Codes.
      * 
-     * **Note**: The string will be *trimmed* ({@see StringObj::trim()}) before being encoded.
+     * **Note**: The string will be *trimmed* (see {@see StringObj::trim()}) before being encoded.
      * 
      * @param bool $legacy_encode Indicates if *Legacy URL Encoding* should be performed, determining which specification should be followed when encoding the URL:
      * 
-     * | Value | Specification | Description 
-     * | --- | --- | --- |
-     * | `false` | *RFC 3986* | All non-alphanumeric characters except `-`, `_`, `.`, & `~` are replaced with a percent (%) sign followed by two hex digits. |
-     * | `true` | *RFC 1866* | All non-alphanumeric characters except `-`, `_`, & `.` are replaced with a percent (%) sign followed by two hex digits. Spaces are encoded as plus (`+`) signs. This is the same way as the `application/x-www-form-urlencoded` media type. |
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * | Value    | Specification | Description |
+     * | ---      | ---           | ---         |
+     * | `false`  | *RFC 3986*    | All non-alphanumeric characters except `-`, `_`, `.`, & `~` are replaced with a percent (%) sign followed by two hex digits. |
+     * | `true`   | *RFC 1866*    | All non-alphanumeric characters except `-`, `_`, & `.` are replaced with a percent (%) sign followed by two hex digits. Spaces are encoded as plus (`+`) signs. This is the same way as the `application/x-www-form-urlencoded` media type. |
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function encode_url (bool $legacy_encode = false) {
+    public function encodeURL (bool $legacy_encode = false) {
       $string = $this->string;
 
       $string = trim($string);
@@ -1425,92 +1315,52 @@
                 ? \rawurlencode($string)
                 : \urlencode($string);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Converts URL Character Codes in the string to their equivalent special characters.
      * 
      * @param bool $legacy_decode Indicates if *Legacy URL Decoding* should be performed, determining which specification should be followed when decoding the URL:
      * 
-     * | Value | Specification | Description 
-     * | --- | --- | --- |
-     * | `false` | *RFC 3986* | All non-alphanumeric characters except `-`, `_`, `.`, & `~` can be decoded. |
-     * | `true` | *RFC 1866* | All non-alphanumeric characters except `-`, `_`, & `.` can be decoded. Spaces are decoded from plus (`+`) signs. This is the same way as the `application/x-www-form-urlencoded` media type. |
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * | Value    | Specification | Description |
+     * | ---      | ---           | ---         |
+     * | `false`  | *RFC 3986*    | All non-alphanumeric characters except `-`, `_`, `.`, & `~` can be decoded. |
+     * | `true`   | *RFC 1866*    | All non-alphanumeric characters except `-`, `_`, & `.` can be decoded. Spaces are decoded from plus (`+`) signs. This is the same way as the `application/x-www-form-urlencoded` media type. |
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function decode_url (bool $legacy_decode = false) {
+    public function decodeURL (bool $legacy_decode = false) {
       $string = $this->string;
 
       $string = !$legacy_decode
                 ? \rawurldecode($string)
                 : \urldecode($string);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Encode a string to be used as an identifier
      * 
-     * @param int $encoding_style Indicates how the string will be encoded.
-     * 
-     * | Style | Example | Description |
-     * | --- | --- | --- |
-     * | `ENCODE_ID_SNAKE_CASE` | string_to_ID | Spaces are converted to Underscores (`_`) |
-     * | `ENCODE_ID_CAMEL_CASE` | stringToID | Spaces are removed and the next immediate character is converted to *uppercase*. This is identical to `ENCODE_ID_PASCAL_CASE`, except that the first character of the string remains *lowercase*. |
-     * | `ENCODE_ID_PASCAL_CASE` | StringToID | Spaces are removed and the next immediate character is converted to *uppercase*. This is identical to `ENCODE_ID_CAMEL_CASE`, except that the first character of the string is also converted to *uppercase*. |
-     * | `ENCODE_ID_KEBAB_CASE` | string-to-ID | Spaces are converted to Dashes (`-`). |
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @param int $casing_style A `CASING_STYLE_*` namespace constant indicating how the string is to be cased.
+     * - See {@see CASING_STYLE_LIST}
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function encode_id ($encoding_style = ENCODE_ID_SNAKE_CASE) {
+    public function encodeID ($casing_style = CASING_STYLE_SNAKE_CASE) {
       $string = $this->string;
-      $replacement = function ($matches) use ($encoding_style) {
-        switch ($encoding_style) {
-          case ENCODE_ID_SNAKE_CASE:
-            return "_{$matches[1]}";
-          case ENCODE_ID_CAMEL_CASE:
-            return transform($matches[1], TRANSFORM_UPPERCASE);
-          case ENCODE_ID_PASCAL_CASE:
-            return transform($matches[1], TRANSFORM_UPPERCASE);
-          case ENCODE_ID_KEBAB_CASE:
-            return "-{$matches[1]}";
-        }
-      };
 
       $string = preg_replace($string, '/[^\w\d\s]/', '');
-      $string = preg_replace($string, '/\s+([\w\d])/', $replacement);
+      $string = change_case($string, $casing_style);
 
-      if ($encoding_style == ENCODE_ID_PASCAL_CASE) {
-        $string = transform($string, TRANSFORM_CAPITALIZE_FIRST);
-      }
-
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
     /** Escape a string for use in a *Regular Expression*.
      * 
-     * @param null|string $delimiter The *Expression Delimiter* to also be escaped.
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @param null|string $delimiter The *Expression Delimiter* which will also be escaped.
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringObj::$editingMode}.
      */
-    public function escape_reg($delimiter = null) {
+    public function escapeReg ($delimiter = null) {
       $string = preg_quote($this->string, $delimiter);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
-    /** An *alias* for `ShiftCodesTKDatabase::escape_string()`.
+    /** An *alias* for {@see ShiftCodesTKDatabase::escape_string()}.
      * 
      * > Escape a string for use in a SQL Query Statement.
      * 
@@ -1522,109 +1372,52 @@
      * - `'`
      * - `"`
      * - `Control-Z`
-     * @see ShiftCodesTKDatabase::escape_string()
      * 
-     * @return StringObj|string Returns a `StringObj` or `string` depending on the `$editing_mode`:
-     * 
-     * | Editing Mode | Return Value |
-     * | --- | --- |
-     * | `EDITING_MODE_CHAIN` | Returns the `StringObj` for further manipulation. |
-     * | `EDITING_MODE_STANDARD` | Returns the modified `string`. |
-     * | `EDITING_MODE_COPY` | Returns a modified *copy* of the `string`. | 
+     * @return StringObj|string Returns a `StringObj` or `string` depending on the {@see StringArrayObj::$editingMode}.
      * @throws \RuntimeException Throws a `RuntimeException` if the method is called before the `Database` module has been loaded.
      */
-    public function escape_sql () {
+    public function escapeSQL () {
       if (!class_exists('ShiftCodesTKDatabase')) {
-        throw new \RuntimeException("String could not be SQL-Escaped: The Database has not been instantiated yet! The Database module needs to be loaded first.");
+        throw new \RuntimeException("String could not be SQL-Escaped: The Database module has not been loaded yet.");
       }
 
       $string = \ShiftCodesTKDatabase::escape_string($this->string);
 
-      return $this->handle_modify_return($string);
+      return $this->handleModifyReturn($string);
     }
 
-    /** Execute an aliased string method
+    /** Casting the `StringObj` as a string returns the {@see StringObj::$string}.
      * 
-     * @param string $method_name The name of the *aliased method*.
-     * @param mixed $args The arguments to be passed to the *aliased method*. The string being evaluated should be passed as the first argument.
-     * @return mixed Returns the value of the *aliased method*
-     * @throws UnexpectedValueException Throws an `UnexpectedValueException` if `$method_name` is not a valid method name.
+     * @return string Returns the value of the `$string`.
      */
-    public static function alias ($method_name, ...$args) {
-      $blacklist = [
-        'preg_check_pattern',
-        'handle_modify_return'
-      ];
-      $string = array_shift($args);
-      $stringObj = new StringObj($string, self::EDITING_MODE_STANDARD);
-
-      if (!method_exists(get_class($stringObj), $method_name)) {
-        throw new \UnexpectedValueException("\"{$method_name}\" is not a valid method to be aliased.");
-      }
-      if (array_search($method_name, $blacklist) !== false) {
-        throw new \UnexpectedValueException("\"{$method_name}\" cannot be aliased.");
-      };
-
-      return $stringObj->$method_name(...$args);
+    public function __toString (): string {
+      return $this->getString();
     }
-    /** Test object support for a string.
+    /** Invoking the `StringObj` returns the {@see StringObj::$string}.
      * 
-     * Emits a warning if a method threw an exception during execution.
-     * 
-     * @param string $string The string to test. Note that longer strings are preferred, as shorter strings may cause unnecessary errors with some methods.
-     * @return array Returns an `array` made up of results of the tested methods. The resulting `StringObj` can be accessed via the **string_obj** index.
+     * @return string Returns the value of the `$string`.
      */
-    public static function test_string_support (string $string) {
-      $patterns = '/[\w\d\p{C}\p{S}]+/';
-      $methods = [
-        'check_encoding'    => [],
-        'get_encoding'      => [],
-        'check_string_mode' => [],
-        'strlen'            => [],
-        'char'              => [2],
-        'firstchar'         => [],
-        'lastchar'          => [],
-        'split'             => [2],
-        'explode'           => [' '],
-        'substr'            => [2, -2],
-        'substr_pos'        => [' '],
-        'substr_check'      => [' '],
-        'substr_count'      => [' '],
-        'preg_match'        => [$patterns],
-        'preg_test'         => [$patterns], 
-        'transform'         => [TRANSFORM_CAPITALIZE_WORDS],
-        'slice'             => [2, -2],
-        'str_replace'       => [' ', "{ }"],
-        'preg_replace'      => [$patterns, '[ $0 ]'],
-        'add_plural'        => [2, true],
-        'trim'              => [],
-        'collapse'          => [],
-        'encode_html'       => [],
-        'decode_html'       => [],
-        'strip_tags'        => [],
-        'encode_url'        => [],
-        'decode_url'        => [],
-        'encode_id'         => [],
-        'escape_reg'        => [],
-        'escape_sql'        => []
-      ];
-      $stringObj = new StringObj($string, StringObj::EDITING_MODE_STANDARD);
-      $result = [];
-
-      foreach ($methods as $method_name => $args) {
-        try {
-          $result[$method_name] = $stringObj->$method_name(...$args);
-        }
-        catch (\Throwable $exception) {
-          trigger_error("A method has failed: \"{$method_name}\". Error: {$exception->getMessage()}");
-          $result[$method_name] = null;
-          continue;
-        }
-      }
-
-      $result['string_obj'] = $stringObj;
-
-      return $result;
+    public function __invoke (): string {
+      return $this->getString();
+    }
+    /** Initialize a new `StringObj` 
+     * 
+     * @param string $string The string to be used.
+     * @param int $editing_mode An `EDITING_MODE_` class constant indicating the *Editing Mode* to be used when *modifying* the `$string`.
+     * - See {@see StringObj::EDITING_MODE_LIST} for the list of Editing Modes.
+     * - Methods that modify the string can be found in the `MANIPULATION_METHODS` class constant.
+     * @param int $string_mode A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$string`.
+     * - See {@see StringObj::STRING_MODE_LIST} for the list of String Modes.
+     * @throws \UnexpectedValueException Throws an `UnexpectedValueException` if `$string_mode` is not a valid *String Mode* value.
+     */
+    public function __construct (
+      string $string, 
+      int $editing_mode = self::EDITING_MODE_CHAIN, 
+      int $string_mode = self::STRING_MODE_AUTO
+    ) {
+      $this->setString($string);
+      $this->setStringMode($string_mode);
+      $this->setEditingMode($editing_mode);
     }
   }
 ?>
