@@ -459,13 +459,13 @@
               }
 
               if (is_string($value)) {
-                $value = clean_all_html($value);
+                $value = Strings\encode_html($value);
                 $value = \ShiftCodesTKDatabase::escape_string($value);
               }
               else if (is_array($value)) {
                 array_walk_recursive($value, function (&$arrValue, $arrKey) {
                   if (is_string($arrValue)) {
-                    $arrValue = clean_all_html($arrValue);
+                    $arrValue = Strings\encode_html($arrValue);
                     $arrValue = \ShiftCodesTKDatabase::escape_string($arrValue);
                   }
                 });

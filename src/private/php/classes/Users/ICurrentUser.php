@@ -704,7 +704,7 @@
                   'template' => 'formSuccess'
                 ],
                 'content' => [
-                  'title' => 'Welcome, <b>' . clean_all_html(self::get_current_user()->username) . '</b>!',
+                  'title' => 'Welcome, <b>' . Strings\encode_html(self::get_current_user()->username) . '</b>!',
                   'body'  => 'You are now logged in to ShiftCodesTK.'
                 ]
               ];

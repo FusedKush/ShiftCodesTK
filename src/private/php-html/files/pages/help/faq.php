@@ -1,7 +1,8 @@
 <?php
   require_once(dirname(__DIR__) . '/initialize.php');
 
-  use ShiftCodesTK\PageConfiguration;
+  use ShiftCodesTK\PageConfiguration,
+      ShiftCodesTK\Strings;
 
   (new PageConfiguration('help/faq'))
     ->setTitle('FAQ')
@@ -108,7 +109,7 @@
       // Add wrapper <p> tags as needed, Add IDs
       foreach ($questions as $section => &$questionList) {
         foreach ($questionList as &$question) {
-          $question['id'] = clean_url($question['q']);
+          $question['id'] = Strings\encode_url($question['q']);
           $question['a'] = collapseWhitespace($question['a']);
 
           if (!strpos($question['a'], '<p>')) {
@@ -137,10 +138,10 @@
         <div class="body content-container" id="table_of_contents">
           <?php foreach ($questions as $section => &$questionList) : ?>
             <div class="section">
-              <h3><a href="<?= '#' .clean_url($section); ?>"><?= $section; ?></a></h3>
+              <h3><a href="<?= '#' . Strings\encode_url($section); ?>"><?= $section; ?></a></h3>
               <ul class="styled">
                 <?php foreach ($questionList as &$question) : ?>
-                  <?php $title = clean_html('Jump to question: "' . $question['q'] . '"'); ?>
+                  <?php $title = Strings\strip_tags('Jump to question: "' . $question['q'] . '"'); ?>
                   <li>
                     <a href="<?= "#{$question['id']}"; ?>"
                        title="<?= $title; ?>"
@@ -154,7 +155,7 @@
       </header>
       <?php foreach ($questions as $section => &$questionList) : ?>
         <section class="faq-group">
-          <header id="<?= clean_url($section); ?>">
+          <header id="<?= Strings\encode_url($section); ?>">
             <h2 class="title"><?= $section; ?></h2>
           </header>
             <?php foreach ($questionList as &$question) : ?>

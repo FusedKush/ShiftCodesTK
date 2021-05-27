@@ -1,6 +1,8 @@
 <?php
   require_once('shift_constants.php');
 
+  use ShiftCodesTK\Strings;
+
   /**
    * Retrieves an Add SHiFT Code or Update SHiFT Code Form
    * 
@@ -90,7 +92,7 @@
               'confirmation'      => [
                 'required'           => true,
                 'title'              => 'Submit this SHiFT Code?',
-                'body'               => clean_all_html('Are you sure you want to submit this SHiFT Code? You will be able to edit it later from <a class="styled" href="/codes/" aria-label="My SHiFT Codes">My Codes</a>.'),
+                'body'               => Strings\encode_html('Are you sure you want to submit this SHiFT Code? You will be able to edit it later from <a class="styled" href="/codes/" aria-label="My SHiFT Codes">My Codes</a>.'),
                 'requireResponseData' => true,
                 'actions'            => [
                   'deny'           => [

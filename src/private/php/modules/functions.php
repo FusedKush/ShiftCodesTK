@@ -400,7 +400,7 @@
           'template' => 'formSuccess'
         ],
         'content' => [
-          'title' => 'Welcome, <b>' . clean_all_html(auth_user_name()) . '</b>!',
+          'title' => 'Welcome, <b>' . Strings\encode_html(auth_user_name()) . '</b>!',
           'body'  => 'You are now logged in to ShiftCodesTK.'
         ]
       ];
@@ -442,7 +442,7 @@
           'template' => 'formSuccess'
         ],
         'content' => [
-          'title'    => 'Goodbye, <b>' . clean_all_html(auth_user_name()) . '</b>',
+          'title'    => 'Goodbye, <b>' . Strings\encode_html(auth_user_name()) . '</b>',
           'body'     => 'You are no longer logged in to ShiftCodesTK.'
         ]
         // 'actions' => [

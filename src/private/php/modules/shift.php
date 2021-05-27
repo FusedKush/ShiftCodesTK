@@ -1,5 +1,6 @@
 <?php
-  use ShiftCodesTK\Users\CurrentUser;
+  use ShiftCodesTK\Users\CurrentUser,
+      ShiftCodesTK\Strings;
 
   // SHiFT Code Management
   (function () {
@@ -475,7 +476,7 @@
             }
           })();
           $order = (function () use ($optionsList) {
-            $cleanCodeID = clean_sql($optionsList['code']);
+            $cleanCodeID = Strings\escape_sql($optionsList['code']);
             // SHiFT Code ordering statements
             $options = [
               'default' =>
@@ -513,8 +514,8 @@
 
             return $str;
           })();
-          $limit = clean_sql($optionsList['limit']);
-          $offset = clean_sql(($optionsList['page'] - 1) * $optionsList['limit']);
+          $limit = Strings\escape_sql($optionsList['limit']);
+          $offset = Strings\escape_sql(($optionsList['page'] - 1) * $optionsList['limit']);
           $count = (function () use ($optionsList, $where, $limit) {
             $str = '';
 

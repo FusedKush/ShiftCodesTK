@@ -61,7 +61,7 @@
         })();
 
         $this->name = $name;
-        $this->id = $prefix . Strings\encode_id($name, Strings\ENCODE_ID_SNAKE_CASE);
+        $this->id = $prefix . Strings\encode_id($name, Strings\CASING_STYLE_SNAKE_CASE);
       }
       else {
         trigger_error($evaluator->get_last_error(), E_USER_WARNING);

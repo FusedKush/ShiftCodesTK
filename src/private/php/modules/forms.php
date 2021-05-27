@@ -168,6 +168,7 @@
   // Old Module
   namespace {
     use const ShiftCodesTK\DATE_TIMEZONES;
+    use ShiftCodesTK\Strings;
 
     /** Form Configuration */
   
@@ -560,7 +561,7 @@
         (function () use (&$child, $properties) {
           $id = "{$this->internalProperties['id']}_{$child->internalProperties['id']}";
   
-          $child->updateProperty("internalProperties->id", clean_id($id), true);
+          $child->updateProperty("internalProperties->id", Strings\encode_id($id), true);
   
           // Inherited Props
           (function () use (&$child, $properties) {
@@ -725,7 +726,7 @@
   
               if ($propertyString == "properties->name" && $usingCustomProperties) {
   
-                $this->updateProperty('internalProperties->id', clean_id($propertyValue), true);
+                $this->updateProperty('internalProperties->id', Strings\encode_id($propertyValue), true);
               }
             }
           }
@@ -993,7 +994,7 @@
           })();
   
           if ($classList) {
-            return 'class="' . clean_all_html(implode(' ', $classList)) . '"';
+            return 'class="' . Strings\encode_html(implode(' ', $classList)) . '"';
           }
           else {
             return '';
@@ -1074,7 +1075,7 @@
             $str = '';
   
             foreach ($attributeList as $attributeName => $attributeValue) {
-              $str .= clean_all_html($attributeName) . '="' . clean_all_html($attributeValue) . '" ';
+              $str .= Strings\encode_html($attributeName ?? '') . '="' . Strings\encode_html($attributeValue ?? '') . '" ';
             }
   
             return $str;
@@ -1129,7 +1130,7 @@
             if (!$isField) {
               $markup .= "<div class=\"title{$hiddenTitle}\">";
                 $markup .= "<span class=\"content\">";
-                  $markup .= clean_all_html($content['title']);
+                  $markup .= Strings\encode_html($content['title']);
                 $markup .= '</span>';
               $markup .= '</div>'; // Closing title tag
             }
@@ -1179,7 +1180,7 @@
   
                 // Label Value
                 $markup .= "<span class=\"content\">";
-                  $markup .= clean_all_html($content['title']);
+                  $markup .= Strings\encode_html($content['title']);
                 $markup .= '</span>';
   
               // Closing label tags
@@ -1188,7 +1189,7 @@
           }
           if ($isValidPiece('subtitle')) {
             $markup .= '<div class="subtitle">';
-              $markup .= clean_html($content['subtitle'], '<span><a><b><strong><i><em>');
+              $markup .= Strings\strip_tags($content['subtitle'], '<span><a><b><strong><i><em>');
             $markup .= '</div>'; // Closing subtitle tag
           }
           if ($isValidPiece('description')) {
@@ -1203,7 +1204,7 @@
                 foreach ($description as $key => $item) {
                   if (!is_array_associative($description) || !isset($this->inputProperties['options'][$key])) {
                     $markup .= "<li>";
-                      $markup .= clean_html($item, '<span><a><b><strong><i><em><ul><ol><li><code><button><a>');
+                      $markup .= Strings\strip_tags($item, '<span><a><b><strong><i><em><ul><ol><li><code><button><a>');
                     $markup .= '</li>';
                   }
                 }
@@ -1211,7 +1212,7 @@
                 $markup .= '</ul>';
               }
               else {
-                $markup .= clean_html($description, '<span><a><b><strong><i><em><br><code><pre><ul><ol><li><button><a>');
+                $markup .= Strings\strip_tags($description, '<span><a><b><strong><i><em><br><code><pre><ul><ol><li><button><a>');
               }
             })();
   
@@ -2162,7 +2163,7 @@
               ],
               'inputProperties' => [
                 'type'        => 'text',
-                'value'       => decode_url($_GET['continue'] ?? $this->formResult['redirect']['location']),
+                'value'       => Strings\decode_url($_GET['continue'] ?? $this->formResult['redirect']['location']),
                 'validations' => [
                   'validations' => [
                     'isURL' => true
@@ -2329,7 +2330,7 @@
           })();
   
           array_walk_recursive($props, function (&$propValue, $propName) {
-            $propValue = decode_url($propValue);
+            $propValue = Strings\decode_url($propValue);
           });
   
           return $props;
@@ -2732,7 +2733,7 @@
                       }
                     })();
   
-                    return decode_url($url);
+                    return Strings\decode_url($url);
                   })()
                 ];
               }
@@ -2856,7 +2857,7 @@
                         <span class=\"fas {$icons[$type]}\"></span>
                       </span>
                       <span class=\"message\">";
-        $markup .=      clean_html($message, '<strong><b><em><i><a><br><ul><ol><li>');
+        $markup .=      Strings\strip_tags($message, '<strong><b><em><i><a><br><ul><ol><li>');
         $markup .= "  </span>
                     </div>";
   
@@ -2938,7 +2939,7 @@
   
           foreach ($properties as $eventType => $props) {
             if (count($props) > 0) {
-              $encodedProps = clean_all_html(json_encode($props));
+              $encodedProps = Strings\encode_html(json_encode($props));
               // $encodedProps = json_encode($props);
   
               $markup .= "<div class=\"{$eventType} confirmation-properties\" hidden>{$encodedProps}</div>";
@@ -2954,7 +2955,7 @@
         (function () use (&$markup) {
           $allowedTags = '<div><span><p><ul><ol><li><strong><em><b><i><a><code><pre><br><form><fieldset><label><legend><input><select><option><button><textarea><dl><dt><dd>';
   
-          $markup = clean_html($markup, $allowedTags);
+          $markup = Strings\strip_tags($markup, $allowedTags);
           $markup = collapseWhitespace($markup);
         })();
   
@@ -3048,7 +3049,7 @@
         (function () use (&$markup) {
           $allowedTags = '<div><span><p><ul><ol><li><strong><em><b><i><a><code><pre><br><fieldset><label><legend><input><select><option><button><textarea>';
   
-          $markup = clean_html($markup, $allowedTags);
+          $markup = Strings\strip_tags($markup, $allowedTags);
           $markup = collapseWhitespace($markup);
         })();
   
@@ -3569,7 +3570,7 @@
                 (function () use (&$markup, $type, $types, $tagName) {
                   $pieces = [
                     'name'         => (function () {
-                      $name = clean_all_html($this->properties['name']);
+                      $name = Strings\encode_html($this->properties['name']);
                       $type = $this->inputProperties['validations']->type;
     
                       if ($type != 'array') {
@@ -3582,7 +3583,7 @@
                     'placeholder'  => (function () use ($types) {
                       $placeholder = $this->inputProperties['placeholder'];
     
-                      if ($placeholder !== false && !$types['multi']) { return 'placeholder="' . clean_html($placeholder, '') . '" '; }
+                      if ($placeholder !== false && !$types['multi']) { return 'placeholder="' . Strings\strip_tags($placeholder, '') . '" '; }
                       else                                            { return ''; }
                     })(),
                     'autocomplete' => (function () use ($types) {
@@ -3627,11 +3628,11 @@
                     'value'        => (function () use ($types) {
                       $value = $this->inputProperties['value'];
     
-                      if ($value !== '' && $types['input']) { return 'value="' . clean_all_html($value) . '" '; }
+                      if ($value !== '' && $types['input']) { return 'value="' . Strings\encode_html($value) . '" '; }
                       else                                    { return ''; }
                     })(),
                     'id'           => (function () {
-                      $id = clean_all_html($this->internalProperties['id']);
+                      $id = Strings\encode_html($this->internalProperties['id']);
     
                       return "{$id}_input";
                     })(),
@@ -3755,7 +3756,7 @@
                           
                           if ($validationPattern) {
                             $delimiters = "[\/~@;%`]";
-                            $pattern = clean_all_html(
+                            $pattern = Strings\encode_html(
                                         preg_replace(
                                           "/\\\/",
                                           "\\\\\\",
@@ -3783,7 +3784,7 @@
                       $controller = $this->findReferencedProperty('inputProperties->hasControl');
   
                       if ($controller) {
-                        $encodedSchemes = clean_all_html(json_encode($controller));
+                        $encodedSchemes = Strings\encode_html(json_encode($controller));
   
                         return "data-has-control=\"{$encodedSchemes}\" ";
                       }
@@ -3817,7 +3818,7 @@
                   $defaultValue = $this->findReferencedProperty('inputProperties->value');
   
                   if ($type == 'textarea' && $defaultValue) {
-                    $markup .= clean_all_html($defaultValue);
+                    $markup .= Strings\encode_html($defaultValue);
                   }
                   else if ($type == 'select') {
                     $options = $this->inputProperties['options'];
@@ -3827,11 +3828,11 @@
   
                       foreach ($options as $value => $label) {
                         $pieces = [
-                          'value'    => clean_all_html($value),
+                          'value'    => Strings\encode_html($value),
                           'selected' => $value == $defaultValue
                                         ? 'selected '
                                         : '',
-                          'content'  => clean_all_html($label) 
+                          'content'  => Strings\encode_html($label) 
                         ];
   
                         $markup .= "<option
@@ -3956,10 +3957,10 @@
                       $inputName = $this->properties['name'];
   
                       if (strpos($inputName, $name) === false) {
-                        return clean_all_html("{$inputName}_{$name}");
+                        return Strings\encode_html("{$inputName}_{$name}");
                       }
                       else {
-                        return clean_all_html($inputName);
+                        return Strings\encode_html($inputName);
                       }
                     })();
                     $type = $this->inputProperties['validations']->type;
@@ -3972,11 +3973,11 @@
                     }
                   })(),
                   'value'       => (function () use ($value) {
-                    if ($value !== false && $value !== '') { return 'value="' . clean_all_html($value) . '" '; }
+                    if ($value !== false && $value !== '') { return 'value="' . Strings\encode_html($value) . '" '; }
                     else                                   { return ""; }
                   })(),
                   'id'          => (function () use ($optionCount) {
-                    $id = clean_all_html($this->internalProperties['id']);
+                    $id = Strings\encode_html($this->internalProperties['id']);
   
                     return "{$id}_option_{$optionCount}";
                   })(),
@@ -4040,7 +4041,7 @@
                         }
                       }
                       
-                      $encodedSchemes = clean_all_html(json_encode($matchingSchemes));
+                      $encodedSchemes = Strings\encode_html(json_encode($matchingSchemes));
   
                       return "data-has-control=\"{$encodedSchemes}\" ";
                     }
@@ -4050,13 +4051,13 @@
                 ];
                 $pieces['label'] = (function () use ($optionCount, &$pieces, $value, $label) {
                   $labelMarkup = "";
-                  $title = clean_all_html($label);
+                  $title = Strings\encode_html($label);
                   $description = (function () use ($optionCount, $value, $label) {
                     $description = $this->content['description'];
                     $matches = [];
   
                     if (is_array($description) && is_array_associative($description) && isset($description[$value])) {
-                      return clean_html($description[$value], '<div><span><p><strong><b><em><i><a><br><code><pre><ul><ol><li><button><a>');
+                      return Strings\strip_tags($description[$value], '<div><span><p><strong><b><em><i><a><br><code><pre><ul><ol><li><button><a>');
                     }
   
                     return false;
@@ -4212,7 +4213,7 @@
         (function () use (&$markup) {
           $allowedTags = '<div><span><p><ul><ol><li><strong><em><b><i><a><code><pre><br><fieldset><label><legend><input><select><option><button><textarea>';
   
-          $markup = clean_html($markup, $allowedTags);
+          $markup = Strings\strip_tags($markup, $allowedTags);
           $markup = collapseWhitespace($markup);
         })();
   
@@ -4398,7 +4399,7 @@
           (function () use (&$markup, $type) {
             $pieces = [
               'name'        => (function () {
-                $name = clean_all_html($this->properties['name']);
+                $name = Strings\encode_html($this->properties['name']);
                 $type = $this->inputProperties['validations']->type;
   
                 if ($type != 'array') {
@@ -4411,21 +4412,21 @@
               'value'       => (function () {
                 $value = $this->inputProperties['value'];
   
-                if ($value !== "") { return 'value="' . clean_all_html($value) . '" '; }
+                if ($value !== "") { return 'value="' . Strings\encode_html($value) . '" '; }
                 else               { return ''; }
               })(),
               'id'          => (function () {
-                $id = clean_all_html($this->internalProperties['id']);
+                $id = Strings\encode_html($this->internalProperties['id']);
   
                 return "{$id}_button";
               })(),
               'type'        => $type,
-              'content'     => clean_html($this->inputProperties['content'], '<div><span>'),
+              'content'     => Strings\strip_tags($this->inputProperties['content'], '<div><span>'),
               'title'       => (function () {
                 $title = $this->inputProperties['title'];
   
                 if ($title) { 
-                  $title = clean_all_html($title);
+                  $title = Strings\encode_html($title);
   
                   return "aria-label=\"{$title}\" ";
                 }
@@ -4464,10 +4465,10 @@
             $markup .= '<span>';
   
             if ($content) {
-              $markup .= clean_html($content, '<div><span>');
+              $markup .= Strings\strip_tags($content, '<div><span>');
             }
             else if ($title) {
-              $markup .= clean_all_html($title);
+              $markup .= Strings\encode_html($title);
             }
   
             $markup .= '</span>';
@@ -4537,7 +4538,7 @@
               }
   
               $markup .= ">";
-              $markup .= clean_html($tooltip['content'], '<div><span><p><ul><ol><li><strong><em><b><i><a><button><code><pre><br>');
+              $markup .= Strings\strip_tags($tooltip['content'], '<div><span><p><ul><ol><li><strong><em><b><i><a><button><code><pre><br>');
               $markup .= "</div>";
             }
           })();
@@ -4563,7 +4564,7 @@
         (function () use (&$markup) {
           $allowedTags = '<div><span><p><ul><ol><li><strong><em><b><i><a><code><pre><br><fieldset><label><legend><input><select><option><button><textarea>';
   
-          $markup = clean_html($markup, $allowedTags);
+          $markup = Strings\strip_tags($markup, $allowedTags);
           $markup = collapseWhitespace($markup);
         })();
   
