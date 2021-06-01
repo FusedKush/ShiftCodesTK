@@ -3,6 +3,22 @@
   <div class="active-toasts" role="log" aria-live="polite"></div>
   <!-- Queued Toast List -->
   <div class="queued-toasts" hidden></div>
+  <!-- Server-Side Toasts -->
+  <div class="server-side-toasts" hidden>
+    <?php 
+      $session_toasts = getSessionToast(true);
+
+      if (!is_array($session_toasts)) {
+        $session_toasts = [];
+      }
+    ?>
+    <?php foreach ($session_toasts as $toast) : ?>
+      <div class="server-side-toast">
+        <?= json_encode($toast, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_NUMERIC_CHECK); ?>
+      </div>
+    <?php endforeach; ?>
+    <?php removeSessionToast(true); ?>
+  </div>
   <!-- Templates -->
   <template id="toast_template">
     <div class="toast" id="toast_template" role="alert" hidden aria-hidden="true">
