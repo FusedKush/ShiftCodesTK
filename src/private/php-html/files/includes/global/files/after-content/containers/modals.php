@@ -1,38 +1,35 @@
-<?php if (!function_exists('confirmation_modal')) { ?>
-  <?php function confirmation_modal () { ?>
-    <div class="modal small" id="confirmation_modal">
-      <div class="title">Action Confirmation</div>
-      <div class="body">
-        <div class="inner-body">Are you sure you want to perform this action?</div>
-      </div>
-      <div class="footer">
-        <div>
-          <button class="modal-action modal-toggle prevent-onclose layer-target styled has-spinner" id="confirmation_modal_approve" data-action="approve">
-            <span>Confirm</span>
-            <?php include('local/spinner.php'); ?>
-          </button>
-          <div class="layer tooltip" id="confirmation_modal_approve_tooltip" data-layer-delay="medium">
-            <span>Approve this action</span>
-          </div>
+<!-- Note: Unset via `templates.php` -->
+<?php $t_get_confirmation_modal = function () { ?>
+  <div class="modal small" id="confirmation_modal">
+    <div class="title">Action Confirmation</div>
+    <div class="body">
+      <div class="inner-body">Are you sure you want to perform this action?</div>
+    </div>
+    <div class="footer">
+      <div>
+        <button class="modal-action modal-toggle prevent-onclose layer-target styled has-spinner" id="confirmation_modal_approve" data-action="approve">
+          <span>Confirm</span>
+          <?php include('local/spinner.php'); ?>
+        </button>
+        <div class="layer tooltip" id="confirmation_modal_approve_tooltip" data-layer-delay="medium">
+          <span>Approve this action</span>
         </div>
-        <div>
-          <button class="modal-action modal-toggle layer-target styled button-effect text has-spinner" id="confirmation_modal_deny" data-action="deny">
-            <span>Cancel</span>
-            <?php include('local/spinner.php'); ?>
-          </button>
-          <div class="layer tooltip" id="confirmation_modal_deny_tooltip" data-layer-delay="medium">
-            <span>Deny this action</span>
-          </div>
+      </div>
+      <div>
+        <button class="modal-action modal-toggle layer-target styled button-effect text has-spinner" id="confirmation_modal_deny" data-action="deny">
+          <span>Cancel</span>
+          <?php include('local/spinner.php'); ?>
+        </button>
+        <div class="layer tooltip" id="confirmation_modal_deny_tooltip" data-layer-delay="medium">
+          <span>Deny this action</span>
         </div>
       </div>
     </div>
-  <?php } ?>
-<?php } ?>
-<!-- End of Confirmation Modal Function -->
-
+  </div>
+<?php } // End of `$t_get_confirmation_modal` ?>
 <div class="modals" id="modals">
   <!-- Global Modals -->
-  <?php confirmation_modal(); ?>
+  <?php $t_get_confirmation_modal(); ?>
   <!-- Profile Card Modal -->
   <div class="modal" id="profile_card_modal">
     <div class="body">
@@ -76,5 +73,29 @@
       </div>
     </div>
   <?php endif; ?>
-  <!-- Local Modals -->
+  <!-- Modal Templates -->
+  <template id="modal_template">
+    <div class="modal configured inactive" hidden>
+      <div class="content-wrapper">
+        <div class="panel">
+          <div class="header">
+            <strong class="title"></strong>
+            <button class="dismiss modal-toggle bubble-parent" data-modal-toggle="false" title="Dismiss the modal" aria-label="Dismiss the modal">
+              <span class="bubble bubble-light"></span>
+              <span class="fas fa-times box-icon" aria-hidden="true"></span>
+            </button>
+          </div>
+          <div class="body">
+            <div class="content-container"></div>
+          </div>
+          <div class="footer">
+            <div class="content-container"></div>
+          </div>
+        </div>
+      </div>
+    </div> 
+  </template>
+  <template id="confirmation_modal_template">
+    <?php $t_get_confirmation_modal(); ?>
+  </template>
 </div>

@@ -4,56 +4,6 @@
 
 <div id="templates" hidden>
   <!-- Global Templates -->
-  <!-- Toasts -->
-  <template id="toast_template">
-    <div class="toast" id="toast_template" role="alert" hidden aria-hidden="true">
-      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100%" aria-hidden="true">
-        <div class="progress"></div>
-      </div>
-      <div class="content-container">
-        <div class="content">
-          <div class="icon" aria-hidden="true">
-            <span></span>
-          </div>
-          <div class="message">
-            <div class="title"></div>
-            <p class="body"></p>
-          </div>
-        </div>
-        <button class="dedicated styled action dismiss-toast layer-target" id="toast_template_dismiss_toast" aria-controls="toast_template" aria-label="Dismiss the toast" data-layer-targets="toast_template_dismiss_toast_tooltip">
-          <span class="fas fa-times box-icon" aria-hidden="true"></span>
-        </button>
-        <div class="layer tooltip" id="toast_template_dismiss_toast_tooltip" data-layer-target="toast_template_dismiss_toast">Dismiss the toast</div>
-        <div class="actions">
-        </div>
-      </div>
-    </div>
-  </template>
-  <!-- Modals -->
-  <template id="modal_template">
-    <div class="modal configured inactive" hidden>
-      <div class="content-wrapper">
-        <div class="panel">
-          <div class="header">
-            <strong class="title"></strong>
-            <button class="dismiss modal-toggle bubble-parent" data-modal-toggle="false" title="Dismiss the modal" aria-label="Dismiss the modal">
-              <span class="bubble bubble-light"></span>
-              <span class="fas fa-times box-icon" aria-hidden="true"></span>
-            </button>
-          </div>
-          <div class="body">
-            <div class="content-container"></div>
-          </div>
-          <div class="footer">
-            <div class="content-container"></div>
-          </div>
-        </div>
-      </div>
-    </div> 
-  </template>
-  <template id="confirmation_modal_template">
-    <?php confirmation_modal(); ?>
-  </template>
   <!-- Dropdown Panels -->
   <template id="dropdown_panel_template">
     <div class="dropdown-panel">

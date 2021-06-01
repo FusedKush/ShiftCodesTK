@@ -3,13 +3,13 @@
   <!-- Layer (Dropdown, Tooltip) Container -->
   <div class="layers" id="layers"></div>
   <!-- Modal Container -->
-  <?php include('containers/modals.php'); ?>
+  <?php require('containers/modals.php'); ?>
   <!-- Toasts List -->
-  <?php include('containers/toasts.php'); ?>
+  <?php require('containers/toasts.php'); ?>
   <!-- Template List -->
-  <?php include('containers/templates.php'); ?>
+  <?php require('containers/templates.php'); ?>
   <!-- Server-Side Data -->
-  <?php include('containers/data.php'); ?>
+  <?php require('containers/data.php'); ?>
   <!-- Temporary Data -->
   <div class="temp" id="temp"></div>
 </div>

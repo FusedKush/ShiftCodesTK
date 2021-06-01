@@ -17,17 +17,17 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/shared-styles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
     <!-- Local Styles -->
     <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/index.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
     <!--// Markup \\-->
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/before-content.php'); ?>
+    <?php include('global/before-content.php'); ?>
     <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <p class="intro">Unsure of what to do with the SHiFT Codes once you've found them? No problem! Choose one of the guides below for step-by-step instructions on redeeming SHiFT Codes and getting at that sweet loot!</p>
@@ -45,11 +45,11 @@
       </div>
     </main>
     <!-- Support Footer -->
-    <?php include_once('local/support-footer.php'); ?>
+    <?php include('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/after-content.php'); ?>
+    <?php include('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
   </body>
 </html>

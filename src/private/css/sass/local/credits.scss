@@ -19,6 +19,10 @@ main{
     margin: 8px;
     background-color: $theme-main;
 
+    &::before {
+      @include fill(true, tpb(0.25));
+    }
+
     @mixin bannerRoot {
       @at-root .credits .banner { @content; }
     }
@@ -89,16 +93,16 @@ main{
     }
   }
   .module {
-    $margins: 8px;
+    $margins: 12px;
 
     flex: 1 1 calc(50% - #{$margins * 2});;
     @include spacing($margins, 8px);
-    background-color: $site-color-lighter;
+    background-color: $site-color-dark;
 
     &::before { @include fill(true, #000); }
 
     @include mouseState(noHover) {
-      &::before                { opacity: 0.2; }
+      &::before                { opacity: 0.25; }
     }
     @include mouseState(hover) {
       &::before                { opacity: 0; }
@@ -115,8 +119,8 @@ main{
       @include multiProp(1.75em, sizing);
       padding: 8px;
       margin-right: 16px;
-      background-color: $site-color-lighter;
-      border: bd(1.5px, $site-color-dark);
+      background-color: $site-color-dark;
+      border: bd(1.5px, $site-color-light);
       border-radius: 4px;
       overflow: hidden;
 

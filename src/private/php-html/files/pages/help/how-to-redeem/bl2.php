@@ -18,21 +18,21 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/shared-styles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
     <!-- Local Styles -->
     <link rel="stylesheet" href="/assets/css/local/help/how-to-redeem/instructions.css<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>">
     <!--// Markup \\-->
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/before-content.php'); ?>
+    <?php include('global/before-content.php'); ?>
     <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <!-- How to Redeem Template -->
-      <?php include_once('local/how-to-redeem-instructions.php'); ?>
+      <?php include('local/how-to-redeem-instructions.php'); ?>
     </main>
     <div class="setup">
       <div class="step 1">Navigate to the Main Menu. Then, select&nbsp;<em>Extras</em>.</div>
@@ -45,12 +45,12 @@
       <div class="step 8">You can now make your way to the&nbsp;<strong>Golden Chest</strong>&nbsp;in&nbsp;<strong>Sanctuary</strong>&nbsp;to spend your Golden Keys. The Golden Chest is located in the same room as the&nbsp;<strong>Fast Travel Station</strong>. Opening the chest will cost&nbsp;<strong>one Golden Key</strong>, and the rewards will be droppped at the&nbsp;<strong>level of your current character</strong>, regardless of playthrough.</div>
     </div>
     <!-- Support Footer -->
-    <?php include_once('local/support-footer.php'); ?>
+    <?php include('local/support-footer.php'); ?>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/after-content.php'); ?>
+    <?php include('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
     <!-- local Scripts -->
     <script async src="/assets/js/local/help/how-to-redeem/instructions.js<?= \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>

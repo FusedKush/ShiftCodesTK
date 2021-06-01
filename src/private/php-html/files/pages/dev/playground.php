@@ -34,13 +34,13 @@
         <div class="view php-tests" data-view="Scratchpad">
           <div class="title">
             <h2>Scratchpad</h2>
-            <?php
-              var_dump("Nothing yet...");
+            <?php      
+              var_dump(ShiftCodes::getInstance()->getCodes(array_replace_recursive($_GET, [ 'return_full_response' => true ])));
             ?>
           </div>
         </div>
         <div class="view buttons" data-view="Buttons">
-          <?php function getButtonList ($classes = '', $pressed = false) { ?>
+          <?php if (!function_exists('getButtonList')) { function getButtonList ($classes = '', $pressed = false) { ?>
             <?php
               $buttonColors = [
                 'light',
@@ -86,7 +86,7 @@
                 </button>
               <?php endforeach; ?>
             </div>
-          <?php } ?>
+          <?php } } ?>
           <!-- End of getButtonList Function -->
   
           <section class="buttons">

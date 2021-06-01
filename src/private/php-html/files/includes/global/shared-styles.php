@@ -1,16 +1,12 @@
-<?php
-  $t_shared_styles = [ 
-    'shared-styles' 
-  ];
-?>
 
-<?php foreach($t_shared_styles as $t_filename) : ?>
-  <link rel="stylesheet" href="<?= "/assets/css/{$t_filename}.css" . \ShiftCodesTK\VERSION_QUERY_STR; ?>">
-<?php 
-  endforeach; 
+<?php (function () { ?>
+  <?php
+    $stylesheets = [ 
+      'shared-styles' 
+    ];
+  ?>
 
-  unset(
-    $t_shared_styles,
-    $t_filename
-  ); 
-?>
+  <?php foreach($stylesheets as $stylesheet) : ?>
+    <link rel="stylesheet" href="<?= "/assets/css/{$stylesheet}.css" . \ShiftCodesTK\VERSION_QUERY_STR; ?>">
+  <?php endforeach; ?>
+<?php })(); ?>

@@ -3,6 +3,7 @@
       ShiftCodesTK\Strings;
 ?>
 
+<?php (function () { ?>
 <header class="navbar-container" id="navbar_container" data-at-top="true">
   <div class="loader progress-bar" id="loader_pb" role="progressbar" aria-valuemin="0" aria-valuenow="0" aria-valuemax="100">
     <div class="progress disable-theme-transitions"></div>
@@ -207,3 +208,4 @@
     </ul>
   </nav>
 </header>
+<?php })(); ?>

@@ -17,16 +17,16 @@
   <head>
     <meta charset="utf-8">
 		
-    <?php include_once('global/shared-styles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
 		
     <link href="/assets/css/local/index.css<?= VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <meta name="google-site-verification" content="dmsrwqOh26nDUBkS9sCSJ4rblI5g363hbCNhvr-nW8s">
 		
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
 	
-    <?php include_once('global/before-content.php'); ?>
+    <?php include('global/before-content.php'); ?>
 		
     <main class="no-header">
       <?php 
@@ -160,8 +160,8 @@
       </section>
     </main>
 		
-    <?php include_once('global/after-content.php'); ?>
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/after-content.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
 		
     <script async src="/assets/js/local/index.js<?= VERSION_QUERY_STR; ?>"></script>
   </body>

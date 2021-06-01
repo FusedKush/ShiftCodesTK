@@ -28,11 +28,11 @@ section { margin-top: 24px; }
 .resource {
   $radius: 4px;
 
-  @include flexbox(none, s);
+  @include flexbox(c, s);
   flex: 1;
   border-radius: $radius;
   margin: 4px;
-  background-color: $site-color-lighter;
+  background-color: $site-color-dark;
 
   &::before { @include fill(true, #fff); }
 
@@ -50,6 +50,7 @@ section { margin-top: 24px; }
     line-height: 0;
     border-radius: $radius 0 0 $radius;
     background-color: tpb(0.25);
+    height: 100%;
 
     .fas, .fab { @include multiProp(1em, sizing); }
     &, .fas, .fab { @include flexbox; }
@@ -80,7 +81,7 @@ section { margin-top: 24px; }
   margin-right: $margins;
 
   .wrapper {
-    @include flexbox($type: inline, $wrap: true);
+    @include flexbox(none, $type: inline, $wrap: true);
     flex: 1;
     width: 50%;
     @include spacing(4px, 8px 6px);

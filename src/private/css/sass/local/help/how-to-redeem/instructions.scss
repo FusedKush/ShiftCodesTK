@@ -13,7 +13,7 @@ main {
   }
   .instructions {
     @include ready;
-    background-color: $site-color-lighter;
+    background-color: $site-color-light;
     border-radius: 4px;
     padding: 16px;
     overflow: hidden;

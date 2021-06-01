@@ -18,12 +18,12 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/shared-styles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
     <style>
       main, main * { opacity: 1; }
     </style>
     <!--// Markup \\-->
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <?php
     $bodyTheme = isset($_GET['game']) 
@@ -33,9 +33,9 @@
   ?>
   <body data-theme="<?= $bodyTheme; ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/before-content.php'); ?>
+    <?php include('global/before-content.php'); ?>
     <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/main-header.php'); ?>
     <!-- Main Content -->
     <main class="content-wrapper">
       <?php
@@ -46,10 +46,10 @@
       ?>
     </main>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/after-content.php'); ?>
+    <?php include('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
     <!-- Local Scripts -->
     <script async src="/assets/js/local/codes/new.js<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>"></script>
   </body>

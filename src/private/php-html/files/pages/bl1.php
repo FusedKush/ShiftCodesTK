@@ -1,5 +1,5 @@
 <?php
-  include_once('initialize.php');
+  require_once('initialize.php');
   
   use ShiftCodesTK\PageConfiguration;
 
@@ -22,16 +22,16 @@
   <head>
     <meta charset="utf-8">
 
-    <?php include_once('global/shared-styles.php'); ?>
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
-    <?php include_once('global/before-content.php'); ?>
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/before-content.php'); ?>
+    <?php include('global/main-header.php'); ?>
 
-    <?php include_once('local/shift.php'); ?>
+    <?php include('local/shift.php'); ?>
 
-    <?php include_once('global/after-content.php'); ?>
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/after-content.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
   </body>
 </html>

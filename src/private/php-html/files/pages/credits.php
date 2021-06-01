@@ -17,17 +17,17 @@
     <meta charset="utf-8">
     <!--// Styles \\-->
     <!-- Shared Styles -->
-    <?php include_once('global/shared-styles.php'); ?>
+    <?php include('global/shared-styles.php'); ?>
     <!-- Local Styles -->
     <link href="/assets/css/local/credits.css<?php echo \ShiftCodesTK\VERSION_QUERY_STR; ?>" rel="stylesheet"></link>
     <!--// Markup \\-->
-    <?php include_once('global/head.php'); ?>
+    <?php include('global/head.php'); ?>
   </head>
   <body data-theme="<?= PageConfiguration::getCurrentPageConfiguration()->getGeneralInfo('theme'); ?>">
     <!--// Before-Content Imports \\-->
-    <?php include_once('global/before-content.php'); ?>
+    <?php include('global/before-content.php'); ?>
     <!-- Main Header -->
-    <?php include_once('global/main-header.php'); ?>
+    <?php include('global/main-header.php'); ?>
     <!-- Main Content -->
     <main>
       <section class="credits content-wrapper">
@@ -88,9 +88,9 @@
       </section>
     </main>
     <!--// After-Content Imports \\-->
-    <?php include_once('global/after-content.php'); ?>
+    <?php include('global/after-content.php'); ?>
     <!--// Scripts \\-->
     <!-- Shared Scripts -->
-    <?php include_once('global/shared-scripts.php'); ?>
+    <?php include('global/shared-scripts.php'); ?>
   </body>
 </html>
