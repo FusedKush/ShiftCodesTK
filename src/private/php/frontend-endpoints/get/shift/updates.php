@@ -1,37 +1,42 @@
 <?php
   // require_once('../../reinitialize.php');
   require_once('shift_constants.php');
+
+  use ShiftCodesTK\Validations;
   
   $response = new ResponseObject();
   $params = (function () use (&$response) {
     $properties = [
-      'last_check' => new ValidationProperties([
+      'last_check' => new Validations\VariableEvaluator([
         'required' => true,
         'type'     => 'date'
       ]),
-      'game_id' => new ValidationProperties([
+      'game_id' => new Validations\VariableEvaluator([
         'required'    => true,
         'type'        => 'string',
         'validations' => [
-          'match' => array_merge(array_keys(SHIFT_GAMES), [ 'all' ])
+          'check_match' => array_merge(array_keys(SHIFT_GAMES), [ 'all' ])
         ]
       ])
     ];
-    $results = check_parameters($_GET, $properties);
+    $param_evaluator = new Validations\GroupEvaluator($properties);
+    $valid_params = $param_evaluator->check_variables($_GET);
+    /** @var Validations\GroupEvaluationResult */
+    $result = $param_evaluator->get_last_result(false);
 
-    if ($results['warnings'] || $results['errors']) {
-      foreach ($results['warnings'] as $warning) {
+    if ($result->warnings || $result->errors) {
+      foreach ($result->warnings as $warning) {
         $response->setWarning($warning);
       }
-      foreach ($results['errors'] as $error) {
-        $response->setWarning($error);
+      foreach ($result->errors as $error) {
+        $response->setError($error);
       }
   
       $response->send();
       exit;
     }
 
-    return $results['parameters'];
+    return $result->variables;
   })();
 
   (function () use (&$_mysqli, &$params) {

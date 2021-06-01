@@ -1,7 +1,8 @@
 <?php
   // New Module
   namespace ShiftCodesTK\Forms {
-    use ShiftCodesTK\Strings;
+    use ShiftCodesTK\Strings,
+        ShiftCodesTK\Validations;
 
     // `FIELD_TYPES`
     (function () {
@@ -168,7 +169,8 @@
   // Old Module
   namespace {
     use const ShiftCodesTK\DATE_TIMEZONES;
-    use ShiftCodesTK\Strings;
+    use ShiftCodesTK\Strings,
+        ShiftCodesTK\Validations;
 
     /** Form Configuration */
   
@@ -427,18 +429,7 @@
        * @return boolean Returns **true** if the property was successfully updated, or **false** if an error occurred.
        */
       public function updateProperty ($propertyString, $propertyValue, $internalUpdate = false) {
-        $property = &$this->findReferencedProperty($propertyString);
-  
-        // Ignore unset, numerical array indexes
-        if ($property === null && !is_numeric(preg_replace('/(.+)(->)/', '', $propertyString))) {
-          if (!$internalUpdate) {
-            trigger_error("Failed to update form property: \"{$propertyString}\" does not exist. ");
-            return null;
-          }
-          else {
-            $property = &$this->findReferencedProperty($propertyString, true);
-          }
-        }
+        $property = &$this->findReferencedProperty($propertyString, true);
   
         if (!$internalUpdate) {
           // else if ($propertyValue === null) {
@@ -457,7 +448,8 @@
   
         // Update the property
         return (function () use (&$property, $propertyString, $propertyValue, $internalUpdate) {
-          $validations = (function () use ($property, $propertyString) {
+          /** @var Validations\VariableEvaluator */
+          $validations = (function () use (&$property, $propertyString) {
             $properties = $this->internalProperties['propertyValidations']["'{$propertyString}'"] ?? false;
   
             if ($properties) {
@@ -469,7 +461,7 @@
               return false;
             }
           })();
-  
+
           $updateProperty = function ($propertyValue) use (&$property, $internalUpdate, $propertyString) {
             /** Property Strings that should not have their values recursively replaced. */
             $arrayReplacementExceptions = [
@@ -494,19 +486,21 @@
           };
   
           if ($validations) {
-            $validationResult = $validations->check_parameter($propertyValue, $propertyString);
-    
+            $validations->check_variable($propertyValue, $propertyString);
+            /** @var Validations\VariableEvaluationResult */
+            $validationResult = $validations->get_last_result(false);
+            
             if (!$internalUpdate) {
-              if ($validationResult['warnings']) {
-                trigger_error('Form property validation failed. ' . print_r($validationResult['warnings'], true));
+              if ($validationResult->warnings) {
+                trigger_error('Form property validation failed. ' . print_r($validationResult->warnings, true));
               }
-              if ($validationResult['errors']) {
-                trigger_error('Form property validation failed. ' . print_r($validationResult['errors'], true));
+              if ($validationResult->errors) {
+                trigger_error('Form property validation failed. ' . print_r($validationResult->errors, true));
                 return false;
               }
             }
-            if ($validationResult['valid']) {
-              $updateProperty($validationResult['parameter']);
+            if ($validationResult->result) {
+              $updateProperty($validationResult->variable);
             }
           }
           else {
@@ -745,58 +739,68 @@
   
         // FormCore Property Validations
         $this->updateProperty('internalProperties->propertyValidations', [
-          "'properties->name'" => new ValidationProperties([
+          "'properties->name'" => new Validations\VariableEvaluator([
             'type'        => 'string',
             'required'    => true,
             'validations' => [
-              'pattern' => '/^[\d\w ]+$/',
-              'range'   => [
+              'check_pattern' => '/^[\d\w ]+$/',
+              'check_range'   => [
                 'min' => 1,
                 'max' => 100
               ]
             ]
           ]),
-          "'properties->customHTML'" => new ValidationProperties([
-            'type' => 'array'
+          "'properties->customHTML'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false 
           ]),
-          "'properties->customHTML->classes'" => new ValidationProperties([
-            'type' => 'array'
+          "'properties->customHTML->classes'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false 
           ]),
-          "'properties->customHTML->attributes'" => new ValidationProperties([
-            'type' => 'array'
+          "'properties->customHTML->attributes'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false 
           ]),
-          "'properties->disabled'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'properties->disabled'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false 
           ]),
-          "'properties->showChildrenFirst'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'properties->showChildrenFirst'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false 
           ]),
-          "'properties->hidden'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'properties->hidden'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false 
           ]),
-          "'content->title'" => new ValidationProperties([
-            'type'              => 'boolean|string',
-            'validations'       => [
-              'range' => [
+          "'content->title'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean|string',
+            'required'    => false ,
+            'validations' => [
+              'check_range' => [
                 'max' => 64
               ]
             ]
           ]),
-          "'content->hideTitle'" => new ValidationProperties([
-            'type'              => 'boolean'
+          "'content->hideTitle'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false 
           ]),
-          "'content->subtitle'" => new ValidationProperties([
-            'type'              => 'boolean|string',
-            'validations'       => [
-              'range' => [
+          "'content->subtitle'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean|string',
+            'required'    => false ,
+            'validations' => [
+              'check_range' => [
                 'max' => 256
               ]
             ]
           ]),
-          "'content->description'" => new ValidationProperties([
-            'type'              => 'boolean|string|array',
-            'validations'       => [
-              'range' => [
+          "'content->description'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean|string|array',
+            'required'    => false ,
+            'validations' => [
+              'check_range' => [
                 'max' => 1024
               ]
             ]
@@ -857,7 +861,7 @@
             $parentType = gettype($property);
   
             if ($parentType == 'object') {
-              if (!isset($property->$level)) {
+              if (!property_exists($property, $level)) {
                 if ($defineUnsetProperties) {
                   $property->$level = null;
                 }
@@ -869,7 +873,7 @@
               $property = &$property->$level;
             }
             else if ($parentType == 'array') {
-              if (!isset($property[$level])) {
+              if (!array_key_exists($level, $property)) {
                 if ($defineUnsetProperties) {
                   $property[$level] = null;
                 }
@@ -1355,23 +1359,26 @@
         if ($position == 'before') {
           // FormChild Property Validations
           $this->updateProperty('internalProperties->propertyValidations', [
-            "'properties->size'" => new ValidationProperties([
+            "'properties->size'" => new Validations\VariableEvaluator([
               'type'        => 'string',
+              'required'    => false,
               'validations' => [
-                'match' => [ 'full', 'half', 'third', 'two-thirds' ]
+                'check_match' => [ 'full', 'half', 'third', 'two-thirds' ]
               ]
             ]),
-            "'inputProperties->type'" => new ValidationProperties([
+            "'inputProperties->type'" => new Validations\VariableEvaluator([
               'type'        => 'string',
+              'required'    => false,
               'validations' => [
-                'match' => FORM_FIELD_TYPES['all']['fields']
+                'check_match' => FORM_FIELD_TYPES['all']['fields']
               ]
             ]),
-            "'inputProperties->value'" => new ValidationProperties([
-              'type'        => 'string|integer|double|array'
+            "'inputProperties->value'" => new Validations\VariableEvaluator([
+              'type'        => 'string|integer|double|array',
+              'required'    => false
             ])
           ], true);
-          $this->updateProperty('inputProperties->validations', new ValidationProperties([]), true);
+          $this->updateProperty('inputProperties->validations', new Validations\VariableEvaluator([]), true);
         }
         else if ($position == 'after') {
           // FormChild htmlBindings
@@ -1456,8 +1463,9 @@
       public function FormInput__construct() {
         // FormInput Property Validations
         $this->updateProperty('internalProperties->propertyValidations', [
-          "'properties->showChildrenFirst'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'properties->showChildrenFirst'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
         ], true);
       }
@@ -1780,52 +1788,62 @@
       public function __construct ($properties) {
         // FormBase Property Validations
         $this->updateProperty('internalProperties->propertyValidations', [
-          "'formProperties->action'" => new ValidationProperties([
+          "'formProperties->action'" => new Validations\VariableEvaluator([
             'type'        => 'array',
+            'required'    => false,
             'customValidationMessages' => [
               'typeMismatch' => 'Action has been changed to an array. Please update this form configuration to follow the new specification.'
             ]
           ]),
-          "'formProperties->action->type'" => new ValidationProperties([
+          "'formProperties->action->type'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'match' => [ 'standard', 'ajax', 'js' ]
+              'check_match' => [ 'standard', 'ajax', 'js' ]
             ]
           ]),
-          "'formProperties->action->path'" => new ValidationProperties([
+          "'formProperties->action->path'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'isURL'   => [
+              'check_url'   => [
                 'protocol' => true,
                 'port'     => true
               ]
             ]
           ]),
-          "'formProperties->action->method'" => new ValidationProperties([
+          "'formProperties->action->method'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'match' => [ 'GET', 'POST' ]
+              'check_match' => [ 'GET', 'POST' ]
             ]
           ]),
-          "'formProperties->action->submitOnChange'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'formProperties->action->submitOnChange'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean',
+            'required'    => false
           ]),
-          "'formProperties->action->confirmUnsavedChanges'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'formProperties->action->confirmUnsavedChanges'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean',
+            'required'    => false
           ]),
-          "'formProperties->action->showProgress'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'formProperties->action->showProgress'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean',
+            'required'    => false
           ]),
-          "'formProperties->showAlerts'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formProperties->showAlerts'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formProperties->showBackground'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formProperties->showBackground'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formProperties->spacing'" => new ValidationProperties([
-            'type' => 'string',
+          "'formProperties->spacing'" => new Validations\VariableEvaluator([
+            'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'match' => [ 
+              'check_match' => [ 
                 'none', 
                 'vertical', 
                 'standard', 
@@ -1833,62 +1851,76 @@
               ]
             ]
           ]),
-          "'formFooter->enabled'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formFooter->enabled'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formFooter->isSticky'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formFooter->isSticky'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formFooter->showProgress'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formFooter->showProgress'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formFooter->showChangeCount'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formFooter->showChangeCount'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formFooter->object'" => new ValidationProperties([
-            'type' => 'object'
+          "'formFooter->object'" => new Validations\VariableEvaluator([
+            'type'      => 'object',
+            'required'  => false
           ]),
           // See "Footer Action Property Validations" below for action validations
-          "'formResult->toast->enabled'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formResult->toast->enabled'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false,
           ]),
-          "'formResult->toast->method'" => new ValidationProperties([
+          "'formResult->toast->method'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'match' => [ 'response', 'session' ]
+              'check_match' => [ 'response', 'session' ]
             ]
           ]),
-          "'formResult->toast->properties'" => new ValidationProperties([
-            'type' => 'array'
+          "'formResult->toast->properties'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false
           ]),
-          "'formResult->redirect->enabled'" => new ValidationProperties([
-            'type' => 'boolean'
+          "'formResult->redirect->enabled'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formResult->redirect->delay'" => new ValidationProperties([
+          "'formResult->redirect->delay'" => new Validations\VariableEvaluator([
             'type'        => 'int',
+            'required'    => false,
             'validations' => [
-              'range' => [
+              'check_range' => [
                 'min' => 0,
                 'max' => 10000
               ]
             ]
           ]),
-          "'formResult->redirect->location'" => new ValidationProperties([
+          "'formResult->redirect->location'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'isURL' => true
+              'check_url' => true
             ]
           ]),
-          "'formResult->redirect->useQueryParam'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'formResult->redirect->useQueryParam'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formResult->modal->enabled'" => new ValidationProperties([
-            'type' => 'boolean',
+          "'formResult->modal->enabled'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'formResult->formState'" => new ValidationProperties([
+          "'formResult->formState'" => new Validations\VariableEvaluator([
             'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'match'        => [
+              'check_match'        => [
                 'disabled', 
                 'enabled', 
                 'reset' 
@@ -1899,99 +1931,126 @@
         // Footer Action Property Validations
         (function () {
           $validations = [
-            'enabled' => new ValidationProperties([
-              'type' => 'boolean'
+            'enabled' => new Validations\VariableEvaluator([
+              'type'      => 'boolean',
+              'required'  => false
             ]),
-            'content' => new ValidationProperties([
-              'type'        => 'string',
+            'content' => new Validations\VariableEvaluator([
+              'type'      => 'string',
+              'required'  => false,
               'validations' => [
-                'range' => [
+                'check_range' => [
                   'min' => 1,
                   'max' => 32
                 ]
               ]
             ]),
-            'title' => new ValidationProperties([
-              'type'        => 'boolean|string',
+            'title' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false,
               'validations' => [
-                'range' => [
+                'check_range' => [
                   'min' => 1,
                   'max' => 128
                 ]
               ]
             ]),
-            'tooltip' => new ValidationProperties([
-              'type' => 'array'
+            'tooltip' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'tooltip->content' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'tooltip->content' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'tooltip->pos' => new ValidationProperties([
-              'type' => 'string'
+            'tooltip->pos' => new Validations\VariableEvaluator([
+              'type'      => 'string',
+              'required'  => false
             ]),
-            'tooltip->align' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'tooltip->align' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'tooltip->delay' => new ValidationProperties([
-              'type' => 'string|number'
+            'tooltip->delay' => new Validations\VariableEvaluator([
+              'type'      => 'string|number',
+              'required'  => false
             ]),
-            'tooltip->name' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'tooltip->name' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation' => new ValidationProperties([
-              'type' => 'array'
+            'confirmation' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'confirmation->required' => new ValidationProperties([
-              'type' => 'boolean'
+            'confirmation->required' => new Validations\VariableEvaluator([
+              'type'      => 'boolean',
+              'required'  => false
             ]),
-            'confirmation->title' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->title' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->body' => new ValidationProperties([
-              'type'              => 'boolean|string'
+            'confirmation->body' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->requireResponseData' => new ValidationProperties([
-              'type'              => 'boolean',
-              'value'             => false
+            'confirmation->requireResponseData' => new Validations\VariableEvaluator([
+              'type'      => 'boolean',
+              'required'  => false,
+              'value'     => false
             ]),
-            'confirmation->actions' => new ValidationProperties([
-              'type' => 'array'
+            'confirmation->actions' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'confirmation->actions->deny' => new ValidationProperties([
-              'type' => 'array'
+            'confirmation->actions->deny' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'confirmation->actions->deny->name' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->deny->name' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->actions->deny->tooltip' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->deny->tooltip' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->actions->deny->color' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->deny->color' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->actions->approve' => new ValidationProperties([
-              'type' => 'array'
+            'confirmation->actions->approve' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'confirmation->actions->approve->name' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->approve->name' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->actions->approve->tooltip' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->approve->tooltip' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'confirmation->actions->approve->color' => new ValidationProperties([
-              'type' => 'boolean|string'
+            'confirmation->actions->approve->color' => new Validations\VariableEvaluator([
+              'type'      => 'boolean|string',
+              'required'  => false
             ]),
-            'requiresModify' => new ValidationProperties([
-              'type' => 'boolean'
+            'requiresModify' => new Validations\VariableEvaluator([
+              'type'      => 'boolean',
+              'required'  => false
             ]),
-            'object' => new ValidationProperties([
-              'type' => 'object'
+            'object' => new Validations\VariableEvaluator([
+              'type'      => 'object',
+              'required'  => false
             ]),
-            'classes' => new ValidationProperties([
-              'type' => 'array'
+            'classes' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
-            'attributes' => new ValidationProperties([
-              'type' => 'array'
+            'attributes' => new Validations\VariableEvaluator([
+              'type'      => 'array',
+              'required'  => false
             ]),
           ];
   
@@ -2525,7 +2584,13 @@
           return $properties;
         })();
         $this->formSubmit['validations'] = $validations;
-        $checkedParams = check_parameters($requestParams, $validations);
+        /** @var Validations\GroupEvaluationResult */
+        $checkedParams = (function () use ($requestParams, $validations) {
+          $evaluator = new Validations\GroupEvaluator($validations);
+
+          $evaluator->check_variables($requestParams);
+          return $evaluator->get_last_result(false);
+        })();
         $parsedParams = (function () use ($checkedParams) {
           $parameters = [];
   
@@ -2537,7 +2602,7 @@
                             : $name;
   
               if ($className == 'FormField' && $childClass->findReferencedProperty('inputProperties->type') != 'group') {
-                $parameterList[$parsedName] = $checkedParams['parameters'][$name];
+                $parameterList[$parsedName] = $checkedParams->variables[$name];
               }
               else if ($className == 'FormSection' || $childClass->findReferencedProperty('inputProperties->type') == 'group') {
                 $parameterList[$parsedName] = [];
@@ -3170,19 +3235,23 @@
       public function __construct ($properties) {
         // FormField Property Validations
         $this->updateProperty('internalProperties->propertyValidations', [
-          "'content->innerTitle'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'content->innerTitle'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'inputProperties->placeholder'" => new ValidationProperties([
-            'type'              => 'boolean|string'
+          "'inputProperties->placeholder'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean|string',
+            'required'  => false
           ]),
-          "'inputProperties->autocomplete'" => new ValidationProperties([
-            'type'        => 'boolean|string'
+          "'inputProperties->autocomplete'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean|string',
+            'required'  => false
           ]),
-          "'inputProperties->inputMode'" => new ValidationProperties([
+          "'inputProperties->inputMode'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
+            'required'    => false,
             'validations' => [
-              'match'        => [
+              'check_match'        => [
                 false,
                 "none",
                 "text",
@@ -3193,13 +3262,15 @@
               ]
             ]
           ]),
-          "'inputProperties->options'" => new ValidationProperties([
-            'type'        => 'array'
+          "'inputProperties->options'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false
           ]),
-          "'inputProperties->wrapOptions'" => new ValidationProperties([
+          "'inputProperties->wrapOptions'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
+            'required'    => false,
             'validations' => [
-              'match'        => [
+              'check_match'        => [
                 false,
                 'half',
                 'third',
@@ -3207,25 +3278,31 @@
               ]
             ]
           ]),
-          "'inputProperties->toolbar'" => new ValidationProperties([
-            'type'        => 'array'
+          "'inputProperties->toolbar'" => new Validations\VariableEvaluator([
+            'type'      => 'array',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->characterCounter'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'inputProperties->toolbar->characterCounter'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->passwordVisibilityToggle'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'inputProperties->toolbar->passwordVisibilityToggle'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->clearFieldButton'" => new ValidationProperties([
-            'type'        => 'boolean'
+          "'inputProperties->toolbar->clearFieldButton'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->markdown'" => new ValidationProperties([
-            'type'        => 'boolean|string'
+          "'inputProperties->toolbar->markdown'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean|string',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->textTransform'" => new ValidationProperties([
+          "'inputProperties->toolbar->textTransform'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
+            'required'    => false,
             'validations' => [
-              'match'        => [
+              'check_match'        => [
                 false,
                 'lowercase',
                 'uppercase',
@@ -3233,14 +3310,17 @@
               ]
             ]
           ]),
-          "'inputProperties->toolbar->dynamicFill'" => new ValidationProperties([
-            'type'        => 'boolean|array'
+          "'inputProperties->toolbar->dynamicFill'" => new Validations\VariableEvaluator([
+            'type'      => 'boolean|array',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->dynamicFill->match'" => new ValidationProperties([
-            'type'        => 'string'
+          "'inputProperties->toolbar->dynamicFill->match'" => new Validations\VariableEvaluator([
+            'type'      => 'string',
+            'required'  => false
           ]),
-          "'inputProperties->toolbar->dynamicFill->fill'" => new ValidationProperties([
-            'type'        => 'string'
+          "'inputProperties->toolbar->dynamicFill->fill'" => new Validations\VariableEvaluator([
+            'type'      => 'string',
+            'required'  => false
           ]),
         ], true);
         
@@ -4276,36 +4356,41 @@
       public function __construct ($properties) {
         // FormButton Property Validations
         $this->updateProperty('internalProperties->propertyValidations', [
-          "'inputProperties->content'" => new ValidationProperties([
-            'type'              => 'string',
-            'validations'       => [
-              'range' => [
-                'max' => 256
-              ]
-            ]
-          ]),
-          "'inputProperties->title'" => new ValidationProperties([
-            'type'        => 'boolean|string',
+          "'inputProperties->content'" => new Validations\VariableEvaluator([
+            'type'        => 'string',
+            'required'    => false,
             'validations' => [
-              'range' => [
+              'check_range' => [
                 'max' => 256
               ]
             ]
           ]),
-          "'inputProperties->tooltip'" => new ValidationProperties([
-            'type'        => 'array',
+          "'inputProperties->title'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean|string',
+            'required'    => false,
+            'validations' => [
+              'check_range' => [
+                'max' => 256
+              ]
+            ]
           ]),
-          "'inputProperties->tooltip->content'" => new ValidationProperties([
-            'type'              => 'boolean|string',
-            'validations'       => [
-              'range' => [
+          "'inputProperties->tooltip'" => new Validations\VariableEvaluator([
+            'type'     => 'array',
+            'required' => false,
+          ]),
+          "'inputProperties->tooltip->content'" => new Validations\VariableEvaluator([
+            'type'        => 'boolean|string',
+            'required'    => false,
+            'validations' => [
+              'check_range' => [
                 'max' => 1024
               ]
             ]
           ]),
-          "'inputProperties->tooltip->pos'" => new ValidationProperties([
+          "'inputProperties->tooltip->pos'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
-            'match' => [
+            'required'    => false,
+            'check_match' => [
               false,
               'top',
               'right',
@@ -4313,9 +4398,10 @@
               'left'
             ]
           ]),
-          "'inputProperties->tooltip->align'" => new ValidationProperties([
+          "'inputProperties->tooltip->align'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
-            'match' => [
+            'required'    => false,
+            'check_match' => [
               false,
               'top',
               'right',
@@ -4323,19 +4409,21 @@
               'left'
             ]
           ]),
-          "'inputProperties->tooltip->delay'" => new ValidationProperties([
+          "'inputProperties->tooltip->delay'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
-            'match' => [
+            'required'    => false,
+            'check_match' => [
               false,
               'short',
               'medium',
               'long'
             ]
           ]),
-          "'inputProperties->tooltip->name'" => new ValidationProperties([
+          "'inputProperties->tooltip->name'" => new Validations\VariableEvaluator([
             'type'        => 'boolean|string',
+            'required'    => false,
             'validations' => [
-              'range' => [
+              'check_range' => [
                 'max' => 256
               ]
             ]

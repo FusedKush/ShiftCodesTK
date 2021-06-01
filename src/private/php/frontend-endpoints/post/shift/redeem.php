@@ -1,27 +1,39 @@
 <?php
+  use ShiftCodesTK\Validations;
+
   /**
    * @var array Parameter validation settings
    */
   $paramSettings = [
-    'code' => new ValidationProperties([
+    'code' => new Validations\VariableEvaluator([
       'type'        => 'string',
       'required'    => true,
       'validations' => [
-        'range' => [ 'is' => 12 ]
+        'check_range' => [ 
+          'is' => 12 
+        ]
       ]
     ]),
-    'action' => new ValidationProperties([
+    'action' => new Validations\VariableEvaluator([
       'type'        => 'string',
       'required'    => true,
       'validations' => [
-        'match' => [ 'redeem', 'remove' ]
+        'check_match' => [ 
+          'redeem', 
+          'remove' 
+        ]
       ]
     ])
   ];
   /**
-   * @var array The validated request parameters
+   * @var Validations\GroupEvaluationResult The validated request parameters
    */
-  $validation = check_parameters($_POST, $paramSettings);
+  $validation = (function () use ($paramSettings) {
+    $evaluator = new Validations\GroupEvaluator($paramSettings);
+    
+    $evaluator->check_variables($_POST);
+    return $evaluator->get_last_result(false);
+  })();
   /**
    * @var string The User's Redemption ID.
    */
@@ -35,10 +47,10 @@
   }
   
   // Invalid request parameters
-  if (!$validation['valid']) {
+  if (!$validation->result) {
     $response->set(-1);
     
-    foreach ($validation['errors'] as $error) {
+    foreach ($validation->errors as $error) {
       $response->setError($error);
     }
     
@@ -51,7 +63,7 @@
     /**
      * @var array The request parameters
      */
-    $params = $validation['parameters'];
+    $params = $validation['variables'];
     /**
      * @var string The SQL Query statement
      */
@@ -94,7 +106,7 @@
       /**
        * @var boolean Indicates if an informational toast should be displayed when the request has completed.
        */
-      $displayToast = $redemptionID === false && $validation['parameters']['action'] == 'add';
+      $displayToast = $redemptionID === false && $validation['variables']['action'] == 'add';
       /**
        * @var int Indicates the type of toast that should be displayed, based on if the user is logged in or not.
        */

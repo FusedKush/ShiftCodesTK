@@ -1,6 +1,7 @@
 <?php
   use ShiftCodesTK\Users\CurrentUser,
-      ShiftCodesTK\Strings;
+      ShiftCodesTK\Strings,
+      ShiftCodesTK\Validations;
 
   // SHiFT Code Management
   (function () {
@@ -174,21 +175,21 @@
             /**
              * The `game_id` of the game to filter the codes by
              */
-            'game' => new ValidationProperties([
+            'game' => new Validations\VariableEvaluator([
               'value'       => false,
               'type'        => 'boolean|string',
               'validations' => [
-                'match'        => array_merge(array_keys(self::$GAME_SUPPORT), [ false ])
+                'check_match'        => array_merge(array_keys(self::$GAME_SUPPORT), [ false ])
               ]
             ]),
             /**
              * The `user_id` of the owner to filter the codes by
              */
-            'owner' => new ValidationProperties([
+            'owner' => new Validations\VariableEvaluator([
               'type'        => 'boolean|string',
               'value'       => false,
               'validations' => [
-                'length' => [
+                'check_range' => [
                   'is' => 12
                 ]
               ]
@@ -197,11 +198,11 @@
              * The `code_id` of an active SHiFT Code to search for.
              * - If provided, overwrites the properties of `order`, `limit`, & `page`.
              */
-            'code' => new ValidationProperties([
+            'code' => new Validations\VariableEvaluator([
               'type'        => 'boolean|string',
               'value'       => false,
               'validations' => [
-                'length' => [ 
+                'check_range' => [ 
                   'is' => 12
                 ]
               ]
@@ -209,11 +210,11 @@
             /**
              * The order in which to sort the SHiFT Codes
              */
-            'order' => new ValidationProperties([
+            'order' => new Validations\VariableEvaluator([
               'type'        => 'string',
               'value'       => 'default',
               'validations' => [
-                'match' => [
+                'check_match' => [
                   'default',
                   'newest', 
                   'oldest'
@@ -223,11 +224,11 @@
             /**
              * The flags(s) in which to filter the SHiFT Codes
              */
-            'status' => new ValidationProperties([
+            'status' => new Validations\VariableEvaluator([
               'type'         => 'array',
               'value'        => [ 'active' ],
               'validations'  => [
-                'match' => [
+                'check_match' => [
                   'active', 
                   'expired',
                   'hidden',
@@ -239,11 +240,11 @@
             /**
             * The **PLATFORM_SUPPORT** *Platform ID* of a platform in which to filter the SHiFT Codes
             */
-            'platform' => new ValidationProperties([
+            'platform' => new Validations\VariableEvaluator([
               'type'         => 'boolean|string',
               'value'        => false,
               'validations'  => [
-                'match' => (function () {
+                'check_match' => (function () {
                   $matches = [
                     false
                   ];
@@ -261,11 +262,11 @@
             /**
             * The maximum number of SHiFT Codes to be retrieved
             */
-            'limit' => new ValidationProperties([
+            'limit' => new Validations\VariableEvaluator([
               'type'        => 'integer',
               'value'       => 1,
               'validations' => [
-                'length' => [
+                'check_range' => [
                   'min' => 1, 
                   'max' => 100
                 ]
@@ -274,11 +275,11 @@
             /**
             * The current page number
             */
-            'page' => new ValidationProperties([
+            'page' => new Validations\VariableEvaluator([
               'type'        => 'integer',
               'value'       => 1,
               'validations' => [
-                'length' => [
+                'check_range' => [
                   'min' => 1
                 ]
               ]
@@ -287,7 +288,7 @@
              * Indicates if the `Result Set Data` for the result set should be retrieved
              * - Can by retrieved via the `result_set` property of the response payload.
              **/
-            'get_result_set_data' => new ValidationProperties([
+            'get_result_set_data' => new Validations\VariableEvaluator([
               'type'        => 'boolean',
               'value'       => false
             ]),
@@ -295,31 +296,37 @@
              * Indicates if the `Flag Counts` for the SHiFT Codes should be retrieved
              * - Can by retrieved via the `flag_counts` property of the response payload.
              **/
-            'get_flag_counts' => new ValidationProperties([
+            'get_flag_counts' => new Validations\VariableEvaluator([
               'type'        => 'boolean',
               'value'       => false
             ]),
             /** Indicates if the full `Response Object` should be returned, instead of just the response payloads. */
-            'return_full_response' => new ValidationProperties([
+            'return_full_response' => new Validations\VariableEvaluator([
               'type'        => 'boolean',
               'value'       => false
             ])
           ];
 
-          $checked = check_parameters($options, $validations);
+          /** @var Validations\GroupEvaluationResult */
+          $checked = (function () use ($options, $validations) {
+            $evaluator = new Validations\GroupEvaluator($validations);
 
-          foreach ($checked['warnings'] as $warning) {
+            $evaluator->check_variables($options);
+            return $evaluator->get_last_result(false);
+          })();
+
+          foreach ($checked->warnings as $warning) {
             $response->setWarning($warning);
           }
-          foreach ($checked['errors'] as $error) {
+          foreach ($checked->errors as $error) {
             $response->setError($error);
           }
 
-          if (!$checked['valid']) {
+          if (!$checked->result) {
             return false;
           }
 
-          return $checked['parameters'];
+          return $checked->variables;
         })();
 
         if ($optionsList) {
@@ -713,7 +720,7 @@
                 $resultSource = &$shiftCode['info']['source'];
 
                 if ($source !== null) {
-                  if (check_url($source)) {
+                  if (Validations\check_url($source)) {
                     $resultSource['type'] = 'online';
                   }
                   else {

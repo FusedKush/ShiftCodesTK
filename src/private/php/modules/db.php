@@ -1,7 +1,8 @@
 <?php
   /** Database Functionality */
 
-  use \ShiftCodesTK\Auth;
+  use \ShiftCodesTK\Auth,
+      ShiftCodesTK\Validations;
 
   /** Traits */
   /** Properties & Methods used for connecting to and querying the ShiftCodesTK Database */
@@ -101,7 +102,7 @@
       'get_field_metadata'     => [
         'type'                    => 'boolean|string',
         'validations'             => [
-          'match'                    => [
+          'check_match'                    => [
             false,
             true,
             'ADVANCED'
@@ -211,9 +212,12 @@
       (function () {
         if (count(self::$VALIDATION_PROPERTIES) == 0) {
           foreach ($this::VALIDATIONS as $optionName => $optionConfiguration) {
-            $compiledConfiguration = array_replace_recursive($optionConfiguration, [ 'value' => $this->$optionName ]);
+            $compiledConfiguration = array_replace_recursive($optionConfiguration, [ 
+              'value'     => $this->$optionName,
+              'required'  => false
+            ]);
   
-            self::$VALIDATION_PROPERTIES[$optionName] = new ValidationProperties($compiledConfiguration);
+            self::$VALIDATION_PROPERTIES[$optionName] = new Validations\VariableEvaluator($compiledConfiguration);
           }
         }
       })();
@@ -1054,24 +1058,30 @@
         // Set Options
         (function () use ($options) {
           $optionList = new ShiftCodesTKDatabaseQueryOptions();
-          $validatedOptions = check_parameters($options, $optionList::$VALIDATION_PROPERTIES);
+          /** @var Validations\GroupEvaluationResult */
+          $validatedOptions = (function () use ($options, $optionList) {
+            $evaluator = new Validations\GroupEvaluator($optionList::$VALIDATION_PROPERTIES);
+
+            $evaluator->check_variables($options);
+            return $evaluator->get_last_result(false);
+          })();
   
-          if ($validatedOptions['valid']) {
-            foreach ($validatedOptions['parameters'] as $optionName => $optionValue) {
+          if ($validatedOptions->result) {
+            foreach ($validatedOptions->variables as $optionName => $optionValue) {
               $optionList->$optionName = $optionValue;
             }
 
             $this->options = $optionList;
           }
           else {
-            foreach ($validatedOptions['errors'] as $error) {
+            foreach ($validatedOptions->errors as $error) {
               $errorStr = print_r($error, true);
   
               throw new Error("Invalid Option: {$errorStr}");
             }
           }
   
-          foreach ($validatedOptions['warnings'] as $warning) {
+          foreach ($validatedOptions->warnings as $warning) {
             $warningStr = print_r($warning, true);
   
             if ($this->options->create_response_object && $this->options->log_response_issues) {

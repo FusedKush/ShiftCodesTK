@@ -151,7 +151,7 @@
       trigger_error('The customMetaID must be a numeric integer ID.');
       return false;
     }
-    else if (!check_match($customMetaIDPosition, [ 'start', 'middle', 'end' ])) {
+    else if (!Validations\check_match($customMetaIDPosition, [ 'start', 'middle', 'end' ])) {
       trigger_error('The value of customMetaIDPosition must be "start", "middle", or "end".');
       return false;
     }
