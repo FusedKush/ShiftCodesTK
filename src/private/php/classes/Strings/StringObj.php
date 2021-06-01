@@ -517,7 +517,7 @@
       int $offset = 0, 
       int $flags = 0
     ): bool {
-      return $this->substrPos($search, $offset, $flags) !== false;
+      return $this->substrPos($search, $offset, $flags) !== null;
     }
     /** Counts the number of substring occurrences within a string
      * 
@@ -591,7 +591,7 @@
      * - {@see PREG_OFFSET_CAPTURE}
      * - {@see PREG_UNMATCHED_AS_NULL}
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return array|null 
+     * @return string|array|null 
      * - On success, returns an `array` or `StringArrayObj` made up of the search results, formatted by the provided `$flags`. 
      * - - The first item contains the text that matched the full pattern, with subsequent items containing the text that matches a captured subpattern.
      * - - If the `PREG_RETURN_FULL_MATCH` flag was passed, only the *full pattern match* will be returned.
@@ -604,7 +604,7 @@
       string $pattern, 
       int $flags = 0, 
       int $offset = 0
-    ): ?array {
+    ) {
       $pattern_str = $this->pregCheckPattern($pattern);
       $pattern_flags = (function () use ($flags) {
         $used_flags = [ PREG_OFFSET_CAPTURE, PREG_UNMATCHED_AS_NULL ];
@@ -1036,7 +1036,7 @@
       })();
       $string = preg_replace($this->string, $patterns, '');
 
-      if (substr_check($charlist, $this->char(-1))) {
+      if (substr_check($charlist, $this->lastchar())) {
         $string = slice($string, 0, -1);
       }
 

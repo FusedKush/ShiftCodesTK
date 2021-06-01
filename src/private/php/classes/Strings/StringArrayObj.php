@@ -527,7 +527,7 @@
      * @param string $pattern The *Regular Expression Pattern*.
      * @param int $flags An integer representing the Search Flags.
      * @param int $offset Specifies where the beginning of the search should start (in bytes).
-     * @return array[]|null[] Returns an `array` of `array` or `null` values representing the search results for each of the strings, formatted by the provided `$flags`. If the `$pattern` doesn't match the `string`, returns `false`.
+     * @return string[]|array[]|null[] Returns an `array` of `string`, `array` or `null` values representing the search results for each of the strings, formatted by the provided `$flags`. If the `$pattern` doesn't match the `string`, returns `false`.
      * @see StringObj::pregMatch()
      */
     public function pregMatch (string $pattern, int $flags = 0, int $offset = 0): array {

@@ -337,7 +337,7 @@
    * @param string $pattern The *Regular Expression Pattern*.
    * @param int $flags An integer representing the Search Flags:
    * @param int $offset Specifies where the beginning of the search should start (in bytes).
-   * @return array|null On success, returns an `array` made up of the search results, formatted by the provided `$flags`. 
+   * @return string|array|null On success, returns a `string` or `array` representing the search results, formatted by the provided `$flags`. 
    * If the `$pattern` doesn't match the `$string`, returns `null`.
    */
   function preg_match (
@@ -345,7 +345,7 @@
     string $pattern, 
     int $flags = 0, 
     int $offset = 0
-  ): ?array {
+  ) {
     return StringObj::alias('pregMatch', ...func_get_args());
   }
   /** An *alias* of {@see StringObj::pregTest()}
