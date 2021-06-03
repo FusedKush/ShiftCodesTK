@@ -53,9 +53,9 @@
     ];
 
     /** @var string The original, unmodified {@see StringObj::$string}. */
-    private $originalString = '';
+    protected $originalString = '';
     /** @var string Indicates the detected *Encoding* of the {@see StringObj::$string}, if available. */
-    private $encoding = '';
+    protected $encoding = '';
     
     /** @var string The current string, after any modifications. */
     protected $string = '';
@@ -90,7 +90,7 @@
      * @param string|array $pattern The *Regular Expression Pattern* to check or an `array` of patterns to be checked. 
      * @return string|array Returns the *Regular Expression Pattern* or `array` of patterns that were checked. If the string is in *Multi-Byte Mode*, the patterns were updated accordingly.
      */
-    private function pregCheckPattern ($pattern) {
+    protected function pregCheckPattern ($pattern) {
       $updated_pattern = $pattern;
       $resolved_string_mode = $this->getResolvedStringMode();
 
@@ -126,7 +126,7 @@
      * @param string $string The modified string.
      * @return StringObj|string Returns the modified `StringObj` or `string` depending on the current `$editingMode`.
      */
-    private function handleModifyReturn (string $string) {
+    protected function handleModifyReturn (string $string) {
       if ($this->editingMode != self::EDITING_MODE_COPY) {
         $this->string = $string;
       }

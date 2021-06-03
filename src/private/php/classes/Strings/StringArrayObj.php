@@ -13,14 +13,14 @@
         Traits\SupportTester;
 
     /** @var bool Indicates if the full `$array` should be returned when calling *Query Methods*, instead of just the `stringArray`. Non-string items return **null**. */
-    private $returnFullArray = false;
+    protected $returnFullArray = false;
     /** @var bool Indicates if errors thrown by `$array` strings should be output. */
-    private $verbose = false;
+    protected $verbose = false;
 
     /** @var StringObj[] An `array` made up of `StringObj`'s for each of the string values of the `$array`. **/
-    private $stringArray = [];
+    protected $stringArray = [];
     /** @var bool Indicates if `$stringArray` has more recent data than `$array`. */
-    private $hasNewData = false;
+    protected $hasNewData = false;
 
     /** @var array The original, unmodified `$array`. **/
     protected $originalArray = [];
@@ -29,13 +29,17 @@
 
     /** Change the behavior preferences of the `StringArrayObj`
      * 
+     * The following options can be changed:
+     * - {@see StringArrayObj::$returnFullArray}
+     * - {@see StringArrayObj::$verbose}
+     * 
      * @param string $option The option being changed.
      * - Valid options include `returnFullArray` & `verbose`.
      * @param bool $preference The new preference of the `$option`.
      * @return bool Returns `true` on success. 
      * @throws \UnexpectedValueException if the `$option` is invalid.
      */
-    private function changePreference (string $option, bool $preference): bool {
+    protected function changePreference (string $option, bool $preference): bool {
       $option_list = [
         'returnFullArray',
         'verbose'
@@ -54,7 +58,7 @@
      * @param array $array The updated array.
      * @return bool Returns `true` on success and `false` on failure.
      */
-    private function setStringArray (array $array): bool {
+    protected function setStringArray (array $array): bool {
       $filter_array = function ($arr) use (&$filter_array) {
         $result = [];
 
@@ -102,7 +106,7 @@
      * @param bool $return_objects Indicates if the `StringObj` objects for each string are to be returned instead of the strings themselves.
      * @return array Returns the `$stringArray`, the values determined by `$return_objects`.
      */
-    private function getStringArray ($return_objects = false): array {
+    protected function getStringArray ($return_objects = false): array {
       $array = $this->stringArray;
 
       if (!$return_objects) {
@@ -124,7 +128,7 @@
      * @return mixed Returns the results of invoking the `$method` on success. 
      * @throws \UnexpectedValueException if `$method` is an invalid or blacklisted method.
      */
-    private function execOnStrings ($method, $concat_results = false, ...$args) {
+    protected function execOnStrings ($method, $concat_results = false, ...$args) {
       $blacklist = [];
       $editing_mode = $this->getEditingMode();
       $result_value = null;
