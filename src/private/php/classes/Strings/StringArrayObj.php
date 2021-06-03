@@ -14,6 +14,8 @@
 
     /** @var bool Indicates if the full `$array` should be returned when calling *Query Methods*, instead of just the `stringArray`. Non-string items return **null**. */
     protected $returnFullArray = false;
+    /** @var bool Indicates if the *Array Keys* of the Array are to be operated on, instead of the values. */
+    protected $arrayKeyMode = false;
     /** @var bool Indicates if errors thrown by `$array` strings should be output. */
     protected $verbose = false;
 
@@ -31,10 +33,10 @@
      * 
      * The following options can be changed:
      * - {@see StringArrayObj::$returnFullArray}
+     * - {@see StringArrayObj::$arrayKeyMode}
      * - {@see StringArrayObj::$verbose}
      * 
      * @param string $option The option being changed.
-     * - Valid options include `returnFullArray` & `verbose`.
      * @param bool $preference The new preference of the `$option`.
      * @return bool Returns `true` on success. 
      * @throws \UnexpectedValueException if the `$option` is invalid.
@@ -42,6 +44,7 @@
     protected function changePreference (string $option, bool $preference): bool {
       $option_list = [
         'returnFullArray',
+        'arrayKeyMode',
         'verbose'
       ];
 
@@ -55,44 +58,50 @@
     
     /** Set or Update the `stringArray` of the array.
      * 
-     * @param array $array The updated array.
+     * @param array $array The array being processed.
      * @return bool Returns `true` on success and `false` on failure.
      */
     protected function setStringArray (array $array): bool {
       $filter_array = function ($arr) use (&$filter_array) {
         $result = [];
+        $array_key_mode = $this->arrayKeyMode;
 
         foreach ($arr as $arr_key => $arr_value) {
-          $keep_item = (function () use ($arr_value, $arr_key, &$filter_array, &$result) {
-            if (\is_array($arr_value)) {
-              if (!empty($arr_value)) {
-                $filtered_arr = $filter_array($arr_value);
+          $process_value = $array_key_mode
+            ? $arr_key
+            : $arr_value;
 
-                if (!empty($filtered_arr)) {
-                  $result[$arr_key] = $filtered_arr;
-                  return true;
+          if (is_array($arr_value) || is_string($process_value)) {
+            $result[$arr_key] = [
+              'key'   => $arr_key,
+              'value' => $arr_value
+            ];
+            $result_arr = &$result[$arr_key];
+            
+            if (is_array($arr_value)) {
+              if (!empty($arr_value)) {
+                $sub_array = $filter_array($arr_value);
+  
+                if (!empty($sub_array)) {
+                  $result_arr['value'] = $sub_array;
                 }
               }
             }
-
-            return is_string($arr_value);
-          })();
-
-          if ($keep_item) {
-            if (is_string($arr_value)) {
-              $result[$arr_key] = new StringObj(
-                $arr_value, 
-                $this->editingMode, 
+            if (is_string($process_value)) {
+              $subkey = $array_key_mode 
+                ? 'key' 
+                : 'value';
+  
+              $result_arr[$subkey] = new StringObj(
+                $process_value, 
+                $this->getEditingMode(), 
                 $this->getStringMode()
               );
             }
           }
-          else {
-            unset($result[$arr_key]);
-          }
         }
 
-        unset($arr_value);
+        unset($arr_key, $arr_value);
 
         return $result;
       };
@@ -111,9 +120,10 @@
 
       if (!$return_objects) {
         \array_walk_recursive($array, function (&$arr_value, $arr_key) {
-          $arr_value = $arr_value->getString();
+          if ($arr_value instanceof StringObj) {
+            $arr_value = $arr_value->getString();
+          }
         });
-        unset($arr_value);
       }
 
       return $array;
@@ -188,7 +198,7 @@
           }
         }
 
-        unset($arr_value);
+        unset($arr_key, $arr_value);
 
         if ($concat_results) {
           return $result_value;
@@ -260,8 +270,48 @@
      */
     public function getArray ($return_original = false): array {
       if ($this->hasNewData) {
+        $updated_array = (function () {
+          $current_array = $this->array;
+          $string_array = $this->getStringArray();
+
+          $process_array = function ($arr, $string_arr) use (&$process_array) {
+            $new_array = [];
+
+            /**
+             * @param string|StringObj $property
+             */
+            $get_property_value = function ($property) {
+              if ($property instanceof StringObj) {
+                return $property->getString();
+              }
+
+              return $property;
+            };
+
+            foreach ($arr as $arr_key => $arr_value) {
+              $arr_strings = $string_arr[$arr_key] ?? null;
+
+              if (!isset($arr_strings)) {
+                $new_array[$arr_key] = $arr_value;
+                continue;
+              }
+
+              $updated_key = $get_property_value($arr_strings['key']);
+              $updated_value = $get_property_value($arr_strings['value']);
+
+              $new_array[$updated_key] = is_array($updated_value)
+                ? $process_array($arr_value, $updated_value)
+                : $updated_value;
+            }
+
+            return $new_array;
+          };
+
+          return $process_array($current_array, $string_array);
+        })();
+
         $this->hasNewData = false;
-        $this->array = \array_replace_recursive($this->array, $this->getStringArray());
+        $this->array = $updated_array;
       }
 
       if (!$return_original) {
@@ -781,21 +831,17 @@
     /** Initialize a new `StringArrayObj` 
      * 
      * @param string $array The array to be used.
-     * @param array $options An `Associative Array` of options to be passed to the `StringArrayObj`:
-     * - `bool $return_full_array` Return the full `$array` when calling *Query Methods* on the array, instead of just the `stringArray`. Non-string items return **null**.
-     * - - This does not affect any of the `MANIPULATION_METHODS`, or any methods that return a `bool`.
-     * - `int $editing_mode` An `EDITING_MODE_*` class constant indicating the *Editing Mode* to be used when *modifying* the `$array`.
-     * - - {@see StringArrayObj::EDITING_MODE_LIST} for the list of Editing Modes.
-     * - - Methods that modify the array can be found in the `MANIPULATION_METHODS` class constant.
-     * - `int $string_mode` A `STRING_MODE_*` class constant indicating the *String Mode* to use for the `$array` strings.
-     * - - {@see StringArrayObj::STRING_MODE_LIST} for the list of String Modes.
-     * - `bool $verbose` Indicates if errors thrown by `$array` strings should be output.
+     * @param array $options An `Associative Array` of options to be passed to the `StringArrayObj`.
+     * - See {@see StringArrayObj::setStringMode()} for `stringMode`.
+     * - See {@see StringArrayObj::setEditingMode()} for `editingMode`.
+     * - See {@see StringArrayObj::changePreference()} for `returnFullArray`, `arrayKeyMode`, `verbose`.
      */
     public function __construct (array $array, array $options = []) {
       $optionsList = [ 
-        'return_full_array', 
-        'editing_mode', 
-        'string_mode', 
+        'editingMode', 
+        'stringMode', 
+        'returnFullArray',
+        'arrayKeyMode', 
         'verbose' 
       ];
       
@@ -804,10 +850,10 @@
 
         if (isset($optionValue)) {
           switch ($option) {
-            case 'string_mode' :
+            case 'stringMode' :
               $this->setStringMode($optionValue);
               break;
-            case 'editing_mode' :
+            case 'editingMode' :
               $this->setEditingMode($optionValue);
               break;
             default :
