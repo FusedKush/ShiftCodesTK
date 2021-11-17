@@ -108,8 +108,7 @@ async function configured (task) {
     })();
   // SASS
   (function () {
-    var sass = require('gulp-sass');
-    sass.compiler = require('node-sass');
+    var sass = require('gulp-sass')(require('node-sass'));
 
     runSass = function () {
       return gulp.src(dirs.sassGlob)
@@ -130,13 +129,13 @@ async function configured (task) {
       autoprefixer: function () {
         return gulp.src(dirs.fileGlob)
           .pipe(newer(dirs.cssFiles))
-          .pipe(postcss([plugins.autoprefixer()]))
+          .pipe(postcss([() => plugins.autoprefixer()]))
           .pipe(gulp.dest(dirs.cssFiles));
       },
       cssnano: function () {
         return gulp.src(dirs.fileGlob)
           .pipe(newer(dirs.cssMin))
-          .pipe(postcss([plugins.cssnano()]))
+          .pipe(postcss([() => plugins.cssnano()]))
           .pipe(rename({extname: '.min.css'}))
           .pipe(gulp.dest(dirs.cssMin));
       }
