@@ -75,7 +75,7 @@ async function sync (src, dest, mode, event, file) {
   return Promise.resolve();
 }
 function keepInSync (src, dest, mode = 'sync') {
-  return gulp.watch(src, { ignoreIntial: false })
+  return gulp.watch(src, { ignoreInitial: false })
     .on('all', function (event, file) {
       sync(src, dest, mode, event, file);
     });
@@ -112,7 +112,7 @@ async function configured (task) {
 
     runSass = function () {
       return gulp.src(dirs.sassGlob)
-        .pipe(newer(dirs.cssFiles, { ext: '.css' }))
+        .pipe(newer({ dest: dirs.cssFiles, ext: '.css' }))
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(dirs.cssFiles));
     }
@@ -308,7 +308,7 @@ function startBrowsersync (cb) {
     // Preferences
     open: false,
     logLevel: "silent",
-    notifify: false
+    notify: false
   });
   console.log(`|*| BrowserSync initialized on Ports ${ports.web} (Web) and ${ports.ui} (UI)`);
   cb();
