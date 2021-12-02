@@ -3,57 +3,58 @@
   require_once('../dbConfig.php');
   // Response
   require_once('../response.php');
+
   $response = new Response;
-  // Request parameters
-  $defaultParams = [
-    'gameID' => null,
-    'order'  => 'default',
-    'filter' => 'none',
-    'limit'  => 10,
-    'offset' => 0,
-    'hash'   => false
-  ];
-  $params = (function () use ($response, $defaultParams) {
-    $errorThrown = false;
-    $arr = $_GET;
-
-    foreach ($defaultParams as $key => $val) {
-      if (!array_key_exists($key, $arr)) {
-        if (!is_null($val)) {
-          $response->addWarning([
-            'name'           => 'Missing Parameter',
-            'parameter'      => $key,
-            'inheritedValue' => $val
-          ]);
-        }
-        else {
-          $response->set(3);
-          $response->addError([
-            'name'      => 'Missing Required Parameter',
-            'parameter' => $key
-          ]);
-          $response->send();
-        }
-
-        $arr[$key] = $val;
-      }
-
-      $arr[$key] = htmlspecialchars($arr[$key]);
-    }
-
-    return $arr;
-  })();
-
+  
   // SQL
-  $sqlStatement = (function () use ($params, $response) {
-    $illegalVal = function ($parameter, $value) use ($response) {
+  $sqlStatement = (function () use (&$response) {
+    // Request parameters
+    $params = (function () use (&$response) {
+      $defaultParams = [
+        'gameID' => null,
+        'order'  => 'default',
+        'filter' => 'none',
+        'limit'  => 10,
+        'offset' => 0,
+        'hash'   => false
+      ];
+      $raw_params = $_GET;
+  
+      foreach ($defaultParams as $key => $val) {
+        if (!array_key_exists($key, $raw_params)) {
+          if (!is_null($val)) {
+            $response->addWarning([
+              'name'           => 'Missing Parameter',
+              'parameter'      => $key,
+              'inheritedValue' => $val
+            ]);
+          }
+          else {
+            $response->set(3);
+            $response->addError([
+              'name'      => 'Missing Required Parameter',
+              'parameter' => $key
+            ]);
+            $response->send();
+          }
+  
+          $raw_params[$key] = $val;
+        }
+  
+        $raw_params[$key] = htmlspecialchars($raw_params[$key]);
+      }
+  
+      return $raw_params;
+    })();
+
+    $illegalVal = function ($parameter, $value) use (&$response) {
       $response->fatalError(3, [
         'name'      => 'Illegal Parameter Value',
         'parameter' => $parameter,
         'value'     => $value
       ]);
     };
-    $checkNumeric = function ($parameter) use ($params, $illegalVal) {
+    $checkNumeric = function ($parameter) use ($params, &$illegalVal) {
       $p = $params[$parameter];
 
       if (is_numeric($p)) {
@@ -63,7 +64,7 @@
         $illegalVal($parameter, $p);
       }
     };
-    $checkHash = function ($returnValue) use ($params, $illegalVal) {
+    $checkHash = function ($returnValue) use ($params, &$illegalVal) {
       $parameter = 'hash';
       $p = $params[$parameter];
 
@@ -77,24 +78,25 @@
       // Else
       $illegalVal($parameter, $p);
     };
+    
     $vars = [
-      'gameID'    => (function () use ($params, $illegalVal) {
+      'gameID'    => (function () use ($params, &$illegalVal) {
         $parameter = 'gameID';
-        $p = $params[$parameter];
+        $gameId = $params[$parameter];
         $ids = ['bl1', 'bl2', 'bl3', 'tps'];
 
         foreach ($ids as $id) {
-          if ($p == $id) {
-            return $p;
+          if ($gameId == $id) {
+            return $gameId;
           }
         }
 
         // Else
-        $illegalVal($parameter, $p);
+        $illegalVal($parameter, $gameId);
       })(),
-      'filter'    => (function () use ($params, $illegalVal) {
+      'filter'    => (function () use ($params) {
         $parameter = 'filter';
-        $f = $params[$parameter];
+        $filter = $params[$parameter];
         $str = '';
         $filters = [
           'new'      => 'Date(rel_date) = CURRENT_DATE()',
@@ -102,12 +104,12 @@
         ];
 
         // No filter
-        if (strlen($f) == 0) {
+        if (strlen($filter) == 0) {
           $str .= '(exp_date >= CURRENT_TIMESTAMP() OR exp_date IS NULL)';
         }
         // Filters
         foreach ($filters as $name => $stmt) {
-          if (strpos($f, $name) !== false) {
+          if (strpos($filter, $name) !== false) {
             if (strlen($str) > 0) {
               $str .= ' OR ';
             }
@@ -118,9 +120,9 @@
 
         return $str;
       })(),
-      'order'     => (function () use ($params, $illegalVal) {
+      'order'     => (function () use ($params, &$illegalVal) {
         $parameter = 'order';
-        $p = $params[$parameter];
+        $order = $params[$parameter];
         $options = [
           'default' =>
             'CASE Date(exp_date)
@@ -142,16 +144,16 @@
             'rel_date DESC',
           'old' =>
             'rel_date ASC'
-          ];
+        ];
 
         foreach ($options as $value => $string) {
-          if ($p == $value) {
+          if ($order == $value) {
             return $string;
           }
         }
 
         // Else
-        $illegalVal($parameter, $p);
+        $illegalVal($parameter, $order);
       })(),
       'limit'     => $checkNumeric('limit'),
       'offset'    => $checkNumeric('offset'),
@@ -168,16 +170,16 @@
        FROM
           shift_codes
        WHERE
-          ${vars['hashWhere']}
-          (game_id = '${vars['gameID']}'
-          AND ${vars['filter']})
+          {$vars['hashWhere']}
+          (game_id = '{$vars['gameID']}'
+          AND {$vars['filter']})
        ORDER BY
-          ${vars['hashOrder']}
-          ${vars['order']}
+          {$vars['hashOrder']}
+          {$vars['order']}
        LIMIT
-          ${vars['limit']}
+          {$vars['limit']}
        OFFSET
-          ${vars['offset']}";
+          {$vars['offset']}";
   })();
 
   $sql = $con->prepare($sqlStatement);
@@ -185,6 +187,7 @@
   if ($sql) {
     $sql->execute();
     $sql->store_result();
+
     // Record code details
     (function () use (&$sql, &$response) {
       $meta = $sql->result_metadata();
@@ -210,15 +213,13 @@
             $v = $val;
           }
           else {
-            if (strpos($val, '00:00:00')) {
-              $date = new DateTime($val);
-            }
-            else {
-              $date = new DateTime($val, new DateTimeZone(timezone_name_from_abbr($tz)));
-            }
+            $date = strpos($val, '00:00:00')
+              ? new DateTime($val)
+              : new DateTime($val, new DateTimeZone(timezone_name_from_abbr($tz)));
 
             $v = $date->format('c');
           }
+          
           $arr[$key] = $v;
         }
         $response->addPayload(array_combine($fields, $arr));

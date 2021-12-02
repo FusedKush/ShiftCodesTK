@@ -3,6 +3,7 @@
   require_once('../dbConfig.php');
   // Response
   require_once('../response.php');
+  
   $response = new Response;
 
   $counts = [];
@@ -22,7 +23,7 @@
        FROM
           shift_codes
        WHERE
-          (${stmt})"
+          ({$stmt})"
     );
     $sql->execute();
     $sql->store_result();

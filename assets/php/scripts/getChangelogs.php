@@ -3,6 +3,7 @@
   require_once('dbConfig.php');
   // Response
   require_once('response.php');
+
   $response = new Response;
   $params = (function () use (&$response) {
     $defaultVals = [
@@ -65,98 +66,89 @@
 
     return $arr;
   })();
+  $cols = $data = ['version', 'date', 'type', 'notes'];
+  $hash = $params['hash'];
+  $args = [
+    'select' => implode(', ', $cols),
+    'where'  => (function() use ($hash) {
+
+                  if ($hash)  { return "WHERE version = '{$hash}' OR 1"; }
+                  else        { return ''; }
+                })(),
+    'order' => (function () use ($hash) {
+                  if ($hash)  { return "CASE version WHEN '{$hash}' THEN 0 ELSE 1 END,"; }
+                  else        { return ''; }
+                })()
+  ];
+
   // Get Changelogs
-  (function () use (&$con, &$response, $params) {
-    $cols = $data = ['version', 'date', 'type', 'notes'];
-    $select = implode(', ', $cols);
-    $where =
-    $s = [
-      'select' => implode(', ', $cols),
-      'where'  => (function() use ($params) {
-                    $p = $params['hash'];
+  $sql = $con->prepare("
+    SELECT
+      {$args['select']}
+    FROM
+        updates
+    {$args['where']}
+    ORDER BY
+      {$args['order']}
+      version DESC
+    LIMIT
+      {$params['limit']}
+    OFFSET
+      {$params['offset']}
+  ");
 
-                    if ($p) { return "WHERE version = '${p}' OR 1"; }
-                    else    { return ''; }
-                  })(),
-      'order' => (function () use ($params) {
-                    $p = $params['hash'];
+  if (!$con->error) {
+    $sql->execute();
+    $sql->store_result();
+    $sql->bind_result(...$data);
+    $response->addPayload([], 'changelogs');
 
-                    if ($p) { return "CASE version WHEN '${p}' THEN 0 ELSE 1 END,"; }
-                    else    { return ''; }
-                  })()
-    ];
-    $sql = $con->prepare("SELECT
-                            ${s['select']}
-                          FROM
-                              updates
-                          ${s['where']}
-                          ORDER BY
-                            ${s['order']}
-                            version DESC
-                          LIMIT
-                            ${params['limit']}
-                          OFFSET
-                            ${params['offset']}");
+    while($sql->fetch()) {
+      $arr = [];
 
-    if (!$con->error) {
-      $sql->execute();
-      $sql->store_result();
-      $sql->bind_result(...$data);
-      $response->addPayload([], 'changelogs');
+      foreach ($data as $key => $val) {
+        $v = $cols[$key] == 'date'
+          ? (new DateTime($val))->format('c')
+          : $val;
 
-      while($sql->fetch()) {
-        $arr = [];
-
-        foreach ($data as $key => $val) {
-          $v;
-
-          if ($cols[$key] == 'date') {
-            $date = new DateTime($val);
-            $v = $date->format('c');
-          }
-          else {
-            $v = $val;
-          }
-
-          $arr[$key] = $v;
-        }
-        $response->payload['changelogs'][] = array_combine($cols, $arr);
+        $arr[$key] = $v;
       }
+      $response->payload['changelogs'][] = array_combine($cols, $arr);
+    }
 
-      if ($params['firstRun'] == 'true') {
-        $sql->prepare("SELECT
-                         version
-                       FROM
-                          updates
-                       ORDER BY
-                          version DESC");
+    if ($params['firstRun'] == 'true') {
+      $sql->prepare("SELECT
+                        version
+                      FROM
+                        updates
+                      ORDER BY
+                        version DESC");
 
-        if (!$con->error) {
-          $ver = '';
-          $sql->execute();
-          $sql->store_result();
-          $sql->bind_result($ver);
-          $response->addPayload([], 'versions');
+      if (!$con->error) {
+        $ver = '';
+        $sql->execute();
+        $sql->store_result();
+        $sql->bind_result($ver);
+        $response->addPayload([], 'versions');
 
-          while($sql->fetch()) {
-            $response->payload['versions'][] = $ver;
-          }
-        }
-        else {
-          $response->fatalError(3, [
-            'name' => 'MySQL Error',
-            'Error' => $con->error
-          ]);
+        while($sql->fetch()) {
+          $response->payload['versions'][] = $ver;
         }
       }
+      else {
+        $response->fatalError(3, [
+          'name' => 'MySQL Error',
+          'Error' => $con->error
+        ]);
+      }
+    }
 
-      $response->send();
-    }
-    else {
-      $response->fatalError(3, [
-        'name' => 'MySQL Error',
-        'Error' => $con->error
-      ]);
-    }
-  })();
+    $response->send();
+  }
+  else {
+    $response->fatalError(3, [
+      'name' => 'MySQL Error',
+      'Error' => $con->error
+    ]);
+  }
 ?>
