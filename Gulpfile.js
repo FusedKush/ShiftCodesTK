@@ -299,7 +299,7 @@ function startBrowsersync (cb) {
     ui: {
       port: ports.ui
     },
-    proxy: "localhost:2600",
+    proxy: "localhost:2603",
     // Watch
     files: [
       './assets/**/min/**/*',
