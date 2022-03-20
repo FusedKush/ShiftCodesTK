@@ -1,24 +1,47 @@
-//*** Load State ***//
-var globalFunctionsReady = true;
+/** 
+ * @typedef {( "silent" | "throw" | "ignore" )} TryCatchFunctionBehavior
+ *    Indicates how Try-Catch Functions such as {@link tryJSONParse `tryJSONParse()`} behave
+ *    on failure:
+ *    - **silent**: The error is written to the console using [`console.error()`](https://developer.mozilla.org/docs/Web/API/Console/error),
+ *      as well as the invoked function returning `false`.
+ *    - **throw**: The error is thrown and execution is halted.
+ *    - **ignore**: The invoked function will return `false`.
+ */
 
+/** @type {boolean} Indicates if the `functions.js` script has loaded yet. */
+var globalFunctionsReady = true;
+/** @type {{ [ IntervalName: string ]: [IntervalID: number] }} */
 var pbIntervals = {};
 
 // Error Handling
+/**
+ * Handle a Try-Catch Function Error
+ * 
+ * @param {Error} error 
+ *    The thrown error 
+ * @param {TryCatchFunctionBehavior} behavior 
+ *    The behavior of the Try-Catch Function.
+ * 
+ * @returns {false} 
+ *    When {@link behavior `behavior`} is `"silent"` or `"ignore"`,
+ *    returns `false`.
+ * @throws {Error}
+ *    When {@link behavior `behavior`} is `"throw"` or invalid,
+ *    throws the provided {@link error `error`}.
+ */
 function thrownTryError (error, behavior) {
-  if (behavior == 'silent') {
-    console.error(error);
+  if (behavior == 'silent' || behavior == 'ignore') {
+    if (behavior == 'silent') {
+      console.error(error);
+    }
+
     return false;
   }
-  else if (behavior == 'throw') {
-    throw error;
-  }
-  else if (behavior == 'ignore') {
-    return false;
-  }
-  else {
+  else if (behavior != 'throw') {
     error.message = `${error.message}\n\r\n\rAdditionally, the behavior parameter is invalid.\n\rBehavior: ${behavior}`;
-    throw error;
   }
+  
+  throw error;
 }
 function tryParseInt (int = null, behavior = 'silent') {
   let error = new Error;
