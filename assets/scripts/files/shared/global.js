@@ -93,10 +93,11 @@ var lastFocus;
 var shiftStats = false;
 var hashListeners = {};
 var shiftNames = {
-  bl1: 'Borderlands: GOTY',
-  bl2: 'Borderlands 2',
-  bl3: 'Borderlands 3',
-  tps: 'Borderlands: The Pre-Sequel'
+  bl1: "Borderlands: GOTY",
+  bl2: "Borderlands 2",
+  bl3: "Borderlands 3",
+  tps: "Borderlands: The Pre-Sequel",
+  wonderlands: "Tiny Tina's Wonderlands"
 };
 var shiftUpdates = {
   creation_time: '',
@@ -578,6 +579,7 @@ function execGlobalScripts () {
           'bl2': 'Borderlands 2',
           'tps': 'Borderlands: The Pre-Sequel',
           'bl3': 'Borderlands 3',
+          'wonderlands': "Tiny Tina's Wonderlands",
           'about-us': 'About us',
           'credits': 'Credits',
           'updates': 'Updates',

@@ -1,0 +1,19 @@
+{
+  "name": "Tiny Tina's Wonderlands - ShiftCodesTK",
+  "short_name": "Tiny Tina's Wonderlands",
+  "description": "SHiFT Codes for Tiny Tina's Wonderlands",
+  "dir": "ltr",
+  "lang": "en-US",
+  "start_url": "/wonderlands",
+  "background_color": "#0f1d2c",
+  "theme_color": "#d12095",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/assets/img/logo.svg",
+      "type": "image/svg",
+      "sizes": "48x48 96x96 192x192 288x288 384x384 480x480 512x512 576x76"
+    }
+  ]
+}

@@ -14,9 +14,9 @@
     <meta property="og:title" content="ShiftCodesTK">
     <meta property="twitter:title" content="ShiftCodesTK">
     <!-- Page Description -->
-    <meta name="description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
-    <meta property="og:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
-    <meta property="twitter:description" content="SHiFT Codes for Borderlands: Game of the Year Edition, Borderlands 2, & Borderlands: The Pre-Sequel">
+    <meta name="description" content="SHiFT Codes for Borderlands and Wonderlands">
+    <meta property="og:description" content="SHiFT Codes for Borderlands and Wonderlands">
+    <meta property="twitter:description" content="SHiFT Codes for Borderlands and Wonderlands">
     <!-- Canonical Page Location -->
     <meta name="canonical" href="https://shiftcodestk.com">
     <meta property="og:url" content="https://shiftcodestk.com">
@@ -36,7 +36,7 @@
     <?php include_once('global/beforeContent.php'); ?>
     <!-- Main Content -->
     <main class="no-header">
-      <section class="main" data-webp='{"path": "/assets/img/banners/bl3/2", "alt": ".jpg", "type": "bg"}'>
+      <section class="main" data-webp='{"path": "/assets/img/banners/wonderlands/2", "alt": ".jpg", "type": "bg"}'>
         <div class="content-wrapper">
           <div class="brand">
             <img class="logo" src="/assets/img/logo.svg" width="3.5em" alt="ShiftCodesTK Logo">
@@ -44,24 +44,29 @@
             <div class="tagline">Less time Scrolling, More time Gaming</div>
           </div>
           <div class="action">
-            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen bl3">Borderlands 3</span></h2>
+            <h2 class="string">SHiFT Codes for&nbsp;<span class="selected chosen wonderlands">Tiny Tina's Wonderlands</span></h2>
             <div class="link-container">
+              <a
+                class="button wonderlands"
+                href="/wonderlands"
+                data-string="Tiny Tina's Wonderlands"
+                data-quote="It's time to become chaotic great.">Wonderlands</a>
               <a
                 class="button bl3"
                 href="/bl3"
                 data-string="Borderlands 3"
                 data-quote="Lets make some mayhem.">BL3</a>
               <a
+                class="button bl2"
+                href="/bl2"
+                data-string="Borderlands 2"
+                data-quote="What are you waiting for? Handsome Jack isn't going to defeat himself!">BL2</a>
+              <a
                 class="button bl1"
                 href="/bl1"
                 data-string="Borderlands: GOTY"
                 data-long-string="Borderlands: Game of the Year Edition"
                 data-quote="If you wanna get to the Vault first, you're gonna need to eliminate the competition.">GOTY</a>
-              <a
-                class="button bl2"
-                href="/bl2"
-                data-string="Borderlands 2"
-                data-quote="What are you waiting for? Handsome Jack isn't going to defeat himself!">BL2</a>
               <a
                 class="button tps"
                 href="/tps"

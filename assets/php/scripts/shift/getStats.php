@@ -14,7 +14,7 @@
   ];
 
   foreach ($stmts as $name => $stmt) {
-    $counts[$name] = array_fill_keys(['bl1', 'bl2', 'bl3', 'tps'], 0);
+    $counts[$name] = array_fill_keys(['bl1', 'bl2', 'bl3', 'tps', 'wonderlands'], 0);
     $count = &$counts[$name];
     $gameID = 0;
     $sql = $con->prepare(
@@ -33,7 +33,7 @@
       $count[$gameID]++;
     }
   }
-
+  
   foreach ($counts as $name => &$count) {
     $response->addPayload($count, $name);
   }

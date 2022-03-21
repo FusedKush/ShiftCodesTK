@@ -83,7 +83,7 @@
       'gameID'    => (function () use ($params, &$illegalVal) {
         $parameter = 'gameID';
         $gameId = $params[$parameter];
-        $ids = ['bl1', 'bl2', 'bl3', 'tps'];
+        $ids = ['bl1', 'bl2', 'bl3', 'tps', 'wonderlands'];
 
         foreach ($ids as $id) {
           if ($gameId == $id) {

@@ -11,21 +11,27 @@
     </div>
     <ul role="menu">
       <li>
+        <a class="use-badge" href="/wonderlands">
+          <span class="fas fa-gamepad"></span>
+          <span class="name">Tiny Tina's Wonderlands</span>
+        </a>
+      </li>
+      <li>
         <a class="use-badge" href="/bl3">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 3</span>
         </a>
       </li>
       <li>
-        <a class="use-badge" href="/bl1">
-          <span class="fas fa-gamepad"></span>
-          <span class="name">Borderlands: GOTY</span>
-        </a>
-      </li>
-      <li>
         <a class="use-badge" href="/bl2">
           <span class="fas fa-gamepad"></span>
           <span class="name">Borderlands 2</span>
+        </a>
+      </li>
+      <li>
+        <a class="use-badge" href="/bl1">
+          <span class="fas fa-gamepad"></span>
+          <span class="name">Borderlands: GOTY</span>
         </a>
       </li>
       <li>
