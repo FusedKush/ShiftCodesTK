@@ -33,7 +33,7 @@
 
     if ($sql) {
       $keys = (function () use ($details) {
-        $keys = ['timestamp'];
+        $keys = [ 'timezone', 'timestamp' ];
 
         if ($details) {
           $keys[] = 'id';
@@ -42,16 +42,18 @@
 
         return $keys;
       })();
-      $data = array_fill_keys($keys, '');
-      $tz = '';
+      $values = array_fill(0, count($keys), null);
       $sql->execute();
       $sql->store_result();
 
-      $sql->bind_result($tz, ...$data); 
+      $sql->bind_result(...$values); 
       $sql->fetch();
 
+      $data = array_combine($keys, $values);
+
       // Format Timestamp
-      (function () use(&$data, $tz) {
+      (function () use(&$data) {
+        $tz = $data['timezone'];
         $val = &$data['timestamp'];
 
         $date = new DateTime($val, new DateTimeZone(timezone_name_from_abbr($tz)));
