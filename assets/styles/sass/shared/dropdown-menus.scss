@@ -34,16 +34,16 @@
     // Positioning
     & {
       $posList: (
-        bottom: (0 -0.5em, 0deg),
-        top: (0 0.5em, 180deg),
-        right: (-0.5em 0, 270deg),
-        left: (0.5em 0, 90deg)
+        bottom: ("0, -0.5em", 0deg),
+        top: ("0, 0.5em", 180deg),
+        right: ("-0.5em, 0", 270deg),
+        left: ("0.5em, 0", 90deg)
         );
 
       @include menuRoot {
         @each $posN, $posL in $posList {
           &[data-pos="#{$posN}"] .arrow {
-            transform: translate(nth($posL, 1)) rotate(nth($posL, 2));
+            transform: translate(unquote(nth($posL, 1))) rotate(nth($posL, 2));
 
             @if $posN == bottom or $posN == top      { justify-self: center; }
             @else if $posN == right or $posN == left { align-self: center; }
@@ -62,10 +62,10 @@
     // Positioning
     & {
       $posList: (
-        bottom: 0 0.5em,
-        top: 0 -0.5em,
-        right: 0.5em 0,
-        left: -0.5em 0
+        bottom: "0, 0.5em",
+        top: "0, -0.5em",
+        right: "0.5em, 0",
+        left: "-0.5em, 0"
         );
       @mixin declarations ($alignments, $property, $min) {
         $pos: unquote('');
@@ -84,7 +84,7 @@
 
       @include menuRoot {
         @each $posN, $posV in $posList {
-          &[data-pos="#{$posN}"] .panel { transform: translate($posV); }
+          &[data-pos="#{$posN}"] .panel { transform: translate(unquote($posV)); }
         }
         &[data-pos="top"], &[data-pos="bottom"] {
           $alignmentList: (

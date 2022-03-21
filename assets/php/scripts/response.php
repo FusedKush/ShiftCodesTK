@@ -9,8 +9,8 @@
     /** @var array */
     public $errors = [];
 
-    private function addArray(array $array, $content, string $name = null) {
-      $p = &$this->$array;
+    private function addArray(string $arrayName, $content, string $name = null) {
+      $p = &$this->$arrayName;
 
       if ($name !== null) {
         $p[$name] = $content;
